@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -e
+
+# shellcheck source=/dev/null
+source "$(dirname ${0})/.env"
+# shellcheck source=/dev/null
+source "$(dirname ${0})/.env.local"
+
+echo "Creating and starting a new keycloak-proxy ${KCPROXY_VERSION} container…"
+echo
+
+docker run --name ${PHUB_AUTHPROXY_CONTAINER_NAME} \
+  -v ${PHUB_AUTHPROXY_DATA_LOCAL}:${PHUB_AUTHPROXY_DATA_CONTAINER} \
+  -d -p 8080:8080 \
+  quay.io/ukhomeofficedigital/go-keycloak-proxy:${KCPROXY_VERSION} \
+  --config=/opt/data/config.yml \
+  --client-id=${KCPROXY_CLIENT_ID} \
+  --client-secret=${KCPROXY_CLIENT_SECRET} \
+  --encryption-key=${KCPROXY_ENCRYPTION_KEY}
+
+echo
+echo "Started new keycloak-proxy container '${PHUB_AUTHPROXY_CONTAINER_NAME}'"

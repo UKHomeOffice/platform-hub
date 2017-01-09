@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+# shellcheck source=/dev/null
+source "$(dirname ${0})/.env"
+
+echo "Destroying keycloak-proxy container '${PHUB_AUTHPROXY_CONTAINER_NAME}'…"
+echo
+
+docker rm ${PHUB_AUTHPROXY_CONTAINER_NAME}
