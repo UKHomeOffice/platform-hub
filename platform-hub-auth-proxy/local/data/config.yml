@@ -1,4 +1,5 @@
 discovery-url: https://sso-dev.notprod.homeoffice.gov.uk/auth/realms/hod-test
+revocation-url: https://sso-dev.notprod.homeoffice.gov.uk/auth/realms/hod-test/protocol/openid-connect/logout
 listen: 0.0.0.0:8080
 no-redirects: true
 redirection-url: http://localhost:8080
@@ -7,9 +8,8 @@ upstream-keepalives: true
 enable-refresh-tokens: true
 enable-security-filter: false
 secure-cookie: false
-http-only-cookie: true
-cookie-access-name: 'auth'
-cookie-refresh-name: 'auth-state'
+cookie-access-name: 'auth-access'
+cookie-refresh-name: 'auth-refresh'
 
 log-requests: true
 log-json-format: false

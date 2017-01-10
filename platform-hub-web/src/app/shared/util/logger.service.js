@@ -1,4 +1,4 @@
-export const logger = ($log, toastr) => {
+export const logger = function ($log, toastr) {
   'ngInject';
 
   const service = {};

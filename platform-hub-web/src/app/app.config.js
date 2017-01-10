@@ -1,4 +1,4 @@
-export const appConfig = ($mdIconProvider, $mdThemingProvider) => {
+export const appConfig = function ($mdIconProvider, $mdThemingProvider, $httpProvider, jwtOptionsProvider) {
   'ngInject';
 
   $mdIconProvider
@@ -7,4 +7,14 @@ export const appConfig = ($mdIconProvider, $mdThemingProvider) => {
   $mdThemingProvider.theme('default')
     .primaryPalette('blue')
     .accentPalette('red');
+
+  // Set up authenticated API access
+  jwtOptionsProvider.config({               // eslint-disable-line
+    tokenGetter: authService => {
+      'ngInject';
+
+      return authService.getToken();
+    }
+  });
+  $httpProvider.interceptors.push('jwtInterceptor');
 };

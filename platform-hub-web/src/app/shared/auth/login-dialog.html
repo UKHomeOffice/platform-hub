@@ -1,0 +1,16 @@
+<md-dialog aria-label="Login dialog">
+  <md-toolbar class="md-toolbar-tools md-accent">
+    <h2>You need to login to continue…</h2>
+    <span flex></span>
+    <md-button
+      class="close-button md-icon-button"
+      ng-click="$ctrl.cancel()"
+      aria-label="Close dialog">
+      <md-icon>clear</md-icon>
+    </md-button>
+  </md-toolbar>
+
+  <md-dialog-content class="md-dialog-content" layout="row" layout-align="center">
+    <md-button class="md-raised md-primary" md-autofocus ng-click="$ctrl.login()">Login</md-button>
+  </md-dialog-content>
+</md-dialog>

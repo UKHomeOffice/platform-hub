@@ -16,6 +16,6 @@ describe('appHome component', () => {
     $rootScope.$digest();
     expect(
       element.text().trim()
-    ).toEqual('HOME CONTENT!');
+    ).toEqual('');
   }));
 });

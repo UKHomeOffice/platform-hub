@@ -1,0 +1,25 @@
+<md-card class="auth-card" md-colors="{background: 'blue-100'}">
+  <md-card-title >
+    <md-card-title-text>
+      <em ng-if="!$ctrl.isAuthenticated">Not logged in</em>
+      <span ng-if="$ctrl.isAuthenticated">
+        Hello<span ng-if="$ctrl.authData.name">, {{$ctrl.authData.name}}</span>
+      </span>
+    </md-card-title-text>
+  </md-card-title>
+
+  <md-card-actions>
+    <md-button
+      ng-if="!$ctrl.isAuthenticated"
+      class="md-raised md-primary"
+      ng-click="$ctrl.login()">
+      Login
+    </md-button>
+    <md-button
+      ng-if="$ctrl.isAuthenticated"
+      class="md-raised md-primary"
+      ng-click="$ctrl.logout()">
+      Logout
+    </md-button>
+  </md-card-actions>
+</md-card>
