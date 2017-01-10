@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+# shellcheck source=/dev/null
+source "$(dirname ${0})/.env"
+
+echo "Destroying Postgres container '${PHUB_PG_CONTAINER_NAME}'…"
+echo "Note: the data volume will NOT be deleted"
+echo
+
+docker rm ${PHUB_PG_CONTAINER_NAME}

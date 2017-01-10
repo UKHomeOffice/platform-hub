@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -e
+
+# shellcheck source=/dev/null
+source "$(dirname ${0})/.env"
+
+echo "Creating and starting a new Postgres ${PHUB_PG_VERSION} container…"
+echo
+echo "Data will be stored locally in:"
+echo "${PHUB_PG_DATA_LOCAL}"
+echo "… mounted as a volume in the container"
+echo
+
+docker run --name ${PHUB_PG_CONTAINER_NAME} \
+  -e POSTGRES_USER=${PHUB_PG_USER} \
+  -e POSTGRES_PASSWORD=${PHUB_PG_PASSWORD} \
+  -e PGDATA=${PHUB_PG_DATA_CONTAINER} \
+  -v ${PHUB_PG_DATA_LOCAL}:${PHUB_PG_DATA_CONTAINER} \
+  -d -p 5432:5432 \
+  postgres:${PHUB_PG_VERSION}
+
+echo
+echo "Started new Postgres container '${PHUB_PG_CONTAINER_NAME}'"

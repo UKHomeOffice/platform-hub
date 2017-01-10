@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+# shellcheck source=/dev/null
+source "$(dirname ${0})/.env"
+
+echo "Stopping Postgres container '${PHUB_PG_CONTAINER_NAME}'…"
+echo "Note: you can start this up again with 'bin/postgres/start'"
+echo
+
+docker stop ${PHUB_PG_CONTAINER_NAME}
