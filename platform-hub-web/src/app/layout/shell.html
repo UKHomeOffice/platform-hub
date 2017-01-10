@@ -1,0 +1,50 @@
+<div class="app-shell" layout="column" layout-fill>
+
+  <!-- Main header / toolbar -->
+  <md-toolbar layout="row" class="md-toolbar-tools">
+    <md-button
+      class="app-menu-button md-icon-button"
+      hide-gt-sm
+      ng-click="$ctrl.toggleMenu()"
+      aria-label="Show/hide menu">
+      <md-icon md-svg-icon="menu"></md-icon>
+    </md-button>
+    <h1>DSP Platform Hub</h1>
+  </md-toolbar>
+
+  <!-- Sidebar + content area -->
+  <div flex layout="row">
+
+    <md-sidenav
+      md-whiteframe="4"
+      md-is-locked-open="$mdMedia('gt-sm')"
+      md-component-id="left"
+      ng-click="$ctrl.toggleMenu()">
+
+      <ul>
+        <li>
+          Option 1
+        </li>
+        <li>
+          Option 2
+        </li>
+        <li>
+          Option 3
+        </li>
+        <li>
+          Option 4
+        </li>
+        <li>
+          Option 5
+        </li>
+      </ul>
+
+    </md-sidenav>
+
+    <md-content flex layout-padding>
+      <ui-view></ui-view>
+    </md-content>
+
+  </div>
+
+</div>

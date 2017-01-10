@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+# shellcheck source=/dev/null
+source "$(dirname ${0})/.env"
+
+echo "Opening a psql console into '${PHUB_PG_CONTAINER_NAME}'…"
+echo
+
+docker run -it --rm -e PGPASSWORD=${PHUB_PG_PASSWORD} --link ${PHUB_PG_CONTAINER_NAME}:postgres postgres:${PHUB_PG_VERSION} psql -h postgres -U ${PHUB_PG_USER}

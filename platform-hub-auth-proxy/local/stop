@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+# shellcheck source=/dev/null
+source "$(dirname ${0})/.env"
+
+echo "Stopping keycloak-proxy container '${PHUB_AUTHPROXY_CONTAINER_NAME}'…"
+echo "Note: you can start this up again with 'local/start'"
+echo
+
+docker stop ${PHUB_AUTHPROXY_CONTAINER_NAME}
