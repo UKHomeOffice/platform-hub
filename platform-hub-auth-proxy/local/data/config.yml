@@ -1,5 +1,6 @@
 discovery-url: https://sso-dev.notprod.homeoffice.gov.uk/auth/realms/hod-test
 listen: 0.0.0.0:8080
+no-redirects: true
 redirection-url: http://localhost:8080
 upstream-url: http://localhost:8081
 upstream-keepalives: true
