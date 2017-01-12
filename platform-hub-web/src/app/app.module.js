@@ -50,7 +50,7 @@ angular
   .constant('_', lodash);
 
 // App specific constants
-const apiEndpoint = `${window.location.protocol}//${window.location.hostname}:8080`;
+const apiEndpoint = '/api';
 angular
   .module(name)
   .constant('apiEndpoint', apiEndpoint);
