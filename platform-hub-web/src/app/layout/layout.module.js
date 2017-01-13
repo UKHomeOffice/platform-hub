@@ -1,7 +1,5 @@
 import angular from 'angular';
 
-import 'angular-material';
-
 import {ShellComponent} from './shell.component';
 
 import './layout.scss';

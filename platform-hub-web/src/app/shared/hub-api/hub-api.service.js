@@ -1,4 +1,4 @@
-export const hubApiService = () => {
+export const hubApiService = function () {
   'ngInject';
 
   const service = {};

@@ -1,4 +1,5 @@
 const conf = require('./gulp.conf');
+const proxyMiddleware = require('./proxy-middleware.conf');
 
 module.exports = function () {
   return {
@@ -6,7 +7,8 @@ module.exports = function () {
       baseDir: [
         conf.paths.tmp,
         conf.paths.src
-      ]
+      ],
+      middleware: proxyMiddleware
     },
     open: false
   };

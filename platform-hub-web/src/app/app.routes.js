@@ -1,6 +1,6 @@
 import {AppHome} from './home/home.module';
 
-export const appRoutes = ($stateProvider, $urlRouterProvider, $locationProvider) => {
+export const appRoutes = function ($stateProvider, $urlRouterProvider, $locationProvider) {
   'ngInject';
 
   $locationProvider.html5Mode(true);
@@ -9,6 +9,9 @@ export const appRoutes = ($stateProvider, $urlRouterProvider, $locationProvider)
   $stateProvider
     .state('home', {
       url: '/',
-      component: AppHome
+      component: AppHome,
+      data: {
+        authenticate: false
+      }
     });
 };

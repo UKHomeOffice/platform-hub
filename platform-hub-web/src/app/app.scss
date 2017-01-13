@@ -2,5 +2,13 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: 'Open Sans', sans-serif;
+}
+
+.close-button {
+  background-color: transparent;
+  border: none;
+  height: 38px;
+  margin: 16px;
+  width: 36px;
+  cursor: pointer;
 }
