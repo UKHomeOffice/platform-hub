@@ -4,15 +4,15 @@
 
 ### Prerequisites
 
-#### Node v6.9.4
+#### Node v6.9.1
 
 [`nave`](https://github.com/isaacs/nave) is a useful way to manage multiple/specific versions of NodeJS
 
 To set up:
 - `npm install -g nave`
-- `nave use 6.9.4`
+- `nave use 6.9.1`
 
-NOTE: you'll then need to run `nave use 6.9.4` every time you start up a new shell.
+NOTE: you'll then need to run `nave use 6.9.1` every time you start up a new shell.
 
 #### Yarn (for package management)
 
