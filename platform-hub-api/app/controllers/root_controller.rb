@@ -1,4 +1,4 @@
-class RootController < ApplicationController
+class RootController < ApiJsonController
 
   def index
     head :no_content
