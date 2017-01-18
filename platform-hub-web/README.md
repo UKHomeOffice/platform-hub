@@ -4,21 +4,21 @@
 
 ### Prerequisites
 
-#### Node v6.9.4
+#### Node v6.9.1
 
 [`nave`](https://github.com/isaacs/nave) is a useful way to manage multiple/specific versions of NodeJS
 
 To set up:
 - `npm install -g nave`
-- `nave use 6.9.4`
+- `nave use 6.9.1`
 
-NOTE: you'll then need to run `nave use 6.9.4` every time you start up a new shell.
+NOTE: you'll then need to run `nave use 6.9.1` every time you start up a new shell.
 
-#### Yarn (for package management)
+#### Yarn v0.18.1 (for package management)
 
 [`Yarn`](https://yarnpkg.com) provides a more deterministic, safe and reliable mechanism for NodeJS package management (substitute for `npm`).
 
-The simplest way to set this up is: `npm install -g yarn` though see the [install docs](https://yarnpkg.com/en/docs/install) for details on potentially better ways. Note that Yarn needs to be available for the version of NodeJS you set up above.
+The simplest way to set this up is: `npm install -g yarn@0.18.1` though see the [install docs](https://yarnpkg.com/en/docs/install) for details on potentially better ways. Note that Yarn needs to be available for the version of NodeJS you set up above.
 
 ### Dev flows
 

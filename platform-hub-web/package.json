@@ -4,7 +4,7 @@
   "author": "Jiten (Jits) Bhagat <dev@jits.co.uk>",
   "private": true,
   "engines": {
-    "node": "6.9.x"
+    "node": "6.9.1"
   },
   "scripts": {
     "build": "gulp",

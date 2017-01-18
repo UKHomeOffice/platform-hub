@@ -1,0 +1,147 @@
+pipeline:
+
+  web_tests_then_build_dist:
+    image: quay.io/ukhomeofficedigital/nodejs-base:v6.9.1
+    commands:
+      - yum install -y git bzip2 bzip2-libs fontconfig
+      - git config --global url."https://".insteadOf git://
+      - npm install -g yarn
+      - cd platform-hub-web
+      - rm -rf node_modules
+      - yarn
+      - yarn run test
+      - yarn run build
+    when:
+      event: [push, tag, pull_request]
+
+  # Expects the optimized dist code to have been built
+  web_build_image:
+    image: docker:1.12
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - cd platform-hub-web
+      - docker build -t platform-hub-web .
+    when:
+      event: [push, tag, pull_request]
+
+  web_test_image:
+    image: docker:1.12
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - docker run --name platform-hub-web-test platform-hub-web /bin/sh -c "pwd && ls -lah && test -e index.html"
+    when:
+      event: [push, tag, pull_request]
+
+  web_latest_image_to_quay:
+    image: docker:1.12
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - docker login -u="ukhomeofficedigital+platform_hub" -p=${DOCKER_PASSWORD} quay.io
+      - docker tag platform-hub-web quay.io/ukhomeofficedigital/platform-hub-web:latest
+      - docker tag platform-hub-web quay.io/ukhomeofficedigital/platform-hub-web:${DRONE_COMMIT_SHA}
+      - docker push quay.io/ukhomeofficedigital/platform-hub-web:latest
+      - docker push quay.io/ukhomeofficedigital/platform-hub-web:${DRONE_COMMIT_SHA}
+    when:
+      event: push
+      branch: master
+
+  web_tag_image_to_quay:
+    image: docker:1.12
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - docker login -u="ukhomeofficedigital+platform_hub" -p=${DOCKER_PASSWORD} quay.io
+      - docker tag platform-hub-web quay.io/ukhomeofficedigital/platform-hub-web:${DRONE_TAG}
+      - docker push quay.io/ukhomeofficedigital/platform-hub-web:${DRONE_TAG}
+    when:
+      event: tag
+
+
+  api_tests:
+    image: ruby:2.3.3
+    commands:
+      - echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
+      - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+      - apt-get update && apt-get install -y libpq-dev
+      - cd platform-hub-api
+      - bundle install --jobs 20 --retry 5 --deployment --no-cache
+      - bin/setup
+      - bundle exec rspec
+    when:
+      event: [push, tag, pull_request]
+
+  api_build_image:
+    image: docker:1.12
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - cd platform-hub-api
+      - docker build -t platform-hub-api .
+    when:
+      event: [push, tag, pull_request]
+
+  api_test_image:
+    image: docker:1.12
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - >
+        docker run
+        --name platform-hub-api-test
+        -e PORT=30000
+        -e PHUB_DB_NAME=phub_development
+        -e PHUB_DB_USERNAME=phub
+        -e PHUB_DB_PASSWORD=phub_password
+        -e RAILS_LOG_TO_STDOUT=true
+        -e SECRET_KEY_BASE=foobar
+        --net=host
+        -d
+        platform-hub-api
+        /bin/sh -c "bin/rails server"
+      - sleep 5
+      - curl -s -f http://127.0.0.1:30000
+    when:
+      event: [push, tag, pull_request]
+
+  api_latest_image_to_quay:
+    image: docker:1.12
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - docker login -u="ukhomeofficedigital+platform_hub" -p=${DOCKER_PASSWORD} quay.io
+      - docker tag platform-hub-api quay.io/ukhomeofficedigital/platform-hub-api:latest
+      - docker tag platform-hub-api quay.io/ukhomeofficedigital/platform-hub-api:${DRONE_COMMIT_SHA}
+      - docker push quay.io/ukhomeofficedigital/platform-hub-api:latest
+      - docker push quay.io/ukhomeofficedigital/platform-hub-api:${DRONE_COMMIT_SHA}
+    when:
+      event: push
+      branch: master
+
+  api_tag_image_to_quay:
+    image: docker:1.12
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - docker login -u="ukhomeofficedigital+platform_hub" -p=${DOCKER_PASSWORD} quay.io
+      - docker tag platform-hub-api quay.io/ukhomeofficedigital/platform-hub-api:${DRONE_TAG}
+      - docker push quay.io/ukhomeofficedigital/platform-hub-api:${DRONE_TAG}
+    when:
+      event: tag
+
+services:
+
+  dind:
+    image: docker:1.12-dind
+    privileged: true
+    command:
+      - "-s"
+      - "overlay"
+
+  postgres:
+    image: postgres:9.6.1
+    environment:
+      - POSTGRES_USER=phub
+      - POSTGRES_PASSWORD=phub_password

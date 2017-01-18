@@ -17,4 +17,5 @@
 .byebug_history
 
 .env.local
+vendor
 pgdata
