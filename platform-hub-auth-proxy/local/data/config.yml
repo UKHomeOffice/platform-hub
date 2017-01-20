@@ -3,8 +3,7 @@ revocation-url: https://sso-dev.notprod.homeoffice.gov.uk/auth/realms/hod-test/p
 listen: 0.0.0.0:8080
 no-redirects: true
 redirection-url: http://localhost:8080
-upstream-url: http://localhost:8081
-upstream-keepalives: true
+upstream-keepalives: false
 enable-refresh-tokens: true
 enable-security-filter: false
 secure-cookie: false
