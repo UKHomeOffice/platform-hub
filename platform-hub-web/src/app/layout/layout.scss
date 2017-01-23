@@ -6,3 +6,11 @@
   width: 36px;
   cursor: pointer;
 }
+
+.app-shell {
+  .nav {
+    .active {
+      color: darken(red, 35);
+    }
+  }
+}

@@ -1,4 +1,4 @@
-export const hubApiService = function ($http, $q, logger, apiEndpoint) {
+export const hubApiService = function ($rootScope, $http, $q, logger, events, apiEndpoint) {
   'ngInject';
 
   const service = {};
@@ -11,7 +11,12 @@ export const hubApiService = function ($http, $q, logger, apiEndpoint) {
     return $http
       .get(`${apiEndpoint}/me`)
       .then(response => {
-        return response.data;
+        const me = response.data;
+
+        $rootScope.$broadcast(events.api.me.updated, me);
+        logger.debug(me);
+
+        return me;
       })
       .catch(response => {
         logger.error('Faild to fetch profile data – the API might be down. Try again later.');

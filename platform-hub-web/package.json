@@ -15,16 +15,17 @@
     "webpack:analysis": "node_modules/.bin/webpack --json --config=./conf/webpack.conf.js | webpack-bundle-size-analyzer"
   },
   "dependencies": {
-    "angular": "1.5.x",
-    "angular-animate": "1.5.x",
-    "angular-aria": "1.5.x",
+    "angular": "1.5.11",
+    "angular-animate": "1.5.11",
+    "angular-aria": "1.5.11",
     "angular-base64": "^2.0.5",
-    "angular-cookies": "1.5.x",
+    "angular-cookies": "1.5.11",
     "angular-jwt": "^0.1.8",
     "angular-loading-bar": "0.9.x",
     "angular-material": "1.1.x",
-    "angular-messages": "1.5.x",
-    "angular-sanitize": "1.5.x",
+    "angular-material-sidemenu": "^1.0.2",
+    "angular-messages": "1.5.11",
+    "angular-sanitize": "1.5.11",
     "angular-toastr": "2.1.x",
     "angular-ui-router": "1.0.0-rc.1",
     "angular-url-encode": "^1.0.0",
@@ -33,7 +34,7 @@
     "moment": "2.17.x"
   },
   "devDependencies": {
-    "angular-mocks": "1.5.x",
+    "angular-mocks": "1.5.11",
     "autoprefixer": "^6.2.2",
     "babel-core": "^6.13.0",
     "babel-eslint": "^6.0.2",

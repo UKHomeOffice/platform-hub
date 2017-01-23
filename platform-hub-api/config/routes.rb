@@ -5,7 +5,17 @@ Rails.application.routes.draw do
 
     root to: 'root#index'
 
-    get 'me', to: 'me#show'
+    get '/me', to: 'me#show'
+
+    constraints service: /github/ do
+      get '/identity_flows/start/:service',
+        to: 'identity_flows#start_auth_flow',
+        as: 'identity_flows_start'
+
+      get '/identity_flows/callback/:service',
+        to: 'identity_flows#callback',
+        as: 'identity_flows_callback'
+    end
 
   end
 

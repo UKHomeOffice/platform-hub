@@ -22,33 +22,27 @@
       md-is-locked-open="$mdMedia('gt-sm')"
       ng-click="$ctrl.toggleMenu()">
 
+      <auth-card></auth-card>
 
-      <md-content flex role="navigation">
-        <auth-card></auth-card>
+      <md-content>
+        <md-sidemenu role="navigation" class="nav">
+          <md-sidemenu-group>
+            <md-subheader class="md-no-sticky">My Account</md-subheader>
 
-        <ul>
-          <li>
-            Option 1
-          </li>
-          <li>
-            Option 2
-          </li>
-          <li>
-            Option 3
-          </li>
-          <li>
-            Option 4
-          </li>
-          <li>
-            Option 5
-          </li>
-        </ul>
-
+            <md-sidemenu-button
+              ng-repeat="item in $ctrl.navStates"
+              ui-sref="{{item.state}}"
+              ui-sref-active="active">
+              <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
+              <span>{{item.title}}</span>
+            </md-sidemenu-button>
+          </md-sidemenu-group>
+        </md-sidemenu>
       </md-content>
 
     </md-sidenav>
 
-    <md-content flex layout-padding>
+    <md-content flex>
       <ui-view></ui-view>
     </md-content>
 

@@ -1,19 +1,10 @@
-export const authService = function ($window, $cookies, $q, $filter, $base64, $state, $rootScope, jwtHelper, windowPopupService, apiEndpoint, logger, _) {
+export const authService = function ($window, $cookies, $q, $filter, $base64, $rootScope, jwtHelper, windowPopupService, events, apiEndpoint, homeEndpoint, logger, _) {
   'ngInject';
 
   const authEndpoint = `${apiEndpoint}/oauth`;
-  const completionUrl = $state.href('home', {}, {absolute: true});
-  const completionUrlEncoded = $filter('bcEncode')($base64.encode(completionUrl));
-
-  const popupClosePredicateFn = function (win) {
-    return win.location.href === completionUrl;
-  };
+  const completionUrlEncoded = $filter('bcEncode')($base64.encode(homeEndpoint));
 
   const accessCookieName = 'auth-access';
-  const authDataEvent = 'auth:data';
-
-  const popupHeight = 500;
-  const popupWidth = 500;
 
   const service = {};
 
@@ -29,8 +20,8 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $s
     return windowPopupService.open(
       `${authEndpoint}/authorize?state=${completionUrlEncoded}`,
       'authPopup',
-      windowPopupOptions(),
-      popupClosePredicateFn
+      {},
+      homeEndpoint
     ).then(() => {
       broadcastAuthData();
 
@@ -47,8 +38,8 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $s
     return windowPopupService.open(
       `${authEndpoint}/logout?redirect=${completionUrlEncoded}`,
       'logoutPopup',
-      windowPopupOptions(),
-      popupClosePredicateFn
+      {},
+      homeEndpoint
     ).then(() => {
       broadcastAuthData();
 
@@ -99,16 +90,7 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $s
     }
   }
 
-  function windowPopupOptions() {
-    return {
-      width: popupHeight,
-      height: popupWidth,
-      top: $window.screenY + (($window.outerHeight - popupHeight) / 2.5),
-      left: $window.screenX + (($window.outerWidth - popupWidth) / 2)
-    };
-  }
-
   function broadcastAuthData() {
-    $rootScope.$broadcast(authDataEvent, getPayload());
+    $rootScope.$broadcast(events.auth.updated, getPayload());
   }
 };

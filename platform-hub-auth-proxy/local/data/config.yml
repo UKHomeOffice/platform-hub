@@ -19,6 +19,8 @@ add-claims:
 - given_name
 
 resources:
+- uri: /identity_flows/callback
+  white-listed: true
 - uri: /
 
 verbose: false

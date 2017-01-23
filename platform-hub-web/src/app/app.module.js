@@ -9,6 +9,7 @@ import 'angular-cookies';
 import 'angular-jwt';
 import 'angular-loading-bar';
 import 'angular-material';
+import 'angular-material-sidemenu';
 import 'angular-messages';
 import 'angular-sanitize';
 import 'angular-ui-router';
@@ -18,6 +19,7 @@ import moment from 'moment';
 import lodash from 'lodash';
 
 import {HomeModule} from './home/home.module';
+import {IdentitiesModule} from './identities/identities.module';
 import {LayoutModule} from './layout/layout.module';
 import {SharedModule} from './shared/shared.module';
 
@@ -26,6 +28,7 @@ import {appRoutes} from './app.routes';
 import {appRun} from './app.run';
 
 import 'angular-material/angular-material.css';  // Make sure this is available across the app
+import 'angular-material-sidemenu/dest/angular-material-sidemenu.css';
 import './app.scss';
 
 const name = 'app';
@@ -34,6 +37,7 @@ const name = 'app';
 angular
   .module(name, [
     HomeModule,
+    IdentitiesModule,
     LayoutModule,
     SharedModule,
     'angular-jwt',
@@ -44,6 +48,7 @@ angular
     'ngAria',
     'ngCookies',
     'ngMaterial',
+    'ngMaterialSidemenu',
     'ngMessages',
     'ngSanitize',
     'ui.router'
