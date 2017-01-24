@@ -30,6 +30,13 @@
             aria-label="Connect Github identity">
             Connect
           </md-button>
+          <md-button
+            class="md-raised md-secondary"
+            ng-if="i.connected && i.external"
+            ng-click="$ctrl.disconnect(i.provider, $event)"
+            aria-label="Disconnect Github identity">
+            Disconnect
+          </md-button>
         </div>
 
       </md-list-item>

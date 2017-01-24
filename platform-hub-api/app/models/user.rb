@@ -7,7 +7,11 @@ class User < ApplicationRecord
 
 
   def main_identity
-    identities.find_by(provider: :keycloak)
+    identity :keycloak
+  end
+
+  def identity provider
+    identities.find_by provider: provider
   end
 
 end
