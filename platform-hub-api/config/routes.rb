@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
     root to: 'root#index'
 
+    get '/healthz', to: 'healthcheck#show'
+
     get '/me', to: 'me#show'
 
     constraints service: /github/ do

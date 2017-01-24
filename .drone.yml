@@ -110,7 +110,7 @@ pipeline:
         platform-hub-api
         /bin/sh -c "bin/rails server"
       - sleep 5
-      - curl -s -f http://127.0.0.1:30000
+      - curl -s -f http://127.0.0.1:30000/healthz
     when:
       event: [push, tag, pull_request]
 
