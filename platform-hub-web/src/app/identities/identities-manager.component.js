@@ -40,15 +40,19 @@ function IdentitiesManagerController($scope, hubApiService, gitHubIdentityServic
   }
 
   function processMeData(meData) {
-    const owned = _.keyBy(meData.identities, 'provider');
+    if (_.isEmpty(meData)) {
+      ctrl.identities = [];
+    } else {
+      const owned = _.keyBy(meData.identities, 'provider');
 
-    ctrl.identities = ctrl.supported.map(entry => {
-      const match = _.clone(owned[entry.provider] || {});
-      return _.extend(
-        _.clone(entry),
-        match,
-        {connected: !_.isEmpty(match)}
-      );
-    });
+      ctrl.identities = ctrl.supported.map(entry => {
+        const match = _.clone(owned[entry.provider] || {});
+        return _.extend(
+          _.clone(entry),
+          match,
+          {connected: !_.isEmpty(match)}
+        );
+      });
+    }
   }
 }
