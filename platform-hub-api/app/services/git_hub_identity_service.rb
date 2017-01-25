@@ -9,11 +9,13 @@ class GitHubIdentityService
   end
 
   def authorize_url existing_user
-    github_api_service.authorize_url(
-      client_id: @client_id,
-      scope: 'user',
-      redirect_uri: "#{@app_base_url}/api/#{@callback_url}",
-      state: @encryption_service.encrypt(existing_user.id)
+    Octokit::Client.new.authorize_url(
+      @client_id,
+      {
+        scope: 'user',
+        redirect_uri: "#{@app_base_url}/api/#{@callback_url}",
+        state: @encryption_service.encrypt(existing_user.id)
+      }
     )
   end
 
@@ -32,8 +34,9 @@ class GitHubIdentityService
       raise NoAccessToken
     end
 
-    github_api_service.access_token = access_token
-    github_user = github_api_service.user
+    github_client = Octokit::Client.new
+    github_client.access_token = access_token
+    github_user = github_client.user
 
     identity = Identity.find_by(external_id: github_user.id)
     if identity.blank?
@@ -53,12 +56,6 @@ class GitHubIdentityService
     end
 
     user
-  end
-
-  protected
-
-  def github_api_service
-    @github_api_service ||= GitHubApiService.new
   end
 
 
