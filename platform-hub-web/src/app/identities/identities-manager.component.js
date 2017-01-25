@@ -3,7 +3,7 @@ export const IdentitiesManagerComponent = {
   controller: IdentitiesManagerController
 };
 
-function IdentitiesManagerController($scope, hubApiService, gitHubIdentityService, events, _) {
+function IdentitiesManagerController($scope, $mdDialog, hubApiService, gitHubIdentityService, events, _) {
   'ngInject';
 
   const ctrl = this;
@@ -16,6 +16,7 @@ function IdentitiesManagerController($scope, hubApiService, gitHubIdentityServic
   ctrl.identities = {};
 
   ctrl.connect = connect;
+  ctrl.disconnect = disconnect;
 
   init();
 
@@ -37,6 +38,24 @@ function IdentitiesManagerController($scope, hubApiService, gitHubIdentityServic
     gitHubIdentityService
       .popupFlow()
       .then(hubApiService.getMe);
+  }
+
+  function disconnect(service, targetEvent) {
+    const confirm = $mdDialog.confirm()
+      .title(`Are you sure?`)
+      .textContent('This will delete the identity permanently from your Platform Hub account. Though you can always connect it back up again later.')
+      .ariaLabel('Confirm disconnection of identity')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(() => {
+        hubApiService
+          .deleteMeIdentity(service)
+          .then(hubApiService.getMe);
+      });
   }
 
   function processMeData(meData) {
