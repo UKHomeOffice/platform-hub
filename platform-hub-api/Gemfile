@@ -5,7 +5,12 @@ ruby '2.3.3'
 gem 'rails', '~> 5.0.0', '>= 5.0.1'
 gem 'pg', '~> 0.18'
 gem 'puma', '~> 3.0'
-gem 'rack-cors', '~> 0.4.0'
+gem 'jwt', '~> 1.5', '>= 1.5.4'
+gem 'hashie', '~> 3.4', '>= 3.4.6'
+gem 'active_model_serializers', '~> 0.10.0'
+gem 'octokit', '~> 4.6', '>= 4.6.2'
+gem 'gibberish', '~> 2.1'
+gem 'timecop', '~> 0.8.1'
 
 group :development, :test do
   gem 'byebug', platform: :mri

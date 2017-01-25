@@ -1,4 +1,4 @@
-export const appRun = function ($rootScope, $transitions, authService, loginDialogService, logger, _) {
+export const appRun = function ($rootScope, $transitions, authService, loginDialogService, hubApiService, events, logger, _) {
   'ngInject';
 
   logger.debug('Starting app…');
@@ -19,4 +19,14 @@ export const appRun = function ($rootScope, $transitions, authService, loginDial
         });
     }
   });
+
+  // Listen for auth data change and fetch the Me profile/settings data from the API
+  const authDataHandler = $rootScope.$on(events.auth.updated, (event, authData) => {
+    if (_.isEmpty(authData)) {
+      $rootScope.$broadcast(events.api.me.updated, null);
+    } else {
+      hubApiService.getMe();
+    }
+  });
+  $rootScope.$on('$destroy', authDataHandler);
 };

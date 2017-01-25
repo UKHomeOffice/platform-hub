@@ -1,16 +1,26 @@
 export const windowPopupService = function ($q, $window, $interval, _) {
   'ngInject';
 
+  const popupHeight = 500;
+  const popupWidth = 500;
+
   const service = {};
 
   service.open = open;
 
   return service;
 
-  function open(url, name, options, closePredicateFn) {
+  function open(url, name, options, closeEndpoint) {
     const d = $q.defer();
 
-    const win = $window.open(url, name, stringifyOptions(options));
+    const mergedOptions = _.extend(
+      defaultWindowPopupOptions(),
+      options || {}
+    );
+
+    const win = $window.open(url, name, stringifyOptions(mergedOptions));
+
+    const closePredicateFn = generateClosePredicateFn(closeEndpoint);
 
     // Close the window if required, and when closed resolve the promise
     const watcher = $interval(() => {
@@ -40,5 +50,20 @@ export const windowPopupService = function ($q, $window, $interval, _) {
       result.push(`${key}=${value}`);
       return result;
     }, []).join(',');
+  }
+
+  function defaultWindowPopupOptions() {
+    return {
+      width: popupHeight,
+      height: popupWidth,
+      top: $window.screenY + (($window.outerHeight - popupHeight) / 2.5),
+      left: $window.screenX + (($window.outerWidth - popupWidth) / 2)
+    };
+  }
+
+  function generateClosePredicateFn(endpoint) {
+    return function (win) {
+      return win.location.href === endpoint;
+    };
   }
 };

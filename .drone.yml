@@ -62,6 +62,11 @@ pipeline:
 
   api_tests:
     image: ruby:2.3.3
+    environment:
+      - SECRET_KEY_BASE=foobar
+      - GITHUB_CLIENT_ID=NA
+      - GITHUB_CLIENT_SECRET=NA
+      - APP_BASE_URL="http://localhost:3000"
     commands:
       - echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
       - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
@@ -97,12 +102,15 @@ pipeline:
         -e PHUB_DB_PASSWORD=phub_password
         -e RAILS_LOG_TO_STDOUT=true
         -e SECRET_KEY_BASE=foobar
+        -e GITHUB_CLIENT_ID=NA
+        -e GITHUB_CLIENT_SECRET=NA
+        -e APP_BASE_URL="http://localhost:3000"
         --net=host
         -d
         platform-hub-api
         /bin/sh -c "bin/rails server"
       - sleep 5
-      - curl -s -f http://127.0.0.1:30000
+      - curl -s -f http://127.0.0.1:30000/healthz
     when:
       event: [push, tag, pull_request]
 

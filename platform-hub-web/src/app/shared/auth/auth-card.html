@@ -1,4 +1,4 @@
-<md-card class="auth-card" md-colors="{background: 'blue-100'}">
+<md-card class="auth-card" md-colors="{background: 'blue-50'}">
   <md-card-title >
     <md-card-title-text>
       <em ng-if="!$ctrl.isAuthenticated">Not logged in</em>
@@ -11,13 +11,13 @@
   <md-card-actions>
     <md-button
       ng-if="!$ctrl.isAuthenticated"
-      class="md-raised md-primary"
+      class="md-primary"
       ng-click="$ctrl.login()">
       Login
     </md-button>
     <md-button
       ng-if="$ctrl.isAuthenticated"
-      class="md-raised md-primary"
+      class="md-primary"
       ng-click="$ctrl.logout()">
       Logout
     </md-button>

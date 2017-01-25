@@ -2,7 +2,7 @@ import angular from 'angular';
 
 import {HomeComponent} from './home.component';
 
-// Define the app section name
+// Main section component name
 export const AppHome = 'appHome';
 
 export const HomeModule = angular

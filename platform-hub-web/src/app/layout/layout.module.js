@@ -6,7 +6,8 @@ import './layout.scss';
 
 export const LayoutModule = angular
   .module('app.layout', [
-    'ngMaterial'
+    'ngMaterial',
+    'ngMaterialSidemenu'
   ])
   .component('appShell', ShellComponent)
   .name;

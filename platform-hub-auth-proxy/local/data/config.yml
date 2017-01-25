@@ -3,8 +3,7 @@ revocation-url: https://sso-dev.notprod.homeoffice.gov.uk/auth/realms/hod-test/p
 listen: 0.0.0.0:8080
 no-redirects: true
 redirection-url: http://localhost:8080
-upstream-url: http://localhost:8081
-upstream-keepalives: true
+upstream-keepalives: false
 enable-refresh-tokens: true
 enable-security-filter: false
 secure-cookie: false
@@ -20,17 +19,8 @@ add-claims:
 - given_name
 
 resources:
-- uri: /favicon.ico
+- uri: /identity_flows/callback
   white-listed: true
 - uri: /
 
 verbose: false
-
-enable-cors-global: true
-cors-origins:
-- http://localhost:3000
-cors-credentials: true
-cors-max-age: 1h
-cors-methods: [ HEAD, GET, POST, PUT, DELETE, OPTIONS ]
-cors-headers: [ Accept, Accept-Charset, Accept-Encoding, Accept-Language, Access-Control-Allow-Credentials, Access-Control-Allow-Headers, Access-Control-Allow-Methods, Access-Control-Allow-Origin, Access-Control-Expose-Headers, Access-Control-Max-Age, Access-Control-Request-Headers, Access-Control-Request-Method, Authentication, Authorization, Cache-Control, Connection, Content-Encoding, Content-Length, Content-Type, Cookie, DNT, Date, Expires, HTTP_CLIENT_IP, HTTP_COMING_FROM, HTTP_VIA, Host, If-Modified-Since, Keep-Alive, Location, Origin, Pragma, REMOTE_ADDR, Referer, Server, Set-Cookie, Srv, Transfer-Encoding, User-Agent, Vary, X-Content-Type-Options, X-CustomHeader, X-DNS-Prefetch-Control, X-Forwarded-For, X-Forwarded-Host, X-Forwarded-Server, X-Frame-Options, X-Modified, X-OTHER, X-Originating-IP, X-Output, X-PING, X-PINGOTHER, X-Powered-By, X-Real-IP, X-Redirect, X-Requested-With, X-Robots-Tag, X-XSS-Protection, X-Xss-Protection ]
-cors-exposed-headers: [ Accept, Accept-Charset, Accept-Encoding, Accept-Language, Access-Control-Allow-Credentials, Access-Control-Allow-Headers, Access-Control-Allow-Methods, Access-Control-Allow-Origin, Access-Control-Expose-Headers, Access-Control-Max-Age, Access-Control-Request-Headers, Access-Control-Request-Method, Authentication, Authorization, Cache-Control, Connection, Content-Encoding, Content-Length, Content-Type, Cookie, DNT, Date, Expires, HTTP_CLIENT_IP, HTTP_COMING_FROM, HTTP_VIA, Host, If-Modified-Since, Keep-Alive, Location, Origin, Pragma, REMOTE_ADDR, Referer, Server, Set-Cookie, Srv, Transfer-Encoding, User-Agent, Vary, X-Content-Type-Options, X-CustomHeader, X-DNS-Prefetch-Control, X-Forwarded-For, X-Forwarded-Host, X-Forwarded-Server, X-Frame-Options, X-Modified, X-OTHER, X-Originating-IP, X-Output, X-PING, X-PINGOTHER, X-Powered-By, X-Real-IP, X-Redirect, X-Requested-With, X-Robots-Tag, X-XSS-Protection, X-Xss-Protection ]
