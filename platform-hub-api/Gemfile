@@ -10,7 +10,6 @@ gem 'hashie', '~> 3.4', '>= 3.4.6'
 gem 'active_model_serializers', '~> 0.10.0'
 gem 'octokit', '~> 4.6', '>= 4.6.2'
 gem 'gibberish', '~> 2.1'
-gem 'timecop', '~> 0.8.1'
 
 group :development, :test do
   gem 'byebug', platform: :mri
@@ -21,6 +20,10 @@ end
 group :development do
   gem 'listen', '~> 3.0.5'
   gem 'spring-watcher-listen', '~> 2.0.0'
+end
+
+group :test do
+  gem 'timecop', '~> 0.8.1'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
