@@ -1,0 +1,59 @@
+<div class="projects-list">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>All Projects</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        ng-if="$ctrl.isAdmin"
+        aria-label="Add new project"
+        ui-sref="projects.new">
+        <md-icon>add_box</md-icon>
+        New
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.projects.length > 0">
+
+    <md-card ng-repeat="p in $ctrl.projects track by p.id">
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            {{p.name}}
+            ({{p.shortname}})
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content>
+        <p ng-if="p.description">
+          {{p.description}}
+        </p>
+        <p>
+          <small>
+            <ng-pluralize
+              count="p.members_count"
+              when="{'0': 'No team members yet',
+                     '1': '1 team member',
+                     'other': '{} team members'}">
+            </ng-pluralize>
+          </small>
+        </p>
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          class="md-primary"
+          aria-label="View details for this project"
+          ui-sref="projects.detail({id: p.id})">
+          Details
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+</div>

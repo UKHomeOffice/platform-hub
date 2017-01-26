@@ -1,4 +1,4 @@
-export const appRun = function ($rootScope, $transitions, authService, loginDialogService, hubApiService, events, logger, _) {
+export const appRun = function ($rootScope, $transitions, $state, authService, loginDialogService, roleCheckerService, hubApiService, events, logger, _) {
   'ngInject';
 
   logger.debug('Starting app…');
@@ -7,16 +7,41 @@ export const appRun = function ($rootScope, $transitions, authService, loginDial
   $rootScope._ = _;
 
   // Auth handling
-  $transitions.onStart({}, transition => {
-    const $state = transition.router.stateService;
 
-    const shouldAuthenticate = Boolean(transition.$to().data.authenticate);
+  const homeTargetState = $state.target('home');
+
+  function roleChecker(role) {
+    return roleCheckerService
+      .hasHubRole(role)
+      .then(hasRole => {
+        if (hasRole) {
+          return true;
+        }
+        return homeTargetState;
+      });
+  }
+
+  $transitions.onStart({}, transition => {
+    const toData = transition.$to().data;
+
+    const shouldAuthenticate = Boolean(toData.authenticate);
+
+    const shouldCheckRole = _.has(toData, 'rolePermitted');
+    const rolePermitted = toData.rolePermitted;
 
     if (shouldAuthenticate && !authService.isAuthenticated()) {
       return loginDialogService()
+        .then(() => {
+          if (shouldCheckRole) {
+            return roleChecker(rolePermitted);
+          }
+          return true;
+        })
         .catch(() => {
-          return $state.target('home');
+          return homeTargetState;
         });
+    } else if (shouldCheckRole) {
+      return roleChecker(rolePermitted);
     }
   });
 

@@ -19,8 +19,6 @@ module Authentication
     @current_user ||= create_or_fetch_user(token)
   end
 
-  private
-
   def create_or_fetch_user token
     # Important assumptions about the token:
     # - it is already verified by the auth proxy in front
