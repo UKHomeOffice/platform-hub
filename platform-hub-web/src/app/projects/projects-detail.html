@@ -1,0 +1,108 @@
+<div class="projects-detail">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>Project: </span>
+        <span ng-cloak>{{$ctrl.project.shortname}}</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        ng-if="$ctrl.isAdmin && $ctrl.project"
+        aria-label="Edit this project"
+        ui-sref="projects.edit({id: $ctrl.project.id})">
+        <md-icon>edit</md-icon>
+        Edit
+      </md-button>
+      <md-button
+        ng-if="$ctrl.isAdmin && $ctrl.project"
+        aria-label="Delete this project"
+        ng-click="$ctrl.deleteProject($event)">
+        <md-icon>delete</md-icon>
+        Delete
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.project">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+      <md-content layout-padding>
+        <h3 class="md-title">
+          {{$ctrl.project.name}}
+          ({{$ctrl.project.shortname}})
+        </h3>
+
+        <p ng-if="$ctrl.project.description" class="md-body-1">
+          {{$ctrl.project.description}}
+        </p>
+        <p ng-if="!$ctrl.project.description" class="md-body-1 none-text">
+          No description set
+        </p>
+
+        <md-divider></md-divider>
+
+        <div>
+          <h4 class="md-subhead centred">Team members</h4>
+
+          <p ng-if="$ctrl.memberships.length == 0" class="md-body-1 none-text centred">
+            No team members yet.
+            <span ng-if="$ctrl.isAdmin">Why not add some?</span>
+          </p>
+
+          <div layout="row" ng-if="$ctrl.isAdmin">
+            <md-input-container layout="row" layout-gt-sm="column" flex class="md-block">
+              <md-autocomplete
+                md-no-cache="true"
+                md-selected-item="$ctrl.searchSelectedUser"
+                md-search-text="$ctrl.searchText"
+                md-items="user in $ctrl.searchUsers($ctrl.searchText)"
+                md-item-text="user.name"
+                md-min-length="1"
+                ng-model-options="{ debounce: 500 }"
+                md-floating-label="Add a new team member">
+                <md-item-template>
+                  <span md-highlight-text="$ctrl.searchText" md-highlight-flags="^i">
+                    {{user.name}}
+                    ({{user.email}})
+                  </span>
+                </md-item-template>
+                <md-not-found>
+                  No users matching "{{$ctrl.searchText}}" were found.
+                </md-not-found>
+              </md-autocomplete>
+              <div layout="row" layout-align="center center">
+                <md-button
+                  class="md-primary md-raised"
+                  ng-click="$ctrl.addMembership()">
+                  Add
+                </md-button>
+              </div>
+            </md-input-container>
+          </div>
+
+          <md-list ng-if="$ctrl.memberships.length > 0">
+            <md-list-item
+              class="md-2-line"
+              ng-repeat="m in $ctrl.memberships">
+              <div class="md-list-item-text">
+                <h3>{{m.user.name}}</h3>
+                <h4>{{m.user.email}}</h4>
+
+                <md-button
+                  class="md-raised md-secondary"
+                  ng-if="$ctrl.isAdmin"
+                  ng-click="$ctrl.removeMembership(m, $event)"
+                  aria-label="Remove this person from this project team">
+                  Remove
+                </md-button>
+              </div>
+            </md-list-item>
+          </md-list>
+        </div>
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

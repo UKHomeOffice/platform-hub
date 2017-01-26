@@ -87,21 +87,13 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
-angular-animate@1.5.11:
+angular-animate@1.5.11, angular-animate@^1.5.0:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.5.11.tgz#1baa43c303d1b93c4e6aa89453b39114b7a1c669"
 
-angular-animate@^1.5.0:
-  version "1.5.10"
-  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.5.10.tgz#7bfd4fb035ace40f9c5a22dbbd3e174ee5fa0032"
-
-angular-aria@1.5.11:
+angular-aria@1.5.11, angular-aria@^1.5.0:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular-aria/-/angular-aria-1.5.11.tgz#26963ac336891ced7b199e59afd7e9b25e53d6a6"
-
-angular-aria@^1.5.0:
-  version "1.5.10"
-  resolved "https://registry.yarnpkg.com/angular-aria/-/angular-aria-1.5.10.tgz#e182244a6c33400cafd9e45a518b797fa660c23a"
 
 angular-base64@^2.0.5:
   version "2.0.5"
@@ -160,13 +152,9 @@ angular-url-encode@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/angular-url-encode/-/angular-url-encode-1.0.0.tgz#2f8ef915d0f7e25b310f869a7f38e6f7034dd175"
 
-angular@1.5.11:
+angular@1.5.11, "angular@>= 1.0.8", angular@^1.5.0:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.11.tgz#8c5ba7386f15965c9acf3429f6881553aada30d6"
-
-"angular@>= 1.0.8", angular@^1.5.0:
-  version "1.5.10"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.10.tgz#e87fd35b2ed2fea3723de958e9ccf0a4b9125ef0"
 
 ansi-escapes@^1.1.0:
   version "1.4.0"
@@ -5008,6 +4996,10 @@ normalize-url@^1.4.0:
     prepend-http "^1.0.0"
     query-string "^4.1.0"
     sort-keys "^1.0.0"
+
+normalize.css@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/normalize.css/-/normalize.css-5.0.0.tgz#7cec875ce8178a5333c4de80b68ea9c18b9d7c37"
 
 now-and-later@0.0.6:
   version "0.0.6"

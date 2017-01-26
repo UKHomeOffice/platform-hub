@@ -20,6 +20,6 @@ describe IdentityFlowsController, type: :routing do
       expect(:get => '/identity_flows/start/no_good_service').not_to be_routable
       expect(:get => '/identity_flows/callback/no_good_service').not_to be_routable
     end
-    
+
   end
 end

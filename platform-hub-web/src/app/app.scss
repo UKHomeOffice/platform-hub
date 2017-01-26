@@ -4,6 +4,11 @@ html, body {
   height: 100%;
 }
 
+h1, h2, h3, h4, h5, h6, p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
 .close-button {
   background-color: transparent;
   border: none;
@@ -11,4 +16,22 @@ html, body {
   margin: 16px;
   width: 36px;
   cursor: pointer;
+}
+
+.badge {
+  padding: 0.2em 0.5em;
+  border-radius: 0.3em;
+}
+
+.float-right {
+  float: right;
+}
+
+.none-text {
+  font-style: italic;
+  color: #777;
+}
+
+.centred {
+  text-align: center;
 }

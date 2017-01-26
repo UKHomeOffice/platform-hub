@@ -1,5 +1,9 @@
 class MeController < ApiJsonController
 
+  # This controller only ever acts on the currently authenticated user,
+  # so we do not need to peform an authorization checks.
+  skip_authorization_check
+
   def show
     render json: current_user, serializer: MeSerializer
   end

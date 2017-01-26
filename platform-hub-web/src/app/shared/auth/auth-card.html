@@ -12,12 +12,14 @@
     <md-button
       ng-if="!$ctrl.isAuthenticated"
       class="md-primary"
+      aria-label="Login"
       ng-click="$ctrl.login()">
       Login
     </md-button>
     <md-button
       ng-if="$ctrl.isAuthenticated"
       class="md-primary"
+      aria-label="Logout"
       ng-click="$ctrl.logout()">
       Logout
     </md-button>

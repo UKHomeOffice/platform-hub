@@ -23,6 +23,19 @@ Rails.application.routes.draw do
 
     end
 
+    resources :users, only: [ :index, :show ] do
+      get '/search/:q', to: 'users#search', on: :collection
+
+      post :make_admin, on: :member
+      post :revoke_admin, on: :member
+    end
+
+    resources :projects do
+      get '/memberships', to: 'projects#memberships', :on => :member
+      put '/memberships/:user_id', to: 'projects#add_membership', :on => :member
+      delete '/memberships/:user_id', to: 'projects#remove_membership', :on => :member
+    end
+
   end
 
 end
