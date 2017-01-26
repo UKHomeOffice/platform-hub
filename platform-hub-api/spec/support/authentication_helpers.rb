@@ -41,7 +41,7 @@ module AuthenticationHelpers
 
   end
 
-  RSpec.shared_examples 'not authenticated' do
+  RSpec.shared_examples 'unauthenticated not allowed' do
     it 'will return a 401 Unauthorized' do
       expect(response).to have_http_status(401)
     end

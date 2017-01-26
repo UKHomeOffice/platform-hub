@@ -14,7 +14,7 @@ RSpec.describe MeController, type: :controller do
   end
 
   describe "GET #show" do
-    it_behaves_like 'not authenticated' do
+    it_behaves_like 'unauthenticated not allowed'  do
       before do
         get :show
       end

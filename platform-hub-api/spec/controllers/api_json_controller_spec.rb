@@ -8,7 +8,7 @@ RSpec.describe ApiJsonController, type: :controller do
     end
   end
 
-  it_behaves_like 'not authenticated' do
+  it_behaves_like 'unauthenticated not allowed'  do
     before do
       get :index
     end
