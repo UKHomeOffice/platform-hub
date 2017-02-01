@@ -10,6 +10,7 @@ export const AuthModule = angular
     'angular-jwt',
     'base64',
     'bc.AngularUrlEncode',
+    'ngCookies',
     'ngMaterial'
   ])
   .component('authCard', AuthCardComponent)
