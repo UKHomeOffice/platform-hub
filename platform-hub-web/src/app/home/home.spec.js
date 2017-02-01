@@ -14,8 +14,6 @@ describe('appHome component', () => {
   it('should render content', angular.mock.inject(($rootScope, $compile) => {
     const element = $compile('<app-home></app-home>')($rootScope);
     $rootScope.$digest();
-    expect(
-      element.text().trim()
-    ).toEqual('');
+    expect(element).toContainElement('div.app-home');
   }));
 });
