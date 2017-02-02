@@ -56,11 +56,17 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
 
+  # factory_girl setup
+  config.include FactoryGirl::Syntax::Methods
+
+
   # Support and shared stuff
   config.include JsonResponseHelper, type: :request
   config.include JsonResponseHelper, type: :controller
   config.include_context 'authentication helpers', type: :request
   config.include_context 'authentication helpers', type: :controller
+  config.include_context 'admin authorization helpers', type: :request
+  config.include_context 'admin authorization helpers', type: :controller
 
 
   config.before :example, type: :controller do

@@ -21,12 +21,15 @@ import lodash from 'lodash';
 import {HomeModule} from './home/home.module';
 import {IdentitiesModule} from './identities/identities.module';
 import {LayoutModule} from './layout/layout.module';
+import {ProjectsModule} from './projects/projects.module';
 import {SharedModule} from './shared/shared.module';
+import {UsersModule} from './users/users.module';
 
 import {appConfig} from './app.config';
 import {appRoutes} from './app.routes';
 import {appRun} from './app.run';
 
+import 'normalize.css';
 import 'angular-material/angular-material.css';  // Make sure this is available across the app
 import 'angular-material-sidemenu/dest/angular-material-sidemenu.css';
 import './app.scss';
@@ -39,7 +42,9 @@ angular
     HomeModule,
     IdentitiesModule,
     LayoutModule,
+    ProjectsModule,
     SharedModule,
+    UsersModule,
     'angular-jwt',
     'angular-loading-bar',
     'base64',

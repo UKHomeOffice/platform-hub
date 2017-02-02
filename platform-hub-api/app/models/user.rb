@@ -1,9 +1,25 @@
 class User < ApplicationRecord
 
+  include PgSearch
+
+  enum role: {
+    admin: 'admin'
+  }
+
   validates :name, presence: true
   validates :email, presence: true
 
   has_many :identities
+
+  has_many :memberships,
+    class_name: 'ProjectMembership',
+    dependent: :delete_all
+
+  has_many :projects, through: :memberships
+
+  pg_search_scope :search,
+    :against => :name,
+    :using => :trigram
 
 
   def main_identity
@@ -12,6 +28,15 @@ class User < ApplicationRecord
 
   def identity provider
     identities.find_by provider: provider
+  end
+
+  def make_admin!
+    self.admin!
+  end
+
+  def revoke_admin!
+    self.role = nil
+    self.save!
   end
 
 end

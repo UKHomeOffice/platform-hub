@@ -1,4 +1,4 @@
-class ApiJsonController < AuthenticatedController
+class ApiJsonController < AuthorizedController
   include ApiJsonErrorHandler
 
   before_action :only_accept_json

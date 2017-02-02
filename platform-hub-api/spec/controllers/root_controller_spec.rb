@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe RootController, type: :controller do
 
   describe "GET #index" do
-    it_behaves_like 'not authenticated' do
+    it_behaves_like 'unauthenticated not allowed'  do
       before do
         get :index
       end

@@ -2,19 +2,10 @@ require 'rails_helper'
 
 RSpec.describe MeController, type: :controller do
 
-  let(:now) { Time.now }
-  let(:now_json_value) { now.utc.iso8601 }
-
-  before do
-    Timecop.freeze(now)
-  end
-
-  after do
-    Timecop.return
-  end
+  include_context 'time helpers'
 
   describe "GET #show" do
-    it_behaves_like 'not authenticated' do
+    it_behaves_like 'unauthenticated not allowed'  do
       before do
         get :show
       end
@@ -28,6 +19,8 @@ RSpec.describe MeController, type: :controller do
           'id' => test_auth_payload.sub,
           'name' => test_auth_payload.name,
           'email' => test_auth_payload.email,
+          'role' => nil,
+          'last_seen_at' => now_json_value,
           'identities' => [
             {
               'provider' => 'keycloak',

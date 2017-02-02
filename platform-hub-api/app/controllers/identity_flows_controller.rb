@@ -15,10 +15,15 @@ class IdentityFlowsController < AuthenticatedController
     # Callback from external service's OAuth2 flow
 
     code = params[:code]
-    head :unprocessable_entity if code.blank?
+    if code.blank?
+      head :unprocessable_entity
+      return
+    end
 
     state = params[:state]
-    head :unprocessable_entity if state.blank?
+    if state.blank?
+      head :unprocessable_entity
+    end
 
     user = nil
     begin

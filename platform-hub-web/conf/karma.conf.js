@@ -30,7 +30,8 @@ module.exports = function (config) {
       ]
     },
     ngHtml2JsPreprocessor: {
-      stripPrefix: `${conf.paths.src}/`
+      stripPrefix: `${conf.paths.src}/`,
+      moduleName: 'app'
     },
     reporters: ['progress', 'coverage', 'verbose-summary'],
     coverageReporter: {

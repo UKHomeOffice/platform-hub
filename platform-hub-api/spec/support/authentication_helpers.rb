@@ -6,6 +6,10 @@ module AuthenticationHelpers
       test_auth_token
     end
 
+    let :current_user_id do
+      '7ea9251a-492e-42c3-90cb-d8e5a1d99005'
+    end
+
     def test_auth_token
       @test_auth_token ||= build_auth_token(test_auth_payload)
     end
@@ -18,7 +22,7 @@ module AuthenticationHelpers
         iat: (DateTime.now - 1.hour).strftime('%s'),
         iss: 'https://sso.example.org',
         aud: 'platform-hub',
-        sub: '7ea9251a-492e-42c3-90cb-d8e5a1d99005',
+        sub: current_user_id,
         typ: 'Bearer',
         auth_time: (DateTime.now - 1.hour).strftime('%s'),
         session_state: 'c340f212-09e2-41a2-a4bd-602b8103fb68',
@@ -41,7 +45,7 @@ module AuthenticationHelpers
 
   end
 
-  RSpec.shared_examples 'not authenticated' do
+  RSpec.shared_examples 'unauthenticated not allowed' do
     it 'will return a 401 Unauthorized' do
       expect(response).to have_http_status(401)
     end

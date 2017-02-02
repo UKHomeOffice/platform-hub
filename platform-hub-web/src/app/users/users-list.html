@@ -1,0 +1,79 @@
+<div class="users-list">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>All Users</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.users.length > 0">
+
+    <md-card ng-repeat="u in $ctrl.users track by u.id">
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            {{u.name}}
+            <small class="badge float-right" ng-if="u.role == 'admin'" md-colors="{background: 'accent'}">Admin</small>
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content>
+        <p>
+          {{u.email}}
+        </p>
+        <p>
+          <span md-colors="{color: 'blue-grey-700'}">ID:</span> {{u.id}}
+        </p>
+        <p>
+          <span md-colors="{color: 'blue-grey-700'}">Last seen at:</span> {{u.last_seen_at | date:'medium'}}
+        </p>
+
+        <div>
+          <span md-colors="{color: 'blue-grey-700'}">Identities:</span>
+
+          <md-list>
+             <md-list-item ng-repeat="i in u.identities track by i.provider">
+               <div class="md-list-item-text">
+                 <strong>{{i.provider}}</strong> -
+                 <span>
+                   <span md-colors="{color: 'blue-grey-700'}">ID:</span> {{i.external_id}}
+                 </span>
+                 <span ng-if="i.external_username">
+                   <span md-colors="{color: 'blue-grey-700'}">| username:</span> {{i.external_username}}
+                 </span>
+                 <span ng-if="i.external_name">
+                   <span md-colors="{color: 'blue-grey-700'}">| name:</span> {{i.external_name}}
+                 </span>
+                 <span>
+                   <span md-colors="{color: 'blue-grey-700'}">| connected at:</span> {{i.created_at | date:'medium'}}
+                 </span>
+               </div>
+             </md-list-item>
+          </md-list>
+        </div>
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          ng-if="u.role != 'admin'"
+          class="md-primary"
+          aria-label="Make user an admin"
+          ng-click="$ctrl.makeAdmin(u)">
+          Make admin
+        </md-button>
+        <md-button
+          ng-if="u.role == 'admin'"
+          class="md-primary"
+          aria-label="Revoke admin status for user"
+          ng-click="$ctrl.revokeAdmin(u)">
+          Revoke admin
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+</div>

@@ -25,12 +25,36 @@
       <auth-card></auth-card>
 
       <md-content>
-        <md-sidemenu role="navigation" class="nav">
+        <md-sidemenu role="navigation" class="nav" ng-if="$ctrl.isAuthenticated()">
           <md-sidemenu-group>
             <md-subheader class="md-no-sticky">My Account</md-subheader>
 
             <md-sidemenu-button
-              ng-repeat="item in $ctrl.navStates"
+              ng-repeat="item in $ctrl.myAccountNavStates"
+              ui-sref="{{item.state}}"
+              ui-sref-active="active">
+              <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
+              <span>{{item.title}}</span>
+            </md-sidemenu-button>
+          </md-sidemenu-group>
+
+          <md-sidemenu-group>
+            <md-subheader class="md-no-sticky">Hub</md-subheader>
+
+            <md-sidemenu-button
+              ng-repeat="item in $ctrl.hubNavStates"
+              ui-sref="{{item.state}}"
+              ui-sref-active="active">
+              <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
+              <span>{{item.title}}</span>
+            </md-sidemenu-button>
+          </md-sidemenu-group>
+
+          <md-sidemenu-group ng-if="$ctrl.isAdmin">
+            <md-subheader class="md-no-sticky">Admin</md-subheader>
+
+            <md-sidemenu-button
+              ng-repeat="item in $ctrl.adminNavStates"
               ui-sref="{{item.state}}"
               ui-sref-active="active">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
