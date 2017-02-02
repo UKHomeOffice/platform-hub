@@ -3,6 +3,14 @@ export const HomeComponent = {
   controller: HomeController
 };
 
-function HomeController() {
+function HomeController(authService) {
   'ngInject';
+
+  const ctrl = this;
+
+  ctrl.login = login;
+
+  function login() {
+    authService.authenticate();
+  }
 }
