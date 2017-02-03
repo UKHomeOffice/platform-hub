@@ -13,11 +13,6 @@ cookie-refresh-name: 'auth-refresh'
 log-requests: true
 log-json-format: false
 
-add-claims:
-- name
-- family_name
-- given_name
-
 resources:
 - uri: /identity_flows/callback
   white-listed: true
