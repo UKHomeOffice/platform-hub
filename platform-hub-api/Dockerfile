@@ -15,4 +15,8 @@ RUN bundle install --jobs 20 --retry 5 --deployment --without development test -
 
 COPY . .
 
+RUN groupadd -r app && useradd -r -g app app
+RUN chown -R app:app /app
+USER app
+
 CMD ["bundle", "exec", "rails", "s"]
