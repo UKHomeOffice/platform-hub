@@ -35,7 +35,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
           return me;
         })
         .catch(response => {
-          logger.error('Faild to fetch profile data – the API might be down. Try again later.');
+          logger.error('Failed to fetch profile data – the API might be down. Try again later.');
           return $q.reject(response);
         })
         .finally(() => {
