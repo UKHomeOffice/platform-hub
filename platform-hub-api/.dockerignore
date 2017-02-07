@@ -23,6 +23,7 @@ pgdata
 
 .git
 .env
+.env.test
 .ruby-version
 .rspec
 .gitignore
