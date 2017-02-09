@@ -22,6 +22,12 @@ class ProjectsController < ApiJsonController
   def create
     @project = Project.new(project_params)
 
+    AuditService.log(
+      context: audit_context,
+      action: 'create',
+      auditable: @project
+    )
+
     if @project.save
       render json: @project, status: :created
     else
@@ -32,6 +38,12 @@ class ProjectsController < ApiJsonController
   # PATCH/PUT /projects/:id
   def update
     if @project.update(project_params)
+      AuditService.log(
+        context: audit_context,
+        action: 'update',
+        auditable: @project
+      )
+
       render json: @project
     else
       render json: @project.errors, status: :unprocessable_entity
@@ -40,7 +52,17 @@ class ProjectsController < ApiJsonController
 
   # DELETE /projects/:id
   def destroy
+    shortname = @project.shortname
+
     @project.destroy
+
+    AuditService.log(
+      context: audit_context,
+      action: 'destroy',
+      comment: "User '#{current_user.email}' deleted project: #{shortname}"
+    )
+
+    head :no_content
   end
 
   # GET /projects/:id/memberships
@@ -54,6 +76,18 @@ class ProjectsController < ApiJsonController
       @membership = @project.memberships.where(user_id: @user.id).first
     else
       @membership = @project.memberships.create! user: @user
+
+      AuditService.log(
+        context: audit_context,
+        action: 'add_membership',
+        auditable: @project,
+        associated: @membership.user,
+        data: {
+          member_id: @membership.user.id,
+          member_name: @membership.user.name,
+          member_email: @membership.user.email
+        }
+      )
     end
     render json: @membership, serializer: ProjectMembershipSerializer
   end
@@ -61,6 +95,19 @@ class ProjectsController < ApiJsonController
   # DELETE /projects/:id/memberships/:user_id
   def remove_membership
     @project.members.destroy(@user)
+
+    AuditService.log(
+      context: audit_context,
+      action: 'remove_membership',
+      auditable: @project,
+      associated: @user,
+      data: {
+        member_id: @user.id,
+        member_name: @user.name,
+        member_email: @user.email
+      }
+    )
+
     head :no_content
   end
 

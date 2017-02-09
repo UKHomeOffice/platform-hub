@@ -75,6 +75,49 @@ CREATE TABLE ar_internal_metadata (
 
 
 --
+-- Name: audits; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE audits (
+    id integer NOT NULL,
+    auditable_type character varying,
+    auditable_id uuid,
+    auditable_descriptor character varying,
+    associated_type character varying,
+    associated_id uuid,
+    associated_descriptor character varying,
+    user_id uuid,
+    user_name character varying,
+    user_email character varying,
+    action character varying,
+    comment character varying,
+    remote_ip character varying,
+    request_uuid character varying,
+    data json,
+    created_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: audits_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE audits_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: audits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE audits_id_seq OWNED BY audits.id;
+
+
+--
 -- Name: identities; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -143,11 +186,26 @@ CREATE TABLE users (
 
 
 --
+-- Name: audits id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY audits ALTER COLUMN id SET DEFAULT nextval('audits_id_seq'::regclass);
+
+
+--
 -- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: audits audits_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY audits
+    ADD CONSTRAINT audits_pkey PRIMARY KEY (id);
 
 
 --
@@ -180,6 +238,62 @@ ALTER TABLE ONLY schema_migrations
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_audits_on_associated_type_and_associated_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_audits_on_associated_type_and_associated_id ON audits USING btree (associated_type, associated_id);
+
+
+--
+-- Name: index_audits_on_auditable_type_and_auditable_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_audits_on_auditable_type_and_auditable_id ON audits USING btree (auditable_type, auditable_id);
+
+
+--
+-- Name: index_audits_on_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_audits_on_created_at ON audits USING btree (created_at);
+
+
+--
+-- Name: index_audits_on_remote_ip; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_audits_on_remote_ip ON audits USING btree (remote_ip);
+
+
+--
+-- Name: index_audits_on_request_uuid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_audits_on_request_uuid ON audits USING btree (request_uuid);
+
+
+--
+-- Name: index_audits_on_user_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_audits_on_user_email ON audits USING btree (user_email);
+
+
+--
+-- Name: index_audits_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_audits_on_user_id ON audits USING btree (user_id);
+
+
+--
+-- Name: index_audits_on_user_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_audits_on_user_name ON audits USING btree (user_name);
 
 
 --
@@ -251,6 +365,7 @@ INSERT INTO schema_migrations (version) VALUES
 ('20170125153828'),
 ('20170126161234'),
 ('20170201101239'),
-('20170201102040');
+('20170201102040'),
+('20170209100930');
 
 

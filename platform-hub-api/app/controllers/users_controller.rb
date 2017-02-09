@@ -24,12 +24,26 @@ class UsersController < ApiJsonController
   # POST /users/:id/make_admin
   def make_admin
     @user.make_admin!
+
+    AuditService.log(
+      context: audit_context,
+      action: 'make_admin',
+      auditable: @user
+    )
+
     head :no_content
   end
 
   # POST /users/:id/revoke_admin
   def revoke_admin
     @user.revoke_admin!
+
+    AuditService.log(
+      context: audit_context,
+      action: 'revoke_admin',
+      auditable: @user
+    )
+    
     head :no_content
   end
 

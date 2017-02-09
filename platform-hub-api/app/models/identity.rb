@@ -1,5 +1,9 @@
 class Identity < ApplicationRecord
 
+  include Audited
+
+  audited descriptor_field: :provider, associated_field: :user
+
   enum provider: {
     keycloak: 'keycloak',
     github: 'github'

@@ -55,7 +55,7 @@ class GitHubIdentityService
       end
     end
 
-    user
+    identity
   end
 
 
