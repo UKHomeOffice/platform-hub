@@ -12,7 +12,7 @@ class GitHubIdentityService
     Octokit::Client.new.authorize_url(
       @client_id,
       {
-        scope: 'user',
+        scope: '',
         redirect_uri: "#{@app_base_url}/api/#{@callback_url}",
         state: @encryption_service.encrypt(existing_user.id)
       }
