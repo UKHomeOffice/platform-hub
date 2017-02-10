@@ -1,5 +1,7 @@
 class ProjectMembership < ApplicationRecord
 
+  include Audited
+
   enum role: {
     manager: 'manager'
   }
@@ -9,5 +11,7 @@ class ProjectMembership < ApplicationRecord
 
   belongs_to :user
   validates :user_id, presence: true
+
+  private
 
 end

@@ -11,6 +11,13 @@ class MeController < ApiJsonController
   def delete_identity
     # We assume that the `service` param has been validated by the route constraints
     current_user.identity(params[:service]).destroy
+
+    AuditService.log(
+      context: audit_context,
+      action: 'delete_identity',
+      comment: "User '#{current_user.email}' removed their #{params[:service]} identity"
+    )
+
     head :no_content
   end
 

@@ -1,6 +1,10 @@
 class Project < ApplicationRecord
 
   include FriendlyId
+  include Audited
+
+  audited descriptor_field: :shortname
+  has_associated_audits
 
   friendly_id :shortname, :use => :slugged
 

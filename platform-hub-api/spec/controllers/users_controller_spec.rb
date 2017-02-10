@@ -171,9 +171,15 @@ RSpec.describe UsersController, type: :controller do
 
         it 'should make the specified user an admin' do
           expect(@user.admin?).to be false
+          expect(Audit.count).to eq 0
           get :make_admin, params: { id: @user.id }
           expect(response).to be_success
           expect(@user.reload.admin?).to be true
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'make_admin'
+          expect(audit.auditable).to eq @user
+          expect(audit.user.id).to eq current_user_id
         end
 
       end
@@ -204,9 +210,15 @@ RSpec.describe UsersController, type: :controller do
 
         it 'should revoke the admin role for the specified user' do
           expect(@user.admin?).to be true
+          expect(Audit.count).to eq 0
           get :revoke_admin, params: { id: @user.id }
           expect(response).to be_success
           expect(@user.reload.admin?).to be false
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'revoke_admin'
+          expect(audit.auditable).to eq @user
+          expect(audit.user.id).to eq current_user_id
         end
 
       end

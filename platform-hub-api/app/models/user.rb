@@ -1,6 +1,10 @@
 class User < ApplicationRecord
 
   include PgSearch
+  include Audited
+
+  audited descriptor_field: :email
+  has_associated_audits
 
   enum role: {
     admin: 'admin'

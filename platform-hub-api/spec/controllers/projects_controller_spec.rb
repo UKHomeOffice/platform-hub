@@ -103,6 +103,7 @@ RSpec.describe ProjectsController, type: :controller do
 
         it 'creates a new project as expected' do
           expect(Project.count).to eq 0
+          expect(Audit.count).to eq 0
           post :create, params: post_data
           expect(response).to be_success
           expect(Project.count).to eq 1
@@ -116,6 +117,11 @@ RSpec.describe ProjectsController, type: :controller do
             'created_at' => now_json_value,
             'updated_at' => now_json_value
           });
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'create'
+          expect(audit.auditable.id).to eq json_response['id']
+          expect(audit.user.id).to eq current_user_id
         end
 
       end
@@ -160,12 +166,18 @@ RSpec.describe ProjectsController, type: :controller do
 
         it 'updates the specified project' do
           expect(Project.count).to eq 1
+          expect(Audit.count).to eq 0
           put :update, params: put_data
           expect(Project.count).to eq 1
           updated = Project.first
           expect(updated.shortname).to eq put_data[:project][:shortname]
           expect(updated.name).to eq put_data[:project][:name]
           expect(updated.description).to eq existing_description
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'update'
+          expect(audit.auditable.id).to eq @project.id
+          expect(audit.user.id).to eq current_user_id
         end
 
       end
@@ -196,9 +208,14 @@ RSpec.describe ProjectsController, type: :controller do
 
         it 'should delete the specified project' do
           expect(Project.exists?(@project.id)).to be true
+          expect(Audit.count).to eq 0
           delete :destroy, params: { id: @project.id }
           expect(response).to be_success
           expect(Project.exists?(@project.id)).to be false
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'destroy'
+          expect(audit.user.id).to eq current_user_id
         end
 
       end
@@ -278,10 +295,17 @@ RSpec.describe ProjectsController, type: :controller do
 
         it 'should add the specified user to the project membership list' do
           expect(@project.memberships.count).to eq 0
+          expect(Audit.count).to eq 0
           put :add_membership, params: { id: @project.id, user_id: @user.id }
           expect(response).to be_success
           expect(@project.memberships.count).to eq 1
           expect(@project.memberships.first.user_id).to eq @user.id
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'add_membership'
+          expect(audit.auditable.id).to eq @project.id
+          expect(audit.associated.id).to eq @user.id
+          expect(audit.user.id).to eq current_user_id
         end
 
       end
@@ -314,9 +338,16 @@ RSpec.describe ProjectsController, type: :controller do
 
         it 'should remove the specified user from the project membership list' do
           expect(@project.memberships.count).to eq 1
+          expect(Audit.count).to eq 0
           put :remove_membership, params: { id: @project.id, user_id: @user.id }
           expect(response).to be_success
           expect(@project.memberships.count).to eq 0
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'remove_membership'
+          expect(audit.auditable.id).to eq @project.id
+          expect(audit.associated.id).to eq @user.id
+          expect(audit.user.id).to eq current_user_id
         end
 
       end

@@ -25,9 +25,15 @@ class IdentityFlowsController < AuthenticatedController
       head :unprocessable_entity
     end
 
-    user = nil
     begin
-      user = gitHubIdentityService.connect_identity code, state
+      identity = gitHubIdentityService.connect_identity code, state
+
+      AuditService.log(
+        context: audit_context,
+        action: 'connect_identity',
+        auditable: identity,
+        comment: "GitHub identity connected for user '#{identity.user.email}' - GitHub username: #{identity.external_username}"
+      )
     rescue GitHubIdentityService::Errors::InvalidCallbackState => ex
       logger.error "Github identity flow callback was called with an invalid 'state' = #{state}"
       head :forbidden
