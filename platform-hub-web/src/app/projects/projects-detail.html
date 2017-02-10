@@ -23,7 +23,7 @@
     </div>
   </md-toolbar>
 
-  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+  <loading-indicator loading="$ctrl.loading || $ctrl.processing"></loading-indicator>
 
   <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.project">
 
@@ -96,11 +96,25 @@
                 <h4>{{m.user.email}}</h4>
               </div>
 
-              <md-menu class="md-secondary">
+              <md-menu class="md-secondary" ng-if="$ctrl.shouldShowActionsMenu(m)">
                 <md-button class="md-primary">
                   Actions
                 </md-button>
                 <md-menu-content width="4">
+                  <md-menu-item ng-if="$ctrl.allowOnboardOrOffboardGitHub(m)">
+                    <md-button
+                      ng-click="$ctrl.userOnboardGitHub(m.user.id, $event)"
+                      aria-label="Onboard this user to the GitHub org and team">
+                      Onboard GitHub
+                    </md-button>
+                  </md-menu-item>
+                  <md-menu-item ng-if="$ctrl.allowOnboardOrOffboardGitHub(m)">
+                    <md-button
+                      ng-click="$ctrl.userOffboardGitHub(m.user.id, $event)"
+                      aria-label="Offboard this user to the GitHub org and team">
+                      Offboard GitHub
+                    </md-button>
+                  </md-menu-item>
                   <md-menu-item ng-if="$ctrl.isAdmin && m.role != 'manager'">
                     <md-button
                       ng-click="$ctrl.makeManager(m, $event)"

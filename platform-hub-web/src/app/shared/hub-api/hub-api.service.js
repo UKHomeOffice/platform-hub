@@ -21,6 +21,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.removeProjectMembership = removeProjectMembership;
   service.projectSetRole = projectSetRole;
   service.projectUnsetRole = projectUnsetRole;
+  service.userOnboardGitHub = userOnboardGitHub;
+  service.userOffboardGitHub = userOffboardGitHub;
 
   return service;
 
@@ -172,6 +174,32 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       })
       .catch(response => {
         logger.error('Failed to unset project team role – the API might be down. Try again later.');
+        return $q.reject(response);
+      });
+  }
+
+  function userOnboardGitHub(userId) {
+    return $http
+      .post(`${apiEndpoint}/users/${userId}/onboard_github`)
+      .catch(response => {
+        let message = response.error.message;
+        if (!message) {
+          message = 'Failed to onboard user on to GitHub – the API might be down. Try again later.';
+        }
+        logger.error(message);
+        return $q.reject(response);
+      });
+  }
+
+  function userOffboardGitHub(userId) {
+    return $http
+      .post(`${apiEndpoint}/users/${userId}/offboard_github`)
+      .catch(response => {
+        let message = response.error.message;
+        if (!message) {
+          message = 'Failed to onboard user on to GitHub – the API might be down. Try again later.';
+        }
+        logger.error(message);
         return $q.reject(response);
       });
   }

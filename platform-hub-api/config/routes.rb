@@ -28,6 +28,9 @@ Rails.application.routes.draw do
 
       post :make_admin, on: :member
       post :revoke_admin, on: :member
+
+      post :onboard_github, on: :member
+      post :offboard_github, on: :member
     end
 
     resources :projects do

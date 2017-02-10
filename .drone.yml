@@ -66,6 +66,9 @@ pipeline:
       - SECRET_KEY_BASE=foobar
       - GITHUB_CLIENT_ID=NA
       - GITHUB_CLIENT_SECRET=NA
+      - AGENT_GITHUB_TOKEN=noop
+      - AGENT_GITHUB_ORG=noop
+      - AGENT_GITHUB_ORG_MAIN_TEAM_ID=noop
       - APP_BASE_URL="http://localhost:3000"
     commands:
       - echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
@@ -104,6 +107,9 @@ pipeline:
         -e SECRET_KEY_BASE=foobar
         -e GITHUB_CLIENT_ID=NA
         -e GITHUB_CLIENT_SECRET=NA
+        -e AGENT_GITHUB_TOKEN=noop
+        -e AGENT_GITHUB_ORG=noop
+        -e AGENT_GITHUB_ORG_MAIN_TEAM_ID=noop
         -e APP_BASE_URL="http://localhost:3000"
         --net=host
         -d

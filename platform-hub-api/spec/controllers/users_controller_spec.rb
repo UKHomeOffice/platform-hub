@@ -94,6 +94,7 @@ RSpec.describe UsersController, type: :controller do
               'email' => @user.email,
               'role' => nil,
               'last_seen_at' => now_json_value,
+              'enabled_identities' => [],
               'identities' => []
             })
           end
@@ -224,6 +225,126 @@ RSpec.describe UsersController, type: :controller do
       end
 
     end
+  end
+
+  describe 'POST #onboard_github' do
+    let :gitHubAgentService do
+      instance_double('Agents::GitHubAgentService')
+    end
+
+    before do
+      @user = create :user
+      allow(Agents::GitHubAgentService).to receive(:new).with(any_args).and_return(gitHubAgentService)
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :onboard_github, params: { id: @user.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :onboard_github, params: { id: @user.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        context 'when user does not have a GitHub identity connected' do
+          it 'should return a 400 Bad Request with an appropriate error message' do
+            expect(gitHubAgentService).to receive(:onboard_user).with(@user).and_raise(Agents::GitHubAgentService::Errors::IdentityMissing)
+            get :onboard_github, params: { id: @user.id }
+            expect(response).to have_http_status(400)
+            expect(json_response['error']['message']).to eq 'User does not have a GitHub identity connected yet'
+          end
+        end
+
+        context 'when user has a GitHub identity connected' do
+          it 'should onboard the user and return a success response with no content' do
+            expect(gitHubAgentService).to receive(:onboard_user).with(@user).and_return(true)
+            get :onboard_github, params: { id: @user.id }
+            expect(response).to have_http_status(204)
+          end
+        end
+
+      end
+
+      context 'not an admin but is project team lead of same team' do
+        before do
+          project = create :project
+          create :project_membership, project: project, user: @user
+          create :project_membership_as_manager, project: project, user: current_user
+        end
+
+        it 'should onboard the user and return a success response with no content' do
+          expect(gitHubAgentService).to receive(:onboard_user).with(@user).and_return(true)
+          get :onboard_github, params: { id: @user.id }
+          expect(response).to have_http_status(204)
+        end
+      end
+
+      context 'not an admin but is project team lead but of a different team' do
+        before do
+          project1 = create :project
+          project2 = create :project
+          create :project_membership, project: project1, user: @user
+          create :project_membership, project: project1, user: current_user
+          create :project_membership_as_manager, project: project2, user: current_user
+        end
+
+        it 'should not be able to onboard the user on GitHub - returning 403 Forbidden' do
+          get :onboard_github, params: { id: @user.id }
+          expect(response).to have_http_status(403)
+        end
+      end
+
+    end
+  end
+
+  describe 'POST #offboard_github' do
+    # We expect the code path for `offboard_github` to be pretty much the same
+    # as `onboard_github`, so rather than duplicating all the tests, we can
+    # test just the auth bits and then rely on the specs for `onboard_github`
+    # to give us confidence for the rest.
+
+    before do
+      @user = create :user
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :offboard_github, params: { id: @user.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :offboard_github, params: { id: @user.id }
+        end
+      end
+
+      context 'not an admin but is project team lead but of a different team' do
+        before do
+          project1 = create :project
+          project2 = create :project
+          create :project_membership, project: project1, user: @user
+          create :project_membership, project: project1, user: current_user
+          create :project_membership_as_manager, project: project2, user: current_user
+        end
+
+        it 'should not be able to offboard the user on GitHub - returning 403 Forbidden' do
+          get :offboard_github, params: { id: @user.id }
+          expect(response).to have_http_status(403)
+        end
+      end
+
+    end
+
   end
 
 end

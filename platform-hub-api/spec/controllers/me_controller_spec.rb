@@ -21,6 +21,7 @@ RSpec.describe MeController, type: :controller do
           'email' => test_auth_payload.email,
           'role' => nil,
           'last_seen_at' => now_json_value,
+          'enabled_identities' => ['keycloak'],
           'identities' => [
             {
               'provider' => 'keycloak',

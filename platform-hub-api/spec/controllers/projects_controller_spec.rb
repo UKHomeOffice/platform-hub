@@ -256,7 +256,8 @@ RSpec.describe ProjectsController, type: :controller do
               'name' => user.name,
               'email' => user.email,
               'role' =>  user.role,
-              'last_seen_at' => now_json_value
+              'last_seen_at' => now_json_value,
+              'enabled_identities' => []
             },
             'role' => nil
           }

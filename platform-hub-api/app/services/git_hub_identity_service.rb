@@ -24,14 +24,14 @@ class GitHubIdentityService
     user = User.find_by_id(user_id)
 
     if user.blank?
-      raise InvalidCallbackState
+      raise Errors::InvalidCallbackState
     end
 
     result = Octokit.exchange_code_for_token(code, @client_id, @client_secret)
     access_token = result[:access_token]
 
     if access_token.blank?
-      raise NoAccessToken
+      raise Errors::NoAccessToken
     end
 
     github_client = Octokit::Client.new
@@ -51,7 +51,7 @@ class GitHubIdentityService
     else
       # Check for user mismatch
       if identity.user_id != user.id
-        raise UserMismatch
+        raise Errors::UserMismatch
       end
     end
 
