@@ -1,7 +1,7 @@
 class ProjectsController < ApiJsonController
 
-  before_action :find_project, only: [ :show, :update, :destroy, :memberships, :add_membership, :remove_membership ]
-  before_action :find_user, only: [ :add_membership, :remove_membership ]
+  before_action :find_project, only: [ :show, :update, :destroy, :memberships, :add_membership, :remove_membership, :set_role, :unset_role ]
+  before_action :find_user, only: [ :add_membership, :remove_membership, :set_role, :unset_role ]
 
   skip_authorization_check :only => [ :index, :show, :memberships ]
   authorize_resource except: [ :index, :show, :memberships ]
@@ -111,6 +111,17 @@ class ProjectsController < ApiJsonController
     head :no_content
   end
 
+  # PUT /projects/:id/memberships/:user_id/role/:role
+  def set_role
+    role = params[:role]
+    handle_role_change role: role
+  end
+
+  # DELETE /projects/:id/memberships/:user_id/role/:role
+  def unset_role
+    handle_role_change role: nil
+  end
+
   private
 
   def find_project
@@ -125,4 +136,38 @@ class ProjectsController < ApiJsonController
   def project_params
     params.require(:project).permit(:shortname, :name, :description)
   end
+
+  # Currently we only have the ability to store one role per membership,
+  # so this method only takes in a role value OR `nil`, and essentially toggles
+  # the `role` field on the membership.
+  def handle_role_change role:
+    membership = @project.memberships.where(user_id: @user.id).first
+
+    if membership
+      previous_role = membership.role
+
+      if membership.update(role: role)
+        AuditService.log(
+          context: audit_context,
+          action: action_name,
+          auditable: @project,
+          associated: membership.user,
+          data: {
+            previous_role: previous_role,
+            new_role: role,
+            member_id: membership.user.id,
+            member_name: membership.user.name,
+            member_email: membership.user.email
+          }
+        )
+
+        render json: membership, serializer: ProjectMembershipSerializer
+      else
+        render json: membership.errors, status: :unprocessable_entity
+      end
+    else
+      render_error 'User is not a team member of the project', :bad_request
+    end
+  end
+
 end

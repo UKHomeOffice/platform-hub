@@ -257,7 +257,8 @@ RSpec.describe ProjectsController, type: :controller do
               'email' => user.email,
               'role' =>  user.role,
               'last_seen_at' => now_json_value
-            }
+            },
+            'role' => nil
           }
         end
       end
@@ -348,6 +349,129 @@ RSpec.describe ProjectsController, type: :controller do
           expect(audit.auditable.id).to eq @project.id
           expect(audit.associated.id).to eq @user.id
           expect(audit.user.id).to eq current_user_id
+        end
+
+      end
+
+    end
+  end
+
+  describe 'PUT #set_role' do
+    let :role do
+      'manager'
+    end
+
+    before do
+      @project = create :project
+      @user = create :user
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        put :set_role, params: { id: @project.id, user_id: @user.id, role: role }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          put :set_role, params: { id: @project.id, user_id: @user.id, role: role }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        context 'when user is not a project team member' do
+          it 'should return a 400 Bad Request error' do
+            put :set_role, params: { id: @project.id, user_id: @user.id, role: role }
+            expect(response).to have_http_status(400)
+          end
+        end
+
+        context 'when user is a project team member' do
+          before do
+            create :project_membership, project: @project, user: @user
+          end
+
+          it 'should set the role accordingly' do
+            expect(ProjectMembership.exists?(project_id: @project.id, user_id: @user.id, role: role)).to be false
+            expect(Audit.count).to eq 0
+            put :set_role, params: { id: @project.id, user_id: @user.id, role: role }
+            expect(response).to be_success
+            expect(json_response['role']).to eq role
+            expect(ProjectMembership.exists?(project_id: @project.id, user_id: @user.id, role: role)).to be true
+            expect(Audit.count).to eq 1
+            audit = Audit.first
+            expect(audit.action).to eq 'set_role'
+            expect(audit.auditable.id).to eq @project.id
+            expect(audit.associated.id).to eq @user.id
+            expect(audit.user.id).to eq current_user_id
+            expect(audit.data['previous_role']).to eq nil
+            expect(audit.data['new_role']).to eq role
+          end
+        end
+
+      end
+
+    end
+  end
+
+  describe 'DELETE #unset_role' do
+    let :role do
+      'manager'
+    end
+
+    before do
+      @project = create :project
+      @user = create :user
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        delete :unset_role, params: { id: @project.id, user_id: @user.id, role: role }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          delete :unset_role, params: { id: @project.id, user_id: @user.id, role: role }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        context 'when user is not a project team member' do
+          it 'should return a 400 Bad Request error' do
+            delete :unset_role, params: { id: @project.id, user_id: @user.id, role: role }
+            expect(response).to have_http_status(400)
+          end
+        end
+
+        context 'when user is a project team member and has the role specified' do
+          before do
+            create :project_membership, project: @project, user: @user, role: role
+          end
+
+          it 'should unset the role accordingly' do
+            expect(ProjectMembership.exists?(project_id: @project.id, user_id: @user.id, role: role)).to be true
+            expect(Audit.count).to eq 0
+            delete :unset_role, params: { id: @project.id, user_id: @user.id, role: role }
+            expect(response).to be_success
+            expect(json_response['role']).to eq nil
+            expect(ProjectMembership.exists?(project_id: @project.id, user_id: @user.id, role: role)).to be false
+            expect(ProjectMembership.exists?(project_id: @project.id, user_id: @user.id, role: nil)).to be true
+            expect(Audit.count).to eq 1
+            audit = Audit.first
+            expect(audit.action).to eq 'unset_role'
+            expect(audit.auditable.id).to eq @project.id
+            expect(audit.associated.id).to eq @user.id
+            expect(audit.user.id).to eq current_user_id
+            expect(audit.data['previous_role']).to eq role
+            expect(audit.data['new_role']).to eq nil
+          end
         end
 
       end

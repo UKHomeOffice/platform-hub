@@ -24,6 +24,8 @@ function ProjectsDetailController($q, $mdDialog, $state, roleCheckerService, hub
   ctrl.searchUsers = searchUsers;
   ctrl.addMembership = addMembership;
   ctrl.removeMembership = removeMembership;
+  ctrl.makeManager = makeManager;
+  ctrl.demoteManager = demoteManager;
 
   init();
 
@@ -134,6 +136,60 @@ function ProjectsDetailController($q, $mdDialog, $state, roleCheckerService, hub
           .removeProjectMembership(ctrl.project.id, membership.user.id)
           .then(() => {
             logger.success('Team member removed from project');
+            loadProject();
+          });
+      });
+  }
+
+  function makeManager(membership, targetEvent) {
+    if (!ctrl.isAdmin) {
+      return;
+    }
+
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent('This will make this person a team manager of the project (giving them certain priviledges).')
+      .ariaLabel('Confirm making this person a team manager.')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(() => {
+        ctrl.loading = true;
+
+        hubApiService
+          .projectSetRole(ctrl.project.id, membership.user.id, 'manager')
+          .then(() => {
+            logger.success('Team member promoted to manager!');
+            loadProject();
+          });
+      });
+  }
+
+  function demoteManager(membership, targetEvent) {
+    if (!ctrl.isAdmin) {
+      return;
+    }
+
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent('This will demote this person from their team manager role in the project (though they will still be a member of the project).')
+      .ariaLabel('Confirm demotion of a project team manager.')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(() => {
+        ctrl.loading = true;
+
+        hubApiService
+          .projectUnsetRole(ctrl.project.id, membership.user.id, 'manager')
+          .then(() => {
+            logger.success('Team member demoted from manager role!');
             loadProject();
           });
       });

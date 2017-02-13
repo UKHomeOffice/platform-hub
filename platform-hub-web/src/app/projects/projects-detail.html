@@ -75,7 +75,8 @@
               <div layout="row" layout-align="center center">
                 <md-button
                   class="md-primary md-raised"
-                  ng-click="$ctrl.addMembership()">
+                  ng-click="$ctrl.addMembership()"
+                  ng-disabled="!$ctrl.searchSelectedUser">
                   Add
                 </md-button>
               </div>
@@ -86,18 +87,44 @@
             <md-list-item
               class="md-2-line"
               ng-repeat="m in $ctrl.memberships">
-              <div class="md-list-item-text">
-                <h3>{{m.user.name}}</h3>
-                <h4>{{m.user.email}}</h4>
 
-                <md-button
-                  class="md-raised md-secondary"
-                  ng-if="$ctrl.isAdmin"
-                  ng-click="$ctrl.removeMembership(m, $event)"
-                  aria-label="Remove this person from this project team">
-                  Remove
-                </md-button>
+              <div class="md-list-item-text">
+                <h3>
+                  {{m.user.name}}
+                  <small class="badge" ng-if="m.role == 'manager'" md-colors="{background: 'accent'}">Manager</small>
+                </h3>
+                <h4>{{m.user.email}}</h4>
               </div>
+
+              <md-menu class="md-secondary">
+                <md-button class="md-primary">
+                  Actions
+                </md-button>
+                <md-menu-content width="4">
+                  <md-menu-item ng-if="$ctrl.isAdmin && m.role != 'manager'">
+                    <md-button
+                      ng-click="$ctrl.makeManager(m, $event)"
+                      aria-label="Make this person a team manager">
+                      Make manager
+                    </md-button>
+                  </md-menu-item>
+                  <md-menu-item ng-if="$ctrl.isAdmin && m.role == 'manager'">
+                    <md-button
+                      ng-click="$ctrl.demoteManager(m, $event)"
+                      aria-label="Demote this person from their team manager role">
+                      Demote manager
+                    </md-button>
+                  </md-menu-item>
+                  <md-menu-item ng-if="$ctrl.isAdmin">
+                    <md-button
+                      ng-click="$ctrl.removeMembership(m, $event)"
+                      aria-label="Remove this person from this project team">
+                      Remove from team
+                    </md-button>
+                  </md-menu-item>
+                </md-menu-content>
+              </md-menu>
+
             </md-list-item>
           </md-list>
         </div>

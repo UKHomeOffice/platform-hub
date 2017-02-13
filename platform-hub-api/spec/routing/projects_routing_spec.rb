@@ -39,5 +39,17 @@ RSpec.describe ProjectsController, type: :routing do
       expect(:delete => '/projects/1/memberships/25').to route_to('projects#remove_membership', :id => '1', :user_id => '25')
     end
 
+    it 'routes to #set_role' do
+      expect(:put => '/projects/1/memberships/25/role/manager').to route_to('projects#set_role', :id => '1', :user_id => '25', :role => 'manager')
+    end
+
+    it 'routes to #unset_role' do
+      expect(:delete => '/projects/1/memberships/25/role/manager').to route_to('projects#unset_role', :id => '1', :user_id => '25', :role => 'manager')
+    end
+
+    it 'does not route when given an unidentified "role"' do
+      expect(:put => '/projects/1/memberships/25/role/unknown_role').not_to be_routable
+    end
+
   end
 end
