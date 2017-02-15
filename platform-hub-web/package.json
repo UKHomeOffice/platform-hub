@@ -12,7 +12,8 @@
     "serve:dist": "gulp serve:dist",
     "test": "gulp test",
     "test:auto": "gulp test:auto",
-    "webpack:analysis": "node_modules/.bin/webpack --json --config=./conf/webpack.conf.js | webpack-bundle-size-analyzer"
+    "webpack:analysis": "node_modules/.bin/webpack --json --config=./conf/webpack.conf.js | webpack-bundle-size-analyzer",
+    "a11y": "bbc-a11y"
   },
   "dependencies": {
     "angular": "1.5.11",
@@ -43,6 +44,7 @@
     "babel-plugin-istanbul": "^2.0.1",
     "babel-polyfill": "^6.7.4",
     "babel-preset-es2015": "^6.2.0",
+    "bbc-a11y": "^1.3.0",
     "browser-sync": "^2.9.11",
     "browser-sync-spa": "^1.0.3",
     "css-loader": "^0.23.1",

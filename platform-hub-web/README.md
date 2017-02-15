@@ -57,6 +57,11 @@ _TODO: break these into separate sections_
 - _TODO: something about "assembling" all the AngularJS specific things like components, directives, services, etc. within the relevant module file_
 
 
+### Running the BBC Accessibility Standards Checker
+
+Start the web server using `yarn run serve`, then run `yarn run a11y` in a separate console to run the checker (which will output the results to your console).
+
+
 ### Resources
 
 - https://github.com/velesin/jasmine-jquery
