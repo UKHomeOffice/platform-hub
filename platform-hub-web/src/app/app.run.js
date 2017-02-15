@@ -54,4 +54,14 @@ export const appRun = function ($rootScope, $transitions, $state, authService, l
     }
   });
   $rootScope.$on('$destroy', authDataHandler);
+
+  // Listen for me data change and set currentUserId
+  const meDataHandler = $rootScope.$on(events.api.me.updated, (event, meData) => {
+    if (_.isEmpty(meData)) {
+      $rootScope.currentUserId = null;
+    } else {
+      $rootScope.currentUserId = meData.id;
+    }
+  });
+  $rootScope.$on('$destroy', meDataHandler);
 };

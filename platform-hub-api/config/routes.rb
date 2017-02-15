@@ -28,12 +28,20 @@ Rails.application.routes.draw do
 
       post :make_admin, on: :member
       post :revoke_admin, on: :member
+
+      post :onboard_github, on: :member
+      post :offboard_github, on: :member
     end
 
     resources :projects do
-      get '/memberships', to: 'projects#memberships', :on => :member
-      put '/memberships/:user_id', to: 'projects#add_membership', :on => :member
-      delete '/memberships/:user_id', to: 'projects#remove_membership', :on => :member
+      get '/memberships', to: 'projects#memberships', on: :member
+      put '/memberships/:user_id', to: 'projects#add_membership', on: :member
+      delete '/memberships/:user_id', to: 'projects#remove_membership', on: :member
+
+      constraints lambda { |request| ProjectMembership.roles.keys.include?(request.params[:role]) } do
+        put '/memberships/:user_id/role/:role', to: 'projects#set_role', on: :member
+        delete '/memberships/:user_id/role/:role', to: 'projects#unset_role', on: :member
+      end
     end
 
   end

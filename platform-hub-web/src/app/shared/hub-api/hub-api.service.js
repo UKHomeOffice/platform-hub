@@ -19,6 +19,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getProjectMemberships = getProjectMemberships;
   service.addProjectMembership = addProjectMembership;
   service.removeProjectMembership = removeProjectMembership;
+  service.projectSetRole = projectSetRole;
+  service.projectUnsetRole = projectUnsetRole;
+  service.userOnboardGitHub = userOnboardGitHub;
+  service.userOffboardGitHub = userOffboardGitHub;
 
   return service;
 
@@ -132,6 +136,9 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   function addProjectMembership(projectId, userId) {
     return $http
       .put(`${apiEndpoint}/projects/${projectId}/memberships/${userId}`)
+      .then(response => {
+        return response.data;
+      })
       .catch(response => {
         logger.error('Failed to add team member to project – the API might be down. Try again later.');
         return $q.reject(response);
@@ -143,6 +150,56 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .delete(`${apiEndpoint}/projects/${projectId}/memberships/${userId}`)
       .catch(response => {
         logger.error('Failed to remove team member from project – the API might be down. Try again later.');
+        return $q.reject(response);
+      });
+  }
+
+  function projectSetRole(projectId, userId, role) {
+    return $http
+      .put(`${apiEndpoint}/projects/${projectId}/memberships/${userId}/role/${role}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error('Failed to set project team role – the API might be down. Try again later.');
+        return $q.reject(response);
+      });
+  }
+
+  function projectUnsetRole(projectId, userId, role) {
+    return $http
+      .delete(`${apiEndpoint}/projects/${projectId}/memberships/${userId}/role/${role}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error('Failed to unset project team role – the API might be down. Try again later.');
+        return $q.reject(response);
+      });
+  }
+
+  function userOnboardGitHub(userId) {
+    return $http
+      .post(`${apiEndpoint}/users/${userId}/onboard_github`)
+      .catch(response => {
+        let message = response.error.message;
+        if (!message) {
+          message = 'Failed to onboard user on to GitHub – the API might be down. Try again later.';
+        }
+        logger.error(message);
+        return $q.reject(response);
+      });
+  }
+
+  function userOffboardGitHub(userId) {
+    return $http
+      .post(`${apiEndpoint}/users/${userId}/offboard_github`)
+      .catch(response => {
+        let message = response.error.message;
+        if (!message) {
+          message = 'Failed to onboard user on to GitHub – the API might be down. Try again later.';
+        }
+        logger.error(message);
         return $q.reject(response);
       });
   }

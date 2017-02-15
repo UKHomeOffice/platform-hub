@@ -8,3 +8,4 @@ _TODO:_
 - Explain the `./bin` folder and relevant scripts like `./bin/setup` and `./bin/update`
 - Postgres:
   - `./bin/postgres/*` – a provided way to quickly run a Postgres container locally (but optional)
+- Explain the Agents within `app/services/agents/*` – intended to provide "root" access to external services like GitHub, and thus should be used cautiously!

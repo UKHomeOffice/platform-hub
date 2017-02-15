@@ -10,6 +10,14 @@ module AuthenticationHelpers
       '7ea9251a-492e-42c3-90cb-d8e5a1d99005'
     end
 
+    let :current_user do
+      if User.exists?(id: current_user_id)
+        User.find current_user_id
+      else
+        NewUserService.new.create test_auth_payload
+      end
+    end
+
     def test_auth_token
       @test_auth_token ||= build_auth_token(test_auth_payload)
     end

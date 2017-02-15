@@ -1,6 +1,6 @@
 class ProjectMembership < ApplicationRecord
 
-  include Audited
+  self.primary_keys = :project_id, :user_id
 
   enum role: {
     manager: 'manager'
@@ -11,7 +11,5 @@ class ProjectMembership < ApplicationRecord
 
   belongs_to :user
   validates :user_id, presence: true
-
-  private
 
 end
