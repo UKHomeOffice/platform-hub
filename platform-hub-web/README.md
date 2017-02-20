@@ -14,11 +14,11 @@ To set up:
 
 NOTE: you'll then need to run `nave use 6.9.1` every time you start up a new shell.
 
-#### Yarn v0.18.1 (for package management)
+#### Yarn v0.20.3 (for package management)
 
 [`Yarn`](https://yarnpkg.com) provides a more deterministic, safe and reliable mechanism for NodeJS package management (substitute for `npm`).
 
-The simplest way to set this up is: `npm install -g yarn@0.18.1` though see the [install docs](https://yarnpkg.com/en/docs/install) for details on potentially better ways. Note that Yarn needs to be available for the version of NodeJS you set up above.
+The simplest way to set this up is: `npm install -g yarn@0.20.3` though see the [install docs](https://yarnpkg.com/en/docs/install) for details on potentially better ways. Note that Yarn needs to be available for the version of NodeJS you set up above.
 
 ### Dev flows
 
