@@ -27,6 +27,15 @@
       <md-content>
         <md-sidemenu role="navigation" class="nav" ng-if="$ctrl.isAuthenticated()">
           <md-sidemenu-group>
+            <md-sidemenu-button
+              ui-sref="home"
+              ui-sref-active="active">
+              <md-icon>home</md-icon>
+              <span>Home</span>
+            </md-sidemenu-button>
+          </md-sidemenu-group>
+
+          <md-sidemenu-group>
             <md-subheader class="md-no-sticky">My Account</md-subheader>
 
             <md-sidemenu-button
