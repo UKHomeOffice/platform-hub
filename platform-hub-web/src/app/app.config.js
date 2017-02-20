@@ -2,7 +2,7 @@ export const appConfig = function ($mdIconProvider, $mdThemingProvider, $httpPro
   'ngInject';
 
   $mdIconProvider
-    .icon("menu", "./assets/svg/menu.svg", 24);
+    .icon('menu', './assets/svg/menu.svg', 24);
 
   $mdThemingProvider.theme('default')
     .primaryPalette('blue')

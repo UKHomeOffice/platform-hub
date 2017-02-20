@@ -18,7 +18,7 @@ describe('appShell component', () => {
 
     $httpBackend
       .whenGET(/.+/)
-      .respond("{}");
+      .respond('{}');
   }));
 
   it('should render content', angular.mock.inject(($rootScope, $compile) => {
