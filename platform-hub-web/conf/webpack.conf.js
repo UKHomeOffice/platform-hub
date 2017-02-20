@@ -3,54 +3,57 @@ const conf = require('./gulp.conf');
 const path = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const FailPlugin = require('webpack-fail-plugin');
 const autoprefixer = require('autoprefixer');
 
 module.exports = {
   module: {
     loaders: [
       {
-        test: /.js$/,
+        test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'eslint-loader',
+        use: 'eslint-loader',
         enforce: 'pre'
       },
       {
         test: /\.(css|scss)$/,
-        loaders: [
+        use: [
           'style-loader',
           'css-loader',
           'sass-loader',
-          'postcss-loader'
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: function () {  // eslint-disable-line object-shorthand
+                return [
+                  autoprefixer
+                ];
+              }
+            }
+          }
         ]
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loaders: [
+        use: [
           'ng-annotate-loader',
           'babel-loader'
         ]
       },
       {
-        test: /.html$/,
-        loaders: [
-          'html-loader'
-        ]
+        test: /\.html$/,
+        use: 'html-loader'
       }
     ]
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.NoErrorsPlugin(),
-    FailPlugin,
+    new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin({
       template: conf.path.src('index.html')
     }),
     new webpack.LoaderOptionsPlugin({
-      options: {
-        postcss: () => [autoprefixer]
-      },
+      options: {},
       debug: true
     })
   ],

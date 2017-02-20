@@ -3,7 +3,6 @@ const conf = require('./gulp.conf');
 const path = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const FailPlugin = require('webpack-fail-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const pkg = require('../package.json');
 const autoprefixer = require('autoprefixer');
@@ -12,29 +11,47 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /.js$/,
+        test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'eslint-loader',
+        use: 'eslint-loader',
         enforce: 'pre'
       },
       {
         test: /\.(css|scss)$/,
-        loaders: ExtractTextPlugin.extract({
-          fallbackLoader: 'style-loader',
-          loader: 'css-loader?minimize!sass-loader!postcss-loader'
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            {
+              loader: 'css-loader',
+              options: {
+                minimize: true
+              }
+            },
+            'sass-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                plugins: function () {  // eslint-disable-line object-shorthand
+                  return [
+                    autoprefixer
+                  ];
+                }
+              }
+            }
+          ]
         })
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loaders: [
+        use: [
           'ng-annotate-loader',
           'babel-loader'
         ]
       },
       {
-        test: /.html$/,
-        loaders: [
+        test: /\.html$/,
+        use: [
           'html-loader'
         ]
       }
@@ -42,8 +59,7 @@ module.exports = {
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.NoErrorsPlugin(),
-    FailPlugin,
+    new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin({
       template: conf.path.src('index.html')
     }),
@@ -51,12 +67,7 @@ module.exports = {
       compress: {unused: true, dead_code: true, warnings: false} // eslint-disable-line camelcase
     }),
     new ExtractTextPlugin('index-[contenthash].css'),
-    new webpack.optimize.CommonsChunkPlugin({name: 'vendor'}),
-    new webpack.LoaderOptionsPlugin({
-      options: {
-        postcss: () => [autoprefixer]
-      }
-    })
+    new webpack.optimize.CommonsChunkPlugin({name: 'vendor'})
   ],
   output: {
     path: path.join(process.cwd(), conf.paths.dist),
