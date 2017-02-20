@@ -1,4 +1,4 @@
-# Platform Hub Auth Proxy
+# # HODDAT PaaS Hub – Local Auth Proxy
 
 Uses [keycloak-proxy](https://github.com/gambol99/keycloak-proxy)
 

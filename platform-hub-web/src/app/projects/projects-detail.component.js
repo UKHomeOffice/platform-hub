@@ -90,7 +90,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
 
     const confirm = $mdDialog.confirm()
       .title('Are you sure?')
-      .textContent('This will delete the project permanently from the Platform Hub.')
+      .textContent('This will delete the project permanently from the hub.')
       .ariaLabel('Confirm deletion of project')
       .targetEvent(targetEvent)
       .ok('Do it')

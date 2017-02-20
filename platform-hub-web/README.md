@@ -1,4 +1,4 @@
-# Platform Hub Web App
+# HODDAT PaaS Hub – Web App
 
 ## Tech summary
 
