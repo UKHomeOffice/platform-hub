@@ -1,5 +1,9 @@
 # Platform Hub Web App
 
+## Tech summary
+
+An AngularJS 1.5 web app that runs fully client side (as static assets), with a local development and build stack for easy development, testing and building.
+
 ## Dev
 
 ### Prerequisites
@@ -38,26 +42,33 @@ yarn
 
 See all available tasks in the `scripts` section of `package.json`.
 
-### Coding guidelines
+### Coding guidelines and source code structure
 
 The structure of this app, and the coding guidelines to work on it, are largely based on:
 
-- https://github.com/johnpapa/angular-styleguide/tree/master/a1
 - https://github.com/toddmotto/angular-styleguide
+- https://github.com/johnpapa/angular-styleguide/tree/master/a1
 
-Key guidelines:
+Important exceptions to the above styleguides:
 
-_TODO: break these into separate sections_
+- When defining an AngularJS `component` or `directive`, place it's corresponding `Controller` function (assuming it has one) in the same file. This is a conscious decision to keep the logic in components/directives as close as possible to the declaration.
+- All application routes are defined in one file: `src/app/app.routes.js`.
 
-- One important exception/difference to the styleguides linked above: when defining an AngularJS `component` or `directive` place it's corresponding `Controller` function (assuming it has one) in the same file. This is a conscious decision to keep the logic in components/directives as close as possible to the declaration.
-- _TODO: describe the app.* files and the important exception that routes are defined in one file instead of with the components_
-- _TODO: something about app structure (i.e. the various folders)_
-- _TODO: something about how Angular modules are the key abstraction to group sections / components / shared bits in self-contained, errr, modules + something about when to define a new module (i.e. top level section folders, as well, as folders within app/shared)_
-- _TODO: something about the top level app sections – and how this can evolve later based on sub-sections / partials / etc_
-- _TODO: something about "assembling" all the AngularJS specific things like components, directives, services, etc. within the relevant module file_
+#### Key points about structure and guidelines to follow
 
+- The various `app.*.js` files in `src/app` set up everything needed for the overall AngularJS app to run, including any module dependencies, runtime config, routes, constants, etc.
+  - The `app.module.js` is the main "assembly" of the app, and is also where app-wide constants are defined.
+- We break down the app as much as possible into [AngularJS modules](https://docs.angularjs.org/guide/module) – in theory, each module could be tested in isolation.
+  - We have one top level `app` module that assembles everything together (as mentioned above).
+  - Each individual _section_ – usually a routable part – of the app has it's own folder in `src/app` (e.g. `src/app/home`) and has it's own module definition in `<section-name>.module.js` where all of it's dependencies are described, and all of it's children components, directives, services, factories, etc. are assmebled into the module. Everything needed for this section of app should go in this folder (and broken down into further modules within this folder, if needed).
+  - A special `app/shared` module is used for shared code across the app. You can register stuff directly within this module, or in further modules inside of the `app/shared` folder (e.g. `app/shared/auth`).
+  - The individual files that provide AngularJS components, directives, services, factories, etc. don't actually know they are AngularJS specific things, as such – they are just functions and objects that make use of AngularJS' conventions, dependency injection and structures, and only get registered in their relevant parent's `<foo>.module.js` file in to the AngularJS runtime.
+- For CSS we use [SASS](http://sass-lang.com/) because it's awesome.
+  - The `src/app/app.scss` file provides app level styling.
+  - Individual app sections and shared modules should have their own `<foo>.scss` file, within their folders, if needed. The dev server and build pipeline will automatically pick these up when building the styles.
 
 ### Resources
 
-- https://github.com/velesin/jasmine-jquery
-- _TODO: more to come_
+- [Angular Material docs](https://material.angularjs.org/1.1.3/)
+- [lodash docs](https://lodash.com/docs/4.17.4)
+- [jasmine-jquery special matchers you can use in your tests](https://github.com/velesin/jasmine-jquery)
