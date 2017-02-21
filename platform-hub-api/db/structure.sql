@@ -142,7 +142,9 @@ CREATE TABLE identities (
 CREATE TABLE project_memberships (
     project_id uuid NOT NULL,
     user_id uuid NOT NULL,
-    role character varying
+    role character varying,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -366,6 +368,7 @@ INSERT INTO schema_migrations (version) VALUES
 ('20170126161234'),
 ('20170201101239'),
 ('20170201102040'),
-('20170209100930');
+('20170209100930'),
+('20170221134425');
 
 
