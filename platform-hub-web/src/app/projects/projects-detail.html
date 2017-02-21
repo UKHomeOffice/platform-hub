@@ -51,8 +51,8 @@
             <span ng-if="$ctrl.isAdmin">Why not add some?</span>
           </p>
 
-          <div layout="row" ng-if="$ctrl.isAdmin">
-            <md-input-container layout="row" layout-gt-sm="column" flex class="md-block">
+          <md-toolbar md-colors="{background: 'primary-50'}" ng-if="$ctrl.isAdmin">
+            <div class="md-toolbar-tools">
               <md-autocomplete
                 md-no-cache="true"
                 md-selected-item="$ctrl.searchSelectedUser"
@@ -61,7 +61,8 @@
                 md-item-text="user.name"
                 md-min-length="1"
                 ng-model-options="{ debounce: 500 }"
-                md-floating-label="Add a new team member">
+                placeholder="Add a new team member"
+                flex>
                 <md-item-template>
                   <span md-highlight-text="$ctrl.searchText" md-highlight-flags="^i">
                     {{user.name}}
@@ -72,16 +73,15 @@
                   No users matching "{{$ctrl.searchText}}" were found.
                 </md-not-found>
               </md-autocomplete>
-              <div layout="row" layout-align="center center">
-                <md-button
-                  class="md-primary md-raised"
-                  ng-click="$ctrl.addMembership()"
-                  ng-disabled="!$ctrl.searchSelectedUser">
-                  Add
-                </md-button>
-              </div>
-            </md-input-container>
-          </div>
+              <md-button
+                class="md-primary md-raised"
+                aria-label="Add the selected user to the project"
+                ng-click="$ctrl.addMembership()"
+                ng-disabled="!$ctrl.searchSelectedUser">
+                Add
+              </md-button>
+            </div>
+          </md-toolbar>
 
           <md-list ng-if="$ctrl.memberships.length > 0">
             <md-list-item
