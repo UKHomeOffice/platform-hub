@@ -146,6 +146,23 @@ RSpec.describe UsersController, type: :controller do
 
       end
 
+      context 'not an admin but is a project team manager of some project' do
+        before do
+          project = create :project
+          create :project_membership_as_manager, project: project, user: current_user
+
+          create_list :user, 3
+          @user = create :user, name: 'foobar'
+        end
+
+        it 'should return expected results' do
+          get :search, params: { q: 'foo' }
+          expect(response).to be_success
+          expect(json_response.length).to eq 1
+          expect(json_response.first['id']).to eq @user.id
+        end
+      end
+
     end
   end
 
@@ -272,7 +289,7 @@ RSpec.describe UsersController, type: :controller do
 
       end
 
-      context 'not an admin but is project team lead of same team' do
+      context 'not an admin but is project team manager of same team' do
         before do
           project = create :project
           create :project_membership, project: project, user: @user
@@ -286,7 +303,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context 'not an admin but is project team lead but of a different team' do
+      context 'not an admin but is project team manager but of a different team' do
         before do
           project1 = create :project
           project2 = create :project
@@ -328,7 +345,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context 'not an admin but is project team lead but of a different team' do
+      context 'not an admin but is project team manager but of a different team' do
         before do
           project1 = create :project
           project2 = create :project
