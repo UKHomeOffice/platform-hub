@@ -292,7 +292,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
 
     const confirm = $mdDialog.confirm()
       .title('Are you sure?')
-      .textContent('This will offboard this person from GitHub and remove them from the project. Continue with caution as this will remove their access from repositories, etc.')
+      .textContent('This will remove the person from the GitHub organisation as well as this team. Continue with caution as this will remove their access from repositories, etc.')
       .ariaLabel('Confirm offboarding from GitHub and removal of team member from project')
       .targetEvent(targetEvent)
       .ok('Do it')
