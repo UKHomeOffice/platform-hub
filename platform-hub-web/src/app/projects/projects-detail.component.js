@@ -234,7 +234,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
 
     const confirm = $mdDialog.confirm()
       .title('Are you sure?')
-      .textContent('This will onboard the user on to the GitHub organisation and main GitHub team. Only continue if you have confirmed that the user has a) 2FA set up, and b) a full name, on their GitHub account.')
+      .textContent('This will onboard the user on to the GitHub org and main GitHub team. Only continue if you have confirmed that the user has a) 2FA set up, and b) a full name, on their GitHub account.')
       .ariaLabel('Confirm onboarding of user on to GitHub.')
       .targetEvent(targetEvent)
       .ok('Do it')
@@ -292,7 +292,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
 
     const confirm = $mdDialog.confirm()
       .title('Are you sure?')
-      .textContent('This will remove the person from the GitHub organisation as well as this team. Continue with caution as this will remove their access from repositories, etc.')
+      .textContent('This will remove the person from the GitHub org as well as this team. Continue with caution as this will remove their access from repositories, etc.')
       .ariaLabel('Confirm offboarding from GitHub and removal of team member from project')
       .targetEvent(targetEvent)
       .ok('Do it')
