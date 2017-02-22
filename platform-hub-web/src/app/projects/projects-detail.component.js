@@ -32,6 +32,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.allowOnboardOrOffboardGitHub = allowOnboardOrOffboardGitHub;
   ctrl.userOnboardGitHub = userOnboardGitHub;
   ctrl.userOffboardGitHub = userOffboardGitHub;
+  ctrl.offboardAndRemove = offboardAndRemove;
 
   init();
 
@@ -280,6 +281,42 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
           })
           .finally(() => {
             ctrl.processing = false;
+          });
+      });
+  }
+
+  function offboardAndRemove(membership, targetEvent) {
+    if (!ctrl.isAdmin && !ctrl.isProjectManager) {
+      return;
+    }
+
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent('This will offboard this person from GitHub and remove them from the project. Continue with caution as this will remove their access from repositories, etc.')
+      .ariaLabel('Confirm offboarding from GitHub and removal of team member from project')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(() => {
+        ctrl.loading = true;
+
+        hubApiService
+          .removeProjectMembership(ctrl.project.id, membership.user.id)
+          .then(() => {
+            ctrl.processing = true;
+
+            hubApiService
+              .userOffboardGitHub(membership.user.id)
+              .then(() => {
+                logger.success('User should now be removed from the GitHub org (and associated teams) and from the project team');
+                loadProject();
+              })
+              .finally(() => {
+                ctrl.processing = false;
+              });
           });
       });
   }

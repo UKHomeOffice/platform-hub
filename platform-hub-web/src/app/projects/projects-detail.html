@@ -136,6 +136,17 @@
                       Remove from team
                     </md-button>
                   </md-menu-item>
+
+                  <md-divider></md-divider>
+
+                  <md-menu-item ng-if="$ctrl.isAdmin || $ctrl.isProjectManager">
+                    <md-button
+                      ng-click="$ctrl.offboardAndRemove(m, $event)"
+                      md-colors="{color: 'accent'}"
+                      aria-label="Offboard this user from GitHub and remove them from the team project in one go">
+                      Offboard and remove from team
+                    </md-button>
+                  </md-menu-item>
                 </md-menu-content>
               </md-menu>
 
