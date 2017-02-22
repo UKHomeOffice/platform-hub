@@ -5,7 +5,7 @@ export const appConfig = function ($mdIconProvider, $mdThemingProvider, $httpPro
     .icon('menu', './assets/svg/menu.svg', 24);
 
   $mdThemingProvider.theme('default')
-    .primaryPalette('blue')
+    .primaryPalette('deep-purple')
     .accentPalette('red');
 
   // Set up authenticated API access
