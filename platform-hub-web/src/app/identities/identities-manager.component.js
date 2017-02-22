@@ -59,7 +59,7 @@ function IdentitiesManagerController($scope, $mdDialog, hubApiService, gitHubIde
   }
 
   function processMeData(meData) {
-    if (_.isEmpty(meData)) {
+    if (_.isNull(meData) || _.isEmpty(meData)) {
       ctrl.identities = [];
     } else {
       const owned = _.keyBy(meData.identities, 'provider');

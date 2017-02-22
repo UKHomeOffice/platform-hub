@@ -27,14 +27,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   return service;
 
   function getMe() {
-    if (_.isEmpty(meDataPromise)) {
+    if (_.isNull(meDataPromise)) {
       meDataPromise = $http
         .get(`${apiEndpoint}/me`)
         .then(response => {
           const me = response.data;
 
           $rootScope.$broadcast(events.api.me.updated, me);
-          logger.debug(me);
 
           return me;
         })

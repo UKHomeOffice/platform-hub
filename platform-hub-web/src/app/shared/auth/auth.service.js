@@ -55,7 +55,7 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $r
   function isAuthenticated() {
     const token = getToken();
 
-    if (_.isEmpty(token)) {
+    if (_.isNull(token) || _.isEmpty(token)) {
       return false;
     }
 
@@ -77,7 +77,7 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $r
   function getPayload() {
     const token = getToken();
 
-    if (_.isEmpty(token)) {
+    if (_.isNull(token) || _.isEmpty(token)) {
       return null;
     }
 
