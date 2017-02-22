@@ -122,11 +122,11 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
     // so it must represent the ORed logic of all the conditions used for the
     // menu buttons, i.e. determine if at least one button will be shown.
 
-    return ctrl.isAdmin || allowOnboardOrOffboardGitHub(membership);
+    return ctrl.isAdmin || ctrl.isProjectManager || allowOnboardOrOffboardGitHub(membership);
   }
 
   function addMembership() {
-    if (!ctrl.isAdmin) {
+    if (!ctrl.isAdmin && !ctrl.isProjectManager) {
       return;
     }
 
@@ -139,7 +139,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   }
 
   function removeMembership(membership, targetEvent) {
-    if (!ctrl.isAdmin) {
+    if (!ctrl.isAdmin && !ctrl.isProjectManager) {
       return;
     }
 

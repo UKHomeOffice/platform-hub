@@ -51,7 +51,7 @@
             <span ng-if="$ctrl.isAdmin">Why not add some?</span>
           </p>
 
-          <md-toolbar md-colors="{background: 'primary-50'}" ng-if="$ctrl.isAdmin">
+          <md-toolbar md-colors="{background: 'primary-50'}" ng-if="$ctrl.isAdmin || $ctrl.isProjectManager">
             <div class="md-toolbar-tools">
               <md-autocomplete
                 md-no-cache="true"
@@ -129,7 +129,7 @@
                       Demote manager
                     </md-button>
                   </md-menu-item>
-                  <md-menu-item ng-if="$ctrl.isAdmin">
+                  <md-menu-item ng-if="$ctrl.isAdmin || $ctrl.isProjectManager">
                     <md-button
                       ng-click="$ctrl.removeMembership(m, $event)"
                       aria-label="Remove this person from this project team">
