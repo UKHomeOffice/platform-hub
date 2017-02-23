@@ -1,4 +1,4 @@
-export const roleCheckerService = function (hubApiService) {
+export const roleCheckerService = function ($q, hubApiService, authService) {
   'ngInject';
 
   const service = {};
@@ -8,10 +8,14 @@ export const roleCheckerService = function (hubApiService) {
   return service;
 
   function hasHubRole(role) {
-    return hubApiService
-      .getMe()
-      .then(meData => {
-        return meData.role === role;
-      });
+    if (authService.isAuthenticated()) {
+      return hubApiService
+        .getMe()
+        .then(meData => {
+          return meData.role === role;
+        });
+    }
+
+    return $q.resolve(false);
   }
 };

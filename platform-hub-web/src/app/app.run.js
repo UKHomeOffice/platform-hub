@@ -47,7 +47,7 @@ export const appRun = function ($rootScope, $transitions, $state, authService, l
 
   // Listen for auth data change and fetch the Me profile/settings data from the API
   const authDataHandler = $rootScope.$on(events.auth.updated, (event, authData) => {
-    if (_.isEmpty(authData)) {
+    if (_.isNull(authData) || _.isEmpty(authData)) {
       $rootScope.$broadcast(events.api.me.updated, null);
     } else {
       hubApiService.getMe();
@@ -57,7 +57,7 @@ export const appRun = function ($rootScope, $transitions, $state, authService, l
 
   // Listen for me data change and set currentUserId
   const meDataHandler = $rootScope.$on(events.api.me.updated, (event, meData) => {
-    if (_.isEmpty(meData)) {
+    if (_.isNull(meData) || _.isEmpty(meData)) {
       $rootScope.currentUserId = null;
     } else {
       $rootScope.currentUserId = meData.id;
