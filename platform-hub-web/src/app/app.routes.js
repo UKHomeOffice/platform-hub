@@ -1,4 +1,5 @@
 import {AppHome} from './home/home.module';
+import {HelpCentre} from './help/help.module';
 import {IdentitiesManager} from './identities/identities.module';
 import {
   ProjectsForm,
@@ -75,6 +76,13 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
       data: {
         authenticate: true,
         rolePermitted: 'admin'
+      }
+    })
+    .state('help', {
+      url: '/help',
+      component: HelpCentre,
+      data: {
+        authenticate: true
       }
     });
 };

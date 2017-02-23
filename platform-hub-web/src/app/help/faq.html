@@ -1,0 +1,108 @@
+<div class="faq">
+
+  <h4 class="md-headline">FAQ</h4>
+
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-title">What is the HODDaT PaaS Hub?</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <p class="md-body-1">
+        A portal for users of the HODDaT PaaS (aka DSP hosting platform) currently providing self-serve tools for identity, onboarding and offboarding. With plans to provide more self-serve tools, docs, status and updates for the hosting platform, in one central place.
+      </p>
+    </md-card-content>
+  </md-card>
+
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-title">How do I create a user account on the hub?</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <p class="md-body-1">
+        Login <em>(Menu > Login)</em> using Keycloak and a new account will be created for you on the hub
+      </p>
+    </md-card-content>
+  </md-card>
+
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-title">What can I do on the hub?</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <div class="md-body-1">
+        <p>
+          Once you log in you can:
+        </p>
+        <ul>
+          <li>
+            <a ui-sref="identities">Manage your connected identities (currently: GitHub)</a>
+            <ul>
+              <li>
+                Needed to allow onboarding/offboarding to these services
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a ui-sref="projects.list">View projects and team members</a>
+          </li>
+        </ul>
+
+        <p>
+          If you are made a project manager, you can:
+        </p>
+        <ul>
+          <li>
+            Add someone to your project (on the project page)
+          </li>
+          <li>
+            Remove a team member from your project (using the <em>Actions</em> button next to a team member, on the project page)
+          </li>
+          <li>
+            Onboard and offboard team members on GitHub (using the <em>Actions</em> button next to a team member, on the project page). <strong>Note:</strong> you can only do this for users that have connected up their GitHub identity within the hub.
+          </li>
+        </ul>
+      </div>
+    </md-card-content>
+  </md-card>
+
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-title">Why can't I create new projects or perform certain actions?</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <div class="md-body-1">
+        You need to be granted specific permissions to be able to do certain things on the hub
+        <ul>
+          <li>
+            <strong>Project managers</strong> can manage a project's team and onboard/offboard team members
+          </li>
+          <li>
+            <strong>Admins</strong> manage the users and projects on the hub and grant special permissions to others
+          </li>
+        </ul>
+      </div>
+    </md-card-content>
+  </md-card>
+
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-title">How do I request something not available to me via self-serve on the hub?</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <p class="md-body-1">
+        Continue using the BAU board as usual until we have the capabilities within the hub
+      </p>
+    </md-card-content>
+  </md-card>
+
+</div>

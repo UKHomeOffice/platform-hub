@@ -3,11 +3,12 @@
   <!-- Main header / toolbar -->
   <md-toolbar layout="row" class="md-toolbar-tools">
     <md-button
-      class="app-menu-button md-icon-button"
+      class="app-menu-button"
       hide-gt-sm
       ng-click="$ctrl.toggleMenu()"
       aria-label="Show/hide menu">
       <md-icon md-svg-icon="menu"></md-icon>
+      Menu
     </md-button>
     <h1>HODDAT PaaS Hub</h1>
   </md-toolbar>
@@ -41,7 +42,7 @@
             <md-sidemenu-button
               ng-repeat="item in $ctrl.myAccountNavStates"
               ui-sref="{{item.state}}"
-              ui-sref-active="active">
+              ui-sref-active="{ 'active': item.activeState || item.state }">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
               <span>{{item.title}}</span>
             </md-sidemenu-button>
@@ -53,7 +54,7 @@
             <md-sidemenu-button
               ng-repeat="item in $ctrl.hubNavStates"
               ui-sref="{{item.state}}"
-              ui-sref-active="active">
+              ui-sref-active="{ 'active': item.activeState || item.state }">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
               <span>{{item.title}}</span>
             </md-sidemenu-button>
@@ -65,7 +66,7 @@
             <md-sidemenu-button
               ng-repeat="item in $ctrl.adminNavStates"
               ui-sref="{{item.state}}"
-              ui-sref-active="active">
+              ui-sref-active="{ 'active': item.activeState || item.state }">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
               <span>{{item.title}}</span>
             </md-sidemenu-button>
