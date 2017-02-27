@@ -1,26 +1,21 @@
 <div class="app-home">
   <md-content layout-padding>
+
     <h2 class="md-display-1">
       Welcome to the HODDAT PaaS Hub
     </h2>
 
-    <div class="md-body-1">
-      If you're new, just
-      <a href="#" ng-click="$ctrl.login()">login</a>
-      with your Keycloak account and a new account will be created for you
+    <div ng-if="!$ctrl.isAuthenticated()" md-whiteframe="1" md-colors="{background: 'primary-50'}">
+      <p class="md-body-1">
+        If you're new, just
+        <a href="#" ng-click="$ctrl.login()">login</a>
+        using Keycloak and a new account will be created for you on the hub
+      </p>
     </div>
 
-    <div class="md-body-1">
-      Once you log in you can:
-
-      <ul>
-        <li>
-          <a ui-sref="identities">Manage your connected identities (e.g GitHub)</a>
-        </li>
-        <li>
-          <a ui-sref="projects.list">View projects and team members</a>
-        </li>
-      </ul>
+    <div>
+      <faq></faq>
     </div>
+
   </md-content>
 </div>

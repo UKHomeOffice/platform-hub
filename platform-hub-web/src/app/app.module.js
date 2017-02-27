@@ -18,6 +18,7 @@ import 'angular-url-encode';
 import moment from 'moment';
 import lodash from 'lodash';
 
+import {HelpModule} from './help/help.module';
 import {HomeModule} from './home/home.module';
 import {IdentitiesModule} from './identities/identities.module';
 import {LayoutModule} from './layout/layout.module';
@@ -39,6 +40,7 @@ const name = 'app';
 // Config + routes
 angular
   .module(name, [
+    HelpModule,
     HomeModule,
     IdentitiesModule,
     LayoutModule,

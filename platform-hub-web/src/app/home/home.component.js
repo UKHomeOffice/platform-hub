@@ -9,6 +9,11 @@ function HomeController(authService) {
   const ctrl = this;
 
   ctrl.login = login;
+  ctrl.isAuthenticated = isAuthenticated;
+
+  function isAuthenticated() {
+    return authService.isAuthenticated();
+  }
 
   function login() {
     authService.authenticate();

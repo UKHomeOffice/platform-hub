@@ -22,7 +22,13 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
     {
       title: 'Projects',
       state: 'projects.list',
+      activeState: 'projects',
       icon: 'book'
+    },
+    {
+      title: 'Help',
+      state: 'help',
+      icon: 'help'
     }
   ];
 
