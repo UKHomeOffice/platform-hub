@@ -1,16 +1,18 @@
 <div class="app-shell" layout="column" layout-fill>
 
   <!-- Main header / toolbar -->
-  <md-toolbar layout="row" class="md-toolbar-tools">
-    <md-button
-      class="app-menu-button"
-      hide-gt-sm
-      ng-click="$ctrl.toggleMenu()"
-      aria-label="Show/hide menu">
-      <md-icon md-svg-icon="menu"></md-icon>
-      Menu
-    </md-button>
-    <h1>HODDAT PaaS Hub</h1>
+  <md-toolbar layout="row">
+    <div class="md-toolbar-tools">
+      <md-button
+        class="app-menu-button"
+        hide-gt-sm
+        ng-click="$ctrl.toggleMenu()"
+        aria-label="Show/hide menu">
+        <md-icon md-svg-icon="menu"></md-icon>
+        Menu
+      </md-button>
+      <h1 md-truncate flex>HODDAT PaaS Hub</h1>
+    </div>
   </md-toolbar>
 
   <!-- Sidebar + content area -->
