@@ -24,11 +24,20 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       state: 'projects.list',
       activeState: 'projects',
       icon: 'book'
+    }
+  ];
+
+  ctrl.helpNavStates = [
+    {
+      title: 'FAQ',
+      state: 'help.faq',
+      icon: 'question_answer'
     },
     {
-      title: 'Help',
-      state: 'help',
-      icon: 'help'
+      title: 'Support Requests',
+      state: 'help.support.requests.overview',
+      activeState: 'help.support.requests',
+      icon: 'note'
     }
   ];
 
@@ -37,6 +46,12 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       title: 'Users',
       state: 'users',
       icon: 'perm_identity'
+    },
+    {
+      title: 'Support Request Templates',
+      state: 'help.support.request-templates.list',
+      activeState: 'help.support.request-templates',
+      icon: 'note'
     }
   ];
 

@@ -19,6 +19,12 @@ module Agents
       end
     end
 
+    def create_issue repo_url, title, body
+      repo = Octokit::Repository.from_url repo_url
+      resource = @client.create_issue repo, title, body
+      resource.html_url
+    end
+
     private
 
     def with_identity user

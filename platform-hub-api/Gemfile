@@ -14,6 +14,7 @@ gem 'friendly_id', '~> 5.2'
 gem 'cancancan', '~> 1.15'
 gem 'pg_search', '~> 2.0', '>= 2.0.1'
 gem 'composite_primary_keys', '~> 9.0', '>= 9.0.6'
+gem 'classy_hash', '~> 0.2.0'
 
 group :development, :test do
   gem 'byebug', platform: :mri

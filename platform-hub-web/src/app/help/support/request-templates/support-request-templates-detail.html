@@ -1,0 +1,175 @@
+<div class="support-request-templates-detail">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>Support Request Template: </span>
+        <span ng-cloak>{{$ctrl.template.shortname}}</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        ng-if="$ctrl.template"
+        aria-label="Edit this support request template"
+        ui-sref="help.support.request-templates.edit({id: $ctrl.template.id})">
+        <md-icon>edit</md-icon>
+        Edit
+      </md-button>
+      <md-button
+        ng-if="$ctrl.template"
+        aria-label="Delete this support request template"
+        ng-click="$ctrl.deleteTemplate($event)">
+        <md-icon>delete</md-icon>
+        Delete
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.template">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+      <md-content layout-padding>
+        <h3 class="md-title" layout="row">
+          {{$ctrl.template.shortname}}
+        </h3>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Title:
+          </span>
+          {{$ctrl.template.title}}
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Target GitHub repo:
+          </span>
+          {{$ctrl.template.git_hub_repo}}
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Description:
+          </span>
+          <br />
+          {{$ctrl.template.description}}
+        </p>
+
+        <br />
+
+        <md-divider></md-divider>
+
+        <div>
+          <h4 class="md-subhead centred">Form spec</h4>
+
+          <p class="md-body-1">
+            <span md-colors="{color: 'blue-grey-700'}">
+              Form help text:
+            </span>
+            <br />
+            {{$ctrl.template.form_spec.help_text}}
+          </p>
+
+          <br />
+
+          <h5 md-colors="{color: 'blue-grey-700'}">
+            Form fields:
+            ({{$ctrl.template.form_spec.fields.length}})
+          </h5>
+
+          <md-card ng-repeat="field in $ctrl.template.form_spec.fields track by field.id">
+            <md-card-content>
+              <span class="badge float-right" md-colors="{background: 'accent'}">{{field.field_type}}</span>
+
+              <p class="md-body-1">
+                <span md-colors="{color: 'blue-grey-700'}">
+                  ID:
+                </span>
+                {{field.id}}
+              </p>
+
+              <p class="md-body-1">
+                <span md-colors="{color: 'blue-grey-700'}">
+                  Label:
+                </span>
+                {{field.label}}
+              </p>
+
+              <p class="md-body-1">
+                <span md-colors="{color: 'blue-grey-700'}">
+                  Required field?
+                </span>
+                {{field.required}}
+              </p>
+
+              <p class="md-body-1" ng-if="field.placeholder">
+                <span md-colors="{color: 'blue-grey-700'}">
+                  Placeholder text:
+                </span>
+                {{field.placeholder}}
+              </p>
+
+              <p class="md-body-1" ng-if="field.help_text">
+                <span md-colors="{color: 'blue-grey-700'}">
+                  Help text:
+                </span>
+                <br />
+                {{field.help_text}}
+              </p>
+
+              <p class="md-body-1" ng-if="field.field_type == 'select'">
+                <span md-colors="{color: 'blue-grey-700'}">
+                  Selection options:
+                </span>
+                <br />
+                {{field.options}}
+              </p>
+
+              <p class="md-body-1" ng-if="field.field_type == 'select'">
+                <span md-colors="{color: 'blue-grey-700'}">
+                  Allow multiple selections?
+                </span>
+                {{field.multiple}}
+              </p>
+            </md-card-content>
+          </md-card>
+        </div>
+
+        <md-divider></md-divider>
+
+        <div>
+          <h4 class="md-subhead centred">GitHub issue spec</h4>
+
+          <p class="md-body-1">
+            <span md-colors="{color: 'blue-grey-700'}">
+              Issue title text:
+            </span>
+            {{$ctrl.template.git_hub_issue_spec.title_text}}
+          </p>
+
+          <p class="md-body-1">
+            <span md-colors="{color: 'blue-grey-700'}">
+              Issue body text preamble:
+            </span>
+            <br />
+            {{$ctrl.template.git_hub_issue_spec.body_text_preamble}}
+          </p>
+
+          <br />
+
+          <md-divider></md-divider>
+
+          <br />
+
+          <div layout="row" layout-align="center">
+            <md-button class="md-raised" ui-sref="help.support.requests.new({id: $ctrl.template.id})">
+              View as new support request
+            </md-button>
+          </div>
+        </div>
+      </md-content>
+    </div>
+
+  </md-content>
+
+</div>

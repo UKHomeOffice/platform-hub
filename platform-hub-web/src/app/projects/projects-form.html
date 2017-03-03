@@ -12,8 +12,8 @@
 
   <md-content layout-padding ng-if="!$ctrl.loading">
 
-    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
-      <md-content layout-padding>
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout-padding>
+      <md-content>
         <form name="$ctrl.projectForm" role="form" ng-submit="$ctrl.createOrUpdate()">
           <md-input-container class="md-block">
             <label for="shortname">Shortname:</label>
@@ -28,7 +28,7 @@
             </div>
           </md-input-container>
           <md-input-container class="md-block">
-            <label>Name:</label>
+            <label for="name">Name:</label>
             <input
               name="name"
               ng-model="$ctrl.project.name"
@@ -40,8 +40,9 @@
           </md-input-container>
 
           <md-input-container class="md-block">
-            <label>Description:</label>
+            <label for="description">Description:</label>
             <textarea
+              name="description"
               ng-model="$ctrl.project.description"
               rows="4"
               md-select-on-focus>
@@ -59,7 +60,7 @@
               <span ng-if="!$ctrl.isNew">Update</span>
             </md-button>
             <md-button ui-sref="projects.list" ng-disabled="$ctrl.saving">Cancel</md-button>
-           </div>
+          </div>
         </form>
       </md-content>
     </div>

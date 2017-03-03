@@ -1,0 +1,81 @@
+<div
+  class="form-field"
+  layout="row"
+  flex>
+
+  <md-input-container
+    ng-switch="$ctrl.spec.field_type"
+    flex
+    class="md-block md-icon-float"
+    ng-class="{'md-icon-float': $ctrl.spec.help_text}">
+
+    <label for="{{$ctrl.spec.id}}" ng-if="$ctrl.spec.field_type != 'checkbox'">
+      {{$ctrl.spec.label}}
+    </label>
+
+    <input
+      ng-switch-default
+      type="{{$ctrl.spec.field_type}}"
+      name="{{$ctrl.spec.id}}"
+      ng-model="$ctrl.value"
+      ng-required="$ctrl.spec.required"
+      ng-attr-placeholder="{{$ctrl.spec.placeholder}}">
+
+    <textarea
+      ng-switch-when="textarea"
+      name="{{$ctrl.spec.id}}"
+      ng-model="$ctrl.value"
+      ng-required="$ctrl.spec.required"
+      ng-attr-placeholder="{{$ctrl.spec.placeholder}}"
+      rows="4"
+      md-select-on-focus>
+    </textarea>
+
+    <div ng-switch-when="checkbox">
+      <md-checkbox
+        name="{{$ctrl.spec.id}}"
+        ng-model="$ctrl.value"
+        ng-attr-aria-label="{{$ctrl.template.help}}">
+        {{$ctrl.spec.label}}
+      </md-checkbox>
+    </div>
+
+    <div ng-switch-when="select">
+      <md-select
+        ng-if="$ctrl.spec.multiple"
+        name="{{$ctrl.spec.id}}"
+        ng-model="$ctrl.value"
+        multiple>
+        <md-option ng-repeat="o in $ctrl.spec.options.split(',')" value="{{o}}">
+          {{o}}
+        </md-option>
+      </md-select>
+      <md-select
+        ng-if="!$ctrl.spec.multiple"
+        name="{{$ctrl.spec.id}}"
+        ng-model="$ctrl.value">
+        <md-option ng-repeat="o in $ctrl.spec.options.split(',')" value="{{o}}">
+          {{o}}
+        </md-option>
+      </md-select>
+    </div>
+
+    <div ng-messages="$ctrl.form[$ctrl.spec.id].$error">
+      <div ng-message="required" ng-if="$ctrl.spec.required">This is required.</div>
+      <div ng-message="email" ng-if="$ctrl.spec.field_type == 'email'">Not a valid email address.</div>
+      <div ng-message="url" ng-if="$ctrl.spec.field_type == 'url'">Not a valid URL.</div>
+    </div>
+
+  </md-input-container>
+
+  <md-button
+    class="md-icon-button input-button-end"
+    aria-label="info"
+    ng-if="$ctrl.spec.help_text">
+    <md-icon>info</md-icon>
+    <md-tooltip md-direction="bottom">
+      {{$ctrl.spec.help_text}}
+    </md-tooltip>
+  </md-button>
+
+</div>

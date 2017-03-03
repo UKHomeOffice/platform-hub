@@ -75,4 +75,33 @@ describe Agents::GitHubAgentService, type: :service do
     end
   end
 
+  describe '#create_issue' do
+    let(:repo_url) { 'http://example.org/repo/1' }
+
+    let(:repo) { instance_double 'Octokit::Repository'  }
+
+    let(:title) { 'title' }
+
+    let(:body) { 'body' }
+
+    let(:url) { 'http://example.com' }
+
+    let(:api_result) { double :api_result, html_url: url }
+
+    before do
+      allow(Octokit::Repository).to receive(:from_url)
+        .with(repo_url)
+        .and_return(repo)
+    end
+
+    it 'should make the appropriate API client call' do
+      expect(git_hub_client).to receive(:create_issue)
+        .with(repo, title, body)
+        .and_return(api_result)
+
+      output = @service.create_issue repo_url, title, body
+      expect(output).to eq url
+    end
+  end
+
 end

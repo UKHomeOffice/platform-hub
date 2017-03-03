@@ -1,0 +1,68 @@
+<div class="support-requests-form">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>New Support Request: </span>
+        <span ng-cloak>{{$ctrl.template.shortname}}</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.sending"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.template">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+      <md-content layout-padding>
+
+        <h4 class="md-title">{{$ctrl.template.title}}</h4>
+
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-if="$ctrl.template.description">
+          {{$ctrl.template.description}}
+        </p>
+
+        <p
+          class="md-body-1"
+          md-colors="{background: 'green-50'}"
+          ng-if="$ctrl.issueUrl">
+          Your issue has been submitted!
+          <br />
+          See:
+          <a ng-href="{{$ctrl.issueUrl}}" target="_blank">{{$ctrl.issueUrl}}</a>
+        </p>
+
+        <form name="$ctrl.requestForm" role="form" ng-submit="$ctrl.sendRequest()" ng-if="!$ctrl.issueUrl">
+          <p class="md-body-1" ng-if="$ctrl.template.form_spec.help_text">
+            {{$ctrl.template.form_spec.help_text}}
+          </p>
+
+          <br />
+
+          <form-field
+            ng-repeat="field in $ctrl.template.form_spec.fields track by field.id"
+            spec="field"
+            value="$ctrl.data[field.id]",
+            form="$ctrl.requestForm">
+          </form-field>
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="$ctrl.sending || $ctrl.requestForm.$invalid"
+              ng-class="{'md-raised': ($ctrl.requestForm.$dirty && $ctrl.requestForm.$valid) }"
+              aria-label="Send support request">
+              Send
+            </md-button>
+            <md-button ui-sref="help.support.requests.overview" ng-disabled="$ctrl.sending">Cancel</md-button>
+          </div>
+        </form>
+
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

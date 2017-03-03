@@ -1,0 +1,58 @@
+<div class="support-requests-overview">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>Support Requests</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.templates.length > 0">
+
+    <h4 class="md-title">Submit a new support request</h4>
+
+    <p class="md-body-1" md-colors="{background: 'blue-grey-50'}">
+      <strong>Tip:</strong>
+      if you have a
+      <a ui-sref="identities">GitHub identity</a>
+      connected to the hub, we'll @ you in the support request issue
+      and you'll receive notifications
+    </p>
+
+    <br />
+
+    <md-card
+      ng-repeat="t in $ctrl.templates track by t.id"
+      ui-sref="help.support.requests.new({id: t.id})"
+      style="cursor: pointer;">
+      <md-card-content layout="row" layout-xs="column" layout-align="space-between">
+        <div flex>
+          <p class="md-headline">
+            {{t.shortname}}
+          </p>
+          <p class="md-subhead">
+            {{t.title}}
+          </p>
+
+          <p
+            class="md-body-1"
+            md-colors="{background: 'blue-grey-50'}"
+            ng-if="t.description"
+            layout-padding>
+            {{t.description}}
+          </p>
+        </div>
+
+        <md-card-actions>
+          <md-button aria-label="Submit new support request for {{t.shortname}}">
+            <md-icon>forward</md-icon>
+            Start
+          </md-button>
+        </md-card-actions>
+      </md-card-content>
+    </md-card>
+
+  </md-content>
+</div>

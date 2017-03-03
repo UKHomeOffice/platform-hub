@@ -70,6 +70,7 @@ RSpec.configure do |config|
 
 
   config.before :example, type: :controller do
+    @request.content_type = 'application/json'
     @request.set_header 'HTTP_ACCEPT', 'application/json, text/plain, */*'  # Default ACCEPT header used by AngularJS 1.x
   end
 

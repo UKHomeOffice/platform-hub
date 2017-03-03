@@ -1,0 +1,338 @@
+<div class="support-request-templates-form">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span ng-if="$ctrl.isNew">New Support Request Template</span>
+        <span ng-if="!$ctrl.isNew">Edit Support Request Template</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="$ctrl.ready && !$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout-padding>
+      <md-content>
+        <form name="$ctrl.templateForm" role="form" ng-submit="$ctrl.createOrUpdate()">
+
+          <div layout="row" flex>
+            <md-input-container class="md-block md-icon-float" flex>
+              <label for="shortname">Shortname:</label>
+              <input
+                name="shortname"
+                ng-model="$ctrl.template.shortname"
+                required
+                placeholder="A short and memorable name for this template, e.g. 'VPN Access'"
+                autofocus>
+              <div ng-messages="$ctrl.templateForm.shortname.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+            <md-button class="md-icon-button input-button-end" aria-label="info">
+              <md-icon>info</md-icon>
+              <md-tooltip md-direction="bottom">
+                This is the main label shown to users when they view the support request types available. Use the 'title' field below for a more descriptive title.
+              </md-tooltip>
+            </md-button>
+          </div>
+
+          <div layout="row" flex>
+            <md-input-container class="md-block md-icon-float" flex>
+              <label for="git_hub_repo">Target GitHub repository URL:</label>
+              <input
+                type="url"
+                name="git_hub_repo"
+                ng-model="$ctrl.template.git_hub_repo"
+                required
+                placeholder="e.g. https://github.com/ACMECorp/support-requests">
+              <div ng-messages="$ctrl.templateForm.git_hub_repo.$error">
+                <div ng-message="required">This is required.</div>
+                <div ng-message="url">Not a valid URL.</div>
+              </div>
+            </md-input-container>
+            <md-button class="md-icon-button input-button-end" aria-label="info">
+              <md-icon>info</md-icon>
+              <md-tooltip md-direction="bottom">
+                The GitHub repository in which an issue will be submitted when using this support request template.
+              </md-tooltip>
+            </md-button>
+          </div>
+
+          <md-input-container class="md-block">
+            <label for="title">Title:</label>
+            <input
+              name="title"
+              ng-model="$ctrl.template.title"
+              required
+              placeholder="A more descriptive title for this kind of support request">
+            <div ng-messages="$ctrl.templateForm.title.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <md-input-container class="md-block">
+            <label for="description">Description:</label>
+            <textarea
+              name="description"
+              ng-model="$ctrl.template.description"
+              rows="4"
+              required
+              md-select-on-focus>
+            </textarea>
+            <div ng-messages="$ctrl.templateForm.description.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <div>
+
+            <h4 class="md-subhead">Form spec</h4>
+
+            <div layout="row" flex>
+              <md-input-container class="md-block md-icon-float" flex>
+                <label for="form_spec-help_text">Form help text:</label>
+                <textarea
+                  name="form_spec-help_text"
+                  ng-model="$ctrl.template.form_spec.help_text"
+                  rows="4"
+                  md-select-on-focus>
+                </textarea>
+              </md-input-container>
+              <md-button class="md-icon-button input-button-end" aria-label="info">
+                <md-icon>info</md-icon>
+                <md-tooltip md-direction="bottom">
+                  The help text shown to the user when filling out the form for this type of support request.
+                </md-tooltip>
+              </md-button>
+            </div>
+
+            <div>
+
+              <label class="md-body-2">
+                Form fields:
+                ({{$ctrl.template.form_spec.fields.length}})
+              </label>
+
+              <p class="none-text" ng-if="$ctrl.template.form_spec.fields.length == 0">
+                No form fields specified yet
+              </p>
+
+              <md-card ng-repeat="field in $ctrl.template.form_spec.fields">
+                <md-card-content>
+
+                  <div layout="row" flex>
+                    <md-input-container class="md-block md-icon-float" flex>
+                      <label>Type of field:</label>
+                      <md-select ng-model="field.field_type" required>
+                        <md-option
+                          ng-repeat="o in $ctrl.formFieldTypes"
+                          value="{{o}}">
+                          {{o}}
+                        </md-option>
+                      </md-select>
+                    </md-input-container>
+                    <md-button
+                      class="md-icon-button input-button-end"
+                      aria-label="Remove this form field"
+                      ng-click="$ctrl.removeFormField($index)">
+                      <md-icon md-colors="{color: 'accent'}">delete</md-icon>
+                      <md-tooltip md-direction="bottom">
+                        Remove this form field
+                      </md-tooltip>
+                    </md-button>
+                  </div>
+
+                  <md-input-container class="md-block">
+                    <md-checkbox
+                      name="field{{$index}}-required"
+                      ng-model="field.required"
+                      aria-label="Is this form field required to be filled in?">
+                      Required to be filled in?
+                    </md-checkbox>
+                  </md-input-container>
+
+                  <div layout="row" flex>
+                    <md-input-container class="md-block md-icon-float" flex>
+                      <label for="field{{$index}}-id">ID:</label>
+                      <input
+                        name="field{{$index}}-id"
+                        ng-model="field.id"
+                        ng-pattern="$ctrl.fieldIdRegex"
+                        placeholder="e.g. usernameRequested"
+                        required>
+                      <div ng-messages="$ctrl.templateForm['field' + $index + '-id'].$error">
+                        <div ng-message="required">This is required.</div>
+                      </div>
+                    </md-input-container>
+                    <md-button class="md-icon-button input-button-end" aria-label="info">
+                      <md-icon>info</md-icon>
+                      <md-tooltip md-direction="bottom">
+                        This is an internal ID for the field. Can only contain letters and numbers.
+                      </md-tooltip>
+                    </md-button>
+                  </div>
+
+                  <div layout="row" flex>
+                    <md-input-container class="md-block md-icon-float" flex>
+                      <label for="field{{$index}}-label">Label:</label>
+                      <input
+                        name="field{{$index}}-label"
+                        ng-model="field.label"
+                        placeholder="e.g. Username requested"
+                        required>
+                      <div ng-messages="$ctrl.templateForm['field' + $index + '-label'].$error">
+                        <div ng-message="required">This is required.</div>
+                      </div>
+                    </md-input-container>
+                    <md-button class="md-icon-button input-button-end" aria-label="info">
+                      <md-icon>info</md-icon>
+                      <md-tooltip md-direction="bottom">
+                        Descriptive label shown to users when filling in this form field.
+                      </md-tooltip>
+                    </md-button>
+                  </div>
+
+                  <div layout="row" flex>
+                    <md-input-container class="md-block md-icon-float" flex>
+                      <label for="field{{$index}}-placeholder">Placeholder text:</label>
+                      <input
+                        name="field{{$index}}-placeholder"
+                        ng-model="field.placeholder">
+                    </md-input-container>
+                    <md-button class="md-icon-button input-button-end" aria-label="info">
+                      <md-icon>info</md-icon>
+                      <md-tooltip md-direction="bottom">
+                        Text shown within the form field. Use this to provide an example of the kind of input you'd like to see. Only used for text input fields.
+                      </md-tooltip>
+                    </md-button>
+                  </div>
+
+                  <div layout="row" flex>
+                    <md-input-container class="md-block md-icon-float" flex>
+                      <label for="field{{$index}}-help_text">Help text:</label>
+                      <textarea
+                        name="field{{$index}}-help_text"
+                        ng-model="field.help_text"
+                        rows="4"
+                        md-select-on-focus>
+                      </textarea>
+                    </md-input-container>
+                    <md-button class="md-icon-button input-button-end" aria-label="info">
+                      <md-icon>info</md-icon>
+                      <md-tooltip md-direction="bottom">
+                        The help text shown to the user when they are filling out the form for this type of support request.
+                      </md-tooltip>
+                    </md-button>
+                  </div>
+
+                  <div layout="row" flex ng-if="field.field_type == 'select'">
+                    <md-input-container class="md-block md-icon-float" flex>
+                      <label for="field{{$index}}-options">Options for the user to select from:</label>
+                      <textarea
+                        name="field{{$index}}-options"
+                        ng-model="field.options"
+                        rows="4"
+                        placeholder="Add comma separated values here"
+                        ng-required="field.field_type == 'select'"
+                        md-select-on-focus>
+                      </textarea>
+                    </md-input-container>
+                    <md-button class="md-icon-button input-button-end" aria-label="info">
+                      <md-icon>info</md-icon>
+                      <md-tooltip md-direction="bottom">
+                        A list of options the user can select for this form field.
+                      </md-tooltip>
+                    </md-button>
+                  </div>
+
+                  <md-input-container class="md-block" ng-if="field.field_type == 'select'">
+                    <md-checkbox
+                      name="field{{$index}}-multiple"
+                      ng-model="field.multiple"
+                      aria-label="Should the user be allowed to select multiple values from the options?">
+                      Alow multiple values to be selected from the options?
+                    </md-checkbox>
+                  </md-input-container>
+
+                </md-card-content>
+              </md-card>
+
+              <div>
+                <md-button
+                  class="md-raised"
+                  aria-label="Add new form field"
+                  ng-click="$ctrl.addFormField()">
+                  <md-icon>add_box</md-icon>
+                  Add new form field
+                </md-button>
+              </div>
+
+            </div>
+
+          </div>
+
+          <br />
+          <br />
+
+          <div>
+
+            <h4 class="md-subhead">GitHub issue spec</h4>
+
+            <div layout="row" flex>
+              <md-input-container class="md-block md-icon-float" flex>
+                <label for="git_hub_issue_spec-title_text">Issue title text:</label>
+                <input
+                  name="git_hub_issue_spec-title_text"
+                  ng-model="$ctrl.template.git_hub_issue_spec.title_text"
+                  required>
+                <div ng-messages="$ctrl.templateForm['git_hub_issue_spec-title_text'].$error">
+                  <div ng-message="required">This is required.</div>
+                </div>
+              </md-input-container>
+              <md-button class="md-icon-button input-button-end" aria-label="info">
+                <md-icon>info</md-icon>
+                <md-tooltip md-direction="bottom">
+                  This will be the title of the GitHub issue created when using this template.
+                </md-tooltip>
+              </md-button>
+            </div>
+
+            <div layout="row" flex>
+              <md-input-container class="md-block md-icon-float" flex>
+                <label for="git_hub_issue_spec-body_text_preamble">Issue body text preamble:</label>
+                <textarea
+                  name="git_hub_issue_spec-body_text_preamble"
+                  ng-model="$ctrl.template.git_hub_issue_spec.body_text_preamble"
+                  rows="4"
+                  md-select-on-focus>
+                </textarea>
+              </md-input-container>
+              <md-button class="md-icon-button input-button-end" aria-label="info">
+                <md-icon>info</md-icon>
+                <md-tooltip md-direction="bottom">
+                  This text will be placed at the beginning of the GitHub issue's description, before the rest of the data from the specified form fields.
+                </md-tooltip>
+              </md-button>
+            </div>
+
+          </div>
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="$ctrl.saving || $ctrl.templateForm.$invalid"
+              ng-class="{'md-raised': ($ctrl.templateForm.$dirty && $ctrl.templateForm.$valid) }"
+              aria-label="Save support request template">
+              <span ng-if="$ctrl.isNew">Create</span>
+              <span ng-if="!$ctrl.isNew">Update</span>
+            </md-button>
+            <md-button ui-sref="help.support.request-templates.list" ng-disabled="$ctrl.saving">Cancel</md-button>
+          </div>
+        </form>
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

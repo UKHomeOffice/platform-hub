@@ -51,6 +51,7 @@ GEM
     cancancan (1.15.0)
     case_transform (0.2)
       activesupport
+    classy_hash (0.2.0)
     composite_primary_keys (9.0.6)
       activerecord (~> 5.0.0)
     concurrent-ruby (1.0.5)
@@ -185,6 +186,7 @@ DEPENDENCIES
   active_model_serializers (~> 0.10.0)
   byebug
   cancancan (~> 1.15)
+  classy_hash (~> 0.2.0)
   composite_primary_keys (~> 9.0, >= 9.0.6)
   dotenv-rails (~> 2.2, >= 2.2.0)
   factory_girl_rails (~> 4.8)

@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 9.6.1
--- Dumped by pg_dump version 9.6.1
+-- Dumped by pg_dump version 9.6.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -173,6 +173,24 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: support_request_templates; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE support_request_templates (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    shortname character varying NOT NULL,
+    slug character varying NOT NULL,
+    git_hub_repo character varying NOT NULL,
+    title character varying NOT NULL,
+    description text NOT NULL,
+    form_spec json NOT NULL,
+    git_hub_issue_spec json NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -232,6 +250,14 @@ ALTER TABLE ONLY projects
 
 ALTER TABLE ONLY schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: support_request_templates support_request_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY support_request_templates
+    ADD CONSTRAINT support_request_templates_pkey PRIMARY KEY (id);
 
 
 --
@@ -341,6 +367,27 @@ CREATE UNIQUE INDEX index_projects_on_slug ON projects USING btree (slug);
 
 
 --
+-- Name: index_support_request_templates_on_git_hub_repo; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_support_request_templates_on_git_hub_repo ON support_request_templates USING btree (git_hub_repo);
+
+
+--
+-- Name: index_support_request_templates_on_shortname; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_support_request_templates_on_shortname ON support_request_templates USING btree (shortname);
+
+
+--
+-- Name: index_support_request_templates_on_slug; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_support_request_templates_on_slug ON support_request_templates USING btree (slug);
+
+
+--
 -- Name: index_users_on_role; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -360,7 +407,7 @@ CREATE INDEX users_search_idx ON users USING gin (name gin_trgm_ops);
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES
+INSERT INTO "schema_migrations" (version) VALUES
 ('20170118143012'),
 ('20170118150822'),
 ('20170118151109'),
@@ -369,6 +416,7 @@ INSERT INTO schema_migrations (version) VALUES
 ('20170201101239'),
 ('20170201102040'),
 ('20170209100930'),
-('20170221134425');
+('20170221134425'),
+('20170301114421');
 
 
