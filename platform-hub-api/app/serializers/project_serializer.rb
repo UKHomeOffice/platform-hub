@@ -13,4 +13,8 @@ class ProjectSerializer < ActiveModel::Serializer
   def members_count
     object.memberships.count
   end
+
+  def id
+    object.friendly_id
+  end
 end
