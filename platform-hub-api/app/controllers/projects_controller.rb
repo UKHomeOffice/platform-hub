@@ -22,13 +22,13 @@ class ProjectsController < ApiJsonController
   def create
     @project = Project.new(project_params)
 
-    AuditService.log(
-      context: audit_context,
-      action: 'create',
-      auditable: @project
-    )
-
     if @project.save
+      AuditService.log(
+        context: audit_context,
+        action: 'create',
+        auditable: @project
+      )
+
       render json: @project, status: :created
     else
       render json: @project.errors, status: :unprocessable_entity
