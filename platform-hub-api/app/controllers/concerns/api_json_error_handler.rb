@@ -16,7 +16,12 @@ module ApiJsonErrorHandler
     render json: error_doc, status: status
   end
 
+  def render_model_errors errors
+    render_error errors.full_messages.to_sentence, :unprocessable_entity
+  end
+
   def not_found
     render_error 'Resource not found', :not_found
   end
+
 end

@@ -31,7 +31,7 @@ class ProjectsController < ApiJsonController
 
       render json: @project, status: :created
     else
-      render json: @project.errors, status: :unprocessable_entity
+      render_model_errors @project.errors
     end
   end
 
@@ -46,7 +46,7 @@ class ProjectsController < ApiJsonController
 
       render json: @project
     else
-      render json: @project.errors, status: :unprocessable_entity
+      render_model_errors @project.errors
     end
   end
 
@@ -163,7 +163,7 @@ class ProjectsController < ApiJsonController
 
         render json: membership, serializer: ProjectMembershipSerializer
       else
-        render json: membership.errors, status: :unprocessable_entity
+        render_model_errors membership.errors
       end
     else
       render_error 'User is not a team member of the project', :bad_request

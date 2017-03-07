@@ -126,6 +126,25 @@ RSpec.describe ProjectsController, type: :controller do
           expect(audit.user.id).to eq current_user_id
         end
 
+        context 'with existing projects' do
+          before do
+            @existing_project = create :project
+          end
+
+          it 'fails to create a new project with a shortname that\'s already taken' do
+            post_data_with_same_shortname = {
+              project: post_data[:project].clone.tap { |h| h[:shortname] = @existing_project.shortname }
+            }
+            expect(Project.count).to eq 1
+            expect(Audit.count).to eq 0
+            post :create, params: post_data_with_same_shortname
+            expect(response).to have_http_status(422)
+            expect(json_response['error']['message']).not_to be_empty
+            expect(Project.count).to eq 1
+            expect(Audit.count).to eq 0
+          end
+        end
+
       end
 
     end
