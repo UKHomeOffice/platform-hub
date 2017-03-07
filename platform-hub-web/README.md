@@ -32,6 +32,11 @@ The simplest way to set this up is: `npm install -g yarn@0.20.3` though see the 
 yarn
 ```
 
+NOTE: If you're experiencing issues pulling dependencies from github you might need to update your git configuration: 
+```
+git config --global url."https://".insteadOf git://
+```
+
 #### Common tasks
 
 - `yarn run serve` – runs a local dev server to serve the app in dev mode (with auto reloading)

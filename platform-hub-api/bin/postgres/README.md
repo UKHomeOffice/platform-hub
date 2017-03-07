@@ -6,7 +6,7 @@ Intended for local dev and not for production environments!
 
 Uses a local data volume to store the pgdata.
 
-See `env.sh` for details of the set up.
+See `.env` for details of the set up.
 
 ## Prequisites
 
