@@ -77,10 +77,13 @@ class UsersController < ApiJsonController
         )
         head :no_content
       else
-        render_error "Failed to Github #{agent_action} the user - the GitHub API may be down", :service_unavailable
+        render_error "Failed to #{agent_action} the user to GitHub - the GitHub API may be down", :service_unavailable
       end
     rescue Agents::GitHubAgentService::Errors::IdentityMissing
       render_error 'User does not have a GitHub identity connected yet', :bad_request
+    rescue => e
+      logger.error "Failed to call the GitHub API during the #{action_name} action. Exception type: #{e.class.name}. Message: #{e.message}"
+      render_error 'Unknown error whilst calling the GitHub API', :service_unavailable
     end
   end
 
