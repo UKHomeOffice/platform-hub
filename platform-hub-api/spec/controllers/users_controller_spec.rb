@@ -245,13 +245,13 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe 'POST #onboard_github' do
-    let :gitHubAgentService do
+    let :git_hub_agent_service do
       instance_double('Agents::GitHubAgentService')
     end
 
     before do
       @user = create :user
-      allow(Agents::GitHubAgentService).to receive(:new).with(any_args).and_return(gitHubAgentService)
+      allow(Agents::GitHubAgentService).to receive(:new).with(any_args).and_return(git_hub_agent_service)
     end
 
     it_behaves_like 'unauthenticated not allowed'  do
@@ -272,7 +272,7 @@ RSpec.describe UsersController, type: :controller do
 
         context 'when user does not have a GitHub identity connected' do
           it 'should return a 400 Bad Request with an appropriate error message' do
-            expect(gitHubAgentService).to receive(:onboard_user).with(@user).and_raise(Agents::GitHubAgentService::Errors::IdentityMissing)
+            expect(git_hub_agent_service).to receive(:onboard_user).with(@user).and_raise(Agents::GitHubAgentService::Errors::IdentityMissing)
             get :onboard_github, params: { id: @user.id }
             expect(response).to have_http_status(400)
             expect(json_response['error']['message']).to eq 'User does not have a GitHub identity connected yet'
@@ -281,7 +281,7 @@ RSpec.describe UsersController, type: :controller do
 
         context 'when user has a GitHub identity connected' do
           it 'should onboard the user and return a success response with no content' do
-            expect(gitHubAgentService).to receive(:onboard_user).with(@user).and_return(true)
+            expect(git_hub_agent_service).to receive(:onboard_user).with(@user).and_return(true)
             get :onboard_github, params: { id: @user.id }
             expect(response).to have_http_status(204)
           end
@@ -297,7 +297,7 @@ RSpec.describe UsersController, type: :controller do
         end
 
         it 'should onboard the user and return a success response with no content' do
-          expect(gitHubAgentService).to receive(:onboard_user).with(@user).and_return(true)
+          expect(git_hub_agent_service).to receive(:onboard_user).with(@user).and_return(true)
           get :onboard_github, params: { id: @user.id }
           expect(response).to have_http_status(204)
         end
