@@ -22,7 +22,7 @@ RSpec.describe ProjectsController, type: :controller do
       end
 
       let :all_project_ids do
-        @projects.map(&:id)
+        @projects.map(&:friendly_id)
       end
 
       it 'should return a list of all projects' do
@@ -42,7 +42,7 @@ RSpec.describe ProjectsController, type: :controller do
 
     it_behaves_like 'unauthenticated not allowed'  do
       before do
-        get :show, params: { id: @project.id }
+        get :show, params: { id: @project.friendly_id }
       end
     end
 
@@ -50,17 +50,17 @@ RSpec.describe ProjectsController, type: :controller do
 
       context 'for a non-existent project' do
         it 'should return a 404' do
-          get :show, params: { id: 'foo' }
+          get :show, params: { id: 'unknown' }
           expect(response).to have_http_status(404)
         end
       end
 
       context 'for a project that exists' do
         it 'should return the specified project resource' do
-          get :show, params: { id: @project.id }
+          get :show, params: { id: @project.friendly_id }
           expect(response).to be_success
           expect(json_response).to eq({
-            'id' => @project.id,
+            'id' => @project.friendly_id,
             'shortname' => @project.shortname,
             'name' => @project.name,
             'description' => @project.description,
@@ -107,9 +107,11 @@ RSpec.describe ProjectsController, type: :controller do
           post :create, params: post_data
           expect(response).to be_success
           expect(Project.count).to eq 1
-          expect(Project.first.id).to eq json_response['id']
+          project = Project.first
+          new_project_external_id = project.friendly_id
+          new_project_internal_id = project.id
           expect(json_response).to eq({
-            'id' => json_response['id'],
+            'id' => new_project_external_id,
             'shortname' => post_data[:project][:shortname],
             'name' => post_data[:project][:name],
             'description' => post_data[:project][:description],
@@ -120,8 +122,27 @@ RSpec.describe ProjectsController, type: :controller do
           expect(Audit.count).to eq 1
           audit = Audit.first
           expect(audit.action).to eq 'create'
-          expect(audit.auditable.id).to eq json_response['id']
+          expect(audit.auditable.id).to eq new_project_internal_id
           expect(audit.user.id).to eq current_user_id
+        end
+
+        context 'with existing projects' do
+          before do
+            @existing_project = create :project
+          end
+
+          it 'fails to create a new project with a shortname that\'s already taken' do
+            post_data_with_same_shortname = {
+              project: post_data[:project].clone.tap { |h| h[:shortname] = @existing_project.shortname }
+            }
+            expect(Project.count).to eq 1
+            expect(Audit.count).to eq 0
+            post :create, params: post_data_with_same_shortname
+            expect(response).to have_http_status(422)
+            expect(json_response['error']['message']).not_to be_empty
+            expect(Project.count).to eq 1
+            expect(Audit.count).to eq 0
+          end
         end
 
       end
@@ -132,7 +153,7 @@ RSpec.describe ProjectsController, type: :controller do
   describe 'PUT #update' do
     let :put_data do
       {
-        id: @project.id,
+        id: @project.friendly_id,
         project: {
           shortname: 'foo',
           name: 'foobar'

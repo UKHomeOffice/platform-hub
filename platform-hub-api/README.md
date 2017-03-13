@@ -64,3 +64,17 @@ See the [Rails CLI guide](http://guides.rubyonrails.org/command_line.html) for d
 - We force bind the `bin/rails server` to `0.0.0.0` so that we bind to all adapters and thus allow access via the loopback alias from docker containers – see `platform-hub-auth-proxy` README for more details.
 - As much as possible, we try to break out coherent, well isolated and single responsibility tasks/logic into "services" in the `app/services` folder.
 - The services in `app/services/agents/*` are intended to provide "root" access to external services like GitHub, and thus should be used cautiously and be well tested wherever used!
+
+
+### Troubleshooting
+
+#### Test database issues
+
+If you experience issues with your tests starting up due to a database error (e.g. a `ActiveRecord::NoEnvironmentInSchemaError` that often occurs after migrating to a newer schema), then recreate the whole test db with:
+
+```bash
+bin/postgres/console -c "drop database phub_test"
+bundle exec rake db:setup
+```
+
+Note: make sure your development db is fully up to date before running this (i.e. make sure all migrations have run, with `bin/rails db:migrate`) so that the test db has the latest schema.
