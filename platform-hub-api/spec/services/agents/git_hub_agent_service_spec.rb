@@ -14,7 +14,7 @@ describe Agents::GitHubAgentService, type: :service do
 
   let(:github_username) { 'foody_mcfooface' }
 
-  let(:github_identity) { double('identity', external_username: github_username) }
+  let(:github_identity) { instance_double('Identity', external_username: github_username) }
 
   before do
     expect(Octokit::Client).to receive(:new).with(access_token: token).and_return(git_hub_client)
@@ -25,7 +25,7 @@ describe Agents::GitHubAgentService, type: :service do
     )
   end
 
-  describe 'onboard_user' do
+  describe '#onboard_user' do
     context 'when user does not have a connected GitHub identity' do
       before do
         expect(user).to receive(:identity).with('github').and_return(nil)
@@ -50,7 +50,7 @@ describe Agents::GitHubAgentService, type: :service do
     end
   end
 
-  describe 'offboard_user' do
+  describe '#offboard_user' do
     context 'when user does not have a connected GitHub identity' do
       before do
         expect(user).to receive(:identity).with('github').and_return(nil)
