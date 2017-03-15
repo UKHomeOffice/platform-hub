@@ -62,6 +62,18 @@
             </md-sidemenu-button>
           </md-sidemenu-group>
 
+          <md-sidemenu-group>
+            <md-subheader class="md-no-sticky">Help &amp; Support</md-subheader>
+
+            <md-sidemenu-button
+              ng-repeat="item in $ctrl.helpNavStates"
+              ui-sref="{{item.state}}"
+              ui-sref-active="{ 'active': item.activeState || item.state }">
+              <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
+              <span>{{item.title}}</span>
+            </md-sidemenu-button>
+          </md-sidemenu-group>
+
           <md-sidemenu-group ng-if="$ctrl.isAdmin">
             <md-subheader class="md-no-sticky">Admin</md-subheader>
 

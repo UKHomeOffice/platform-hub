@@ -10,7 +10,7 @@ class Project < ApplicationRecord
 
   validates :shortname,
     presence: true,
-    uniqueness: true
+    uniqueness: { case_sensitive: false }
 
   validates :name,
     presence: true

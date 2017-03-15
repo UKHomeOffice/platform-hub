@@ -189,6 +189,7 @@ RSpec.describe ProjectsController, type: :controller do
           expect(Project.count).to eq 1
           expect(Audit.count).to eq 0
           put :update, params: put_data
+          expect(response).to be_success
           expect(Project.count).to eq 1
           updated = Project.first
           expect(updated.shortname).to eq put_data[:project][:shortname]

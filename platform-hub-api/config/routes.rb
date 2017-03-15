@@ -44,6 +44,12 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :support_request_templates do
+      get '/form_field_types', to: 'support_request_templates#form_field_types', on: :collection
+    end
+
+    resources :support_requests, only: [ :create ]
+
   end
 
 end

@@ -1,0 +1,69 @@
+<div class="support-request-templates-list">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>All Support Request Templates</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        aria-label="Add new support request template"
+        ui-sref="help.support.request-templates.new">
+        <md-icon>add_box</md-icon>
+        New
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.templates.length > 0">
+
+    <md-card ng-repeat="t in $ctrl.templates track by t.id">
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            {{t.shortname}}
+          </span>
+          <span class="md-subhead">
+            {{t.title}}
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content>
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Target GitHub repo:
+          </span>
+          {{t.git_hub_repo}}
+        </p>
+
+        <p class="md-body-1">
+          <ng-pluralize
+            count="t.form_spec.fields.length"
+            when="{'0': 'No form fields specified',
+                   '1': '1 form field specified',
+                   'other': '{} form fields specified'}">
+          </ng-pluralize>
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            GitHub issue title:
+          </span>
+          {{t.git_hub_issue_spec.title_text}}
+        </p>
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          class="md-primary"
+          aria-label="View details for this support request template"
+          ui-sref="help.support.request-templates.detail({id: t.id})">
+          Details
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+</div>

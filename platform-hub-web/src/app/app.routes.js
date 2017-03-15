@@ -1,5 +1,12 @@
+import {
+  Faq,
+  SupportRequestsForm,
+  SupportRequestsOverview,
+  SupportRequestTemplatesDetail,
+  SupportRequestTemplatesForm,
+  SupportRequestTemplatesList
+} from './help/help.module';
 import {AppHome} from './home/home.module';
-import {HelpCentre} from './help/help.module';
 import {IdentitiesManager} from './identities/identities.module';
 import {
   ProjectsForm,
@@ -32,17 +39,17 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
     .state('projects', {
       abstract: true,
       url: '/projects',
-      template: '<ui-view/>'
+      template: '<ui-view></ui-view>'
     })
       .state('projects.list', {
-        url: '/',
+        url: '/list',
         component: ProjectsList,
         data: {
           authenticate: true
         }
       })
       .state('projects.detail', {
-        url: '/:id',
+        url: '/detail/:id',
         component: ProjectsDetail,
         resolve: {
           transition: '$transition$'
@@ -60,7 +67,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         }
       })
       .state('projects.edit', {
-        url: '/:id/edit',
+        url: '/edit/:id',
         component: ProjectsForm,
         resolve: {
           transition: '$transition$'
@@ -79,10 +86,85 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
       }
     })
     .state('help', {
+      abstract: true,
       url: '/help',
-      component: HelpCentre,
-      data: {
-        authenticate: true
-      }
-    });
+      template: '<ui-view></ui-view>'
+    })
+      .state('help.faq', {
+        url: '/faq',
+        component: Faq,
+        data: {
+          authenticate: true
+        }
+      })
+      .state('help.support', {
+        abstract: true,
+        url: '/support',
+        template: '<ui-view></ui-view>'
+      })
+        .state('help.support.requests', {
+          abstract: true,
+          url: '/requests',
+          template: '<ui-view></ui-view>'
+        })
+          .state('help.support.requests.overview', {
+            url: '/overview',
+            component: SupportRequestsOverview,
+            data: {
+              authenticate: true
+            }
+          })
+          .state('help.support.requests.new', {
+            url: '/new/:id',
+            component: SupportRequestsForm,
+            resolve: {
+              transition: '$transition$'
+            },
+            data: {
+              authenticate: true
+            }
+          })
+        .state('help.support.request-templates', {
+          abstract: true,
+          url: '/request-templates',
+          template: '<ui-view></ui-view>'
+        })
+          .state('help.support.request-templates.list', {
+            url: '/list',
+            component: SupportRequestTemplatesList,
+            data: {
+              authenticate: true,
+              rolePermitted: 'admin'
+            }
+          })
+          .state('help.support.request-templates.detail', {
+            url: '/detail/:id',
+            component: SupportRequestTemplatesDetail,
+            resolve: {
+              transition: '$transition$'
+            },
+            data: {
+              authenticate: true,
+              rolePermitted: 'admin'
+            }
+          })
+          .state('help.support.request-templates.new', {
+            url: '/new',
+            component: SupportRequestTemplatesForm,
+            data: {
+              authenticate: true,
+              rolePermitted: 'admin'
+            }
+          })
+          .state('help.support.request-templates.edit', {
+            url: '/edit/:id',
+            component: SupportRequestTemplatesForm,
+            resolve: {
+              transition: '$transition$'
+            },
+            data: {
+              authenticate: true,
+              rolePermitted: 'admin'
+            }
+          });
 };

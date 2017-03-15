@@ -1,3 +1,5 @@
+/* eslint camelcase: 0, object-shorthand: 0 */
+
 export const hubApiService = function ($rootScope, $http, $q, logger, events, apiEndpoint, _) {
   'ngInject';
 
@@ -13,9 +15,9 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.revokeAdmin = revokeAdmin;
   service.getProjects = buildCollectionFetcher('projects');
   service.getProject = buildResourceFetcher('projects');
-  service.createProject = createProject;
-  service.updateProject = updateProject;
-  service.deleteProject = deleteProject;
+  service.createProject = buildResourceCreator('projects');
+  service.updateProject = buildResourceUpdater('projects');
+  service.deleteProject = buildResourceDeletor('projects');
   service.getProjectMemberships = getProjectMemberships;
   service.addProjectMembership = addProjectMembership;
   service.removeProjectMembership = removeProjectMembership;
@@ -23,6 +25,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.projectUnsetRole = projectUnsetRole;
   service.userOnboardGitHub = userOnboardGitHub;
   service.userOffboardGitHub = userOffboardGitHub;
+  service.getSupportRequestTemplates = buildCollectionFetcher('support_request_templates');
+  service.getSupportRequestTemplate = buildResourceFetcher('support_request_templates');
+  service.createSupportRequestTemplate = buildResourceCreator('support_request_templates');
+  service.updateSupportRequestTemplate = buildResourceUpdater('support_request_templates');
+  service.deleteSupportRequestTemplate = buildResourceDeletor('support_request_templates');
+  service.getSupportRequestTemplateFormFieldTypes = getSupportRequestTemplateFormFieldTypes;
+  service.createSupportRequest = createSupportRequest;
 
   return service;
 
@@ -52,7 +61,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     return $http
       .delete(`${apiEndpoint}/me/identities/${provider}`)
       .catch(response => {
-        logger.error(`Failed to delete the identity for '${provider}' – the API might be down. Try again later.`);
+        logger.error(buildErrorMessageFromResponse(`Failed to delete the identity for '${provider}'`, response));
         return $q.reject(response);
       });
   }
@@ -64,7 +73,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         return response.data;
       })
       .catch(response => {
-        logger.error('Failed to search for users – the API might be down. Try again later.');
+        logger.error(buildErrorMessageFromResponse('Failed to search for users', response));
         return $q.reject(response);
       });
   }
@@ -73,7 +82,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     return $http
       .post(`${apiEndpoint}/users/${userId}/make_admin`)
       .catch(response => {
-        logger.error('Failed to make the user an admin – the API might be down. Try again later.');
+        logger.error(buildErrorMessageFromResponse('Failed to make the user an admin', response));
         return $q.reject(response);
       });
   }
@@ -82,40 +91,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     return $http
       .post(`${apiEndpoint}/users/${userId}/revoke_admin`)
       .catch(response => {
-        logger.error('Failed to revoke admin status for the – the API might be down. Try again later.');
-        return $q.reject(response);
-      });
-  }
-
-  function createProject(fields) {
-    return $http
-      .post(`${apiEndpoint}/projects`, fields)
-      .then(response => {
-        return response.data;
-      })
-      .catch(response => {
-        logger.error('Failed to create a new project. The shortname provided may be taken, or the API might be down.');
-        return $q.reject(response);
-      });
-  }
-
-  function updateProject(id, fields) {
-    return $http
-      .put(`${apiEndpoint}/projects/${id}`, fields)
-      .then(response => {
-        return response.data;
-      })
-      .catch(response => {
-        logger.error('Failed to update the project. The shortname provided may be taken, or the API might be down.');
-        return $q.reject(response);
-      });
-  }
-
-  function deleteProject(projectId) {
-    return $http
-      .delete(`${apiEndpoint}/projects/${projectId}`)
-      .catch(response => {
-        logger.error('Failed to delete project – the API might be down. Try again later.');
+        logger.error(buildErrorMessageFromResponse('Failed to revoke admin status', response));
         return $q.reject(response);
       });
   }
@@ -127,7 +103,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         return response.data;
       })
       .catch(response => {
-        logger.error('Failed to fetch memberships for project – the API might be down. Try again later.');
+        logger.error(buildErrorMessageFromResponse('Failed to fetch memberships for project', response));
         return $q.reject(response);
       });
   }
@@ -139,7 +115,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         return response.data;
       })
       .catch(response => {
-        logger.error('Failed to add team member to project – the API might be down. Try again later.');
+        logger.error(buildErrorMessageFromResponse('Failed to add team member to project', response));
         return $q.reject(response);
       });
   }
@@ -148,7 +124,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     return $http
       .delete(`${apiEndpoint}/projects/${projectId}/memberships/${userId}`)
       .catch(response => {
-        logger.error('Failed to remove team member from project – the API might be down. Try again later.');
+        logger.error(buildErrorMessageFromResponse('Failed to remove team member from project', response));
         return $q.reject(response);
       });
   }
@@ -160,7 +136,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         return response.data;
       })
       .catch(response => {
-        logger.error('Failed to set project team role – the API might be down. Try again later.');
+        logger.error(buildErrorMessageFromResponse('Failed to set project team role', response));
         return $q.reject(response);
       });
   }
@@ -172,7 +148,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         return response.data;
       })
       .catch(response => {
-        logger.error('Failed to unset project team role – the API might be down. Try again later.');
+        logger.error(buildErrorMessageFromResponse('Failed to unset project team role', response));
         return $q.reject(response);
       });
   }
@@ -181,11 +157,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     return $http
       .post(`${apiEndpoint}/users/${userId}/onboard_github`)
       .catch(response => {
-        let message = response.error.message;
-        if (!message) {
-          message = 'Failed to onboard user on to GitHub – the API might be down. Try again later.';
-        }
-        logger.error(message);
+        logger.error(buildErrorMessageFromResponse('Failed to onboard user to GitHub ', response));
         return $q.reject(response);
       });
   }
@@ -194,11 +166,34 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     return $http
       .post(`${apiEndpoint}/users/${userId}/offboard_github`)
       .catch(response => {
-        let message = response.error.message;
-        if (!message) {
-          message = 'Failed to onboard user on to GitHub – the API might be down. Try again later.';
-        }
-        logger.error(message);
+        logger.error(buildErrorMessageFromResponse('Failed to offboard user from GitHub', response));
+        return $q.reject(response);
+      });
+  }
+
+  function getSupportRequestTemplateFormFieldTypes() {
+    return $http
+      .get(`${apiEndpoint}/support_request_templates/form_field_types`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to fetch field types', response));
+        return $q.reject(response);
+      });
+  }
+
+  function createSupportRequest(templateId, data) {
+    return $http
+      .post(`${apiEndpoint}/support_requests`, {
+        template_id: templateId,
+        data: data
+      })
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to create support request', response));
         return $q.reject(response);
       });
   }
@@ -211,23 +206,71 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
           return response.data;
         })
         .catch(response => {
-          logger.error(`Failed to fetch ${name} – the API might be down. Try again later.`);
+          logger.error(buildErrorMessageFromResponse('Failed to fetch items', response));
           return $q.reject(response);
         });
     };
   }
 
-  function buildResourceFetcher(name) {
+  function buildResourceFetcher(resource) {
     return function (id) {
       return $http
-        .get(`${apiEndpoint}/${name}/${id}`)
+        .get(`${apiEndpoint}/${resource}/${id}`)
         .then(response => {
           return response.data;
         })
         .catch(response => {
-          logger.error('Failed to fetch item – the API might be down. Try again later.');
+          logger.error(buildErrorMessageFromResponse('Failed to fetch item', response));
           return $q.reject(response);
         });
     };
+  }
+
+  function buildResourceCreator(resource) {
+    return function (data) {
+      return $http
+        .post(`${apiEndpoint}/${resource}`, data)
+        .then(response => {
+          return response.data;
+        })
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse('Failed to create item', response));
+          return $q.reject(response);
+        });
+    };
+  }
+
+  function buildResourceUpdater(resource) {
+    return function (id, data) {
+      return $http
+        .put(`${apiEndpoint}/${resource}/${id}`, data)
+        .then(response => {
+          return response.data;
+        })
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse('Failed to update item', response));
+          return $q.reject(response);
+        });
+    };
+  }
+
+  function buildResourceDeletor(resource) {
+    return function (id) {
+      return $http
+      .delete(`${apiEndpoint}/${resource}/${id}`)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to delete item', response));
+        return $q.reject(response);
+      });
+    };
+  }
+
+  function buildErrorMessageFromResponse(prefix, response) {
+    const errorDetails = _.get(response.data, 'error.message');
+    let msg = prefix;
+    if (errorDetails) {
+      msg += `: ${errorDetails}`;
+    }
+    return msg;
   }
 };

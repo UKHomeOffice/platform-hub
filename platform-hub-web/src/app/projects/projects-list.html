@@ -30,18 +30,16 @@
       </md-card-title>
 
       <md-card-content>
-        <p ng-if="p.description">
+        <p class="md-body-1" ng-if="p.description">
           {{p.description}}
         </p>
-        <p>
-          <small>
-            <ng-pluralize
-              count="p.members_count"
-              when="{'0': 'No team members yet',
-                     '1': '1 team member',
-                     'other': '{} team members'}">
-            </ng-pluralize>
-          </small>
+        <p class="md-body-2">
+          <ng-pluralize
+            count="p.members_count"
+            when="{'0': 'No team members yet',
+                   '1': '1 team member',
+                   'other': '{} team members'}">
+          </ng-pluralize>
         </p>
       </md-card-content>
 

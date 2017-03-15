@@ -1,5 +1,7 @@
 class UsersController < ApiJsonController
 
+  include AgentsInitializer
+
   before_action :find_user, only: [ :show, :make_admin, :revoke_admin, :onboard_github, :offboard_github ]
 
   authorize_resource
@@ -65,7 +67,7 @@ class UsersController < ApiJsonController
 
   def handle_github_agent_request agent_action
     begin
-      success = gitHubAgentService.send "#{agent_action}_user", @user
+      success = git_hub_agent_service.send "#{agent_action}_user", @user
 
       if success
         AuditService.log(
@@ -75,19 +77,14 @@ class UsersController < ApiJsonController
         )
         head :no_content
       else
-        render_error "Failed to Github #{agent_action} the user - the GitHub API may be down", :service_unavailable
+        render_error "Failed to #{agent_action} the user to GitHub - the GitHub API may be down", :service_unavailable
       end
     rescue Agents::GitHubAgentService::Errors::IdentityMissing
       render_error 'User does not have a GitHub identity connected yet', :bad_request
+    rescue => e
+      logger.error "Failed to call the GitHub API during the #{action_name} action. Exception type: #{e.class.name}. Message: #{e.message}"
+      render_error 'Unknown error whilst calling the GitHub API', :service_unavailable
     end
-  end
-
-  def gitHubAgentService
-    @gitHubAgentService ||= Agents::GitHubAgentService.new(
-      token: Rails.application.secrets.agent_github_token,
-      org: Rails.application.secrets.agent_github_org,
-      main_team_id: Rails.application.secrets.agent_github_org_main_team_id
-    )
   end
 
 end

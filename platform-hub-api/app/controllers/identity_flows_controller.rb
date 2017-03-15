@@ -8,7 +8,7 @@ class IdentityFlowsController < AuthenticatedController
   def start_auth_flow
     # Initial step to initiate an auth flow;
     # can only be accessed if already authenticated
-    redirect_to gitHubIdentityService.authorize_url current_user
+    redirect_to git_hub_identity_service.authorize_url current_user
   end
 
   def callback
@@ -26,7 +26,7 @@ class IdentityFlowsController < AuthenticatedController
     end
 
     begin
-      identity = gitHubIdentityService.connect_identity code, state
+      identity = git_hub_identity_service.connect_identity code, state
 
       AuditService.log(
         context: audit_context,
@@ -50,8 +50,8 @@ class IdentityFlowsController < AuthenticatedController
 
   protected
 
-  def gitHubIdentityService
-    @gitHubIdentityService ||= GitHubIdentityService.new(
+  def git_hub_identity_service
+    @git_hub_identity_service ||= GitHubIdentityService.new(
       encryption_service: ShortLivedSymmetricEncryptionService.new(Rails.application.secrets.secret_key_base),
       client_id: Rails.application.secrets.github_client_id,
       client_secret: Rails.application.secrets.github_client_secret,
