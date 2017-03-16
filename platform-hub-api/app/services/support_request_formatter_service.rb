@@ -22,7 +22,9 @@ module SupportRequestFormatterService
       body_text_lines << "| #{spec['label']} | #{data[spec['id']] || '--'} |"
     end
 
-    Result.new title: template['git_hub_issue_spec']['title_text'], body: body_text_lines.join("\n");
+    title_text = template['git_hub_issue_spec']['title_text'] + " [#{submitter_text}]"
+
+    Result.new title: title_text, body: body_text_lines.join("\n");
   end
 
 
