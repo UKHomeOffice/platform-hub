@@ -28,10 +28,10 @@
           class="md-body-1"
           md-colors="{background: 'green-50'}"
           ng-if="$ctrl.issueUrl">
-          Your issue has been submitted!
+          Your support request has been submitted…
           <br />
-          See:
-          <a ng-href="{{$ctrl.issueUrl}}" target="_blank">{{$ctrl.issueUrl}}</a>
+          See the following GitHub issue for details and updates:
+          <strong><a ng-href="{{$ctrl.issueUrl}}" target="_blank">{{$ctrl.issueUrl}}</a></strong>
         </p>
 
         <form name="$ctrl.requestForm" role="form" ng-submit="$ctrl.sendRequest()" ng-if="!$ctrl.issueUrl">
