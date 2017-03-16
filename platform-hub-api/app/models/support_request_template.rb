@@ -71,6 +71,10 @@ class SupportRequestTemplate < ApplicationRecord
     }
   }.freeze
 
+  def self.git_hub_repos
+    SupportRequestTemplate.pluck(:git_hub_repo).uniq.sort
+  end
+
   private
 
   def check_schemas

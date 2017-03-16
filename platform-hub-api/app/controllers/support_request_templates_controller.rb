@@ -2,8 +2,8 @@ class SupportRequestTemplatesController < ApiJsonController
 
   before_action :find_support_request_template, only: [ :show, :update, :destroy ]
 
-  skip_authorization_check :only => [ :index, :show ]
-  authorize_resource except: [ :index, :show ]
+  skip_authorization_check :only => [ :index, :show, :form_field_types, :git_hub_repos ]
+  authorize_resource except: [ :index, :show, :form_field_types, :git_hub_repos ]
 
   # GET /support_request_templates
   def index
@@ -67,6 +67,11 @@ class SupportRequestTemplatesController < ApiJsonController
   # GET /support_request_templates/form_field_types
   def form_field_types
     render json: SupportRequestTemplate.form_field_types
+  end
+
+  # GET /support_request_templates/git_hub_repos
+  def git_hub_repos
+    render json: SupportRequestTemplate.git_hub_repos
   end
 
   private
