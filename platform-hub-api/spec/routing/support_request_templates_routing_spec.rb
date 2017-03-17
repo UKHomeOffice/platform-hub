@@ -31,5 +31,9 @@ RSpec.describe SupportRequestTemplatesController, type: :routing do
       expect(:get => '/support_request_templates/form_field_types').to route_to('support_request_templates#form_field_types')
     end
 
+    it 'routes to #git_hub_repos' do
+      expect(:get => '/support_request_templates/git_hub_repos').to route_to('support_request_templates#git_hub_repos')
+    end
+
   end
 end

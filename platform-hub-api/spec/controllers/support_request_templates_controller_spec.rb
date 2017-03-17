@@ -238,4 +238,49 @@ RSpec.describe SupportRequestTemplatesController, type: :controller do
     end
   end
 
+  describe 'GET #form_field_types' do
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :form_field_types
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it 'should return the available form field types' do
+        get :form_field_types
+        expect(response).to be_success
+        expect(json_response).to eq SupportRequestTemplate.form_field_types.to_a
+      end
+
+    end
+  end
+
+  describe 'GET #git_hub_repos' do
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :git_hub_repos
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      let(:foo_repo) { 'http://example.com/foo' }
+      let(:bar_repo) { 'http://example.com/bar' }
+
+      before do
+        create :support_request_template, :git_hub_repo => foo_repo
+        create :support_request_template, :git_hub_repo => bar_repo
+        create :support_request_template, :git_hub_repo => foo_repo
+      end
+
+      it 'should return a unique and sorted list of the possible GitHub repo URLs' do
+        get :git_hub_repos
+        expect(response).to be_success
+        expect(json_response).to eq [ bar_repo, foo_repo ]
+      end
+
+    end
+  end
+
 end

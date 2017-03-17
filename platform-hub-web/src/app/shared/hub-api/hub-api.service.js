@@ -30,7 +30,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.createSupportRequestTemplate = buildResourceCreator('support_request_templates');
   service.updateSupportRequestTemplate = buildResourceUpdater('support_request_templates');
   service.deleteSupportRequestTemplate = buildResourceDeletor('support_request_templates');
-  service.getSupportRequestTemplateFormFieldTypes = getSupportRequestTemplateFormFieldTypes;
+  service.getSupportRequestTemplateFormFieldTypes = buildSimpleFetcher('support_request_templates/form_field_types', 'field types');
+  service.getSupportRequestTemplateGitHubRepos = buildSimpleFetcher('support_request_templates/git_hub_repos', 'GitHub repos for support requests');
   service.createSupportRequest = createSupportRequest;
 
   return service;
@@ -171,16 +172,18 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function getSupportRequestTemplateFormFieldTypes() {
-    return $http
-      .get(`${apiEndpoint}/support_request_templates/form_field_types`)
-      .then(response => {
-        return response.data;
-      })
-      .catch(response => {
-        logger.error(buildErrorMessageFromResponse('Failed to fetch field types', response));
-        return $q.reject(response);
-      });
+  function buildSimpleFetcher(path, errorDescriptor) {
+    return function () {
+      return $http
+        .get(`${apiEndpoint}/${path}`)
+        .then(response => {
+          return response.data;
+        })
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse(`Failed to fetch ${errorDescriptor}`, response));
+          return $q.reject(response);
+        });
+    };
   }
 
   function createSupportRequest(templateId, data) {

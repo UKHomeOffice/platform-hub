@@ -6,7 +6,7 @@ export const SupportRequestsFormComponent = {
   controller: SupportRequestsFormController
 };
 
-function SupportRequestsFormController(hubApiService) {
+function SupportRequestsFormController($mdDialog, hubApiService) {
   'ngInject';
 
   const ctrl = this;
@@ -48,9 +48,22 @@ function SupportRequestsFormController(hubApiService) {
       .createSupportRequest(ctrl.template.id, ctrl.data)
       .then(result => {
         ctrl.issueUrl = result.url;
+
+        showIssueUrlDialog();
       })
       .finally(() => {
         ctrl.sending = false;
       });
+  }
+
+  function showIssueUrlDialog() {
+    $mdDialog.show(
+      $mdDialog.alert()
+        .clickOutsideToClose(true)
+        .title('Your support request has been submitted')
+        .htmlContent(`<p class="md-body-1">See the following GitHub issue for details and updates:</p><p class="md-body-1"><strong><a href="${ctrl.issueUrl}" target="_blank">${ctrl.issueUrl}</a></strong></p>`)
+        .ariaLabel('Support request GitHub issue URL')
+        .ok('Got it')
+    );
   }
 }
