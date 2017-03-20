@@ -54,6 +54,7 @@
         ng-if="!$ctrl.spec.multiple"
         name="{{$ctrl.spec.id}}"
         ng-model="$ctrl.value">
+        <md-option md-option-empty></md-option>
         <md-option ng-repeat="o in $ctrl.spec.options.split(',')" value="{{o}}">
           {{o}}
         </md-option>
