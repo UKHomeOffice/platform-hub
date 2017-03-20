@@ -12,14 +12,30 @@ module SupportRequestFormatterService
     body_text_lines = []
     body_text_lines << "Requested by: #{submitter_text}"
     body_text_lines << ""
+
     if template['git_hub_issue_spec']['body_text_preamble']
       body_text_lines << template['git_hub_issue_spec']['body_text_preamble']
       body_text_lines << ""
     end
-    body_text_lines << "| Field | Value provided |"
-    body_text_lines << "|  ---: | -------------- |"
+
     template['form_spec']['fields'].each do |spec|
-      body_text_lines << "| #{spec['label']} | #{data[spec['id']] || '--'} |"
+      value = data[spec['id']]
+      body_text_lines << "**#{spec['label']}**"
+      if value
+        body_text_lines << "```"
+        if value.is_a? Array
+          value.each do |v|
+            body_text_lines << "- #{v.to_s}"
+          end
+        else
+          body_text_lines << value.to_s
+        end
+        body_text_lines << "```"
+      else
+        body_text_lines << "*No data provided*"
+      end
+      body_text_lines << ""
+      body_text_lines << ""
     end
 
     title_text = template['git_hub_issue_spec']['title_text'] + " [#{submitter_text}]"
