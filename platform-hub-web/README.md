@@ -2,7 +2,7 @@
 
 ## Tech summary
 
-An AngularJS 1.5 web app that runs fully client side (as static assets), with a local development and build stack for easy development, testing and building.
+An AngularJS 1.5 web app that runs fully client side (served as static assets), with a local development and build stack for easy development, testing and building, as well as communicating with the backend API server (via proxying `/api` calls from the browser).
 
 ## Dev
 
@@ -32,7 +32,7 @@ The simplest way to set this up is: `npm install -g yarn@0.20.3` though see the 
 yarn
 ```
 
-NOTE: If you're experiencing issues pulling dependencies from github you might need to update your git configuration: 
+NOTE: If you're experiencing issues pulling dependencies from github you might need to update your git configuration:
 ```
 git config --global url."https://".insteadOf git://
 ```
