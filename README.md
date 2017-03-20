@@ -41,3 +41,18 @@
 ## Drone build
 
 See [the pipeline](.drone.yml) for all the steps involved in the various build pipelines.
+
+## Versioning and release process
+
+All services/components provided by this repo are currently versioned together using the same version identifier on every release, determined by Git tags and corresponding Docker image tags.
+
+Creating and pushing a Git tag in this repo will trigger a drone pipeline that builds Docker images tagged with the same tag value, and pushes them to the relevant Quay.io repositories.
+
+The general process to trigger a new release of Docker images:
+
+- Switch to / pull the latest `master` branch (ensuring this has previously built successfully)
+- Find the latest version using `git tag`
+- Tag a new incremental version (either major, minor or patch)
+  - e.g. `git tag -a v0.5.1 -m "v0.5.1"`
+- Push tags using `git push --tags`
+- Monitor the triggered drone build to ensure it builds and pushes images sucessfully
