@@ -21,14 +21,10 @@ RSpec.describe SupportRequestTemplate, type: :model do
       expect(srt.description).to eq @srt.description
 
       expect(srt.form_spec).not_to be_empty
-      expected_form_spec = Hashie::Mash.new @srt.form_spec
-      loaded_form_spec = Hashie::Mash.new srt.form_spec
-      expect(loaded_form_spec).to eq expected_form_spec
+      expect(srt.form_spec).to eq @srt.form_spec
 
       expect(srt.git_hub_issue_spec).not_to be_empty
-      expected_git_hub_issue_spec = Hashie::Mash.new @srt.git_hub_issue_spec
-      loaded_git_hub_issue_spec = Hashie::Mash.new srt.git_hub_issue_spec
-      expect(loaded_git_hub_issue_spec).to eq expected_git_hub_issue_spec
+      expect(srt.git_hub_issue_spec).to eq @srt.git_hub_issue_spec
 
     end
   end
