@@ -118,6 +118,19 @@ ALTER SEQUENCE audits_id_seq OWNED BY audits.id;
 
 
 --
+-- Name: hash_records; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE hash_records (
+    id character varying NOT NULL,
+    scope character varying NOT NULL,
+    data json NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: identities; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -229,6 +242,14 @@ ALTER TABLE ONLY audits
 
 
 --
+-- Name: hash_records hash_records_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY hash_records
+    ADD CONSTRAINT hash_records_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: identities identities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -325,6 +346,13 @@ CREATE INDEX index_audits_on_user_name ON audits USING btree (user_name);
 
 
 --
+-- Name: index_hash_records_on_scope; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_hash_records_on_scope ON hash_records USING btree (scope);
+
+
+--
 -- Name: index_identities_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -417,6 +445,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170201102040'),
 ('20170209100930'),
 ('20170221134425'),
-('20170301114421');
+('20170301114421'),
+('20170322132009');
 
 
