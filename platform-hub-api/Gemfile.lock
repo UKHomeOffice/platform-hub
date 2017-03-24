@@ -198,8 +198,8 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers (~> 0.10.0)
-  attribute-defaults (~> 0.8.0)
   activemodel-associations (~> 0.2.0)
+  attribute-defaults (~> 0.8.0)
   byebug
   cancancan (~> 1.15)
   classy_hash (~> 0.2.0)
