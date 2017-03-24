@@ -11,6 +11,7 @@ export const icons = function () {
     hubSetup: 'settings',
     identities: 'account_box',
     internalLink: 'input',
+    kubernetes: 'vpn_key',
     markAllRead: 'drafts',
     platformThemes: 'lens',
     projects: 'group_work',
