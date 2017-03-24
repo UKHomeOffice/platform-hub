@@ -14,6 +14,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.globalAnnouncementsMarkAllRead = globalAnnouncementsMarkAllRead;
 
   service.getUsers = buildCollectionFetcher('users');
+  service.getUser = buildResourceFetcher('users');
   service.searchUsers = searchUsers;
   service.makeAdmin = makeAdmin;
   service.revokeAdmin = revokeAdmin;
@@ -482,5 +483,40 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       msg += `: ${errorDetails}`;
     }
     return msg;
+  }
+
+  function getKubernetesTokens(userId) {
+    return $http
+      .get(`${apiEndpoint}/kubernetes/tokens/${userId}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error('Failed to fetch user kubernetes tokens – the API might be down. Try again later.');
+        return $q.reject(response);
+      });
+  }
+
+  function deleteKubernetesToken(userId, cluster) {
+    return $http
+      .delete(`${apiEndpoint}/kubernetes/tokens/${userId}/${cluster}`)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse(`Failed to delete "'${cluster}'" kubernetes token for '${userId}'`, response));
+        return $q.reject(response);
+      });
+  }
+
+  function createOrUpdateKubernetesToken(user, data) {
+    return $http
+      .patch(`${apiEndpoint}/kubernetes/tokens/${user.id}/${data.cluster}`, {
+        groups: data.groups
+      })
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse(`Failed to create or update a "${data.cluster}" kubernetes token for ${user.id}`, response));
+        return $q.reject(response);
+      });
   }
 };
