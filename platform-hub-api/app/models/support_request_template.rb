@@ -7,6 +7,10 @@ class SupportRequestTemplate < ApplicationRecord
 
   friendly_id :shortname, :use => :slugged
 
+  def should_generate_new_friendly_id?
+    shortname_changed? || super
+  end
+
   validates :shortname,
     presence: true,
     uniqueness: { case_sensitive: false }
