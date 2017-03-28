@@ -3,7 +3,7 @@ class ProjectsController < ApiJsonController
   before_action :find_project, only: [ :show, :update, :destroy, :memberships, :add_membership, :remove_membership, :set_role, :unset_role ]
   before_action :find_user, only: [ :add_membership, :remove_membership, :set_role, :unset_role ]
 
-  skip_authorization_check :only => [ :index, :show, :memberships ]
+  skip_authorization_check only: [ :index, :show, :memberships ]
   authorize_resource except: [ :index, :show, :memberships ]
 
   # GET /projects
