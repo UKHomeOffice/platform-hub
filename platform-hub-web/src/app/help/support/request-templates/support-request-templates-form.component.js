@@ -27,6 +27,8 @@ function SupportRequestTemplatesFormController($q, $state, hubApiService, logger
   ctrl.createOrUpdate = createOrUpdate;
   ctrl.addFormField = addFormField;
   ctrl.removeFormField = removeFormField;
+  ctrl.moveFieldDown = moveFieldDown;
+  ctrl.moveFieldUp = moveFieldUp;
 
   init();
 
@@ -143,5 +145,19 @@ function SupportRequestTemplatesFormController($q, $state, hubApiService, logger
     }
 
     return errors;
+  }
+
+  function moveFieldDown(ix) {
+    const fields = ctrl.template.form_spec.fields;
+    const field1 = fields[ix];
+    const field2 = fields[ix + 1];
+    fields.splice(ix, 2, field2, field1);
+  }
+
+  function moveFieldUp(ix) {
+    const fields = ctrl.template.form_spec.fields;
+    const field1 = fields[ix - 1];
+    const field2 = fields[ix];
+    fields.splice(ix - 1, 2, field2, field1);
   }
 }
