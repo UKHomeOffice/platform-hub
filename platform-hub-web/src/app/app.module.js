@@ -12,16 +12,19 @@ import 'angular-material';
 import 'angular-material-sidemenu';
 import 'angular-messages';
 import 'angular-sanitize';
+import 'angular-sortable-view';
 import 'angular-ui-router';
 import 'angular-url-encode';
 
 import moment from 'moment';
 import lodash from 'lodash';
 
+import {AppSettingsModule} from './app-settings/app-settings.module';
 import {HelpModule} from './help/help.module';
 import {HomeModule} from './home/home.module';
 import {IdentitiesModule} from './identities/identities.module';
 import {LayoutModule} from './layout/layout.module';
+import {PlatformThemesModule} from './platform-themes/platform-themes.module';
 import {ProjectsModule} from './projects/projects.module';
 import {SharedModule} from './shared/shared.module';
 import {UsersModule} from './users/users.module';
@@ -40,15 +43,18 @@ const name = 'app';
 // Config + routes
 angular
   .module(name, [
+    AppSettingsModule,
     HelpModule,
     HomeModule,
     IdentitiesModule,
     LayoutModule,
+    PlatformThemesModule,
     ProjectsModule,
     SharedModule,
     UsersModule,
     'angular-jwt',
     'angular-loading-bar',
+    'angular-sortable-view',
     'base64',
     'bc.AngularUrlEncode',
     'ngAnimate',
@@ -73,7 +79,8 @@ angular
 const apiEndpoint = '/api';
 angular
   .module(name)
-  .constant('apiEndpoint', apiEndpoint);
+  .constant('apiEndpoint', apiEndpoint)
+  .constant('apiBackoffTimeMs', 1000);
 
 // Run function
 angular

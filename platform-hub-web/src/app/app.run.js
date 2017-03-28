@@ -1,10 +1,17 @@
-export const appRun = function ($rootScope, $transitions, $state, authService, loginDialogService, roleCheckerService, hubApiService, events, logger, _) {
+export const appRun = function ($rootScope, $transitions, $state, authService, loginDialogService, roleCheckerService, hubApiService, events, AppSettings, logger, _) {
   'ngInject';
 
   logger.debug('Starting app…');
 
-  // Inject lodash into views
+  // Inject lodash into templates that have rootScope access
   $rootScope._ = _;
+
+  // Fetch AppSettings and inject into templates that have rootScope access
+  AppSettings
+    .refresh()
+    .then(() => {
+      $rootScope.AppSettings = AppSettings;
+    });
 
   // Auth handling
 

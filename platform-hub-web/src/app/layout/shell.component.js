@@ -3,10 +3,14 @@ export const ShellComponent = {
   controller: ShellController
 };
 
-function ShellController($scope, $mdSidenav, authService, roleCheckerService, events) {
+function ShellController($scope, $mdSidenav, authService, roleCheckerService, events, icons, AppSettings, PlatformThemesList, _) {
   'ngInject';
 
   const ctrl = this;
+
+  ctrl.AppSettings = AppSettings;
+  ctrl.PlatformThemesList = PlatformThemesList;
+  ctrl.platformThemeIcon = icons.platformThemes;
 
   ctrl.isAdmin = false;
 
@@ -14,16 +18,16 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
     {
       title: 'Connected Identities',
       state: 'identities',
-      icon: 'account_box'
+      icon: icons.identities
     }
   ];
 
-  ctrl.hubNavStates = [
+  ctrl.orgNavStates = [
     {
       title: 'Projects',
       state: 'projects.list',
       activeState: 'projects',
-      icon: 'book'
+      icon: icons.projects
     }
   ];
 
@@ -31,13 +35,13 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
     {
       title: 'FAQ',
       state: 'help.faq',
-      icon: 'question_answer'
+      icon: icons.faq
     },
     {
       title: 'Support Requests',
       state: 'help.support.requests.overview',
       activeState: 'help.support.requests',
-      icon: 'note'
+      icon: icons.supportRequests
     }
   ];
 
@@ -45,13 +49,24 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
     {
       title: 'Users',
       state: 'users',
-      icon: 'perm_identity'
+      icon: icons.users
+    },
+    {
+      title: 'App Settings',
+      state: 'app-settings',
+      icon: icons.appSettings
+    },
+    {
+      title: 'Platform Themes',
+      state: 'platform-themes.editor.list',
+      activeState: 'platform-themes.editor',
+      icon: ctrl.platformThemeIcon
     },
     {
       title: 'Support Request Templates',
       state: 'help.support.request-templates.list',
       activeState: 'help.support.request-templates',
-      icon: 'note'
+      icon: icons.supportRequests
     }
   ];
 
@@ -62,11 +77,20 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
 
   function init() {
     // Listen for changes to the Me profile data
-    $scope.$on(events.api.me.updated, loadAdminStatus);
+    $scope.$on(events.api.me.updated, (event, meData) => {
+      if (!_.isNull(meData) && !_.isEmpty(meData)) {
+        refresh();
+      }
+    });
 
     if (isAuthenticated()) {
-      loadAdminStatus();
+      refresh();
     }
+  }
+
+  function refresh() {
+    loadAdminStatus();
+    PlatformThemesList.refresh();
   }
 
   function loadAdminStatus() {

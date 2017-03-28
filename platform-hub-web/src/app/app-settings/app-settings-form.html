@@ -1,0 +1,94 @@
+<div class="app-settings-form">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        Edit App Settings
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout-padding>
+      <p class="md-body-1" md-colors="{background: 'accent-50'}">
+        <strong>Note:</strong>
+        everything you set here is available publicly (via the API).
+        Please don't put anything confidential in these app settings.
+      </p>
+
+      <md-content>
+        <form name="$ctrl.settingsForm" role="form" ng-submit="$ctrl.update()">
+          <md-input-container class="md-block">
+            <label for="platformName">Platform Name:</label>
+            <input
+              name="platformName"
+              ng-model="$ctrl.settings.platformName"
+              required
+              autofocus>
+            <div ng-messages="$ctrl.settingsForm.platformName.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <div>
+            <h3 class="md-subhead">Platform Themes</h3>
+            <div
+              sv-root class="multi-sortable"
+              layout="row"
+              layout-align="center start"
+              layout-margin
+              layout-padding>
+            	<div
+                flex
+                class="sortable-container"
+                sv-part="$ctrl.visiblePlatformThemes"
+                md-colors="{background: 'blue-grey-50'}">
+                <h4 class="text-center">Visible</h4>
+                <div
+                  ng-repeat="t in $ctrl.visiblePlatformThemes"
+                  md-colors="{background: '{{t.colour}}'}"
+                  sv-element
+                  md-whiteframe="1"
+                  class="item">
+            			{{t.title}}
+            		</div>
+            	</div>
+            	<div
+                flex
+                class="sortable-container"
+                sv-part="$ctrl.hiddenPlatformThemes"
+                md-colors="{background: 'blue-grey-50'}">
+                <h4 class="text-center">Hidden</h4>
+                <div
+                  ng-repeat="t in $ctrl.hiddenPlatformThemes"
+                  md-colors="{background: '{{t.colour}}'}"
+                  sv-element
+                  md-whiteframe="1"
+                  class="item">
+            			{{t.title}}
+            		</div>
+            	</div>
+            </div>
+          </div>
+
+          <br />
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="$ctrl.saving || !$ctrl.settingsForm.$valid"
+              ng-class="{'md-raised': ($ctrl.settingsForm.$dirty && $ctrl.settingsForm.$valid) }"
+              aria-label="Save app settings">
+              Update
+            </md-button>
+            <md-button ui-sref="home" ng-disabled="$ctrl.saving">Cancel</md-button>
+          </div>
+        </form>
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

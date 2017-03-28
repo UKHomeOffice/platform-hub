@@ -149,6 +149,22 @@ CREATE TABLE identities (
 
 
 --
+-- Name: platform_themes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE platform_themes (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    title character varying NOT NULL,
+    slug character varying NOT NULL,
+    description text NOT NULL,
+    image_url character varying NOT NULL,
+    colour character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: project_memberships; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -258,6 +274,14 @@ ALTER TABLE ONLY identities
 
 
 --
+-- Name: platform_themes platform_themes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY platform_themes
+    ADD CONSTRAINT platform_themes_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -360,6 +384,20 @@ CREATE INDEX index_identities_on_user_id ON identities USING btree (user_id);
 
 
 --
+-- Name: index_platform_themes_on_slug; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_platform_themes_on_slug ON platform_themes USING btree (slug);
+
+
+--
+-- Name: index_platform_themes_on_title; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_platform_themes_on_title ON platform_themes USING btree (title);
+
+
+--
 -- Name: index_project_memberships_on_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -446,6 +484,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170209100930'),
 ('20170221134425'),
 ('20170301114421'),
-('20170322132009');
+('20170322132009'),
+('20170322143551');
 
 

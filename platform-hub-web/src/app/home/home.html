@@ -1,11 +1,14 @@
 <div class="app-home">
   <md-content layout-padding>
 
-    <h2 class="md-display-1">
-      Welcome to the HODDAT PaaS Hub
+    <h2 class="md-display-1 text-center">
+      Welcome to the {{$ctrl.AppSettings.getAppTitle()}}
     </h2>
 
-    <div ng-if="!$ctrl.isAuthenticated()" md-whiteframe="1" md-colors="{background: 'primary-50'}">
+    <div
+      ng-if="!$ctrl.isAuthenticated()"
+      md-whiteframe="1"
+      md-colors="{background: 'primary-50'}">
       <p class="md-body-1">
         If you're new, just
         <a href="#" ng-click="$ctrl.login()">login</a>
@@ -13,8 +16,38 @@
       </p>
     </div>
 
+    <div
+      layout="row" layout-wrap layout-align="center center"
+      ng-if="$ctrl.isAuthenticated() && $ctrl.PlatformThemesList.visible.length > 0">
+      <md-card
+        ng-repeat="t in $ctrl.PlatformThemesList.visible track by t.id"
+        ui-sref="platform-themes.page({id: t.id})"
+        style="width: 250px; cursor: pointer;">
+        <div class="tinted-bar" md-colors="{background: '{{t.colour}}'}"></div>
+        <img
+          ng-src="{{t.image_url}}"
+          class="md-card-image"
+          alt="{{t.title}} icon" />
+        <md-card-title>
+          <md-card-title-text>
+            <span class="md-headline">{{t.title}}</span>
+          </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+          <p class="md-body-1">
+            {{t.description}}
+          </p>
+        </md-card-content>
+      </md-card>
+    </div>
+
+    <br />
+    <md-divider></md-divider>
+
     <div>
-      <h3 class="md-headline">Frequently Asked Questions (FAQ)</h3>
+      <h3 class="md-headline text-center">
+        Frequently Asked Questions (FAQ)
+      </h3>
       <faq-entries></faq-entries>
     </div>
 

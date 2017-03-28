@@ -1,4 +1,4 @@
-# HODDAT PaaS Hub – API Server & Backend
+# Platform Hub – API Server & Backend
 
 ## Tech summary
 

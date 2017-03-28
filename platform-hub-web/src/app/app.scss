@@ -32,10 +32,59 @@ h1, h2, h3, h4, h5, h6, p {
   color: #777;
 }
 
+.text-center,
 .centred {
   text-align: center;
 }
 
 .md-button.md-icon-button.input-button-end {
   margin-top: 1em;
+}
+
+
+.tinted-bar {
+  height: 1em;
+}
+
+md-card,
+.md-card {
+  .tinted-bar {
+    border-radius: 2px 2px 0 0;
+  }
+}
+
+.layout-padding > * > .tinted-bar {
+  margin: -8px -8px 0 -8px;
+}
+
+
+.floated-image-container-right {
+  float: right;
+  width: 120px;
+
+  > img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.multi-sortable {
+  height: 400px;
+
+  .sortable-container {
+    overflow: auto;
+    height: 100%;
+    border-radius: 3px;
+
+    .item {
+      background: white;
+      cursor: grab;
+      border-radius: 3px;
+      padding: 0.5em 0.75em;
+
+      &:not(:last-child) {
+        margin-bottom: 0.65em;
+      }
+    }
+  }
 }

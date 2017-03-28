@@ -1,4 +1,4 @@
-# # HODDAT PaaS Hub – Local Auth Proxy
+# Platform Hub – Local Auth Proxy
 
 Uses [keycloak-proxy](https://github.com/gambol99/keycloak-proxy)
 
@@ -25,4 +25,3 @@ Note: make sure you run scripts from the root of auth proxy.
   - `local/start`
 - _Destroy_ the container if you want to recreate it or just don't need it anymore
   - `local/destroy`
-

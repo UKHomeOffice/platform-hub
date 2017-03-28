@@ -16,6 +16,10 @@ log-json-format: false
 resources:
 - uri: /identity_flows/callback
   white-listed: true
+- uri: /app_settings
+  white-listed: true
+  methods:
+  - GET
 - uri: /
 
 verbose: false

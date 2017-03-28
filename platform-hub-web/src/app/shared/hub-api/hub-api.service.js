@@ -9,10 +9,12 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
   service.getMe = getMe;
   service.deleteMeIdentity = deleteMeIdentity;
+
   service.getUsers = buildCollectionFetcher('users');
   service.searchUsers = searchUsers;
   service.makeAdmin = makeAdmin;
   service.revokeAdmin = revokeAdmin;
+
   service.getProjects = buildCollectionFetcher('projects');
   service.getProject = buildResourceFetcher('projects');
   service.createProject = buildResourceCreator('projects');
@@ -23,8 +25,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.removeProjectMembership = removeProjectMembership;
   service.projectSetRole = projectSetRole;
   service.projectUnsetRole = projectUnsetRole;
+
   service.userOnboardGitHub = userOnboardGitHub;
   service.userOffboardGitHub = userOffboardGitHub;
+
   service.getSupportRequestTemplates = buildCollectionFetcher('support_request_templates');
   service.getSupportRequestTemplate = buildResourceFetcher('support_request_templates');
   service.createSupportRequestTemplate = buildResourceCreator('support_request_templates');
@@ -32,7 +36,16 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.deleteSupportRequestTemplate = buildResourceDeletor('support_request_templates');
   service.getSupportRequestTemplateFormFieldTypes = buildSimpleFetcher('support_request_templates/form_field_types', 'field types');
   service.getSupportRequestTemplateGitHubRepos = buildSimpleFetcher('support_request_templates/git_hub_repos', 'GitHub repos for support requests');
+
   service.createSupportRequest = createSupportRequest;
+  service.getPlatformThemes = buildCollectionFetcher('platform_themes');
+  service.getPlatformTheme = buildResourceFetcher('platform_themes');
+  service.createPlatformTheme = buildResourceCreator('platform_themes');
+  service.updatePlatformTheme = buildResourceUpdater('platform_themes');
+  service.deletePlatformTheme = buildResourceDeletor('platform_themes');
+
+  service.getAppSettings = buildSimpleFetcher('app_settings', 'app settings');
+  service.updateAppSettings = buildSimpleUpdater('app_settings', 'app settings');
 
   return service;
 
@@ -59,6 +72,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function deleteMeIdentity(provider) {
+    if (_.isNull(provider) || _.isEmpty(provider)) {
+      throw new Error('"provider" argument not specified or empty');
+    }
+
     return $http
       .delete(`${apiEndpoint}/me/identities/${provider}`)
       .catch(response => {
@@ -68,6 +85,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function searchUsers(query) {
+    if (_.isNull(query) || _.isEmpty(query)) {
+      throw new Error('"query" argument not specified or empty');
+    }
+
     return $http
       .get(`${apiEndpoint}/users/search/${query}`)
       .then(response => {
@@ -80,6 +101,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function makeAdmin(userId) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
     return $http
       .post(`${apiEndpoint}/users/${userId}/make_admin`)
       .catch(response => {
@@ -89,6 +114,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function revokeAdmin(userId) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
     return $http
       .post(`${apiEndpoint}/users/${userId}/revoke_admin`)
       .catch(response => {
@@ -98,6 +127,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function getProjectMemberships(projectId) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+
     return $http
       .get(`${apiEndpoint}/projects/${projectId}/memberships`)
       .then(response => {
@@ -110,6 +143,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function addProjectMembership(projectId, userId) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
     return $http
       .put(`${apiEndpoint}/projects/${projectId}/memberships/${userId}`)
       .then(response => {
@@ -122,6 +162,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function removeProjectMembership(projectId, userId) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
     return $http
       .delete(`${apiEndpoint}/projects/${projectId}/memberships/${userId}`)
       .catch(response => {
@@ -131,6 +178,16 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function projectSetRole(projectId, userId, role) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+    if (_.isNull(role) || _.isEmpty(role)) {
+      throw new Error('"role" argument not specified or empty');
+    }
+
     return $http
       .put(`${apiEndpoint}/projects/${projectId}/memberships/${userId}/role/${role}`)
       .then(response => {
@@ -143,6 +200,16 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function projectUnsetRole(projectId, userId, role) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+    if (_.isNull(role) || _.isEmpty(role)) {
+      throw new Error('"role" argument not specified or empty');
+    }
+
     return $http
       .delete(`${apiEndpoint}/projects/${projectId}/memberships/${userId}/role/${role}`)
       .then(response => {
@@ -155,6 +222,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function userOnboardGitHub(userId) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
     return $http
       .post(`${apiEndpoint}/users/${userId}/onboard_github`)
       .catch(response => {
@@ -164,10 +235,29 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function userOffboardGitHub(userId) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
     return $http
       .post(`${apiEndpoint}/users/${userId}/offboard_github`)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to offboard user from GitHub', response));
+        return $q.reject(response);
+      });
+  }
+
+  function createSupportRequest(templateId, data) {
+    return $http
+      .post(`${apiEndpoint}/support_requests`, {
+        template_id: templateId,
+        data: data
+      })
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to create support request', response));
         return $q.reject(response);
       });
   }
@@ -186,19 +276,22 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     };
   }
 
-  function createSupportRequest(templateId, data) {
-    return $http
-      .post(`${apiEndpoint}/support_requests`, {
-        template_id: templateId,
-        data: data
-      })
-      .then(response => {
-        return response.data;
-      })
-      .catch(response => {
-        logger.error(buildErrorMessageFromResponse('Failed to create support request', response));
-        return $q.reject(response);
-      });
+  function buildSimpleUpdater(path, errorDescriptor) {
+    return function (data) {
+      if (_.isNull(data) || _.isEmpty(data)) {
+        throw new Error('"data" argument not specified or empty');
+      }
+
+      return $http
+        .put(`${apiEndpoint}/${path}`, data)
+        .then(response => {
+          return response.data;
+        })
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse(`Failed to update ${errorDescriptor}`, response));
+          return $q.reject(response);
+        });
+    };
   }
 
   function buildCollectionFetcher(name) {
@@ -217,6 +310,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
   function buildResourceFetcher(resource) {
     return function (id) {
+      if (_.isNull(id) || _.isEmpty(id)) {
+        throw new Error('"id" argument not specified or empty');
+      }
+
       return $http
         .get(`${apiEndpoint}/${resource}/${id}`)
         .then(response => {
@@ -231,6 +328,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
   function buildResourceCreator(resource) {
     return function (data) {
+      if (_.isNull(data) || _.isEmpty(data)) {
+        throw new Error('"data" argument not specified or empty');
+      }
+
       return $http
         .post(`${apiEndpoint}/${resource}`, data)
         .then(response => {
@@ -245,6 +346,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
   function buildResourceUpdater(resource) {
     return function (id, data) {
+      if (_.isNull(id) || _.isEmpty(id)) {
+        throw new Error('"id" argument not specified or empty');
+      }
+      if (_.isNull(data) || _.isEmpty(data)) {
+        throw new Error('"data" argument not specified or empty');
+      }
+
       return $http
         .put(`${apiEndpoint}/${resource}/${id}`, data)
         .then(response => {
@@ -259,6 +367,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
   function buildResourceDeletor(resource) {
     return function (id) {
+      if (_.isNull(id) || _.isEmpty(id)) {
+        throw new Error('"id" argument not specified or empty');
+      }
+
       return $http
       .delete(`${apiEndpoint}/${resource}/${id}`)
       .catch(response => {
