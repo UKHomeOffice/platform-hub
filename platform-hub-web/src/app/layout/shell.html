@@ -11,7 +11,7 @@
         <md-icon md-svg-icon="menu"></md-icon>
         Menu
       </md-button>
-      <h1 flex>HODDAT PaaS Hub</h1>
+      <h1 flex>{{$ctrl.AppSettings.getAppTitle()}}</h1>
     </div>
   </md-toolbar>
 
@@ -36,6 +36,14 @@
               <md-icon>home</md-icon>
               <span>Home</span>
             </md-sidemenu-button>
+
+            <md-sidemenu-button
+              ng-repeat="t in $ctrl.PlatformThemesList.visible track by t.id"
+              ui-sref="platform-themes.page({id: t.id})"
+              ui-sref-active="active">
+              <md-icon md-colors="{color: '{{t.colour}}'}">{{$ctrl.platformThemeIcon}}</md-icon>
+              <span>{{t.title}}</span>
+            </md-sidemenu-button>
           </md-sidemenu-group>
 
           <md-sidemenu-group>
@@ -51,10 +59,10 @@
           </md-sidemenu-group>
 
           <md-sidemenu-group>
-            <md-subheader class="md-no-sticky">Hub</md-subheader>
+            <md-subheader class="md-no-sticky">Org</md-subheader>
 
             <md-sidemenu-button
-              ng-repeat="item in $ctrl.hubNavStates"
+              ng-repeat="item in $ctrl.orgNavStates"
               ui-sref="{{item.state}}"
               ui-sref-active="{ 'active': item.activeState || item.state }">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>

@@ -1,0 +1,27 @@
+<div class="platform-themes-page">
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.theme">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+      <div class="tinted-bar" md-colors="{background: '{{$ctrl.theme.colour}}'}"></div>
+
+      <md-content layout-padding>
+        <div class="floated-image-container-right">
+          <img
+            ng-src="{{$ctrl.theme.image_url}}"
+            alt="{{t.title}} icon" />
+        </div>
+
+        <h2 class="md-display-2">
+          {{$ctrl.theme.title}}
+        </h2>
+
+        <p class="md-body-1">
+          {{$ctrl.theme.description}}
+        </p>
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

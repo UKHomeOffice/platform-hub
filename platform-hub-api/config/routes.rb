@@ -51,6 +51,10 @@ Rails.application.routes.draw do
 
     resources :support_requests, only: [ :create ]
 
+    resources :platform_themes
+
+    resource :app_settings, only: [ :show, :update ]
+
   end
 
 end

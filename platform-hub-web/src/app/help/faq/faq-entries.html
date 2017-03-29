@@ -3,12 +3,12 @@
   <md-card>
     <md-card-title>
       <md-card-title-text>
-        <span class="md-title">What is the HODDaT PaaS Hub?</span>
+        <span class="md-title">What is the {{$ctrl.AppSettings.getAppTitle()}}?</span>
       </md-card-title-text>
     </md-card-title>
     <md-card-content>
       <p class="md-body-1">
-        A portal for users of the HODDaT PaaS (aka DSP hosting platform) currently providing self-serve tools for identity, onboarding and offboarding. With plans to provide more self-serve tools, docs, status and updates for the hosting platform, in one central place.
+        A portal for users of the {{$ctrl.AppSettings.getPlatformName()}}, currently providing self-serve tools for identity, onboarding and offboarding. With plans to provide more self-serve tools, docs, status and updates for the hosting platform, in one central place.
       </p>
     </md-card-content>
   </md-card>

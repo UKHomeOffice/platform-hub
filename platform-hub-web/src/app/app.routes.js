@@ -1,3 +1,4 @@
+import {AppSettingsForm} from './app-settings/app-settings.module';
 import {
   Faq,
   SupportRequestsForm,
@@ -8,6 +9,11 @@ import {
 } from './help/help.module';
 import {AppHome} from './home/home.module';
 import {IdentitiesManager} from './identities/identities.module';
+import {
+  PlatformThemesEditorForm,
+  PlatformThemesEditorList,
+  PlatformThemesPage
+} from './platform-themes/platform-themes.module';
 import {
   ProjectsForm,
   ProjectsDetail,
@@ -166,5 +172,60 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
               authenticate: true,
               rolePermitted: 'admin'
             }
-          });
+          })
+    .state('platform-themes', {
+      abstract: true,
+      url: '/platform-themes',
+      template: '<ui-view></ui-view>'
+    })
+      .state('platform-themes.editor', {
+        abstract: true,
+        url: '/editor',
+        template: '<ui-view></ui-view>'
+      })
+        .state('platform-themes.editor.list', {
+          url: '/list',
+          component: PlatformThemesEditorList,
+          data: {
+            authenticate: true,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('platform-themes.editor.new', {
+          url: '/new',
+          component: PlatformThemesEditorForm,
+          data: {
+            authenticate: true,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('platform-themes.editor.edit', {
+          url: '/edit/:id',
+          component: PlatformThemesEditorForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            rolePermitted: 'admin'
+          }
+        })
+      .state('platform-themes.page', {
+        url: '/page/:id',
+        component: PlatformThemesPage,
+        resolve: {
+          transition: '$transition$'
+        },
+        data: {
+          authenticate: true
+        }
+      })
+    .state('app-settings', {
+      url: '/app-settings/edit',
+      component: AppSettingsForm,
+      data: {
+        authenticate: true,
+        rolePermitted: 'admin'
+      }
+    });
 };

@@ -26,6 +26,7 @@
     "angular-material-sidemenu": "^1.0.2",
     "angular-messages": "1.5.11",
     "angular-sanitize": "1.5.11",
+    "angular-sortable-view": "jits/angular-sortable-view#754d087f079075f126c4a38eb7041c7fa69fbd55",
     "angular-toastr": "2.1.x",
     "angular-ui-router": "1.0.0-rc.1",
     "angular-url-encode": "^1.0.0",

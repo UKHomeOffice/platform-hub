@@ -1,0 +1,82 @@
+<div class="platform-themes-editor-list">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>All Platform Themes</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        aria-label="Add new platform theme"
+        ui-sref="platform-themes.editor.new">
+        <md-icon>add_box</md-icon>
+        New
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.PlatformThemesList.all.length > 0">
+
+    <md-card ng-repeat="t in $ctrl.PlatformThemesList.all track by t.id">
+      <div class="tinted-bar" md-colors="{background: '{{t.colour}}'}"></div>
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            <md-icon md-colors="{color: '{{t.colour}}'}">{{$ctrl.platformThemeIcon}}</md-icon>
+            <span>{{t.title}}</span>
+          </span>
+        </md-card-title-text>
+        <md-card-title-media>
+          <div class="md-media-sm">
+            <img ng-src="{{t.image_url}}" />
+          </div>
+        </md-card-title-media>
+      </md-card-title>
+
+      <md-card-content>
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Description
+          </span>
+          <br />
+          {{t.description}}
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Image URL:
+          </span>
+          <a ng-href="{{t.image_url}}" target="_blank">{{t.image_url}}</a>
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Colour:
+          </span>
+          {{t.colour}}
+        </p>
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          class="md-primary"
+          aria-label="View the page for this platform theme"
+          ui-sref="platform-themes.page({id: t.id})">
+          View page
+        </md-button>
+        <md-button
+          aria-label="Edit this platform theme"
+          ui-sref="platform-themes.editor.edit({id: t.id})">
+          Edit
+        </md-button>
+        <md-button
+          aria-label="Delete this platform theme"
+          ng-click="$ctrl.deleteTheme(t, $event)">
+          Delete
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+</div>
