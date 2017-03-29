@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-export const PlatformThemesList = function ($window, $q, AppSettings, apiBackoffTimeMs, hubApiService, _) {
+export const PlatformThemesList = function ($window, $q, AppSettings, apiBackoffTimeMs, hubApiService, arrayUtilsService, _) {
   'ngInject';
 
   const model = {};
@@ -43,19 +43,8 @@ export const PlatformThemesList = function ($window, $q, AppSettings, apiBackoff
 
     angular.copy(themes, model.all);
 
-    const visible = _.times(visibleIds.length, _.constant(null));
-    const hidden = [];
-
-    themes.forEach(t => {
-      const ix = _.indexOf(visibleIds, t.id);
-      if (ix >= 0) {
-        visible.splice(ix, 0, t);
-      } else {
-        hidden.push(t);
-      }
-    });
-
-    angular.copy(_.compact(visible), model.visible);
-    angular.copy(hidden, model.hidden);
+    const [left, right] = arrayUtilsService.splitBySortedIds(themes, visibleIds);
+    angular.copy(left, model.visible);
+    angular.copy(right, model.hidden);
   }
 };
