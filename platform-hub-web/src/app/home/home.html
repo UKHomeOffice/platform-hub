@@ -5,15 +5,11 @@
       Welcome to the {{$ctrl.AppSettings.getAppTitle()}}
     </h2>
 
-    <div
-      ng-if="!$ctrl.isAuthenticated()"
-      md-whiteframe="1"
-      md-colors="{background: 'primary-50'}">
-      <p class="md-body-1">
-        If you're new, just
-        <a href="#" ng-click="$ctrl.login()">login</a>
-        using Keycloak and a new account will be created for you on the hub
-      </p>
+    <div ng-if="!$ctrl.isAuthenticated()" layout="row" layout-align="center center">
+      <md-button class="md-primary md-raised" ng-click="$ctrl.login()">
+        <md-icon>person</md-icon>
+        Login
+      </md-button>
     </div>
 
     <div
@@ -39,16 +35,6 @@
           </p>
         </md-card-content>
       </md-card>
-    </div>
-
-    <br />
-    <md-divider></md-divider>
-
-    <div>
-      <h3 class="md-headline text-center">
-        Frequently Asked Questions (FAQ)
-      </h3>
-      <faq-entries></faq-entries>
     </div>
 
   </md-content>
