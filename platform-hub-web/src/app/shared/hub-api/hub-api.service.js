@@ -38,6 +38,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getSupportRequestTemplateGitHubRepos = buildSimpleFetcher('support_request_templates/git_hub_repos', 'GitHub repos for support requests');
 
   service.createSupportRequest = createSupportRequest;
+
   service.getPlatformThemes = buildCollectionFetcher('platform_themes');
   service.getPlatformTheme = buildResourceFetcher('platform_themes');
   service.createPlatformTheme = buildResourceCreator('platform_themes');

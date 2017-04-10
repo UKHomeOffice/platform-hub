@@ -160,7 +160,8 @@ CREATE TABLE platform_themes (
     image_url character varying NOT NULL,
     colour character varying,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    resources json
 );
 
 
@@ -485,6 +486,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170221134425'),
 ('20170301114421'),
 ('20170322132009'),
-('20170322143551');
+('20170322143551'),
+('20170410142703');
 
 

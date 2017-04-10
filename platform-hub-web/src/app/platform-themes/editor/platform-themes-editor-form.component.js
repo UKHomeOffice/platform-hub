@@ -6,7 +6,7 @@ export const PlatformThemesEditorFormComponent = {
   controller: PlatformThemesEditorFormController
 };
 
-function PlatformThemesEditorFormController($state, $mdColorPalette, hubApiService, logger, _) {
+function PlatformThemesEditorFormController($state, $mdColorPalette, hubApiService, PlatformThemesResourceKinds, logger, _) {
   'ngInject';
 
   const ctrl = this;
@@ -16,12 +16,19 @@ function PlatformThemesEditorFormController($state, $mdColorPalette, hubApiServi
   // Colours from the material design spec
   ctrl.colours = Object.keys($mdColorPalette);
 
+  ctrl.resourceKinds = PlatformThemesResourceKinds.all;
+
   ctrl.loading = true;
   ctrl.saving = false;
   ctrl.isNew = true;
   ctrl.theme = null;
 
   ctrl.createOrUpdate = createOrUpdate;
+  ctrl.addResource = addResource;
+  ctrl.removeResource = removeResource;
+  ctrl.handleResourceKindChange = handleResourceKindChange;
+  ctrl.moveResourceDown = moveResourceDown;
+  ctrl.moveResourceUp = moveResourceUp;
 
   init();
 
@@ -38,7 +45,8 @@ function PlatformThemesEditorFormController($state, $mdColorPalette, hubApiServi
 
   function initEmptyTheme() {
     return {
-      colour: _.sample(ctrl.colours)
+      colour: _.sample(ctrl.colours),
+      resources: []
     };
   }
 
@@ -95,5 +103,44 @@ function PlatformThemesEditorFormController($state, $mdColorPalette, hubApiServi
 
   function validate() {
     return [];
+  }
+
+  function addResource() {
+    if (!ctrl.theme.resources) {
+      ctrl.theme.resources = [];
+    }
+    ctrl.theme.resources.push({
+      visible: true
+    });
+  }
+
+  function removeResource(ix) {
+    if (!_.isEmpty(ctrl.theme.resources)) {
+      ctrl.theme.resources.splice(ix, 1);
+    }
+  }
+
+  function handleResourceKindChange(ix) {
+    const resource = ctrl.theme.resources[ix];
+    if (resource) {
+      ctrl.resourceKinds.forEach(k => {
+        delete resource[k.kind];
+      });
+      resource[resource.kind] = {};
+    }
+  }
+
+  function moveResourceDown(ix) {
+    const resources = ctrl.theme.resources;
+    const resource1 = resources[ix];
+    const resource2 = resources[ix + 1];
+    resources.splice(ix, 2, resource2, resource1);
+  }
+
+  function moveResourceUp(ix) {
+    const resources = ctrl.theme.resources;
+    const resource1 = resources[ix - 1];
+    const resource2 = resources[ix];
+    resources.splice(ix - 1, 2, resource2, resource1);
   }
 }

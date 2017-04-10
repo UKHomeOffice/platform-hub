@@ -1,0 +1,68 @@
+<div
+  class="platform-themes-resource-kind-fields"
+  ng-switch="$ctrl.resource.kind">
+
+  <div ng-switch-default class="md-body-1 none-text">
+    The resource kind <em>{{$ctrl.resource.kind}}</em> is not currently supported in the app
+  </div>
+
+  <div ng-switch-when="internal_route">
+    <md-input-container class="md-block" flex>
+      <label for="resource{{$ctrl.index}}-internal_route-state">Router state:</label>
+      <input
+        name="resource{{$ctrl.index}}-internal_route-state"
+        ng-model="$ctrl.resource.internal_route.state"
+        placeholder="Should match a non-abstract state in the app.routes.js file"
+        required>
+      <div ng-messages="$ctrl.form['resource' + $ctrl.index + '-internal_route-state'].$error">
+        <div ng-message="required">This is required.</div>
+      </div>
+    </md-input-container>
+  </div>
+
+  <div ng-switch-when="external_link">
+    <md-input-container class="md-block" flex>
+      <label for="resource{{$ctrl.index}}-external_link-url">URL:</label>
+      <input
+        type="url"
+        name="resource{{$ctrl.index}}-external_link-url"
+        ng-model="$ctrl.resource.external_link.url"
+        required>
+      <div ng-messages="$ctrl.form['resource' + $ctrl.index + '-external_link-url'].$error">
+        <div ng-message="required">This is required.</div>
+        <div ng-message="url">Not a valid URL.</div>
+      </div>
+    </md-input-container>
+  </div>
+
+  <div ng-switch-when="support_request">
+    <md-input-container class="md-block" flex>
+      <label for="resource{{$ctrl.index}}-support_request-id">Support Request Form ID:</label>
+      <input
+        name="resource{{$ctrl.index}}-support_request-id"
+        ng-model="$ctrl.resource.support_request.id"
+        placeholder="Find the ID in the URL of the support request form"
+        required>
+      <div ng-messages="$ctrl.form['resource' + $ctrl.index + '-support_request-id'].$error">
+        <div ng-message="required">This is required.</div>
+      </div>
+    </md-input-container>
+  </div>
+
+  <div ng-switch-when="plain_text">
+    <md-input-container class="md-block" flex>
+      <label for="resource{{$ctrl.index}}-plain_text-text">Text:</label>
+      <textarea
+        name="resource{{$ctrl.index}}-plain_text-text"
+        ng-model="$ctrl.resource.plain_text.text"
+        rows="4"
+        required
+        md-select-on-focus>
+      </textarea>
+      <div ng-messages="$ctrl.form['resource' + $ctrl.index + '-plain_text-text'].$error">
+        <div ng-message="required">This is required.</div>
+      </div>
+    </md-input-container>
+  </div>
+
+</div>

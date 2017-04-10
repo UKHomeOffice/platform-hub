@@ -13,13 +13,91 @@
             alt="{{t.title}} icon" />
         </div>
 
-        <h2 class="md-display-2">
+        <h1 class="md-display-2">
           {{$ctrl.theme.title}}
-        </h2>
+        </h1>
 
         <p class="md-body-1">
           {{$ctrl.theme.description}}
         </p>
+
+        <div ng-if="$ctrl.theme.resources && $ctrl.theme.resources.length > 0">
+          <br />
+
+          <h2 class="md-title">
+            Tasks, actions and resources
+          </h2>
+
+          <md-list flex>
+            <ng-switch
+              ng-repeat="resource in $ctrl.theme.resources"
+              ng-if="resource.visible"
+              on="resource.kind">
+
+              <!-- internal_route -->
+              <md-list-item
+                ng-switch-when="internal_route"
+                class="md-2-line"
+                ui-sref="{{resource.internal_route.state}}">
+                <md-icon class="md-avatar-icon">{{$ctrl.icons[resource.kind]}}</md-icon>
+                <div class="md-list-item-text" layout="column">
+                  <h3>{{resource.title}}</h3>
+                  <h4>{{resource.description}}</h4>
+                </div>
+                <md-divider ng-if="!$last"></md-divider>
+              </md-list-item>
+
+              <!-- external_link -->
+              <md-list-item
+                ng-switch-when="external_link"
+                class="md-2-line"
+                ng-href="{{resource.external_link.url}}"
+                target="_blank">
+                <md-icon class="md-avatar-icon">{{$ctrl.icons[resource.kind]}}</md-icon>
+                <div class="md-list-item-text" layout="column">
+                  <h3>{{resource.title}}</h3>
+                  <p ng-if="resource.description">
+                    {{resource.description}}
+                  </p>
+                </div>
+                <md-divider ng-if="!$last"></md-divider>
+              </md-list-item>
+
+              <!-- support_request -->
+              <md-list-item
+                ng-switch-when="support_request"
+                class="md-2-line"
+                ui-sref="help.support.requests.new({id: resource.support_request.id})">
+                <md-icon class="md-avatar-icon">{{$ctrl.icons[resource.kind]}}</md-icon>
+                <div class="md-list-item-text" layout="column">
+                  <h3>{{resource.title}}</h3>
+                  <p ng-if="resource.description">
+                    {{resource.description}}
+                  </p>
+                </div>
+                <md-divider ng-if="!$last"></md-divider>
+              </md-list-item>
+
+              <!-- plain_text -->
+              <md-list-item
+                ng-switch-when="plain_text"
+                class="md-3-line md-long-text">
+                <md-icon class="md-avatar-icon">{{$ctrl.icons[resource.kind]}}</md-icon>
+                <div class="md-list-item-text" layout="column">
+                  <h3>{{resource.title}}</h3>
+                  <h4 ng-if="resource.description">
+                    {{resource.description}}
+                  </h4>
+                  <p>
+                    {{resource.plain_text.text}}
+                  </p>
+                </div>
+                <md-divider ng-if="!$last"></md-divider>
+              </md-list-item>
+
+            </ng-switch>
+          </md-list>
+        </div>
       </md-content>
     </div>
 
