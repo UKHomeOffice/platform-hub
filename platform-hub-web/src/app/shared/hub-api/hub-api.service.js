@@ -65,6 +65,11 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.announcementMarkSticky = announcementMarkSticky;
   service.announcementUnmarkSticky = announcementUnmarkSticky;
 
+  service.getKubernetesClusters = buildSimpleFetcher('kubernetes/clusters', 'kubernetes clusters');
+  service.getKubernetesTokens = getKubernetesTokens;
+  service.deleteKubernetesToken = deleteKubernetesToken;
+  service.createOrUpdateKubernetesToken = createOrUpdateKubernetesToken;
+
   return service;
 
   function getMe() {
