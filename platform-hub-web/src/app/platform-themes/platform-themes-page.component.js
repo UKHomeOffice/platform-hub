@@ -1,3 +1,5 @@
+/* eslint camelcase: 0 */
+
 export const PlatformThemesPageComponent = {
   bindings: {
     transition: '<'
@@ -6,12 +8,19 @@ export const PlatformThemesPageComponent = {
   controller: PlatformThemesPageController
 };
 
-function PlatformThemesPageController(hubApiService, _) {
+function PlatformThemesPageController(hubApiService, icons, _) {
   'ngInject';
 
   const ctrl = this;
 
   const id = ctrl.transition.params().id;
+
+  ctrl.icons = {
+    internal_route: icons.internalLink,
+    external_link: icons.externalLink,
+    support_request: icons.supportRequests,
+    plain_text: icons.text
+  };
 
   ctrl.loading = true;
   ctrl.theme = null;

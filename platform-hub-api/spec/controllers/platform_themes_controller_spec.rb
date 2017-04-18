@@ -65,6 +65,7 @@ RSpec.describe PlatformThemesController, type: :controller do
             'description' => @platform_theme.description,
             'image_url' => @platform_theme.image_url,
             'colour' => @platform_theme.colour,
+            'resources' => @platform_theme.resources,
             'created_at' => now_json_value,
             'updated_at' => now_json_value
           })
@@ -83,7 +84,8 @@ RSpec.describe PlatformThemesController, type: :controller do
           title: source_data.title,
           description: source_data.description,
           image_url: source_data.image_url,
-          colour: source_data.colour
+          colour: source_data.colour,
+          resources: source_data.resources
         }
       }
     end
@@ -119,6 +121,7 @@ RSpec.describe PlatformThemesController, type: :controller do
             'description' => post_data[:platform_theme][:description],
             'image_url' => post_data[:platform_theme][:image_url],
             'colour' => post_data[:platform_theme][:colour],
+            'resources' => post_data[:platform_theme][:resources],
             'created_at' => now_json_value,
             'updated_at' => now_json_value
           });

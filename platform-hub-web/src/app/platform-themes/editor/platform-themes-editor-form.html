@@ -75,6 +75,117 @@
             </md-select>
           </md-input-container>
 
+          <br />
+
+          <div>
+
+            <label class="md-body-2">
+              Resources
+              ({{$ctrl.theme.resources.length}})
+            </label>
+
+            <p class="none-text" ng-if="$ctrl.theme.resources.length == 0">
+              No resources specified yet – why not add one?
+            </p>
+
+            <md-card ng-repeat="resource in $ctrl.theme.resources">
+              <md-card-content>
+
+                <div layout="row" flex>
+                  <md-input-container class="md-block md-icon-float" flex>
+                    <label>Type of resource:</label>
+                    <md-select
+                      ng-model="resource.kind"
+                      ng-change="$ctrl.handleResourceKindChange($index)"
+                      required>
+                      <md-option
+                        ng-repeat="k in $ctrl.resourceKinds"
+                        value="{{k.kind}}">
+                        {{k.name}}
+                      </md-option>
+                    </md-select>
+                  </md-input-container>
+                  <md-button
+                    class="md-icon-button input-button-end"
+                    aria-label="Remove this resource"
+                    ng-click="$ctrl.removeResource($index)">
+                    <md-icon md-colors="{color: 'accent'}">delete</md-icon>
+                    <md-tooltip md-direction="bottom">
+                      Remove this resource
+                    </md-tooltip>
+                  </md-button>
+                </div>
+
+                <md-input-container class="md-block">
+                  <md-checkbox
+                    name="resource{{$index}}-visible"
+                    ng-model="resource.visible"
+                    aria-label="Is this resource visible in the app?">
+                    Visible?
+                  </md-checkbox>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex>
+                  <label for="resource{{$index}}-title">Title:</label>
+                  <input
+                    name="resource{{$index}}-title"
+                    ng-model="resource.title"
+                    placeholder="e.g. Getting started guide"
+                    required>
+                  <div ng-messages="$ctrl.themeForm['resource' + $index + '-title'].$error">
+                    <div ng-message="required">This is required.</div>
+                  </div>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex>
+                  <label for="resource{{$index}}-description">Short description (optional):</label>
+                  <textarea
+                    name="resource{{$index}}-description"
+                    ng-model="resource.description"
+                    rows="2"
+                    md-select-on-focus>
+                  </textarea>
+                </md-input-container>
+
+                <platform-themes-resource-kind-fields
+                  ng-if="resource.kind"
+                  index="$index"
+                  resource="resource"
+                  form="$ctrl.themeForm">
+                </platform-themes-resource-kind-fields>
+
+              </md-card-content>
+
+              <md-card-actions layout="row" layout-align="end center">
+                <md-button
+                  ng-disabled="$index == ($ctrl.theme.resources.length - 1) || $ctrl.theme.resources.length == 1"
+                  ng-click="$ctrl.moveResourceDown($index)">
+                  <md-icon>arrow_downward</md-icon>
+                  Move down
+                </md-button>
+                <md-button
+                  ng-disabled="$index == 0 || $ctrl.theme.resources.length == 1"
+                  ng-click="$ctrl.moveResourceUp($index)">
+                  <md-icon>arrow_upward</md-icon>
+                  Move up
+                </md-button>
+              </md-card-actions>
+            </md-card>
+
+            <div>
+              <md-button
+                class="md-raised"
+                aria-label="Add new resource to this platform theme"
+                ng-click="$ctrl.addResource()">
+                <md-icon>add_box</md-icon>
+                Add new resource
+              </md-button>
+            </div>
+
+          </div>
+
+          <br />
+
           <div>
             <md-button
               type="submit"

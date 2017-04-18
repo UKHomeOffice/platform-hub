@@ -70,6 +70,10 @@ class PlatformThemesController < ApiJsonController
 
   # Only allow a trusted parameter "white list" through
   def platform_theme_params
-    params.require(:platform_theme).permit(:title, :description, :image_url, :colour)
+    allowed_params = params.require(:platform_theme).permit(:title, :description, :image_url, :colour)
+
+    # Below is a workaround until Rails 5.1 lands and we can use the `foo: [{}]` syntax to permit the whole array of hashes
+    allowed_params[:resources] = params[:platform_theme][:resources]
+    allowed_params.permit!
   end
 end

@@ -12,5 +12,7 @@ FactoryGirl.define do
 
     colour 'red'
 
+    resources []
+
   end
 end

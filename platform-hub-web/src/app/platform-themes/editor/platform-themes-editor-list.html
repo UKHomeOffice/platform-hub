@@ -56,6 +56,15 @@
           </span>
           {{t.colour}}
         </p>
+
+        <p class="md-body-1">
+          <ng-pluralize
+            count="t.resources.length"
+            when="{'0': 'No resources specified',
+                   '1': '1 resource specified',
+                   'other': '{} resources specified'}">
+          </ng-pluralize>
+        </p>
       </md-card-content>
 
       <md-card-actions layout="row" layout-align="start center">
