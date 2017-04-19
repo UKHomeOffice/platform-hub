@@ -3,11 +3,10 @@
 export const hubApiService = function ($rootScope, $http, $q, logger, events, apiEndpoint, _) {
   'ngInject';
 
-  let meDataPromise = null;
-
   const service = {};
 
   service.getMe = getMe;
+  service.getIdentityFlowStartEndpoint = getIdentityFlowStartEndpoint;
   service.deleteMeIdentity = deleteMeIdentity;
 
   service.getUsers = buildCollectionFetcher('users');
@@ -51,25 +50,19 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   return service;
 
   function getMe() {
-    if (_.isNull(meDataPromise)) {
-      meDataPromise = $http
-        .get(`${apiEndpoint}/me`)
-        .then(response => {
-          const me = response.data;
+    return $http
+      .get(`${apiEndpoint}/me`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error('Failed to fetch profile data – the API might be down. Try again later.');
+        return $q.reject(response);
+      });
+  }
 
-          $rootScope.$broadcast(events.api.me.updated, me);
-
-          return me;
-        })
-        .catch(response => {
-          logger.error('Failed to fetch profile data – the API might be down. Try again later.');
-          return $q.reject(response);
-        })
-        .finally(() => {
-          meDataPromise = null;
-        });
-    }
-    return meDataPromise;
+  function getIdentityFlowStartEndpoint(provider) {
+    return `${apiEndpoint}/identity_flows/start/${provider}`;
   }
 
   function deleteMeIdentity(provider) {

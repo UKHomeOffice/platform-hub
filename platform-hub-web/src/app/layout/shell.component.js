@@ -3,7 +3,7 @@ export const ShellComponent = {
   controller: ShellController
 };
 
-function ShellController($scope, $mdSidenav, authService, roleCheckerService, events, icons, AppSettings, PlatformThemesList, _) {
+function ShellController($scope, $mdSidenav, authService, roleCheckerService, events, icons, AppSettings, PlatformThemesList) {
   'ngInject';
 
   const ctrl = this;
@@ -76,10 +76,11 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
   init();
 
   function init() {
-    // Listen for changes to the Me profile data
-    $scope.$on(events.api.me.updated, (event, meData) => {
-      if (!_.isNull(meData) && !_.isEmpty(meData)) {
+    $scope.$on(events.auth.updated, () => {
+      if (isAuthenticated()) {
         refresh();
+      } else {
+        ctrl.isAdmin = false;
       }
     });
 
