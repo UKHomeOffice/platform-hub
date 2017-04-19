@@ -16,6 +16,11 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
 
   ctrl.myAccountNavStates = [
     {
+      title: 'Hub Setup',
+      state: 'onboarding.hub-setup',
+      icon: icons.hubSetup
+    },
+    {
       title: 'Connected Identities',
       state: 'identities',
       icon: icons.identities

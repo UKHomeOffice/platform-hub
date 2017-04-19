@@ -24,6 +24,7 @@ import {HelpModule} from './help/help.module';
 import {HomeModule} from './home/home.module';
 import {IdentitiesModule} from './identities/identities.module';
 import {LayoutModule} from './layout/layout.module';
+import {OnboardingModule} from './onboarding/onboarding.module';
 import {PlatformThemesModule} from './platform-themes/platform-themes.module';
 import {ProjectsModule} from './projects/projects.module';
 import {SharedModule} from './shared/shared.module';
@@ -48,6 +49,7 @@ angular
     HomeModule,
     IdentitiesModule,
     LayoutModule,
+    OnboardingModule,
     PlatformThemesModule,
     ProjectsModule,
     SharedModule,

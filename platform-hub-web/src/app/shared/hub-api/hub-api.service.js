@@ -8,6 +8,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getMe = getMe;
   service.getIdentityFlowStartEndpoint = getIdentityFlowStartEndpoint;
   service.deleteMeIdentity = deleteMeIdentity;
+  service.completeHubOnboarding = completeHubOnboarding;
 
   service.getUsers = buildCollectionFetcher('users');
   service.searchUsers = searchUsers;
@@ -74,6 +75,22 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .delete(`${apiEndpoint}/me/identities/${provider}`)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to delete the identity for '${provider}'`, response));
+        return $q.reject(response);
+      });
+  }
+
+  function completeHubOnboarding(data) {
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/me/complete_hub_onboarding`, data)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to complete hub onboarding', response));
         return $q.reject(response);
       });
   }

@@ -4,6 +4,7 @@ export const icons = function () {
   return {
     appSettings: 'settings',
     faq: 'question_answer',
+    hubSetup: 'settings',
     identities: 'account_box',
     internalLink: 'input',
     externalLink: 'link',

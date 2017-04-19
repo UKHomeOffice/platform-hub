@@ -13,6 +13,7 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
   model.clear = clear;
   model.connectIdentity = connectIdentity;
   model.deleteIdentity = deleteIdentity;
+  model.completeHubOnboarding = completeHubOnboarding;
 
   return model;
 
@@ -20,10 +21,7 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
     if (force || _.isNull(fetcherPromise)) {
       fetcherPromise = hubApiService
         .getMe()
-        .then(me => {
-          angular.copy(me, model.data);
-          return model.data;
-        })
+        .then(handleMeResourceFromApi)
         .finally(() => {
           // Reuse the same promise for some time, to prevent smashing the API
           $window.setTimeout(() => {
@@ -55,5 +53,16 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
       .then(() => {
         return refresh(true);
       });
+  }
+
+  function completeHubOnboarding(data) {
+    return hubApiService
+      .completeHubOnboarding(data)
+      .then(handleMeResourceFromApi);
+  }
+
+  function handleMeResourceFromApi(me) {
+    angular.copy(me, model.data);
+    return model.data;
   }
 };
