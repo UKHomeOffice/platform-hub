@@ -6,6 +6,8 @@ class User < ApplicationRecord
   audited descriptor_field: :email
   has_associated_audits
 
+  before_create :build_flags
+
   enum role: {
     admin: 'admin'
   }
@@ -20,6 +22,12 @@ class User < ApplicationRecord
     dependent: :delete_all
 
   has_many :projects, through: :memberships
+
+  has_one :flags,
+    class_name: 'UserFlags',
+    foreign_key: 'id',
+    autosave: true,
+    dependent: :destroy
 
   pg_search_scope :search,
     :against => :name,
@@ -40,6 +48,19 @@ class User < ApplicationRecord
 
   def revoke_admin!
     self.role = nil
+    self.save!
+  end
+
+  def ensure_flags
+    self.flags.presence || self.create_flags!(id: self.id)
+  end
+
+  def update_flag name, value
+    ensure_flags.send("#{name}=", value)
+  end
+
+  def update_flag! name, value
+    update_flag name, value
     self.save!
   end
 

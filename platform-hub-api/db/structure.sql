@@ -221,6 +221,18 @@ CREATE TABLE support_request_templates (
 
 
 --
+-- Name: user_flags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE user_flags (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    completed_hub_onboarding boolean DEFAULT false,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -231,7 +243,9 @@ CREATE TABLE users (
     last_seen_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    role character varying
+    role character varying,
+    is_managerial boolean DEFAULT true,
+    is_technical boolean DEFAULT true
 );
 
 
@@ -304,6 +318,14 @@ ALTER TABLE ONLY schema_migrations
 
 ALTER TABLE ONLY support_request_templates
     ADD CONSTRAINT support_request_templates_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_flags user_flags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY user_flags
+    ADD CONSTRAINT user_flags_pkey PRIMARY KEY (id);
 
 
 --
@@ -487,6 +509,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170301114421'),
 ('20170322132009'),
 ('20170322143551'),
-('20170410142703');
+('20170410142703'),
+('20170413124233'),
+('20170418140933');
 
 
