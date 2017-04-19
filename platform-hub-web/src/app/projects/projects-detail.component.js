@@ -6,7 +6,7 @@ export const ProjectsDetailComponent = {
   controller: ProjectsDetailController
 };
 
-function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, logger, _) {
+function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, Me, logger, _) {
   'ngInject';
 
   const ctrl = this;
@@ -61,7 +61,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
         ctrl.memberships = memberships;
 
         // Check to see if logged in user is a project team manager
-        const currentUserId = $rootScope.currentUserId;
+        const currentUserId = Me.data.id;
         if (currentUserId) {
           ctrl.isProjectManager = _.some(memberships, m => {
             return m.role === 'manager' && m.user.id === currentUserId;

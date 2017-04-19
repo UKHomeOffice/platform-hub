@@ -80,7 +80,7 @@ const apiEndpoint = '/api';
 angular
   .module(name)
   .constant('apiEndpoint', apiEndpoint)
-  .constant('apiBackoffTimeMs', 1000);
+  .constant('apiBackoffTimeMs', 2000);
 
 // Run function
 angular

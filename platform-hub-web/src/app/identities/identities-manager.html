@@ -7,7 +7,9 @@
     </div>
   </md-toolbar>
 
-  <md-content layout-padding>
+  <loading-indicator loading="$ctrl.loading || $ctrl.processing"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
     <md-list>
       <md-list-item
         class="md-3-line"

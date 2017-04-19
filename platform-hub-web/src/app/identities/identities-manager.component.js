@@ -3,7 +3,7 @@ export const IdentitiesManagerComponent = {
   controller: IdentitiesManagerController
 };
 
-function IdentitiesManagerController($scope, $mdDialog, hubApiService, gitHubIdentityService, events, _) {
+function IdentitiesManagerController($scope, $mdDialog, Me, _) {
   'ngInject';
 
   const ctrl = this;
@@ -13,6 +13,8 @@ function IdentitiesManagerController($scope, $mdDialog, hubApiService, gitHubIde
     {provider: 'github', title: 'GitHub', external: true}
   ];
 
+  ctrl.loading = true;
+  ctrl.processing = false;
   ctrl.identities = {};
 
   ctrl.connect = connect;
@@ -21,26 +23,33 @@ function IdentitiesManagerController($scope, $mdDialog, hubApiService, gitHubIde
   init();
 
   function init() {
-    // Listen for changes to the Me profile data
-    $scope.$on(events.api.me.updated, (event, meData) => {
-      processMeData(meData);
-    });
+    ctrl.loading = true;
 
-    hubApiService.getMe();
+    Me
+      .refresh()
+      .then(processMeData)
+      .finally(() => {
+        ctrl.loading = false;
+      });
   }
 
-  function connect(service) {
+  function connect(provider) {
     // Currently only support Github
-    if (service !== 'github') {
+    if (provider !== 'github') {
       return;
     }
 
-    gitHubIdentityService
-      .popupFlow()
-      .then(hubApiService.getMe);
+    ctrl.processing = true;
+
+    Me
+      .connectIdentity(provider)
+      .then(processMeData)
+      .finally(() => {
+        ctrl.processing = false;
+      });
   }
 
-  function disconnect(service, targetEvent) {
+  function disconnect(provider, targetEvent) {
     const confirm = $mdDialog.confirm()
       .title(`Are you sure?`)
       .textContent('This will delete the identity permanently from your Platform Hub account. Though you can always connect it back up again later.')
@@ -52,9 +61,14 @@ function IdentitiesManagerController($scope, $mdDialog, hubApiService, gitHubIde
     $mdDialog
       .show(confirm)
       .then(() => {
-        hubApiService
-          .deleteMeIdentity(service)
-          .then(hubApiService.getMe);
+        ctrl.processing = true;
+
+        Me
+          .deleteIdentity(provider)
+          .then(processMeData)
+          .finally(() => {
+            ctrl.processing = false;
+          });
       });
   }
 
