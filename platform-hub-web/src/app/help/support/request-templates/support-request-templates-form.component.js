@@ -8,12 +8,14 @@ export const SupportRequestTemplatesFormComponent = {
   controller: SupportRequestTemplatesFormController
 };
 
-function SupportRequestTemplatesFormController($q, $state, hubApiService, logger, _) {
+function SupportRequestTemplatesFormController($q, $state, hubApiService, UserScopes, logger, _) {
   'ngInject';
 
   const ctrl = this;
 
   const id = ctrl.transition && ctrl.transition.params().id;
+
+  ctrl.userScopes = UserScopes.all;
 
   ctrl.fieldIdRegex = '\\w+';
 

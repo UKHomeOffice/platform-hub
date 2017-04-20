@@ -82,7 +82,7 @@ class SupportRequestTemplatesController < ApiJsonController
 
   # Only allow a trusted parameter "white list" through
   def support_request_template_params
-    allowed_params = params.require(:support_request_template).permit(:shortname, :git_hub_repo, :title, :description)
+    allowed_params = params.require(:support_request_template).permit(:shortname, :git_hub_repo, :title, :description, :user_scope)
 
     # Below is a workaround until Rails 5.1 lands and we can use the `foo: {}` syntax to permit the whole hash
     allowed_params[:form_spec] = params[:support_request_template][:form_spec]

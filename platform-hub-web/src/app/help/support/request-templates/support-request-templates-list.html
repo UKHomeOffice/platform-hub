@@ -39,6 +39,13 @@
         </p>
 
         <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            User scope:
+          </span>
+          {{t.user_scope || '--'}}
+        </p>
+
+        <p class="md-body-1">
           <ng-pluralize
             count="t.form_spec.fields.length"
             when="{'0': 'No form fields specified',
