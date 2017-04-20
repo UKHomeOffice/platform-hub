@@ -3,27 +3,16 @@ export const AuthCardComponent = {
   controller: AuthCardController
 };
 
-function AuthCardController($scope, $state, authService, events) {
+function AuthCardController($scope, $state, authService, Me) {
   'ngInject';
 
   const ctrl = this;
 
-  ctrl.authData = {};
+  ctrl.Me = Me;
 
   ctrl.isAuthenticated = isAuthenticated;
   ctrl.login = login;
   ctrl.logout = logout;
-
-  init();
-
-  function init() {
-    ctrl.authData = authService.getPayload();
-
-    // Listen for further changes
-    $scope.$on(events.auth.updated, (event, authData) => {
-      ctrl.authData = authData;
-    });
-  }
 
   function isAuthenticated() {
     return authService.isAuthenticated();
