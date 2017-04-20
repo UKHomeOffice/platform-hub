@@ -6,7 +6,7 @@ export const PlatformThemesEditorFormComponent = {
   controller: PlatformThemesEditorFormController
 };
 
-function PlatformThemesEditorFormController($state, $mdColorPalette, hubApiService, PlatformThemesResourceKinds, logger, _) {
+function PlatformThemesEditorFormController($state, $mdColorPalette, hubApiService, PlatformThemesResourceKinds, UserScopes, logger, _) {
   'ngInject';
 
   const ctrl = this;
@@ -17,6 +17,7 @@ function PlatformThemesEditorFormController($state, $mdColorPalette, hubApiServi
   ctrl.colours = Object.keys($mdColorPalette);
 
   ctrl.resourceKinds = PlatformThemesResourceKinds.all;
+  ctrl.userScopes = UserScopes.all;
 
   ctrl.loading = true;
   ctrl.saving = false;

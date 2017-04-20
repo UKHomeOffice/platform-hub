@@ -67,6 +67,7 @@ RSpec.describe SupportRequestTemplatesController, type: :controller do
             'description' => @support_request_template.description,
             'form_spec' => Hashie::Mash.new(@support_request_template.form_spec),
             'git_hub_issue_spec' => Hashie::Mash.new(@support_request_template.git_hub_issue_spec),
+            'user_scope' => nil,
             'created_at' => now_json_value,
             'updated_at' => now_json_value,
           })
@@ -87,7 +88,8 @@ RSpec.describe SupportRequestTemplatesController, type: :controller do
           title: source_data.title,
           description: source_data.description,
           form_spec: source_data.form_spec,
-          git_hub_issue_spec: source_data.git_hub_issue_spec
+          git_hub_issue_spec: source_data.git_hub_issue_spec,
+          user_scope: 'foo'
         }
       }
     end
@@ -125,6 +127,7 @@ RSpec.describe SupportRequestTemplatesController, type: :controller do
             'description' => post_data[:support_request_template][:description],
             'form_spec' => Hashie::Mash.new(post_data[:support_request_template][:form_spec]),
             'git_hub_issue_spec' => Hashie::Mash.new(post_data[:support_request_template][:git_hub_issue_spec]),
+            'user_scope' => post_data[:support_request_template][:user_scope],
             'created_at' => now_json_value,
             'updated_at' => now_json_value
           });

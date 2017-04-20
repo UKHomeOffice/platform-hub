@@ -85,6 +85,21 @@
             </div>
           </md-input-container>
 
+          <md-input-container class="md-block" flex>
+            <label>User scope (optional):</label>
+            <md-select
+              ng-model="$ctrl.template.user_scope">
+              <md-option md-option-empty></md-option>
+              <md-option
+                ng-repeat="s in $ctrl.userScopes"
+                value="{{s.value}}">
+                {{s.name}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+
+          <br />
+
           <div>
 
             <h4 class="md-subhead">Form spec</h4>

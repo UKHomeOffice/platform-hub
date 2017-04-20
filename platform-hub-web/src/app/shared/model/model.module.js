@@ -7,6 +7,7 @@ import {AppSettings} from './app-settings';
 import {Me} from './me';
 import {PlatformThemesList} from './platform-themes-list';
 import {PlatformThemesResourceKinds} from './platform-themes-resource-kinds';
+import {UserScopes} from './user-scopes';
 
 export const ModelModule = angular
   .module('app.shared.model', [
@@ -17,4 +18,5 @@ export const ModelModule = angular
   .service('Me', Me)
   .service('PlatformThemesList', PlatformThemesList)
   .service('PlatformThemesResourceKinds', PlatformThemesResourceKinds)
+  .service('UserScopes', UserScopes)
   .name;

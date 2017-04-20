@@ -216,7 +216,8 @@ CREATE TABLE support_request_templates (
     form_spec json NOT NULL,
     git_hub_issue_spec json NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    user_scope character varying
 );
 
 
@@ -511,6 +512,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170322143551'),
 ('20170410142703'),
 ('20170413124233'),
-('20170418140933');
+('20170418140933'),
+('20170420134436');
 
 

@@ -3,7 +3,7 @@ export const SupportRequestsOverviewComponent = {
   controller: SupportRequestsOverviewController
 };
 
-function SupportRequestsOverviewController($q, hubApiService) {
+function SupportRequestsOverviewController($q, hubApiService, UserScopes) {
   'ngInject';
 
   const ctrl = this;
@@ -11,6 +11,8 @@ function SupportRequestsOverviewController($q, hubApiService) {
   ctrl.loading = this;
   ctrl.templates = [];
   ctrl.gitHubRepos = [];
+
+  ctrl.templateIsVisible = templateIsVisible;
 
   init();
 
@@ -40,5 +42,9 @@ function SupportRequestsOverviewController($q, hubApiService) {
       .finally(() => {
         ctrl.loading = false;
       });
+  }
+
+  function templateIsVisible(template) {
+    return UserScopes.isVisibleToCurrentUser(template.user_scope);
   }
 }
