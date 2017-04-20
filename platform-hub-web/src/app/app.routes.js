@@ -9,6 +9,7 @@ import {
 } from './help/help.module';
 import {AppHome} from './home/home.module';
 import {IdentitiesManager} from './identities/identities.module';
+import {HubSetup} from './onboarding/onboarding.module';
 import {
   PlatformThemesEditorForm,
   PlatformThemesEditorList,
@@ -35,6 +36,18 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         authenticate: false
       }
     })
+    .state('onboarding', {
+      abstract: true,
+      url: '/onboarding',
+      template: '<ui-view></ui-view>'
+    })
+      .state('onboarding.hub-setup', {
+        url: '/hub-setup',
+        component: HubSetup,
+        data: {
+          authenticate: true
+        }
+      })
     .state('identities', {
       url: '/identities',
       component: IdentitiesManager,

@@ -5,7 +5,7 @@ class MeController < ApiJsonController
   skip_authorization_check
 
   def show
-    render json: current_user, serializer: MeSerializer
+    render_me_resource
   end
 
   def delete_identity
@@ -19,6 +19,31 @@ class MeController < ApiJsonController
     )
 
     head :no_content
+  end
+
+  def complete_hub_onboarding
+    current_user.is_managerial = params[:is_managerial]
+    current_user.is_technical = params[:is_technical]
+
+    current_user.update_flag :completed_hub_onboarding, true
+
+    if current_user.save
+      AuditService.log(
+        context: audit_context,
+        action: 'complete_hub_onboarding',
+        comment: "User '#{current_user.email}' completed the hub onboarding"
+      )
+
+      render_me_resource
+    else
+      render_model_errors current_user.errors
+    end
+  end
+
+  private
+
+  def render_me_resource
+    render json: current_user, serializer: MeSerializer
   end
 
 end

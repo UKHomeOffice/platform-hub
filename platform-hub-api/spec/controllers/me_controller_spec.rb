@@ -4,7 +4,7 @@ RSpec.describe MeController, type: :controller do
 
   include_context 'time helpers'
 
-  describe "GET #show" do
+  describe 'GET #show' do
     it_behaves_like 'unauthenticated not allowed'  do
       before do
         get :show
@@ -12,7 +12,7 @@ RSpec.describe MeController, type: :controller do
     end
 
     it_behaves_like 'authenticated' do
-      it "should return information about the currently authenticated user" do
+      it 'should return information about the currently authenticated user' do
         get :show
         expect(response).to be_success
         expect(json_response).to eq({
@@ -32,8 +32,46 @@ RSpec.describe MeController, type: :controller do
               'created_at' => now_json_value,
               'updated_at' => now_json_value
             }
-          ]
+          ],
+          'flags' => Hash[UserFlags.flag_names.map {|f| [f, false]}],
+          'is_managerial' => true,
+          'is_technical' => true
         })
+      end
+    end
+  end
+
+  describe '#complete_hub_onboarding' do
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        get :show
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+      before do
+        u = current_user
+        @current_is_managerial_value = u.is_managerial
+        @current_is_technical_value = u.is_technical
+      end
+
+      let :post_data do
+        {
+          is_managerial: !@current_is_managerial_value,
+          is_technical: !@current_is_technical_value
+        }
+      end
+
+      it 'should make the necessary user updates and return the updated me resource' do
+        post :complete_hub_onboarding, params: post_data
+        expect(response).to be_success
+        expect(json_response['is_managerial']).to eq !@current_is_managerial_value
+        expect(json_response['is_technical']).to eq !@current_is_technical_value
+        expect(json_response['flags']['completed_hub_onboarding']).to be true
+        expect(Audit.count).to eq 1
+        audit = Audit.first
+        expect(audit.action).to eq 'complete_hub_onboarding'
+        expect(audit.user.id).to eq current_user_id
       end
     end
   end

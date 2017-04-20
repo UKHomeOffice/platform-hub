@@ -95,7 +95,10 @@ RSpec.describe UsersController, type: :controller do
               'role' => nil,
               'last_seen_at' => now_json_value,
               'enabled_identities' => [],
-              'identities' => []
+              'identities' => [],
+              'flags' => Hash[UserFlags.flag_names.map {|f| [f, false]}],
+              'is_managerial' => true,
+              'is_technical' => true
             })
           end
         end

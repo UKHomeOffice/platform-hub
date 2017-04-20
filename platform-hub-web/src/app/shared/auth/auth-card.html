@@ -3,7 +3,7 @@
     <md-card-title-text>
       <em ng-if="!$ctrl.isAuthenticated()">Not logged in</em>
       <span ng-if="$ctrl.isAuthenticated()">
-        Hello<span ng-if="$ctrl.authData.name">, {{$ctrl.authData.name}}</span>
+        Hello<span ng-if="$ctrl.Me.data.name">, {{$ctrl.Me.data.name}}</span>
       </span>
     </md-card-title-text>
   </md-card-title>

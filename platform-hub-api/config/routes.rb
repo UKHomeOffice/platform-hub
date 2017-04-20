@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     get '/healthz', to: 'healthcheck#show'
 
     get '/me', to: 'me#show'
+    post '/me/complete_hub_onboarding', to: 'me#complete_hub_onboarding'
 
     constraints service: /github/ do
 
