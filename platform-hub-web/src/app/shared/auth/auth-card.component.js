@@ -3,7 +3,7 @@ export const AuthCardComponent = {
   controller: AuthCardController
 };
 
-function AuthCardController($scope, $state, authService, Me) {
+function AuthCardController($scope, $state, authService, onboardingTrigger, Me) {
   'ngInject';
 
   const ctrl = this;
@@ -19,7 +19,9 @@ function AuthCardController($scope, $state, authService, Me) {
   }
 
   function login() {
-    authService.authenticate();
+    authService
+      .authenticate()
+      .then(onboardingTrigger);
   }
 
   function logout() {

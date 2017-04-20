@@ -3,7 +3,7 @@ export const HomeComponent = {
   controller: HomeController
 };
 
-function HomeController($scope, events, authService, AppSettings, PlatformThemesList, _) {
+function HomeController($scope, events, authService, onboardingTrigger, AppSettings, PlatformThemesList) {
   'ngInject';
 
   const ctrl = this;
@@ -18,8 +18,8 @@ function HomeController($scope, events, authService, AppSettings, PlatformThemes
 
   function init() {
     // Listen for changes to the Me profile data
-    $scope.$on(events.auth.updated, (event, authData) => {
-      if (!_.isNull(authData) && !_.isEmpty(authData)) {
+    $scope.$on(events.auth.updated, () => {
+      if (isAuthenticated()) {
         refresh();
       }
     });
@@ -38,6 +38,8 @@ function HomeController($scope, events, authService, AppSettings, PlatformThemes
   }
 
   function login() {
-    authService.authenticate();
+    authService
+      .authenticate()
+      .then(onboardingTrigger);
   }
 }

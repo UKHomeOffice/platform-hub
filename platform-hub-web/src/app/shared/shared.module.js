@@ -9,6 +9,7 @@ import {UtilModule} from './util/util.module';
 import {events} from './events.factory';
 import {homeEndpoint} from './home-endpoint.factory';
 import {icons} from './icons.factory';
+import {onboardingTrigger} from './onboarding-trigger.factory';
 import {roleCheckerService} from './role-checker.service';
 
 export const SharedModule = angular
@@ -22,5 +23,6 @@ export const SharedModule = angular
   .factory('events', events)
   .factory('homeEndpoint', homeEndpoint)
   .factory('icons', icons)
+  .factory('onboardingTrigger', onboardingTrigger)
   .service('roleCheckerService', roleCheckerService)
   .name;
