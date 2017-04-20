@@ -31,7 +31,7 @@
           <md-list flex>
             <ng-switch
               ng-repeat="resource in $ctrl.theme.resources"
-              ng-if="resource.visible"
+              ng-if="$ctrl.resourceIsVisible(resource)"
               on="resource.kind">
 
               <!-- internal_route -->

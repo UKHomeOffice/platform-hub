@@ -116,14 +116,33 @@
                   </md-button>
                 </div>
 
-                <md-input-container class="md-block">
-                  <md-checkbox
-                    name="resource{{$index}}-visible"
-                    ng-model="resource.visible"
-                    aria-label="Is this resource visible in the app?">
-                    Visible?
-                  </md-checkbox>
-                </md-input-container>
+                <fieldset layout-padding>
+                  <legend>Visibility</legend>
+
+                  <div>
+                    <md-checkbox
+                      name="resource{{$index}}-visible"
+                      ng-model="resource.visible"
+                      aria-label="Is this resource visible in the app?">
+                      Visible?
+                    </md-checkbox>
+
+                    <md-input-container class="md-block" flex>
+                      <label>User scope (optional):</label>
+                      <md-select
+                        ng-model="resource.user_scope">
+                        <md-option md-option-empty></md-option>
+                        <md-option
+                          ng-repeat="s in $ctrl.userScopes"
+                          value="{{s.value}}">
+                          {{s.name}}
+                        </md-option>
+                      </md-select>
+                    </md-input-container>
+                  </div>
+                </fieldset>
+
+                <br />
 
                 <md-input-container class="md-block" flex>
                   <label for="resource{{$index}}-title">Title:</label>

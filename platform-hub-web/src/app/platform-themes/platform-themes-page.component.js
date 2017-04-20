@@ -8,7 +8,7 @@ export const PlatformThemesPageComponent = {
   controller: PlatformThemesPageController
 };
 
-function PlatformThemesPageController(hubApiService, icons, _) {
+function PlatformThemesPageController(hubApiService, icons, UserScopes, _) {
   'ngInject';
 
   const ctrl = this;
@@ -24,6 +24,8 @@ function PlatformThemesPageController(hubApiService, icons, _) {
 
   ctrl.loading = true;
   ctrl.theme = null;
+
+  ctrl.resourceIsVisible = resourceIsVisible;
 
   init();
 
@@ -48,5 +50,9 @@ function PlatformThemesPageController(hubApiService, icons, _) {
       .finally(() => {
         ctrl.loading = false;
       });
+  }
+
+  function resourceIsVisible(resource) {
+    return resource.visible && UserScopes.isVisibleToCurrentUser(resource.user_scope);
   }
 }
