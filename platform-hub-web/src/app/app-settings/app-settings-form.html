@@ -20,6 +20,8 @@
 
       <md-content>
         <form name="$ctrl.settingsForm" role="form" ng-submit="$ctrl.update()">
+
+          <!-- Platform name -->
           <md-input-container class="md-block">
             <label for="platformName">Platform Name:</label>
             <input
@@ -32,6 +34,7 @@
             </div>
           </md-input-container>
 
+          <!-- Platform themes config -->
           <div>
             <h3 class="md-subhead">Platform Themes</h3>
             <div
@@ -73,6 +76,37 @@
             </div>
           </div>
 
+          <br />
+          <br />
+
+          <!-- Platform overview -->
+          <div>
+            <h3 class="md-subhead">Platform Overview</h3>
+
+            <div layout-padding>
+              <p class="md-body-1" md-colors="{background: 'accent-50'}">
+                <strong>Important:</strong>
+                this overview text (and any images in it) will be shown on the homepage for both logged in users AND visitors. Please don't put anything confidential in here!
+              </p>
+
+              <br />
+
+              <div layout-padding md-colors="{background: 'blue-grey-50'}">
+                <div
+                  medium-editor
+                  bind-options="$ctrl.editorOptions"
+                  ng-model="$ctrl.settings.platform_overview">
+                </div>
+              </div>
+
+              <p class="md-body-1">
+                <span><strong>Tip:</strong></span>
+                this is a rich text editor – try highlighting some text for options
+              </p>
+            </div>
+          </div>
+
+          <br />
           <br />
 
           <div>

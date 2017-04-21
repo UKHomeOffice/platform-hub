@@ -13,6 +13,7 @@ export const AppSettings = function ($window, hubApiService, apiBackoffTimeMs, l
   model.update = update;
   model.getAppTitle = getAppTitle;
   model.getPlatformName = getPlatformName;
+  model.getPlatformOverviewText = getPlatformOverviewText;
 
   return model;
 
@@ -50,5 +51,9 @@ export const AppSettings = function ($window, hubApiService, apiBackoffTimeMs, l
 
   function getPlatformName() {
     return model.data.platformName || 'Platform';
+  }
+
+  function getPlatformOverviewText() {
+    return model.data.platform_overview || '';
   }
 };

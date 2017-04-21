@@ -3,13 +3,15 @@ export const HomeComponent = {
   controller: HomeController
 };
 
-function HomeController($scope, events, authService, onboardingTrigger, AppSettings, PlatformThemesList) {
+function HomeController($scope, $sce, events, authService, onboardingTrigger, AppSettings, PlatformThemesList) {
   'ngInject';
 
   const ctrl = this;
 
   ctrl.AppSettings = AppSettings;
   ctrl.PlatformThemesList = PlatformThemesList;
+
+  ctrl.platformOverviewText = '';
 
   ctrl.login = login;
   ctrl.isAuthenticated = isAuthenticated;
@@ -27,6 +29,12 @@ function HomeController($scope, events, authService, onboardingTrigger, AppSetti
     if (isAuthenticated()) {
       refresh();
     }
+
+    AppSettings
+      .refresh()
+      .then(() => {
+        ctrl.platformOverviewText = $sce.trustAsHtml(AppSettings.getPlatformOverviewText());
+      });
   }
 
   function refresh() {

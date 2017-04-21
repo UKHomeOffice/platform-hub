@@ -19,6 +19,9 @@ import 'angular-url-encode';
 import moment from 'moment';
 import lodash from 'lodash';
 
+window.MediumEditor = require('medium-editor/dist/js/medium-editor.js');
+import 'angular-medium-editor';
+
 import {AppSettingsModule} from './app-settings/app-settings.module';
 import {HelpModule} from './help/help.module';
 import {HomeModule} from './home/home.module';
@@ -37,6 +40,8 @@ import {appRun} from './app.run';
 import 'normalize.css';
 import 'angular-material/angular-material.css';  // Make sure this is available across the app
 import 'angular-material-sidemenu/dest/angular-material-sidemenu.css';
+import 'medium-editor/dist/css/medium-editor.css';
+import 'medium-editor/dist/css/themes/beagle.css';
 import './app.scss';
 
 const name = 'app';
@@ -56,6 +61,7 @@ angular
     UsersModule,
     'angular-jwt',
     'angular-loading-bar',
+    'angular-medium-editor',
     'angular-sortable-view',
     'base64',
     'bc.AngularUrlEncode',
