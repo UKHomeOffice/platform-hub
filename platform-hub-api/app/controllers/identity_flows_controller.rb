@@ -16,13 +16,12 @@ class IdentityFlowsController < AuthenticatedController
 
     code = params[:code]
     if code.blank?
-      head :unprocessable_entity
-      return
+      head :unprocessable_entity and return
     end
 
     state = params[:state]
     if state.blank?
-      head :unprocessable_entity
+      head :unprocessable_entity and return
     end
 
     begin
@@ -36,13 +35,13 @@ class IdentityFlowsController < AuthenticatedController
       )
     rescue GitHubIdentityService::Errors::InvalidCallbackState => ex
       logger.error "Github identity flow callback was called with an invalid 'state' = #{state}"
-      head :forbidden
+      head :forbidden and return
     rescue GitHubIdentityService::Errors::NoAccessToken => ex
       logger.error "Github identity flow was unable to get an access token"
-      head :forbidden
+      head :forbidden and return
     rescue GitHubIdentityService::Errors::UserMismatch => ex
       logger.error "Github identity flow with mismatched users: the Github auth flow was carried out with a different user to the user assigned to an existing matching Github identity"
-      head :forbidden
+      head :forbidden and return
     end
 
     redirect_to Rails.application.config.app_base_url
