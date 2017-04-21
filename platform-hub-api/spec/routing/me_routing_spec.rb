@@ -25,5 +25,9 @@ RSpec.describe MeController, type: :routing do
       expect(:post => '/me/complete_hub_onboarding').to route_to('me#complete_hub_onboarding')
     end
 
+    it 'routes to #complete_services_onboarding' do
+      expect(:post => '/me/complete_services_onboarding').to route_to('me#complete_services_onboarding')
+    end
+
   end
 end

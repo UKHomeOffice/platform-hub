@@ -21,6 +21,11 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       icon: icons.hubSetup
     },
     {
+      title: 'Services Onboarding',
+      state: 'onboarding.services',
+      icon: icons.services
+    },
+    {
       title: 'Connected Identities',
       state: 'identities',
       icon: icons.identities

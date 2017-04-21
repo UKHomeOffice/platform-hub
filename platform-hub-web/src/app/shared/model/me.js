@@ -14,6 +14,7 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
   model.connectIdentity = connectIdentity;
   model.deleteIdentity = deleteIdentity;
   model.completeHubOnboarding = completeHubOnboarding;
+  model.completeServicesOnboarding = completeServicesOnboarding;
 
   return model;
 
@@ -58,6 +59,12 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
   function completeHubOnboarding(data) {
     return hubApiService
       .completeHubOnboarding(data)
+      .then(handleMeResourceFromApi);
+  }
+
+  function completeServicesOnboarding() {
+    return hubApiService
+      .completeServicesOnboarding()
       .then(handleMeResourceFromApi);
   }
 

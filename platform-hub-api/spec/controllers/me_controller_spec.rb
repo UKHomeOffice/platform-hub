@@ -63,6 +63,7 @@ RSpec.describe MeController, type: :controller do
       end
 
       it 'should make the necessary user updates and return the updated me resource' do
+        expect(current_user.flags.completed_hub_onboarding).to be false
         post :complete_hub_onboarding, params: post_data
         expect(response).to be_success
         expect(json_response['is_managerial']).to eq !@current_is_managerial_value
@@ -73,6 +74,51 @@ RSpec.describe MeController, type: :controller do
         expect(audit.action).to eq 'complete_hub_onboarding'
         expect(audit.user.id).to eq current_user_id
       end
+    end
+  end
+
+  describe '#complete_services_onboarding' do
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        get :show
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      let :git_hub_agent_service do
+        instance_double('Agents::GitHubAgentService')
+      end
+
+      context 'when user does not have a GitHub identity connected' do
+        it 'should return a 400 Bad Request with an appropriate error message' do
+          expect(Agents::GitHubAgentService).to receive(:new).with(any_args).and_return(git_hub_agent_service)
+          expect(git_hub_agent_service).to receive(:onboard_user).with(current_user).and_raise(Agents::GitHubAgentService::Errors::IdentityMissing)
+          post :complete_services_onboarding
+          expect(response).to have_http_status(400)
+          expect(json_response['error']['message']).to eq 'User does not have a GitHub identity connected yet'
+          expect(Audit.count).to be 0
+        end
+      end
+
+      context 'when user has a GitHub identity connected' do
+        it 'should onboard the user and return a success response with no content' do
+          expect(Agents::GitHubAgentService).to receive(:new).with(any_args).and_return(git_hub_agent_service)
+          expect(git_hub_agent_service).to receive(:onboard_user).with(current_user).and_return(true)
+          expect(current_user.flags.completed_services_onboarding).to be false
+          get :complete_services_onboarding
+          expect(response).to be_success
+          expect(json_response['flags']['completed_services_onboarding']).to be true
+          expect(Audit.count).to eq 2
+          audits = Audit.all
+          expect(audits.first.action).to eq 'onboard_github'
+          expect(audits.first.auditable).to eq current_user
+          expect(audits.first.user.id).to eq current_user_id
+          expect(audits.second.action).to eq 'complete_services_onboarding'
+          expect(audits.second.user.id).to eq current_user_id
+        end
+      end
+
     end
   end
 

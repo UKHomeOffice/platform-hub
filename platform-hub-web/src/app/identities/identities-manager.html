@@ -7,43 +7,9 @@
     </div>
   </md-toolbar>
 
-  <loading-indicator loading="$ctrl.loading || $ctrl.processing"></loading-indicator>
+  <loading-indicator loading="$ctrl.busy"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading">
-    <md-list>
-      <md-list-item
-        class="md-3-line"
-        ng-repeat="i in $ctrl.identities track by i.provider">
-
-        <md-icon ng-if="i.connected" md-colors="{color: 'teal'}">check_circle</md-icon>
-
-        <div class="md-list-item-text" ng-class="{'md-offset': !i.connected}">
-          <h3>{{i.title}}</h3>
-          <p ng-if="i.connected">
-            ID: {{i.external_id}}
-          </p>
-          <p ng-if="i.connected">
-            Username: {{i.external_username}}
-          </p>
-          <md-button
-            class="md-raised md-secondary"
-            ng-if="!i.connected && i.external"
-            ng-click="$ctrl.connect(i.provider)"
-            aria-label="Connect Github identity">
-            Connect
-          </md-button>
-          <md-button
-            class="md-raised md-secondary"
-            ng-if="i.connected && i.external"
-            ng-click="$ctrl.disconnect(i.provider, $event)"
-            aria-label="Disconnect Github identity">
-            Disconnect
-          </md-button>
-        </div>
-
-        <md-divider></md-divider>
-
-      </md-list-item>
-    </md-list>
+  <md-content>
+    <identities-list busy="$ctrl.busy"></identities-list>
   </md-content>
 </div>

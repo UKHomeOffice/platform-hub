@@ -1,6 +1,8 @@
 class MeController < ApiJsonController
 
-  # This controller only ever acts on the currently authenticated user,
+  include GitHubOnboardingHelpers
+
+  # This controller should only ever act on the currently authenticated user,
   # so we do not need to peform an authorization checks.
   skip_authorization_check
 
@@ -37,6 +39,24 @@ class MeController < ApiJsonController
       render_me_resource
     else
       render_model_errors current_user.errors
+    end
+  end
+
+  def complete_services_onboarding
+    # Currently only supports GitHub onboarding
+    success = handle_onboard_github_request current_user, audit_context
+
+    current_user.update_flag :completed_services_onboarding, true
+    current_user.save  # Note: doesn't _really_ matter if this save fails – just means the flag won't get set
+
+    if success
+      AuditService.log(
+        context: audit_context,
+        action: 'complete_services_onboarding',
+        comment: "User '#{current_user.email}' completed the services onboarding"
+      )
+
+      render_me_resource
     end
   end
 

@@ -4,6 +4,7 @@ import {HubApiModule} from '../hub-api/hub-api.module';
 import {UtilModule} from '../util/util.module';
 
 import {AppSettings} from './app-settings';
+import {Identities} from './identities';
 import {Me} from './me';
 import {PlatformThemes} from './platform-themes';
 import {PlatformThemesResourceKinds} from './platform-themes-resource-kinds';

@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
     get '/me', to: 'me#show'
     post '/me/complete_hub_onboarding', to: 'me#complete_hub_onboarding'
+    post '/me/complete_services_onboarding', to: 'me#complete_services_onboarding'
 
     constraints service: /github/ do
 

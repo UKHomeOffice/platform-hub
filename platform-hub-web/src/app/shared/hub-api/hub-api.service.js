@@ -9,6 +9,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getIdentityFlowStartEndpoint = getIdentityFlowStartEndpoint;
   service.deleteMeIdentity = deleteMeIdentity;
   service.completeHubOnboarding = completeHubOnboarding;
+  service.completeServicesOnboarding = completeServicesOnboarding;
 
   service.getUsers = buildCollectionFetcher('users');
   service.searchUsers = searchUsers;
@@ -91,6 +92,18 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to complete hub onboarding', response));
+        return $q.reject(response);
+      });
+  }
+
+  function completeServicesOnboarding() {
+    return $http
+      .post(`${apiEndpoint}/me/complete_services_onboarding`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to complete services onboarding', response));
         return $q.reject(response);
       });
   }
