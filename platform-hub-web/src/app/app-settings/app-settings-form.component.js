@@ -8,6 +8,15 @@ function AppSettingsFormController($state, AppSettings, PlatformThemesList, _) {
 
   const ctrl = this;
 
+  // See https://github.com/yabwe/medium-editor#mediumeditor-options
+  ctrl.editorOptions = {
+    toolbar: {
+      buttons: ['bold', 'italic', 'underline', 'anchor', 'image', 'h2', 'h3', 'h4', 'orderedlist', 'unorderedlist', 'indent', 'outdent', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'subscript', 'superscript', 'removeFormat']
+    },
+    targetBlank: true,
+    imageDragging: false
+  };
+
   ctrl.loading = true;
   ctrl.saving = false;
   ctrl.settings = {};

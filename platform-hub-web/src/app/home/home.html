@@ -1,15 +1,26 @@
 <div class="app-home">
   <md-content layout-padding>
 
-    <h2 class="md-display-1 text-center">
+    <h1 class="md-display-1 text-center">
       Welcome to the {{$ctrl.AppSettings.getAppTitle()}}
-    </h2>
+    </h1>
 
     <div ng-if="!$ctrl.isAuthenticated()" layout="row" layout-align="center center">
       <md-button class="md-primary md-raised" ng-click="$ctrl.login()">
         <md-icon>person</md-icon>
         Login
       </md-button>
+    </div>
+
+    <div ng-if="$ctrl.platformOverviewText">
+      <br ng-if="!$ctrl.isAuthenticated()" />
+      <div
+        ng-if="$ctrl.platformOverviewText"
+        layout-padding
+        md-colors="{background: 'blue-grey-50'}">
+        <div ng-bind-html="$ctrl.platformOverviewText"></div>
+      </div>
+      <br />
     </div>
 
     <div
