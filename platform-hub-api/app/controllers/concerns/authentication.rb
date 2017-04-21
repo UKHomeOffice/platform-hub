@@ -24,7 +24,9 @@ module Authentication
     # - it is already verified by the auth proxy in front
     # - expiry has already been checked by the auth proxy in front (TODO: perhaps recheck here)
     begin
-      payload, _ = JWT.decode(token, nil, false)
+      payload, _ = JWT.decode token, nil, false
+    rescue JWT::ExpiredSignature
+      return nil
     rescue => e
       logger.error "Failed to parse JWT token: #{token}. Error: #{e.message}"
       return nil
