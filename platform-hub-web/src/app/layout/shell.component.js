@@ -3,13 +3,13 @@ export const ShellComponent = {
   controller: ShellController
 };
 
-function ShellController($scope, $mdSidenav, authService, roleCheckerService, events, icons, AppSettings, PlatformThemesList) {
+function ShellController($scope, $mdSidenav, authService, roleCheckerService, events, icons, AppSettings, PlatformThemes) {
   'ngInject';
 
   const ctrl = this;
 
   ctrl.AppSettings = AppSettings;
-  ctrl.PlatformThemesList = PlatformThemesList;
+  ctrl.PlatformThemes = PlatformThemes;
   ctrl.platformThemeIcon = icons.platformThemes;
 
   ctrl.isAdmin = false;
@@ -96,7 +96,7 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
 
   function refresh() {
     loadAdminStatus();
-    PlatformThemesList.refresh();
+    PlatformThemes.refresh();
   }
 
   function loadAdminStatus() {

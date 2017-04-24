@@ -25,9 +25,9 @@
 
     <div
       layout="row" layout-wrap layout-align="center center"
-      ng-if="$ctrl.isAuthenticated() && $ctrl.PlatformThemesList.visible.length > 0">
+      ng-if="$ctrl.isAuthenticated() && $ctrl.PlatformThemes.visible.length > 0">
       <md-card
-        ng-repeat="t in $ctrl.PlatformThemesList.visible track by t.id"
+        ng-repeat="t in $ctrl.PlatformThemes.visible track by t.id"
         ui-sref="platform-themes.page({id: t.id})"
         style="width: 250px; cursor: pointer;">
         <div class="tinted-bar" md-colors="{background: '{{t.colour}}'}"></div>

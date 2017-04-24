@@ -3,12 +3,12 @@ export const PlatformThemesEditorListComponent = {
   controller: PlatformThemesEditorListController
 };
 
-function PlatformThemesEditorListController($mdDialog, PlatformThemesList, icons, hubApiService, logger) {
+function PlatformThemesEditorListController($mdDialog, PlatformThemes, icons, hubApiService, logger) {
   'ngInject';
 
   const ctrl = this;
 
-  ctrl.PlatformThemesList = PlatformThemesList;
+  ctrl.PlatformThemes = PlatformThemes;
   ctrl.platformThemeIcon = icons.platformThemes;
 
   ctrl.loading = true;
@@ -24,7 +24,7 @@ function PlatformThemesEditorListController($mdDialog, PlatformThemesList, icons
   function refreshThemes() {
     ctrl.loading = true;
 
-    PlatformThemesList
+    PlatformThemes
       .refresh()
       .finally(() => {
         ctrl.loading = false;

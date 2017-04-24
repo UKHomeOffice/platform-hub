@@ -16,9 +16,9 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.PlatformThemesList.all.length > 0">
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.PlatformThemes.all.length > 0">
 
-    <md-card ng-repeat="t in $ctrl.PlatformThemesList.all track by t.id">
+    <md-card ng-repeat="t in $ctrl.PlatformThemes.all track by t.id">
       <div class="tinted-bar" md-colors="{background: '{{t.colour}}'}"></div>
       <md-card-title>
         <md-card-title-text>

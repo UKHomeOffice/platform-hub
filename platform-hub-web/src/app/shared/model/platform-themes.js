@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-export const PlatformThemesList = function ($window, $q, AppSettings, apiBackoffTimeMs, hubApiService, arrayUtilsService, _) {
+export const PlatformThemes = function ($window, $q, AppSettings, apiBackoffTimeMs, hubApiService, arrayUtilsService, _) {
   'ngInject';
 
   const model = {};
