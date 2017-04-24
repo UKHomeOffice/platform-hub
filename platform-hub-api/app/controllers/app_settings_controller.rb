@@ -1,10 +1,10 @@
 class AppSettingsController < ApiJsonController
 
-  before_action :load_app_settings_hash_record
-
   skip_before_action :require_authentication, only: :show
 
-  skip_authorization_check only: [ :show ]
+  before_action :load_app_settings_hash_record
+
+  skip_authorization_check only: :show
 
   # GET /app_settings
   def show
