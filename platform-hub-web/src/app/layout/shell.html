@@ -27,8 +27,35 @@
 
       <auth-card></auth-card>
 
-      <md-content>
-        <md-sidemenu role="navigation" class="nav" ng-if="$ctrl.isAuthenticated()">
+      <md-content ng-if="$ctrl.isAuthenticated()">
+
+        <md-card
+          ng-if="!$ctrl.Me.data.flags.completed_hub_onboarding"
+          ui-sref="onboarding.hub-setup"
+          class="md-body-2"
+          md-colors="{background: 'accent-50'}"
+          style="cursor: pointer;">
+          <md-card-content layout="row" layout-align="space-between">
+            <span>Complete your hub setup</span>
+            <span flex></span>
+            <md-icon>forward</md-icon>
+          </md-card-content>
+        </md-card>
+
+        <md-card
+          ng-if="!$ctrl.Me.data.flags.completed_services_onboarding"
+          ui-sref="onboarding.services"
+          class="md-body-2"
+          md-colors="{background: 'accent-50'}"
+          style="cursor: pointer;">
+          <md-card-content layout="row" layout-align="space-between">
+            <span>Complete your services onboarding</span>
+            <span flex></span>
+            <md-icon>forward</md-icon>
+          </md-card-content>
+        </md-card>
+
+        <md-sidemenu role="navigation" class="nav">
           <md-sidemenu-group>
             <md-sidemenu-button
               ui-sref="home"
@@ -94,6 +121,7 @@
             </md-sidemenu-button>
           </md-sidemenu-group>
         </md-sidemenu>
+
       </md-content>
 
       <br />
