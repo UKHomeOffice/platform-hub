@@ -3,13 +3,14 @@ export const ShellComponent = {
   controller: ShellController
 };
 
-function ShellController($scope, $mdSidenav, authService, roleCheckerService, events, icons, AppSettings, PlatformThemes) {
+function ShellController($scope, $mdSidenav, authService, roleCheckerService, events, icons, AppSettings, PlatformThemes, Me) {
   'ngInject';
 
   const ctrl = this;
 
   ctrl.AppSettings = AppSettings;
   ctrl.PlatformThemes = PlatformThemes;
+  ctrl.Me = Me;
   ctrl.platformThemeIcon = icons.platformThemes;
 
   ctrl.isAdmin = false;
