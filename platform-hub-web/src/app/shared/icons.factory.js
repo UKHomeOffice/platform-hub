@@ -10,6 +10,7 @@ export const icons = function () {
     externalLink: 'link',
     platformThemes: 'lens',
     projects: 'group_work',
+    services: 'cloud_circle',
     supportRequests: 'feedback',
     text: 'short_text',
     users: 'perm_identity'

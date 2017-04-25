@@ -5,10 +5,12 @@ export const HubSetupComponent = {
   controller: HubSetupController
 };
 
-function HubSetupController(Me) {
+function HubSetupController($state, Me, logger) {
   'ngInject';
 
   const ctrl = this;
+
+  ctrl.Me = Me;
 
   ctrl.loading = true;
   ctrl.saving = false;
@@ -34,7 +36,16 @@ function HubSetupController(Me) {
 
     Me
       .completeHubOnboarding(ctrl.data)
-      .then(processMeData)
+      .then(meData => {
+        processMeData(meData);
+        logger.success('You have successfully set up your hub account');
+
+        if (meData.flags.completed_services_onboarding) {
+          $state.go('home');
+        } else {
+          $state.go('onboarding.services');
+        }
+      })
       .finally(() => {
         ctrl.saving = false;
       });

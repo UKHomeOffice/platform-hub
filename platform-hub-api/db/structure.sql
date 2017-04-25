@@ -229,7 +229,8 @@ CREATE TABLE user_flags (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     completed_hub_onboarding boolean DEFAULT false,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    completed_services_onboarding boolean DEFAULT false
 );
 
 
@@ -513,6 +514,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170410142703'),
 ('20170413124233'),
 ('20170418140933'),
-('20170420134436');
+('20170420134436'),
+('20170421083936');
 
 

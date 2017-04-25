@@ -38,7 +38,7 @@
             </md-sidemenu-button>
 
             <md-sidemenu-button
-              ng-repeat="t in $ctrl.PlatformThemesList.visible track by t.id"
+              ng-repeat="t in $ctrl.PlatformThemes.visible track by t.id"
               ui-sref="platform-themes.page({id: t.id})"
               ui-sref-active="active">
               <md-icon md-colors="{color: '{{t.colour}}'}">{{$ctrl.platformThemeIcon}}</md-icon>

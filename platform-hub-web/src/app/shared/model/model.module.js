@@ -4,8 +4,9 @@ import {HubApiModule} from '../hub-api/hub-api.module';
 import {UtilModule} from '../util/util.module';
 
 import {AppSettings} from './app-settings';
+import {Identities} from './identities';
 import {Me} from './me';
-import {PlatformThemesList} from './platform-themes-list';
+import {PlatformThemes} from './platform-themes';
 import {PlatformThemesResourceKinds} from './platform-themes-resource-kinds';
 import {UserScopes} from './user-scopes';
 
@@ -15,8 +16,9 @@ export const ModelModule = angular
     UtilModule
   ])
   .service('AppSettings', AppSettings)
+  .service('Identities', Identities)
   .service('Me', Me)
-  .service('PlatformThemesList', PlatformThemesList)
+  .service('PlatformThemes', PlatformThemes)
   .service('PlatformThemesResourceKinds', PlatformThemesResourceKinds)
   .service('UserScopes', UserScopes)
   .name;

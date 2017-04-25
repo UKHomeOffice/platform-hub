@@ -9,7 +9,10 @@ import {
 } from './help/help.module';
 import {AppHome} from './home/home.module';
 import {IdentitiesManager} from './identities/identities.module';
-import {HubSetup} from './onboarding/onboarding.module';
+import {
+  HubSetup,
+  ServicesOnboarding
+} from './onboarding/onboarding.module';
 import {
   PlatformThemesEditorForm,
   PlatformThemesEditorList,
@@ -44,6 +47,13 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
       .state('onboarding.hub-setup', {
         url: '/hub-setup',
         component: HubSetup,
+        data: {
+          authenticate: true
+        }
+      })
+      .state('onboarding.services', {
+        url: '/services',
+        component: ServicesOnboarding,
         data: {
           authenticate: true
         }

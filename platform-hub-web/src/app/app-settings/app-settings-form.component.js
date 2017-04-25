@@ -3,7 +3,7 @@ export const AppSettingsFormComponent = {
   controller: AppSettingsFormController
 };
 
-function AppSettingsFormController($state, AppSettings, PlatformThemesList, _) {
+function AppSettingsFormController($state, AppSettings, PlatformThemes, _) {
   'ngInject';
 
   const ctrl = this;
@@ -34,7 +34,7 @@ function AppSettingsFormController($state, AppSettings, PlatformThemesList, _) {
         // Make sure to store a copy as we may be mutating this!
         angular.copy(settings, ctrl.settings);
 
-        return refreshPlatformThemesLists()
+        return refreshPlatformThemes()
           .then(() => {
             // Only stop loading if it's a successful fetch
             // (i.e. the following doesn't go into a .finally handler)
@@ -58,13 +58,13 @@ function AppSettingsFormController($state, AppSettings, PlatformThemesList, _) {
       });
   }
 
-  function refreshPlatformThemesLists() {
-    return PlatformThemesList
+  function refreshPlatformThemes() {
+    return PlatformThemes
       .refresh()
       .then(() => {
         // Make sure to store copies as we may be mutating these!
-        angular.copy(PlatformThemesList.visible, ctrl.visiblePlatformThemes);
-        angular.copy(PlatformThemesList.hidden, ctrl.hiddenPlatformThemes);
+        angular.copy(PlatformThemes.visible, ctrl.visiblePlatformThemes);
+        angular.copy(PlatformThemes.hidden, ctrl.hiddenPlatformThemes);
       });
   }
 }

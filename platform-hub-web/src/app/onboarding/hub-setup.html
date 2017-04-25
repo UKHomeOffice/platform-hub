@@ -1,9 +1,9 @@
 <div class="hub-setup">
   <md-toolbar md-scroll-shrink>
     <div class="md-toolbar-tools">
-      <h3>
+      <h2>
         Setup Your Hub Account
-      </h3>
+      </h2>
     </div>
   </md-toolbar>
 
@@ -14,7 +14,6 @@
     <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout-padding>
       <md-content>
         <form name="$ctrl.form" role="form" ng-submit="$ctrl.update()">
-
 
           <fieldset layout-padding>
             <legend>What does your role involve?</legend>
@@ -42,16 +41,24 @@
 
           <br />
 
-          <div>
+          <div layout="row">
             <md-button
               type="submit"
               class="md-primary"
               ng-disabled="$ctrl.saving || !$ctrl.form.$valid"
-              ng-class="{'md-raised': ($ctrl.form.$dirty && $ctrl.form.$valid) }"
+              ng-class="{'md-raised': $ctrl.form.$valid }"
               aria-label="Save your hub setup">
-              Update
+              Save
             </md-button>
-            <md-button ui-sref="home" ng-disabled="$ctrl.saving">Cancel</md-button>
+            <span flex></span>
+            <md-button
+              ng-if="!$ctrl.Me.data.flags.completed_services_onboarding"
+              class="md-raised md-accent"
+              ui-sref="onboarding.services"
+              ng-disabled="$ctrl.saving">
+              Continue to services onboarding
+              <md-icon>forward</md-icon>
+            </md-button>
           </div>
         </form>
       </md-content>

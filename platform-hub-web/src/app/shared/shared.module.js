@@ -2,6 +2,7 @@ import angular from 'angular';
 
 import {AuthModule} from './auth/auth.module';
 import {HubApiModule} from './hub-api/hub-api.module';
+import {IdentitiesModule} from './identities/identities.module';
 import {ModelModule} from './model/model.module';
 import {UiModule} from './ui/ui.module';
 import {UtilModule} from './util/util.module';
@@ -16,6 +17,7 @@ export const SharedModule = angular
   .module('app.shared', [
     AuthModule,
     HubApiModule,
+    IdentitiesModule,
     ModelModule,
     UiModule,
     UtilModule
