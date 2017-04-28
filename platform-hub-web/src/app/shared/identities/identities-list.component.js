@@ -18,6 +18,7 @@ function IdentitiesListController($mdDialog, Identities, Me, _) {
 
   ctrl.connect = connect;
   ctrl.disconnect = disconnect;
+  ctrl.showKubeTokens = false;
 
   init();
 
