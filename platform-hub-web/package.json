@@ -22,20 +22,20 @@
     "angular-cookies": "1.5.11",
     "angular-jwt": "^0.1.9",
     "angular-loading-bar": "0.9.x",
-    "angular-material": "^1.1.3",
+    "angular-material": "^1.1.4",
     "angular-material-sidemenu": "^1.0.2",
     "angular-medium-editor": "^1.2.1",
     "angular-messages": "1.5.11",
     "angular-sanitize": "1.5.11",
     "angular-sortable-view": "jits/angular-sortable-view#754d087f079075f126c4a38eb7041c7fa69fbd55",
     "angular-toastr": "2.1.x",
-    "angular-ui-router": "1.0.0-rc.1",
+    "angular-ui-router": "^1.0.3",
     "angular-url-encode": "^1.0.0",
     "bourbon": "^4.3.2",
     "lodash": "^4.17.4",
     "medium-editor": "^5.23.0",
     "moment": "2.17.x",
-    "normalize.css": "^5.0.0"
+    "normalize.css": "^7.0.0"
   },
   "devDependencies": {
     "angular-mocks": "1.5.11",
