@@ -1,3 +1,5 @@
+/* eslint camelcase: 0 */
+
 export const AppSettingsFormComponent = {
   template: require('./app-settings-form.html'),
   controller: AppSettingsFormController
@@ -24,6 +26,8 @@ function AppSettingsFormController($state, AppSettings, PlatformThemes, _) {
   ctrl.hiddenPlatformThemes = [];
 
   ctrl.update = update;
+  ctrl.addOtherManagedService = addOtherManagedService;
+  ctrl.removeOtherManagedService = removeOtherManagedService;
 
   init();
 
@@ -48,6 +52,10 @@ function AppSettingsFormController($state, AppSettings, PlatformThemes, _) {
 
     ctrl.settings.visiblePlatformThemes = _.map(ctrl.visiblePlatformThemes, 'id');
 
+    if (ctrl.settings.other_managed_services) {
+      ctrl.settings.other_managed_services = _.sortBy(ctrl.settings.other_managed_services, ['title']);
+    }
+
     AppSettings
       .update(ctrl.settings)
       .then(() => {
@@ -66,5 +74,16 @@ function AppSettingsFormController($state, AppSettings, PlatformThemes, _) {
         angular.copy(PlatformThemes.visible, ctrl.visiblePlatformThemes);
         angular.copy(PlatformThemes.hidden, ctrl.hiddenPlatformThemes);
       });
+  }
+
+  function addOtherManagedService() {
+    if (!ctrl.settings.other_managed_services) {
+      ctrl.settings.other_managed_services = [];
+    }
+    ctrl.settings.other_managed_services.push({});
+  }
+
+  function removeOtherManagedService(ix) {
+    ctrl.settings.other_managed_services.splice(ix, 1);
   }
 }

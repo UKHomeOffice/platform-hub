@@ -23,7 +23,7 @@
 
           <!-- Platform name -->
           <md-input-container class="md-block">
-            <label for="platformName">Platform Name:</label>
+            <label for="platformName">Platform name:</label>
             <input
               name="platformName"
               ng-model="$ctrl.settings.platformName"
@@ -34,9 +34,12 @@
             </div>
           </md-input-container>
 
+          <hr />
+          <br />
+
           <!-- Platform themes config -->
           <div>
-            <h3 class="md-subhead">Platform Themes</h3>
+            <h3 class="md-subhead">Platform themes</h3>
             <div
               sv-root class="multi-sortable"
               layout="row"
@@ -78,10 +81,12 @@
 
           <br />
           <br />
+          <hr />
+          <br />
 
           <!-- Platform overview -->
           <div>
-            <h3 class="md-subhead">Platform Overview</h3>
+            <h3 class="md-subhead">Platform overview</h3>
 
             <div layout-padding>
               <p class="md-body-1" md-colors="{background: 'accent-50'}">
@@ -103,6 +108,53 @@
                 <span><strong>Tip:</strong></span>
                 this is a rich text editor – try highlighting some text for options
               </p>
+            </div>
+          </div>
+
+          <br />
+          <hr />
+          <br />
+
+          <!-- Other managed services -->
+          <div>
+            <h3 class="md-subhead">Other managed services to show</h3>
+
+            <p class="none-text" ng-if="!$ctrl.settings.other_managed_services || $ctrl.settings.other_managed_services.length == 0">
+              No other managed services specified yet
+            </p>
+
+            <md-card ng-repeat="service in $ctrl.settings.other_managed_services">
+              <md-card-content>
+                <md-input-container class="md-block" flex>
+                  <label for="service{{$index}}-title">Title:</label>
+                  <input
+                    name="service{{$index}}-title"
+                    ng-model="service.title"
+                    placeholder="e.g. GitLab"
+                    required>
+                  <div ng-messages="$ctrl.settingsForm['service' + $index + '-title'].$error">
+                    <div ng-message="required">This is required.</div>
+                  </div>
+                </md-input-container>
+              </md-card-content>
+              <md-card-actions layout="row" layout-align="end center">
+                <md-button
+                  aria-label="Remove this service"
+                  ng-click="$ctrl.removeOtherManagedService($index)">
+                  <md-icon md-colors="{color: 'accent'}">delete</md-icon>
+                  Remove
+                </md-button>
+              </md-card-actions>
+            </md-card>
+
+            <div>
+              <md-button
+                class="md-raised"
+                aria-label="Add new other managed service"
+                ng-click="$ctrl.addOtherManagedService()">
+                <md-icon>add_box</md-icon>
+                Add new service
+              </md-button>
             </div>
           </div>
 

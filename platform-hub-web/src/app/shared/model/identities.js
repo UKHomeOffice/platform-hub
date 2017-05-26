@@ -1,4 +1,4 @@
-export const Identities = function () {
+export const Identities = function (AppSettings) {
   'ngInject';
 
   const model = {};
@@ -16,5 +16,11 @@ export const Identities = function () {
     }
   ];
 
+  model.getOther = getOther;
+
   return model;
+
+  function getOther() {
+    return AppSettings.getOtherManagedServices();
+  }
 };
