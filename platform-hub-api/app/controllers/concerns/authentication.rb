@@ -36,7 +36,6 @@ module Authentication
 
     id = payload['sub']
 
-    # TODO: handle sub changes – User.find_by(email: payload)
     user = User.find_by_id(id)
 
     if user.blank?
