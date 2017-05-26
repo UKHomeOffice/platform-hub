@@ -14,6 +14,7 @@ export const AppSettings = function ($window, hubApiService, apiBackoffTimeMs, l
   model.getAppTitle = getAppTitle;
   model.getPlatformName = getPlatformName;
   model.getPlatformOverviewText = getPlatformOverviewText;
+  model.getOtherManagedServices = getOtherManagedServices;
 
   return model;
 
@@ -55,5 +56,9 @@ export const AppSettings = function ($window, hubApiService, apiBackoffTimeMs, l
 
   function getPlatformOverviewText() {
     return model.data.platform_overview || '';
+  }
+
+  function getOtherManagedServices() {
+    return model.data.other_managed_services || [];
   }
 };

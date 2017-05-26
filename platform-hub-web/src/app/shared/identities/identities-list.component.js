@@ -12,7 +12,9 @@ function IdentitiesListController($mdDialog, Identities, Me, _) {
 
   const ctrl = this;
 
-  ctrl.identities = {};
+  ctrl.Identities = Identities;
+
+  ctrl.userIdentities = {};
 
   ctrl.connect = connect;
   ctrl.disconnect = disconnect;
@@ -66,11 +68,11 @@ function IdentitiesListController($mdDialog, Identities, Me, _) {
 
   function processMeData(meData) {
     if (_.isNull(meData) || _.isEmpty(meData)) {
-      ctrl.identities = [];
+      ctrl.userIdentities = [];
     } else {
       const owned = _.keyBy(meData.identities, 'provider');
 
-      ctrl.identities = Identities.supported.map(entry => {
+      ctrl.userIdentities = Identities.supported.map(entry => {
         const match = _.clone(owned[entry.provider] || {});
         return _.extend(
           _.clone(entry),

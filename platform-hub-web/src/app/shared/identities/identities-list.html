@@ -1,40 +1,73 @@
-<md-list class="identities-list">
-  <md-list-item
-    class="md-3-line"
-    ng-repeat="i in $ctrl.identities track by i.provider"
-    ng-if="!$ctrl.onlySelfService || i.selfService">
+<div class="identities-list">
+  <md-list>
+    <md-list-item
+      class="md-3-line"
+      ng-repeat="i in $ctrl.userIdentities track by i.provider"
+      ng-if="!$ctrl.onlySelfService || i.selfService">
 
-    <md-icon ng-if="i.connected" md-colors="{color: 'teal'}">check_circle</md-icon>
+      <md-icon ng-if="i.connected" md-colors="{color: 'teal'}">check_circle</md-icon>
 
-    <div class="md-list-item-text" ng-class="{'md-offset': !i.connected}">
-      <h3>{{i.title}}</h3>
+      <div class="md-list-item-text" ng-class="{'md-offset': !i.connected}">
+        <h3>{{i.title}}</h3>
 
-      <p ng-if="i.connected">
-        ID: {{i.external_id}}
-      </p>
+        <p ng-if="i.connected">
+          ID: {{i.external_id}}
+        </p>
 
-      <p ng-if="i.connected && i.external_username">
-        Username: {{i.external_username}}
-      </p>
+        <p ng-if="i.connected && i.external_username">
+          Username: {{i.external_username}}
+        </p>
 
-      <md-button
-        class="md-raised md-secondary"
-        ng-if="i.selfService && !i.connected"
-        ng-click="$ctrl.connect(i.provider)"
-        aria-label="Connect {{i.title}} identity">
-        Connect
-      </md-button>
-      <md-button
-        class="md-raised md-secondary"
-        ng-if="i.selfService && i.connected"
-        ng-click="$ctrl.disconnect(i.provider, $event)"
-        aria-label="Disconnect {{i.title}} identity">
-        Disconnect
-      </md-button>
+        <md-button
+          class="md-raised md-secondary"
+          ng-if="i.selfService && !i.connected"
+          ng-click="$ctrl.connect(i.provider)"
+          aria-label="Connect {{i.title}} identity">
+          Connect
+        </md-button>
+        <md-button
+          class="md-raised md-secondary"
+          ng-if="i.selfService && i.connected"
+          ng-click="$ctrl.disconnect(i.provider, $event)"
+          aria-label="Disconnect {{i.title}} identity">
+          Disconnect
+        </md-button>
+      </div>
 
+      <md-divider></md-divider>
+
+    </md-list-item>
+  </md-list>
+
+  <br />
+
+  <div layout-padding ng-if="$ctrl.Identities.getOther().length > 0">
+    <div class="md-whiteframe-z1" layout-padding>
+      <div>
+        <h3 class="md-title">
+          Other services
+        </h3>
+
+        <p class="md-body-1">
+          You already have access via single sign-on, or may need to request access separately.
+        </p>
+        <p class="md-body-1">
+          The hub may manage these for you in the future.
+        </p>
+
+        <md-list>
+          <md-list-item ng-repeat="i in $ctrl.Identities.getOther() track by i.title">
+
+            <div class="md-list-item-text md-offset">
+              <p>
+                {{i.title}}
+              </p>
+            </div>
+
+            <md-divider></md-divider>
+          </md-list-item>
+        </md-list>
+      </div>
     </div>
-
-    <md-divider></md-divider>
-
-  </md-list-item>
-</md-list>
+  </div>
+</div>
