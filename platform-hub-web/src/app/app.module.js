@@ -23,6 +23,7 @@ window.MediumEditor = require('medium-editor/dist/js/medium-editor.js');
 import 'angular-medium-editor';
 
 import {AppSettingsModule} from './app-settings/app-settings.module';
+import {ContactListsModule} from './contact-lists/contact-lists.module';
 import {HelpModule} from './help/help.module';
 import {HomeModule} from './home/home.module';
 import {IdentitiesModule} from './identities/identities.module';
@@ -50,6 +51,7 @@ const name = 'app';
 angular
   .module(name, [
     AppSettingsModule,
+    ContactListsModule,
     HelpModule,
     HomeModule,
     IdentitiesModule,

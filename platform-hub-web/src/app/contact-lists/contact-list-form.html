@@ -1,0 +1,50 @@
+<div class="contact-list-form">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        Edit Contact Lists
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout-padding>
+      <p class="md-body-1" md-colors="{background: 'accent-50'}">
+        Specify one email address per line
+      </p>
+
+      <md-content>
+        <form name="$ctrl.contactListForm" role="form" ng-submit="$ctrl.update()">
+
+          <md-input-container class="md-block" ng-repeat="cl in $ctrl.lists">
+            <label for="description">{{cl.id}}:</label>
+            <textarea
+              name="description"
+              ng-model="cl.emailAddressesString"
+              rows="10"
+              md-select-on-focus>
+            </textarea>
+          </md-input-container>
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="$ctrl.saving || !$ctrl.contactListForm.$valid"
+              ng-class="{'md-raised': ($ctrl.contactListForm.$dirty && $ctrl.contactListForm.$valid) }"
+              aria-label="Save contact lists">
+              Update
+            </md-button>
+            <md-button ng-disabled="$ctrl.saving">Cancel</md-button>
+          </div>
+
+        </form>
+      </md-content>
+    </div>
+
+  </md-content>
+
+</div>

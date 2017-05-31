@@ -3,6 +3,7 @@ export const icons = function () {
 
   return {
     appSettings: 'settings',
+    contactList: 'contacts',
     faq: 'question_answer',
     hubSetup: 'settings',
     identities: 'account_box',

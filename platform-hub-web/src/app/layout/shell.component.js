@@ -78,6 +78,11 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       state: 'help.support.request-templates.list',
       activeState: 'help.support.request-templates',
       icon: icons.supportRequests
+    },
+    {
+      title: 'Contact Lists',
+      state: 'contact-lists',
+      icon: icons.contactList
     }
   ];
 
