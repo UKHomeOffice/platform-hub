@@ -63,6 +63,25 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: announcements; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE announcements (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    level character varying NOT NULL,
+    title character varying NOT NULL,
+    text text NOT NULL,
+    is_global boolean DEFAULT false NOT NULL,
+    is_sticky boolean DEFAULT false NOT NULL,
+    deliver_to json NOT NULL,
+    published_at timestamp without time zone NOT NULL,
+    status character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -256,6 +275,14 @@ CREATE TABLE users (
 --
 
 ALTER TABLE ONLY audits ALTER COLUMN id SET DEFAULT nextval('audits_id_seq'::regclass);
+
+
+--
+-- Name: announcements announcements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY announcements
+    ADD CONSTRAINT announcements_pkey PRIMARY KEY (id);
 
 
 --
@@ -515,6 +542,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170413124233'),
 ('20170418140933'),
 ('20170420134436'),
-('20170421083936');
+('20170421083936'),
+('20170602101700');
 
 

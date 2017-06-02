@@ -1,4 +1,4 @@
-class SupportRequestTemplateSerializer < ActiveModel::Serializer
+class SupportRequestTemplateSerializer < BaseSerializer
   attributes(
     :id,
     :shortname,

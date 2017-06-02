@@ -31,6 +31,10 @@ class Ability
     can :offboard_github, User, &project_manager_of_common_project_checker
 
 
+    can :global, Announcement
+    can :show, Announcement
+
+
     can do |action, subject_class, subject|
       if action == :search && subject_class == User
         user.admin? || ProjectManagersService.is_user_a_manager_of_any_project?(user.id)

@@ -1,4 +1,4 @@
-class IdentitySerializer < ActiveModel::Serializer
+class IdentitySerializer < BaseSerializer
   attributes(
     :provider,
     :external_id,

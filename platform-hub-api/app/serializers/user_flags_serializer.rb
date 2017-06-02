@@ -1,4 +1,4 @@
-class UserFlagsSerializer < ActiveModel::Serializer
+class UserFlagsSerializer < BaseSerializer
 
   UserFlags.flag_names.each do |f|
     attribute f do

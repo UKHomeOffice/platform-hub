@@ -1,4 +1,4 @@
-class ProjectMembershipSerializer < ActiveModel::Serializer
+class ProjectMembershipSerializer < BaseSerializer
   belongs_to :user
 
   attributes :role
