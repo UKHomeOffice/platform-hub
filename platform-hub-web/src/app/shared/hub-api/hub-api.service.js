@@ -49,6 +49,9 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getAppSettings = buildSimpleFetcher('app_settings', 'app settings');
   service.updateAppSettings = buildSimpleUpdater('app_settings', 'app settings');
 
+  service.getContactList = buildResourceFetcher('contact_lists');
+  service.updateContactList = buildResourceUpdater('contact_lists');
+
   return service;
 
   function getMe() {

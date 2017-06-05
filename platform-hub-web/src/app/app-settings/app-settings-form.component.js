@@ -5,7 +5,7 @@ export const AppSettingsFormComponent = {
   controller: AppSettingsFormController
 };
 
-function AppSettingsFormController($state, AppSettings, PlatformThemes, _) {
+function AppSettingsFormController($state, AppSettings, PlatformThemes, logger, _) {
   'ngInject';
 
   const ctrl = this;
@@ -59,6 +59,7 @@ function AppSettingsFormController($state, AppSettings, PlatformThemes, _) {
     AppSettings
       .update(ctrl.settings)
       .then(() => {
+        logger.success('App settings updated');
         $state.go('home');
       })
       .finally(() => {

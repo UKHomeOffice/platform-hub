@@ -1,12 +1,9 @@
 class HashRecord < ApplicationRecord
 
-  include Audited
-
-  audited descriptor_field: :id
-
   enum scope: {
     general: 'general',
-    webapp: 'webapp'
+    webapp: 'webapp',
+    contact_lists: 'contact_lists'
   }
 
   validates :scope,

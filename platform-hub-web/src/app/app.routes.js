@@ -1,4 +1,5 @@
 import {AppSettingsForm} from './app-settings/app-settings.module';
+import {ContactListForm} from './contact-lists/contact-lists.module';
 import {
   Faq,
   SupportRequestsForm,
@@ -246,6 +247,14 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
     .state('app-settings', {
       url: '/app-settings/edit',
       component: AppSettingsForm,
+      data: {
+        authenticate: true,
+        rolePermitted: 'admin'
+      }
+    })
+    .state('contact-lists', {
+      url: '/contact-lists/edit',
+      component: ContactListForm,
       data: {
         authenticate: true,
         rolePermitted: 'admin'
