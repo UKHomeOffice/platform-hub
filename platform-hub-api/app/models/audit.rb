@@ -8,6 +8,7 @@ class Audit < ApplicationRecord
   before_create :set_descriptors_if_needed
   before_create :denormalise_user_fields
   after_create :output_log_message
+  after_create { readonly! }
   after_find { readonly! }
   before_destroy { raise ActiveRecord::ReadOnlyRecord }
 
