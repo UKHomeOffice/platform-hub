@@ -51,6 +51,7 @@ class PlatformThemesController < ApiJsonController
 
   # DELETE /platform_themes/1
   def destroy
+    id = @platform_theme.id
     title = @platform_theme.title
 
     @platform_theme.destroy
@@ -58,7 +59,7 @@ class PlatformThemesController < ApiJsonController
     AuditService.log(
       context: audit_context,
       action: 'destroy',
-      comment: "User '#{current_user.email}' deleted platform theme: #{title}"
+      comment: "User '#{current_user.email}' deleted platform theme: '#{title}' (ID: #{id})"
     )
   end
 

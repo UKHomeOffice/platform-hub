@@ -51,6 +51,7 @@ class SupportRequestTemplatesController < ApiJsonController
 
   # DELETE /support_request_templates/1
   def destroy
+    id = @support_request_template.id
     shortname = @support_request_template.shortname
 
     @support_request_template.destroy
@@ -58,7 +59,7 @@ class SupportRequestTemplatesController < ApiJsonController
     AuditService.log(
       context: audit_context,
       action: 'destroy',
-      comment: "User '#{current_user.email}' deleted support request template: #{shortname}"
+      comment: "User '#{current_user.email}' deleted support request template: '#{shortname}' (ID: #{id})"
     )
 
     head :no_content
