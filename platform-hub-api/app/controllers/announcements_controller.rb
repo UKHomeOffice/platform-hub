@@ -78,7 +78,7 @@ class AnnouncementsController < ApiJsonController
 
   # Only allow a trusted parameter "white list" through
   def announcement_params
-    allowed_params = params.require(:announcement).permit(:level, :title, :text, :is_global, :is_sticky, :published_at)
+    allowed_params = params.require(:announcement).permit(:level, :title, :text, :is_global, :is_sticky, :publish_at)
 
     # Below is a workaround until Rails 5.1 lands and we can use the `foo: [{}]` syntax to permit the whole array of hashes
     if params[:announcement][:deliver_to]

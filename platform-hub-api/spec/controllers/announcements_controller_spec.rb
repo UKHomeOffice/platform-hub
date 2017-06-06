@@ -55,11 +55,11 @@ RSpec.describe AnnouncementsController, type: :controller do
     it_behaves_like 'authenticated' do
 
       before do
-        @a1 = create :announcement, is_global: true, published_at: (now - 1.second)
-        @a2 = create :announcement, is_global: true, published_at: (now + 1.hour)
-        @a3 = create :announcement, is_global: false, published_at: (now + 1.hour)
-        @a4 = create :announcement, is_global: true, published_at: (now - 1.hour)
-        @a5 = create :announcement, is_global: false, published_at: (now - 1.hour)
+        @a1 = create :announcement, is_global: true, publish_at: (now - 1.second)
+        @a2 = create :announcement, is_global: true, publish_at: (now + 1.hour)
+        @a3 = create :announcement, is_global: false, publish_at: (now + 1.hour)
+        @a4 = create :announcement, is_global: true, publish_at: (now - 1.hour)
+        @a5 = create :announcement, is_global: false, publish_at: (now - 1.hour)
       end
 
       it 'should return a list of global and published announcements only and ordered by published date (desc)' do
@@ -103,7 +103,7 @@ RSpec.describe AnnouncementsController, type: :controller do
             'text' => @announcement.text,
             'is_global' => @announcement.is_global,
             'is_sticky' => @announcement.is_sticky,
-            'published_at' => @announcement.published_at.iso8601,
+            'publish_at' => @announcement.publish_at.iso8601,
             'created_at' => now_json_value,
             'updated_at' => now_json_value
           })
@@ -124,7 +124,7 @@ RSpec.describe AnnouncementsController, type: :controller do
           text: source_data.text,
           is_global: source_data.is_global,
           is_sticky: source_data.is_sticky,
-          published_at: source_data.published_at,
+          publish_at: source_data.publish_at,
           deliver_to: source_data.deliver_to
         }
       }
@@ -161,7 +161,7 @@ RSpec.describe AnnouncementsController, type: :controller do
             'text' => post_data[:announcement][:text],
             'is_global' => post_data[:announcement][:is_global],
             'is_sticky' => post_data[:announcement][:is_sticky],
-            'published_at' => post_data[:announcement][:published_at].iso8601,
+            'publish_at' => post_data[:announcement][:publish_at].iso8601,
             'created_at' => now_json_value,
             'updated_at' => now_json_value,
             'deliver_to' => post_data[:announcement][:deliver_to],
@@ -187,7 +187,7 @@ RSpec.describe AnnouncementsController, type: :controller do
           level: 'critical',
           text: @announcement.text + ' foobar',
           is_sticky: !@announcement.is_sticky,
-          published_at: now + 100.hours
+          publish_at: now + 100.hours
         }
       }
     end
@@ -225,7 +225,7 @@ RSpec.describe AnnouncementsController, type: :controller do
             expect(updated.text).to eq put_data[:announcement][:text]
             expect(updated.is_global).to eq @announcement.is_global
             expect(updated.is_sticky).to eq put_data[:announcement][:is_sticky]
-            expect(updated.published_at).to eq put_data[:announcement][:published_at].iso8601
+            expect(updated.publish_at).to eq put_data[:announcement][:publish_at].iso8601
             expect(Audit.count).to eq 1
             audit = Audit.first
             expect(audit.action).to eq 'update'
