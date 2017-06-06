@@ -2,7 +2,8 @@ module ApiJsonErrorHandler
   extend ActiveSupport::Concern
 
   included do
-    rescue_from ActiveRecord::RecordNotFound, with: :not_found
+    rescue_from ActiveRecord::RecordNotFound, with: :not_found_error
+    rescue_from ActiveRecord::ReadOnlyRecord, with: :readonly_error
   end
 
   def render_error message, status
@@ -20,8 +21,12 @@ module ApiJsonErrorHandler
     render_error errors.full_messages.to_sentence, :unprocessable_entity
   end
 
-  def not_found
+  def not_found_error
     render_error 'Resource not found', :not_found
+  end
+
+  def readonly_error
+    render_error 'Resource is readonly', :unprocessable_entity
   end
 
 end

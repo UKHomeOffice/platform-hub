@@ -1,4 +1,4 @@
-class UserSerializer < ActiveModel::Serializer
+class UserSerializer < BaseSerializer
   attributes :id, :name, :email, :role, :last_seen_at
 
   has_many :identities, if: :is_admin_or_own?
@@ -15,6 +15,6 @@ class UserSerializer < ActiveModel::Serializer
 
   # Note: `scope` here is actually `current_user` (passed in from controller)
   def is_admin_or_own?
-    scope.admin? || scope.id == object.id
+    is_admin? || scope.id == object.id
   end
 end

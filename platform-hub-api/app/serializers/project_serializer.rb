@@ -1,4 +1,4 @@
-class ProjectSerializer < ActiveModel::Serializer
+class ProjectSerializer < BaseSerializer
   attributes(
     :id,
     :shortname,

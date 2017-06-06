@@ -1,4 +1,4 @@
-class PlatformThemeSerializer < ActiveModel::Serializer
+class PlatformThemeSerializer < BaseSerializer
   attributes(
     :id,
     :title,

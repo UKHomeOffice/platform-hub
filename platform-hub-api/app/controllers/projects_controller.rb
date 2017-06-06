@@ -52,6 +52,7 @@ class ProjectsController < ApiJsonController
 
   # DELETE /projects/:id
   def destroy
+    id = @project.id
     shortname = @project.shortname
 
     @project.destroy
@@ -59,7 +60,7 @@ class ProjectsController < ApiJsonController
     AuditService.log(
       context: audit_context,
       action: 'destroy',
-      comment: "User '#{current_user.email}' deleted project: #{shortname}"
+      comment: "User '#{current_user.email}' deleted project: '#{shortname}' (ID: #{id})"
     )
 
     head :no_content

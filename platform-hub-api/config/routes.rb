@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   scope :format => false do
@@ -58,6 +59,10 @@ Rails.application.routes.draw do
     resource :app_settings, only: [ :show, :update ]
 
     resources :contact_lists, only: [ :show, :update ], constraints: { id: /[a-zA-Z]\w*/ }
+
+    resources :announcements do
+      get :global, on: :collection
+    end
 
   end
 
