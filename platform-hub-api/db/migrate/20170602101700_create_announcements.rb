@@ -7,7 +7,7 @@ class CreateAnnouncements < ActiveRecord::Migration[5.0]
       t.boolean :is_global, null: false, default: false
       t.boolean :is_sticky, null: false, default: false
       t.json :deliver_to, null: false
-      t.datetime :published_at, null: false
+      t.datetime :publish_at, null: false
       t.string :status, null: false
 
       t.timestamps

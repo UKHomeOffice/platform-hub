@@ -35,7 +35,7 @@ class Announcement < ApplicationRecord
       message: '%{value} should not be nil'
     }
 
-  validates :published_at,
+  validates :publish_at,
     presence: true
 
   validates :status,
@@ -52,12 +52,12 @@ class Announcement < ApplicationRecord
   after_update :update_protections
 
   scope :global, -> { where(is_global: true) }
-  scope :published, -> { where('published_at <= ?', DateTime.now.utc).order(published_at: :desc) }
+  scope :published, -> { where('publish_at <= ?', DateTime.now.utc).order(publish_at: :desc) }
 
   private
 
   def update_protections
-    if !self.waiting_delivery? || self.published_at <= DateTime.now.utc
+    if !self.waiting_delivery? || self.publish_at <= DateTime.now.utc
       readonly!
     end
   end

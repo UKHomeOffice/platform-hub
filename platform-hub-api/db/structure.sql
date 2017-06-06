@@ -74,7 +74,7 @@ CREATE TABLE announcements (
     is_global boolean DEFAULT false NOT NULL,
     is_sticky boolean DEFAULT false NOT NULL,
     deliver_to json NOT NULL,
-    published_at timestamp without time zone NOT NULL,
+    publish_at timestamp without time zone NOT NULL,
     status character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL

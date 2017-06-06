@@ -19,14 +19,14 @@ RSpec.describe Announcement, type: :model do
       }.to raise_error(ActiveRecord::ReadOnlyRecord)
     end
 
-    it 'should not allow updates after published_at has been reached' do
-      a = create :announcement, title: 'foo', published_at: now + 1.hour
+    it 'should not allow updates after publish_at has been reached' do
+      a = create :announcement, title: 'foo', publish_at: now + 1.hour
       expect(a.title).to eq 'foo'
 
       a.update title: 'bar'
       expect(a.title).to eq 'bar'
 
-      a.update published_at: now - 1.hour
+      a.update publish_at: now - 1.hour
 
       expect {
         a.update title: 'baz'
@@ -36,9 +36,9 @@ RSpec.describe Announcement, type: :model do
 
   describe 'scope: published' do
     before do
-      @a1 = create :announcement, published_at: (now - 1.second)
-      @a2 = create :announcement, published_at: (now + 1.hour)
-      @a3 = create :announcement, published_at: (now - 1.hour)
+      @a1 = create :announcement, publish_at: (now - 1.second)
+      @a2 = create :announcement, publish_at: (now + 1.hour)
+      @a3 = create :announcement, publish_at: (now - 1.hour)
     end
 
     it 'should only show announcements that are currently published and ordered by published date (desc)' do
