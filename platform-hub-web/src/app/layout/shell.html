@@ -55,14 +55,27 @@
           </md-card-content>
         </md-card>
 
+        <sticky-announcements></sticky-announcements>
+
         <md-sidemenu role="navigation" class="nav">
           <md-sidemenu-group>
             <md-sidemenu-button
               ui-sref="home"
               ui-sref-active="active">
-              <md-icon>home</md-icon>
+              <md-icon>{{$ctrl.homeIcon}}</md-icon>
               <span>Home</span>
             </md-sidemenu-button>
+
+            <md-sidemenu-button
+              ui-sref="announcements.global"
+              ui-sref-active="active">
+              <md-icon>{{$ctrl.announcementsIcon}}</md-icon>
+              <span>Global Announcements</span>
+            </md-sidemenu-button>
+          </md-sidemenu-group>
+
+          <md-sidemenu-group>
+            <md-subheader class="md-no-sticky">Platform Themes</md-subheader>
 
             <md-sidemenu-button
               ng-repeat="t in $ctrl.PlatformThemes.visible track by t.id"

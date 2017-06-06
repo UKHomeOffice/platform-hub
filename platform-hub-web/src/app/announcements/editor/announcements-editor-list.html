@@ -1,0 +1,118 @@
+<div class="announcements-editor-list">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>All Announcements</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        aria-label="Add new announcement"
+        ui-sref="announcements.editor.new">
+        <md-icon>add_box</md-icon>
+        New
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!ctrl.loading && $ctrl.Announcements.all.length == 0">
+    <p class="md-body-2 none-text text-center">
+      No announcements created yet
+    </p>
+  </md-content>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.Announcements.all.length > 0">
+
+    <md-card ng-repeat="a in $ctrl.Announcements.all track by a.id">
+      <div class="tinted-bar" md-colors="{background: '{{a.colour}}'}"></div>
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            <md-icon md-colors="{color: '{{a.colour}}'}">
+              {{$ctrl.announcementIcon}}
+            </md-icon>
+
+            <small
+              class="badge float-right"
+              ng-if="a.is_global"
+              md-colors="{background: 'blue'}">
+              Global
+            </small>
+            <small
+              class="badge float-right"
+              ng-if="a.is_sticky"
+              md-colors="{background: 'accent'}">
+              Sticky
+            </small>
+            <span>{{a.title}}</span>
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content>
+        <div layout-padding class="md-body-1" md-colors="{background: '{{a.colour}}-50'}">
+          <div ng-bind-html='a.text | simpleFormat'></div>
+        </div>
+
+        <br />
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Publish at:
+          </span>
+          <span>{{a.publish_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
+          (<strong><span am-time-ago="a.publish_at"></span></strong>)
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Status:
+          </span>
+          {{a.status}}
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Created at:
+          </span>
+          <span>{{a.created_at}}</span>
+          <span class="separator">|</span>
+          <span md-colors="{color: 'blue-grey-700'}">
+            Updated at:
+          </span>
+          <span>{{a.updated_at}}</span>
+        </p>
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          ng-if="$ctrl.isEditable(a)"
+          class="md-primary"
+          aria-label="Edit this announcement"
+          ui-sref="announcements.editor.edit({id: a.id})">
+          Edit
+        </md-button>
+        <md-button
+          ng-if="!a.is_sticky"
+          aria-label="Mark this announcement as sticky"
+          ng-click="$ctrl.markSticky(a)">
+          Mark sticky
+        </md-button>
+        <md-button
+          ng-if="a.is_sticky"
+          aria-label="Unmark this announcement as sticky"
+          ng-click="$ctrl.unmarkSticky(a)">
+          Unmark sticky
+        </md-button>
+        <md-button
+          ng-disabled="$ctrl.saving"
+          aria-label="Delete this announcement"
+          ng-click="$ctrl.deleteAnnouncement(a, $event)">
+          Delete
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+</div>

@@ -1,0 +1,49 @@
+<div class="global-announcements">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>Global Announcements</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!ctrl.loading && $ctrl.Announcements.global.length == 0">
+    <p class="md-body-2 none-text text-center">
+      No global announcements made yet
+    </p>
+  </md-content>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.Announcements.global.length > 0">
+
+    <md-card
+      ng-repeat="a in $ctrl.Announcements.global track by a.id"
+      ng-attr-id="{{a.id}}"
+      md-colors="::{background: '{{a.colour}}-100'}">
+      <div class="tinted-bar" md-colors="::{background: '{{a.colour}}'}"></div>
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            <md-icon md-colors="::{color: '{{a.colour}}'}">
+              {{$ctrl.announcementIcon}}
+            </md-icon>
+            <span>{{a.title}}</span>
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+      <md-card-content>
+        <br />
+        <div class="md-body-1">
+          <div ng-bind-html='a.text | simpleFormat'></div>
+        </div>
+        <br />
+        <p class="md-body-2" style="text-align: right;">
+          <span>{{a.publish_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
+          (<span am-time-ago="a.publish_at"></span>)
+        </p>
+      </md-card-content>
+    </md-card>
+
+  </md-content>
+</div>

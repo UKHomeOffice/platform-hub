@@ -1,3 +1,8 @@
+import {
+  AnnouncementsEditorForm,
+  AnnouncementsEditorList,
+  GlobalAnnouncements
+} from './announcements/announcements.module';
 import {AppSettingsForm} from './app-settings/app-settings.module';
 import {ContactListForm} from './contact-lists/contact-lists.module';
 import {
@@ -259,5 +264,49 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         authenticate: true,
         rolePermitted: 'admin'
       }
-    });
+    })
+    .state('announcements', {
+      abstract: true,
+      url: '/announcements',
+      template: '<ui-view></ui-view>'
+    })
+      .state('announcements.editor', {
+        abstract: true,
+        url: '/editor',
+        template: '<ui-view></ui-view>'
+      })
+        .state('announcements.editor.list', {
+          url: '/list',
+          component: AnnouncementsEditorList,
+          data: {
+            authenticate: true,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('announcements.editor.new', {
+          url: '/new',
+          component: AnnouncementsEditorForm,
+          data: {
+            authenticate: true,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('announcements.editor.edit', {
+          url: '/edit/:id',
+          component: AnnouncementsEditorForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            rolePermitted: 'admin'
+          }
+        })
+      .state('announcements.global', {
+        url: '/global',
+        component: GlobalAnnouncements,
+        data: {
+          authenticate: true
+        }
+      });
 };

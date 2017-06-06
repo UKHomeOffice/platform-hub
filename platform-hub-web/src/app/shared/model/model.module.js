@@ -3,6 +3,7 @@ import angular from 'angular';
 import {HubApiModule} from '../hub-api/hub-api.module';
 import {UtilModule} from '../util/util.module';
 
+import {Announcements} from './announcements';
 import {AppSettings} from './app-settings';
 import {ContactLists} from './contact-lists';
 import {Identities} from './identities';
@@ -16,6 +17,7 @@ export const ModelModule = angular
     HubApiModule,
     UtilModule
   ])
+  .service('Announcements', Announcements)
   .service('AppSettings', AppSettings)
   .service('ContactLists', ContactLists)
   .service('Identities', Identities)

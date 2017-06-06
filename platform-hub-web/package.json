@@ -26,6 +26,7 @@
     "angular-material-sidemenu": "^1.0.2",
     "angular-medium-editor": "^1.2.1",
     "angular-messages": "1.5.11",
+    "angular-moment": "^1.0.1",
     "angular-sanitize": "1.5.11",
     "angular-sortable-view": "jits/angular-sortable-view#754d087f079075f126c4a38eb7041c7fa69fbd55",
     "angular-toastr": "2.1.x",
@@ -34,7 +35,8 @@
     "bourbon": "^4.3.2",
     "lodash": "^4.17.4",
     "medium-editor": "^5.23.0",
-    "moment": "2.17.x",
+    "moment": "^2.18.1",
+    "ng-material-datetimepicker": "^1.6.3",
     "normalize.css": "^7.0.0"
   },
   "devDependencies": {

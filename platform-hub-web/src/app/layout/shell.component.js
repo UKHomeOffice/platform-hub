@@ -11,6 +11,8 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
   ctrl.AppSettings = AppSettings;
   ctrl.PlatformThemes = PlatformThemes;
   ctrl.Me = Me;
+  ctrl.announcementsIcon = icons.announcements;
+  ctrl.homeIcon = icons.home;
   ctrl.platformThemeIcon = icons.platformThemes;
 
   ctrl.isAdmin = false;
@@ -57,6 +59,12 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
   ];
 
   ctrl.adminNavStates = [
+    {
+      title: 'Announcements',
+      state: 'announcements.editor.list',
+      activeState: 'announcements.editor',
+      icon: ctrl.announcementsIcon
+    },
     {
       title: 'Users',
       state: 'users',
