@@ -30,7 +30,7 @@
       <md-content ng-if="$ctrl.isAuthenticated()">
 
         <md-card
-          ng-if="!$ctrl.Me.data.flags.completed_hub_onboarding"
+          ng-if="$ctrl.Me.data.id && !$ctrl.Me.data.flags.completed_hub_onboarding"
           ui-sref="onboarding.hub-setup"
           class="md-body-2"
           md-colors="{background: 'accent-50'}"
@@ -43,7 +43,7 @@
         </md-card>
 
         <md-card
-          ng-if="!$ctrl.Me.data.flags.completed_services_onboarding"
+          ng-if="$ctrl.Me.data.id && !$ctrl.Me.data.flags.completed_services_onboarding"
           ui-sref="onboarding.services"
           class="md-body-2"
           md-colors="{background: 'accent-50'}"
