@@ -59,4 +59,12 @@ class Announcement < ApplicationRecord
   scope :global, -> { where(is_global: true) }
   scope :published, -> { where('publish_at <= ?', DateTime.now.utc).order(publish_at: :desc) }
 
+  def mark_sticky!
+    self.update_column :is_sticky, true
+  end
+
+  def unmark_sticky!
+    self.update_column :is_sticky, false
+  end
+
 end
