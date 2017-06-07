@@ -9,5 +9,9 @@ FactoryGirl.define do
     end
     is_global false
     publish_at { DateTime.now.utc + 1.hour }
+
+    factory :readonly_announcement do
+      status :delivering
+    end
   end
 end

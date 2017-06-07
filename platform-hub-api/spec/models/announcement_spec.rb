@@ -32,6 +32,31 @@ RSpec.describe Announcement, type: :model do
         a.update title: 'baz'
       }.to raise_error(ActiveRecord::ReadOnlyRecord)
     end
+
+    it 'should still allow direct column update' do
+      a = create :announcement, title: 'foo'
+      expect(a.title).to eq 'foo'
+
+      a.update status: :delivering
+
+      previous_sticky = a.is_sticky
+      a.update_column :is_sticky,  !previous_sticky
+
+      a2 = Announcement.find a.id
+      expect(a2.is_sticky).to be !previous_sticky
+    end
+
+    it 'should still allow deletion' do
+      a = create :announcement, title: 'foo'
+      expect(a.title).to eq 'foo'
+
+      a.update status: :delivering
+
+      # Need to reload before we can destroy it
+      Announcement.find(a.id).destroy
+
+      expect(Announcement.exists?(a.id)).to be false
+    end
   end
 
   describe 'scope: published' do

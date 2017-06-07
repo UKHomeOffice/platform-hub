@@ -236,7 +236,7 @@ RSpec.describe AnnouncementsController, type: :controller do
 
         context 'for a readonly announcement' do
           before do
-            @readonly_announcement = create :announcement, status: :delivering
+            @readonly_announcement = create :readonly_announcement
           end
 
           it 'returns an appropriate error and does not update the announcement' do
@@ -280,16 +280,36 @@ RSpec.describe AnnouncementsController, type: :controller do
 
       it_behaves_like 'an admin' do
 
-        it 'should delete the specified announcement' do
-          expect(Announcement.exists?(@announcement.id)).to be true
-          expect(Audit.count).to eq 0
-          delete :destroy, params: { id: @announcement.id }
-          expect(response).to be_success
-          expect(Announcement.exists?(@announcement.id)).to be false
-          expect(Audit.count).to eq 1
-          audit = Audit.first
-          expect(audit.action).to eq 'destroy'
-          expect(audit.user.id).to eq current_user_id
+        context 'for non readonly announcement' do
+          it 'should delete the specified announcement' do
+            expect(Announcement.exists?(@announcement.id)).to be true
+            expect(Audit.count).to eq 0
+            delete :destroy, params: { id: @announcement.id }
+            expect(response).to be_success
+            expect(Announcement.exists?(@announcement.id)).to be false
+            expect(Audit.count).to eq 1
+            audit = Audit.first
+            expect(audit.action).to eq 'destroy'
+            expect(audit.user.id).to eq current_user_id
+          end
+        end
+
+        context 'for a readonly announcement' do
+          before do
+            @readonly_announcement = create :readonly_announcement
+          end
+
+          it 'should delete the specified announcement' do
+            expect(Announcement.exists?(@readonly_announcement.id)).to be true
+            expect(Audit.count).to eq 0
+            delete :destroy, params: { id: @readonly_announcement.id }
+            expect(response).to be_success
+            expect(Announcement.exists?(@readonly_announcement.id)).to be false
+            expect(Audit.count).to eq 1
+            audit = Audit.first
+            expect(audit.action).to eq 'destroy'
+            expect(audit.user.id).to eq current_user_id
+          end
         end
 
       end

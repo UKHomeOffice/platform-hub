@@ -47,19 +47,16 @@ class Announcement < ApplicationRecord
   attr_default :deliver_to, -> { Hash.new }
   attr_default :status, :waiting_delivery
 
-  after_find :update_protections
-  after_create :update_protections
-  after_update :update_protections
+  before_save do
+    readonly! if (
+      persisted? && (
+        self.status_was != 'waiting_delivery' ||
+        self.publish_at_was <= DateTime.now.utc
+      )
+    )
+  end
 
   scope :global, -> { where(is_global: true) }
   scope :published, -> { where('publish_at <= ?', DateTime.now.utc).order(publish_at: :desc) }
-
-  private
-
-  def update_protections
-    if !self.waiting_delivery? || self.publish_at <= DateTime.now.utc
-      readonly!
-    end
-  end
 
 end
