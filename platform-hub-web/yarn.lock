@@ -979,9 +979,9 @@ boom@2.x.x:
   dependencies:
     hoek "2.x.x"
 
-bourbon@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/bourbon/-/bourbon-4.3.2.tgz#857582bc516243864d6c8db23d5eeea0343db4a6"
+bourbon@^4.3.4:
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/bourbon/-/bourbon-4.3.4.tgz#4da380029e92c0c8f9764c779451a134b11e7cc3"
 
 bower-config@~0.5.0, bower-config@~0.5.2:
   version "0.5.2"
@@ -4766,13 +4766,9 @@ mkpath@~0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/mkpath/-/mkpath-0.1.0.tgz#7554a6f8d871834cc97b5462b122c4c124d6de91"
 
-"moment@>=2.8.0 <3.0.0", moment@^2.18.1:
+"moment@>=2.8.0 <3.0.0", moment@^2.17.1, moment@^2.18.1:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
-
-moment@^2.17.1:
-  version "2.17.1"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.17.1.tgz#fed9506063f36b10f066c8b59a144d7faebe1d82"
 
 mout@~0.9.0:
   version "0.9.1"
