@@ -1,0 +1,15 @@
+<md-card
+  ng-if="!$ctrl.loading"
+  ng-repeat="a in $ctrl.Announcements.sticky track by a.id"
+  ui-sref="announcements.global({'#': a.id})"
+  class="md-body-2"
+  md-colors="::{background: '{{a.colour}}-100'}"
+  style="cursor: pointer;"
+  ng-init="icon = $ctrl.announcementIcon">
+  <md-card-content layout="row">
+    <md-icon md-colors="::{color: '{{a.colour}}'}" style="margin-right: 0.33em; margin-top: 2px;">
+      {{icon}}
+    </md-icon>
+    <span md-truncate flex>{{a.title}}</span>
+  </md-card-content>
+</md-card>

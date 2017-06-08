@@ -5,6 +5,8 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 
+const bourbonIncludePaths = require('bourbon').includePaths;
+
 module.exports = {
   module: {
     loaders: [
@@ -19,7 +21,12 @@ module.exports = {
         use: [
           'style-loader',
           'css-loader',
-          'sass-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              includePaths: bourbonIncludePaths
+            }
+          },
           {
             loader: 'postcss-loader',
             options: {

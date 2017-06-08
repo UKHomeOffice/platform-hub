@@ -11,17 +11,21 @@ import 'angular-loading-bar';
 import 'angular-material';
 import 'angular-material-sidemenu';
 import 'angular-messages';
+import 'angular-moment';
 import 'angular-sanitize';
 import 'angular-sortable-view';
 import 'angular-ui-router';
 import 'angular-url-encode';
+import 'ng-material-datetimepicker';
 
 import moment from 'moment';
 import lodash from 'lodash';
 
+window.moment = moment;
 window.MediumEditor = require('medium-editor/dist/js/medium-editor.js');
 import 'angular-medium-editor';
 
+import {AnnouncementsModule} from './announcements/announcements.module';
 import {AppSettingsModule} from './app-settings/app-settings.module';
 import {ContactListsModule} from './contact-lists/contact-lists.module';
 import {HelpModule} from './help/help.module';
@@ -43,6 +47,7 @@ import 'angular-material/angular-material.css';  // Make sure this is available 
 import 'angular-material-sidemenu/dest/angular-material-sidemenu.css';
 import 'medium-editor/dist/css/medium-editor.css';
 import 'medium-editor/dist/css/themes/beagle.css';
+import 'ng-material-datetimepicker/dist/material-datetimepicker.min.css';
 import './app.scss';
 
 const name = 'app';
@@ -50,6 +55,7 @@ const name = 'app';
 // Config + routes
 angular
   .module(name, [
+    AnnouncementsModule,
     AppSettingsModule,
     ContactListsModule,
     HelpModule,
@@ -65,12 +71,14 @@ angular
     'angular-loading-bar',
     'angular-medium-editor',
     'angular-sortable-view',
+    'angularMoment',
     'base64',
     'bc.AngularUrlEncode',
     'ngAnimate',
     'ngAria',
     'ngCookies',
     'ngMaterial',
+    'ngMaterialDatePicker',
     'ngMaterialSidemenu',
     'ngMessages',
     'ngSanitize',

@@ -21,6 +21,7 @@ h1, h2, h3, h4, h5, h6, p {
 .badge {
   padding: 0.2em 0.5em;
   border-radius: 0.3em;
+  margin-left: 0.66em;
 }
 
 .float-right {
@@ -35,6 +36,10 @@ h1, h2, h3, h4, h5, h6, p {
 .text-center,
 .centred {
   text-align: center;
+}
+
+.separator {
+  margin: 0 0.66em;
 }
 
 .md-button.md-icon-button.input-button-end {

@@ -2,9 +2,11 @@ export const icons = function () {
   'ngInject';
 
   return {
+    announcements: 'announcement',
     appSettings: 'settings',
     contactList: 'contacts',
     faq: 'question_answer',
+    home: 'home',
     hubSetup: 'settings',
     identities: 'account_box',
     internalLink: 'input',

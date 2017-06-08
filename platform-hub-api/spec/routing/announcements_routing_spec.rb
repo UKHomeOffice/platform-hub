@@ -31,5 +31,13 @@ RSpec.describe AnnouncementsController, type: :routing do
       expect(:delete => '/announcements/1').to route_to('announcements#destroy', :id => '1')
     end
 
+    it 'routes to #mark_sticky' do
+      expect(:post => '/announcements/1/mark_sticky').to route_to('announcements#mark_sticky', :id => '1')
+    end
+
+    it 'routes to #unmark_sticky' do
+      expect(:post => '/announcements/1/unmark_sticky').to route_to('announcements#unmark_sticky', :id => '1')
+    end
+
   end
 end

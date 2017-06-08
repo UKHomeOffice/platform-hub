@@ -1,0 +1,128 @@
+<div class="announcements-editor-form">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span ng-if="$ctrl.isNew">New Announcement</span>
+        <span ng-if="!$ctrl.isNew">Edit Announcement</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout-padding>
+      <md-content>
+        <form name="$ctrl.announcementForm" role="form" ng-submit="$ctrl.createOrUpdate()" ng-if="$ctrl.announcement">
+
+          <md-input-container class="md-block">
+            <label for="level">Level:</label>
+            <md-select
+              name="level"
+              ng-model="$ctrl.announcement.level"
+              md-colors="::{background: '{{$ctrl.colours[$ctrl.announcement.level]}}'}"
+              aria-label="Set a level for this announcement">
+              <md-option
+                ng-repeat="l in $ctrl.levels"
+                md-colors="::{background: '{{$ctrl.colours[l]}}'}"
+                md-colors-watch="false"
+                value="{{l}}">
+                {{l}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+
+          <br />
+
+          <md-input-container class="md-block">
+            <label for="title">Title:</label>
+            <input
+              name="title"
+              ng-model="$ctrl.announcement.title"
+              required
+              placeholder="A title for this announcement – e.g. 'Service foo being upgraded on 23rd April'"
+              aria-label="Set a title for this announcement">
+            <div ng-messages="$ctrl.announcementForm.title.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <md-input-container class="md-block">
+            <label for="text">Text:</label>
+            <textarea
+              name="text"
+              ng-model="$ctrl.announcement.text"
+              rows="8"
+              required
+              aria-label="Set a text for this announcement"
+              md-select-on-focus>
+            </textarea>
+            <div ng-messages="$ctrl.announcementForm.text.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <md-checkbox
+            name="is_global"
+            ng-model="$ctrl.announcement.is_global"
+            aria-label="Is this announcement a global one (i.e. visible to everyone in the hub)?">
+            Global? (Visible to everyone on the hub)
+          </md-checkbox>
+
+          <md-checkbox
+            name="is_sticky"
+            ng-model="$ctrl.announcement.is_sticky"
+            aria-label="Is this announcement a sticky one (i.e. pinned to the top of the hub)?">
+            Sticky? (Pinned to the top of the hub)
+          </md-checkbox>
+
+          <br />
+          <br />
+
+          <md-input-container class="md-block">
+            <label for="publish_at">Publish at (note the timezone):</label>
+            <input
+              class="md-input"
+              type="text"
+              name="publish_at"
+              ng-model="$ctrl.announcement.publish_at"
+              required
+              mdc-datetime-picker
+              date="true"
+              time="true"
+              show-todays-date
+              week-start="1"
+              format="YYYY-MM-DDTHH:mm:ssZ"
+              aria-label="A datetime for when this announcement should be published">
+            <div ng-messages="$ctrl.announcementForm.publish_at.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <div layout-padding>
+            <p class="md-body-1" md-colors="::{background: 'accent-50'}">
+              <strong>Important:</strong>
+              you won't be able to update any announcement that becomes published (based on the published at datetime above)!
+            </p>
+          </div>
+
+          <br />
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="$ctrl.saving || $ctrl.announcementForm.$invalid"
+              ng-class="{'md-raised': ($ctrl.announcementForm.$dirty && $ctrl.announcementForm.$valid) }"
+              aria-label="Save announcement">
+              <span ng-if="$ctrl.isNew">Create</span>
+              <span ng-if="!$ctrl.isNew">Update</span>
+            </md-button>
+            <md-button ui-sref="announcements.editor.list" ng-disabled="$ctrl.saving">Cancel</md-button>
+          </div>
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

@@ -88,11 +88,11 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
-angular-animate@1.5.11, angular-animate@^1.5.0:
+angular-animate@1.5.11, angular-animate@^1.5.0, angular-animate@^1.5.10:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.5.11.tgz#1baa43c303d1b93c4e6aa89453b39114b7a1c669"
 
-angular-aria@1.5.11, angular-aria@^1.5.0:
+angular-aria@1.5.11, angular-aria@^1.5.0, angular-aria@^1.5.10:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular-aria/-/angular-aria-1.5.11.tgz#26963ac336891ced7b199e59afd7e9b25e53d6a6"
 
@@ -123,7 +123,7 @@ angular-material-sidemenu@^1.0.2:
     angular-aria "^1.5.0"
     angular-material "^1.0.6"
 
-angular-material@^1.0.6, angular-material@^1.1.4:
+angular-material@^1.0.6, angular-material@^1.1.1, angular-material@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/angular-material/-/angular-material-1.1.4.tgz#27de35646f54ccd320080af0c708e1b438af87f6"
 
@@ -138,6 +138,12 @@ angular-messages@1.5.11:
 angular-mocks@1.5.11:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.5.11.tgz#a0e1dd0ea55fd77ee7a757d75536c5e964c86f81"
+
+angular-moment@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/angular-moment/-/angular-moment-1.0.1.tgz#509d3326aea23f78221cfddb2b62bfede6841d31"
+  dependencies:
+    moment ">=2.8.0 <3.0.0"
 
 angular-sanitize@1.5.11:
   version "1.5.11"
@@ -161,7 +167,7 @@ angular-url-encode@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/angular-url-encode/-/angular-url-encode-1.0.0.tgz#2f8ef915d0f7e25b310f869a7f38e6f7034dd175"
 
-angular@1.5.11, "angular@>= 1.0.8", angular@^1.5.0:
+angular@1.5.11, "angular@>= 1.0.8", angular@^1.5.0, angular@^1.5.10:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.11.tgz#8c5ba7386f15965c9acf3429f6881553aada30d6"
 
@@ -973,9 +979,9 @@ boom@2.x.x:
   dependencies:
     hoek "2.x.x"
 
-bourbon@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/bourbon/-/bourbon-4.3.2.tgz#857582bc516243864d6c8db23d5eeea0343db4a6"
+bourbon@^4.3.4:
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/bourbon/-/bourbon-4.3.4.tgz#4da380029e92c0c8f9764c779451a134b11e7cc3"
 
 bower-config@~0.5.0, bower-config@~0.5.2:
   version "0.5.2"
@@ -4760,9 +4766,9 @@ mkpath@~0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/mkpath/-/mkpath-0.1.0.tgz#7554a6f8d871834cc97b5462b122c4c124d6de91"
 
-moment@2.17.x:
-  version "2.17.1"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.17.1.tgz#fed9506063f36b10f066c8b59a144d7faebe1d82"
+"moment@>=2.8.0 <3.0.0", moment@^2.17.1, moment@^2.18.1:
+  version "2.18.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
 
 mout@~0.9.0:
   version "0.9.1"
@@ -4873,6 +4879,16 @@ ng-dependencies@~0.2.0:
     esprima "^1.2.2"
     estraverse "^1.5.1"
     lodash "^3.0.1"
+
+ng-material-datetimepicker@^1.6.3:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/ng-material-datetimepicker/-/ng-material-datetimepicker-1.6.3.tgz#533f333062f95ccedd53dbabb22955e362d8a4e2"
+  dependencies:
+    angular "^1.5.10"
+    angular-animate "^1.5.10"
+    angular-aria "^1.5.10"
+    angular-material "^1.1.1"
+    moment "^2.17.1"
 
 no-case@^2.2.0:
   version "2.3.0"

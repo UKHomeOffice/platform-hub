@@ -52,6 +52,15 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getContactList = buildResourceFetcher('contact_lists');
   service.updateContactList = buildResourceUpdater('contact_lists');
 
+  service.getGlobalAnnouncements = buildSimpleFetcher('announcements/global', 'global announcements');
+  service.getAllAnnouncements = buildCollectionFetcher('announcements');
+  service.getAnnouncement = buildResourceFetcher('announcements');
+  service.createAnnouncement = buildResourceCreator('announcements');
+  service.updateAnnouncement = buildResourceUpdater('announcements');
+  service.deleteAnnouncement = buildResourceDeletor('announcements');
+  service.announcementMarkSticky = announcementMarkSticky;
+  service.announcementUnmarkSticky = announcementUnmarkSticky;
+
   return service;
 
   function getMe() {
@@ -285,6 +294,32 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to create support request', response));
+        return $q.reject(response);
+      });
+  }
+
+  function announcementMarkSticky(announcementId) {
+    if (_.isNull(announcementId) || _.isEmpty(announcementId)) {
+      throw new Error('"announcementId" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/announcements/${announcementId}/mark_sticky`)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to mark announcement as sticky', response));
+        return $q.reject(response);
+      });
+  }
+
+  function announcementUnmarkSticky(announcementId) {
+    if (_.isNull(announcementId) || _.isEmpty(announcementId)) {
+      throw new Error('"announcementId" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/announcements/${announcementId}/unmark_sticky`)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to unmark announcement as sticky', response));
         return $q.reject(response);
       });
   }

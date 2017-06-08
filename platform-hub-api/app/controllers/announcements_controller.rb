@@ -1,6 +1,6 @@
 class AnnouncementsController < ApiJsonController
 
-  before_action :find_announcement, only: [ :show, :update, :destroy ]
+  before_action :find_announcement, only: [ :show, :update, :destroy, :mark_sticky, :unmark_sticky ]
 
   skip_authorization_check :only => [ :global ]
   authorize_resource except: [ :global ]
@@ -68,6 +68,32 @@ class AnnouncementsController < ApiJsonController
       action: 'destroy',
       comment: "User '#{current_user.email}' deleted announcement: '#{title}' (#{id})"
     )
+  end
+
+  # POST /announcements/:id/mark_sticky
+  def mark_sticky
+    @announcement.mark_sticky!
+
+    AuditService.log(
+      context: audit_context,
+      action: 'mark_sticky',
+      auditable: @announcement
+    )
+
+    head :no_content
+  end
+
+  # POST /announcements/:id/unmark_sticky
+  def unmark_sticky
+    @announcement.unmark_sticky!
+
+    AuditService.log(
+      context: audit_context,
+      action: 'unmark_sticky',
+      auditable: @announcement
+    )
+
+    head :no_content
   end
 
   private

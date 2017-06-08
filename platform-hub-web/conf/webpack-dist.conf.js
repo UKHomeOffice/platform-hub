@@ -7,6 +7,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const pkg = require('../package.json');
 const autoprefixer = require('autoprefixer');
 
+const bourbonIncludePaths = require('bourbon').includePaths;
+
 module.exports = {
   module: {
     loaders: [
@@ -27,7 +29,12 @@ module.exports = {
                 minimize: true
               }
             },
-            'sass-loader',
+            {
+              loader: 'sass-loader',
+              options: {
+                includePaths: bourbonIncludePaths
+              }
+            },
             {
               loader: 'postcss-loader',
               options: {

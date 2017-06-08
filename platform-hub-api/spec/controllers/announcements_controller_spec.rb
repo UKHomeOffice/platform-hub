@@ -317,4 +317,82 @@ RSpec.describe AnnouncementsController, type: :controller do
     end
   end
 
+  describe 'POST #mark_sticky' do
+    before do
+      @announcement = create :announcement, is_sticky: false
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :mark_sticky, params: { id: @announcement.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :mark_sticky, params: { id: @announcement.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        it 'should mark the specified announcement as sticky' do
+          expect(@announcement.is_sticky).to be false
+          expect(Audit.count).to eq 0
+          get :mark_sticky, params: { id: @announcement.id }
+          expect(response).to be_success
+          expect(@announcement.reload.is_sticky).to be true
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'mark_sticky'
+          expect(audit.auditable).to eq @announcement
+          expect(audit.user.id).to eq current_user_id
+        end
+
+      end
+
+    end
+  end
+
+  describe 'POST #unmark_sticky' do
+    before do
+      @announcement = create :announcement, is_sticky: true
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :unmark_sticky, params: { id: @announcement.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :unmark_sticky, params: { id: @announcement.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        it 'should unmark the specified announcement as sticky' do
+          expect(@announcement.is_sticky).to be true
+          expect(Audit.count).to eq 0
+          get :unmark_sticky, params: { id: @announcement.id }
+          expect(response).to be_success
+          expect(@announcement.reload.is_sticky).to be false
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'unmark_sticky'
+          expect(audit.auditable).to eq @announcement
+          expect(audit.user.id).to eq current_user_id
+        end
+
+      end
+
+    end
+  end
+
 end

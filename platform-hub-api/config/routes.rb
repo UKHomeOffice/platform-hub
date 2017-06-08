@@ -62,6 +62,8 @@ Rails.application.routes.draw do
 
     resources :announcements do
       get :global, on: :collection
+      post :mark_sticky, on: :member
+      post :unmark_sticky, on: :member
     end
 
   end
