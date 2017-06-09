@@ -27,5 +27,7 @@ module PlatformHubApi
 
     # Because we're using Postgesql specific stuff:
     config.active_record.schema_format = :sql
+
+    config.active_job.queue_adapter = :delayed_job
   end
 end

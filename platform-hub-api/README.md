@@ -52,7 +52,8 @@ This will also set up your local tests database used when running the test suite
 
 #### Common tasks
 
-- `bin/rails server` – runs a local server to serve the API
+- `bin/rails server` – runs a local server to serve the API (`Ctrl+C` to stop)
+- `bin/rails jobs:work` – runs a non-daemonised delayed_job worker to process background jobs (`Ctrl+C` to stop)
 - `bundle exec rspec` – runs the tests (specified in the `/spec` folder)
 - `bin/rails console` – runs a local Rails console to access your app
 - `bin/rails db:migrate` – runs database migrations to get your local database to the latest schema
