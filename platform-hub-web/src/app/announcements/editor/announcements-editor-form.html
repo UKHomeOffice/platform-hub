@@ -27,7 +27,7 @@
                 ng-repeat="l in $ctrl.levels"
                 md-colors="::{background: '{{$ctrl.colours[l]}}'}"
                 md-colors-watch="false"
-                value="{{l}}">
+                ng-value="l">
                 {{l}}
               </md-option>
             </md-select>
