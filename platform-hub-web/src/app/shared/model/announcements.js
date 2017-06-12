@@ -1,3 +1,5 @@
+/* eslint camelcase: 0 */
+
 import angular from 'angular';
 
 export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApiService, _) {
@@ -27,6 +29,8 @@ export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApi
   model.refreshGlobal = refreshGlobal;
   model.refreshAll = refreshAll;
   model.isEditable = isEditable;
+  model.isPublished = isPublished;
+  model.publishNow = publishNow;
 
   return model;
 
@@ -72,11 +76,20 @@ export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApi
       return false;
     }
 
-    if (announcement.status !== 'waiting_delivery') {
+    if (announcement.status !== 'awaiting_delivery') {
       return false;
     }
 
-    return moment(announcement.publish_at).isAfter(moment());
+    return !model.isPublished(announcement);
+  }
+
+  function isPublished(announcement) {
+    return moment(announcement.publish_at).isSameOrBefore(moment());
+  }
+
+  function publishNow(announcement) {
+    announcement.publish_at = moment.utc().format();
+    return hubApiService.updateAnnouncement(announcement.id, announcement);
   }
 
   function processAnnouncementsFromApi(results) {

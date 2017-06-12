@@ -92,7 +92,7 @@
               <md-option md-option-empty></md-option>
               <md-option
                 ng-repeat="s in $ctrl.userScopes"
-                value="{{s.value}}">
+                ng-value="s.value">
                 {{s.name}}
               </md-option>
             </md-select>
@@ -142,7 +142,7 @@
                       <md-select ng-model="field.field_type" required>
                         <md-option
                           ng-repeat="o in $ctrl.formFieldTypes"
-                          value="{{o}}">
+                          ng-value="o">
                           {{o}}
                         </md-option>
                       </md-select>

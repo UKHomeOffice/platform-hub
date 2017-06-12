@@ -27,7 +27,7 @@
                 ng-repeat="l in $ctrl.levels"
                 md-colors="::{background: '{{$ctrl.colours[l]}}'}"
                 md-colors-watch="false"
-                value="{{l}}">
+                ng-value="l">
                 {{l}}
               </md-option>
             </md-select>
@@ -74,31 +74,45 @@
             name="is_sticky"
             ng-model="$ctrl.announcement.is_sticky"
             aria-label="Is this announcement a sticky one (i.e. pinned to the top of the hub)?">
-            Sticky? (Pinned to the top of the hub)
+            Sticky? (Pinned to the top of the sidebar)
           </md-checkbox>
 
           <br />
           <br />
 
-          <md-input-container class="md-block">
-            <label for="publish_at">Publish at (note the timezone):</label>
-            <input
-              class="md-input"
-              type="text"
-              name="publish_at"
-              ng-model="$ctrl.announcement.publish_at"
-              required
-              mdc-datetime-picker
-              date="true"
-              time="true"
-              show-todays-date
-              week-start="1"
-              format="YYYY-MM-DDTHH:mm:ssZ"
-              aria-label="A datetime for when this announcement should be published">
-            <div ng-messages="$ctrl.announcementForm.publish_at.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
+          <fieldset>
+            <legend>
+              Publish at
+            </legend>
+
+            <md-input-container class="md-block">
+              <input
+                class="md-input"
+                type="text"
+                name="publish_at"
+                ng-model="$ctrl.announcement.publish_at"
+                required
+                mdc-datetime-picker
+                date="true"
+                time="true"
+                show-todays-date
+                week-start="1"
+                format="YYYY-MM-DDTHH:mm:ssZ"
+                aria-label="A datetime for when this announcement should be published">
+              <div ng-messages="$ctrl.announcementForm.publish_at.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+              <p
+                class="md-body-1"
+                md-colors="{color: 'accent'}"
+                ng-if="$ctrl.announcement.publish_at"
+                style="font-weight: bold">
+                = <span am-time-ago="$ctrl.announcement.publish_at"></span>
+              </p>
+            </md-input-container>
+          </fieldset>
+
+          <br />
 
           <div layout-padding>
             <p class="md-body-1" md-colors="::{background: 'accent-50'}">

@@ -24,7 +24,9 @@
 
   <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.Announcements.all.length > 0">
 
-    <md-card ng-repeat="a in $ctrl.Announcements.all track by a.id">
+    <md-card
+      ng-repeat="a in $ctrl.Announcements.all track by a.id"
+      md-colors="$ctrl.Announcements.isPublished(a) ? {background: 'blue-grey-50'} : {background: 'background'}">
       <div class="tinted-bar" md-colors="{background: '{{a.colour}}'}"></div>
       <md-card-title>
         <md-card-title-text>
@@ -45,13 +47,19 @@
               md-colors="{background: 'accent'}">
               Sticky
             </small>
+            <small
+              class="badge float-right"
+              ng-if="$ctrl.Announcements.isPublished(a)"
+              md-colors="{background: 'blue-grey'}">
+              Published
+            </small>
             <span>{{a.title}}</span>
           </span>
         </md-card-title-text>
       </md-card-title>
 
       <md-card-content>
-        <div layout-padding class="md-body-1" md-colors="{background: '{{a.colour}}-50'}">
+        <div layout-padding class="md-body-1" md-colors="{background: '{{a.colour}}-100'}">
           <div ng-bind-html='a.text | simpleFormat'></div>
         </div>
 
@@ -94,13 +102,22 @@
           Edit
         </md-button>
         <md-button
+          ng-disabled="$ctrl.saving"
+          ng-if="!$ctrl.Announcements.isPublished(a)"
+          aria-label="Publish this announcement now"
+          ng-click="$ctrl.publish(a, $event)">
+          Publish
+        </md-button>
+        <md-button
           ng-if="!a.is_sticky"
+          ng-disabled="$ctrl.saving"
           aria-label="Mark this announcement as sticky"
           ng-click="$ctrl.markSticky(a)">
           Mark sticky
         </md-button>
         <md-button
           ng-if="a.is_sticky"
+          ng-disabled="$ctrl.saving"
           aria-label="Unmark this announcement as sticky"
           ng-click="$ctrl.unmarkSticky(a)">
           Unmark sticky

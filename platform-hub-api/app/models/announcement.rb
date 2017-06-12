@@ -12,7 +12,7 @@ class Announcement < ApplicationRecord
   }
 
   enum status: {
-    waiting_delivery: 'waiting_delivery',
+    awaiting_delivery: 'awaiting_delivery',
     delivering: 'delivering',
     delivered: 'delivered'
   }
@@ -45,12 +45,12 @@ class Announcement < ApplicationRecord
   attr_default :is_global, false
   attr_default :is_sticky, false
   attr_default :deliver_to, -> { Hash.new }
-  attr_default :status, :waiting_delivery
+  attr_default :status, :awaiting_delivery
 
   before_save do
     readonly! if (
       persisted? && (
-        self.status_was != 'waiting_delivery' ||
+        self.status_was != 'awaiting_delivery' ||
         self.publish_at_was <= DateTime.now.utc
       )
     )

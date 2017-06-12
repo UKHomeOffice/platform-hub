@@ -69,7 +69,7 @@
                 ng-repeat="c in $ctrl.colours"
                 md-colors="{background: '{{c}}'}"
                 md-colors-watch="false"
-                value="{{c}}">
+                ng-value="c">
                 {{c}}
               </md-option>
             </md-select>
@@ -100,7 +100,7 @@
                       required>
                       <md-option
                         ng-repeat="k in $ctrl.resourceKinds"
-                        value="{{k.kind}}">
+                        ng-value="k.kind">
                         {{k.name}}
                       </md-option>
                     </md-select>
@@ -134,7 +134,7 @@
                         <md-option md-option-empty></md-option>
                         <md-option
                           ng-repeat="s in $ctrl.userScopes"
-                          value="{{s.value}}">
+                          ng-value="s.value">
                           {{s.name}}
                         </md-option>
                       </md-select>

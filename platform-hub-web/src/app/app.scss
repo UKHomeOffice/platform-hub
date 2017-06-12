@@ -9,6 +9,14 @@ h1, h2, h3, h4, h5, h6, p {
   margin-bottom: 0.5em;
 }
 
+fieldset {
+  border-color: rgba(black, 0.2);
+
+  > legend {
+    padding: 0 0.33em;
+  }
+}
+
 .close-button {
   background-color: transparent;
   border: none;
