@@ -51,7 +51,7 @@ class IdentityFlowsController < AuthenticatedController
 
   def git_hub_identity_service
     @git_hub_identity_service ||= GitHubIdentityService.new(
-      encryption_service: ShortLivedSymmetricEncryptionService.new(Rails.application.secrets.secret_key_base),
+      encryption_service: ENCRYPTOR,
       client_id: Rails.application.secrets.github_client_id,
       client_secret: Rails.application.secrets.github_client_secret,
       app_base_url: Rails.application.config.app_base_url,
