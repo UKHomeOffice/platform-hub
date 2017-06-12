@@ -72,7 +72,7 @@ export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApi
       return false;
     }
 
-    if (announcement.status !== 'waiting_delivery') {
+    if (announcement.status !== 'awaiting_delivery') {
       return false;
     }
 

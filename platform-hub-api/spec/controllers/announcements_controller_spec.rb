@@ -165,7 +165,7 @@ RSpec.describe AnnouncementsController, type: :controller do
             'created_at' => now_json_value,
             'updated_at' => now_json_value,
             'deliver_to' => post_data[:announcement][:deliver_to],
-            'status' => 'waiting_delivery'
+            'status' => 'awaiting_delivery'
           });
           expect(Audit.count).to eq 1
           audit = Audit.first
