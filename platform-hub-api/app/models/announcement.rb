@@ -14,7 +14,8 @@ class Announcement < ApplicationRecord
   enum status: {
     awaiting_delivery: 'awaiting_delivery',
     delivering: 'delivering',
-    delivered: 'delivered'
+    delivered: 'delivered',
+    delivery_failed: 'delivery_failed'
   }
 
   validates :title,
@@ -62,6 +63,7 @@ class Announcement < ApplicationRecord
 
   scope :global, -> { where(is_global: true) }
   scope :published, -> { where('publish_at <= ?', DateTime.now.utc).order(publish_at: :desc) }
+  scope :awaiting_delivery, -> { where(status: :awaiting_delivery) }
 
   def mark_sticky!
     self.update_column :is_sticky, true

@@ -3,11 +3,11 @@
 export const ContactLists = function ($q, hubApiService) {
   'ngInject';
 
-  const listIds = [
+  const model = {};
+
+  model.listIds = [
     'global'
   ];
-
-  const model = {};
 
   model.all = all;
   model.update = update;
@@ -15,7 +15,7 @@ export const ContactLists = function ($q, hubApiService) {
   return model;
 
   function all() {
-    const promises = listIds.map(hubApiService.getContactList);
+    const promises = model.listIds.map(hubApiService.getContactList);
     return $q.all(promises);
   }
 

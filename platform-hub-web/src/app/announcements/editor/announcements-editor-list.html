@@ -75,6 +75,24 @@
 
         <p class="md-body-1">
           <span md-colors="{color: 'blue-grey-700'}">
+            Deliver to:
+          </span>
+          <span class="indented" ng-if="a.deliver_to.hub_users.length > 0">
+            <br />
+            Hub users = {{a.deliver_to.hub_users}}
+          </span>
+          <span class="indented" ng-if="a.deliver_to.contact_lists.length > 0">
+            <br />
+            Contact lists = {{a.deliver_to.contact_lists}}
+          </span>
+          <span class="indented" ng-if="a.deliver_to.slack_channels.length > 0">
+            <br />
+            Slack channels = {{a.deliver_to.slack_channels.join(' ')}}
+          </span>
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
             Status:
           </span>
           {{a.status}}

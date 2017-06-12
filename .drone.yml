@@ -70,6 +70,9 @@ pipeline:
       - AGENT_GITHUB_ORG=noop
       - AGENT_GITHUB_ORG_MAIN_TEAM_ID=noop
       - APP_BASE_URL="http://localhost:3000"
+      - EMAIL_FROM_ADDRESS="test@example.org"
+      - EMAIL_MAX_TO_ADDRESSES=10
+      - SLACK_WEBHOOK=noop
     commands:
       - echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
       - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
@@ -111,6 +114,9 @@ pipeline:
         -e AGENT_GITHUB_ORG=noop
         -e AGENT_GITHUB_ORG_MAIN_TEAM_ID=noop
         -e APP_BASE_URL="http://localhost:3000"
+        -e EMAIL_FROM_ADDRESS="test@example.org"
+        -e EMAIL_MAX_TO_ADDRESSES=10
+        -e SLACK_WEBHOOK=noop
         --net=host
         -d
         platform-hub-api
