@@ -17,6 +17,7 @@ function AnnouncementsEditorListController($mdDialog, icons, Announcements, hubA
   ctrl.loading = true;
   ctrl.saving = false;
 
+  ctrl.publish = publish;
   ctrl.markSticky = markSticky;
   ctrl.unmarkSticky = unmarkSticky;
   ctrl.deleteAnnouncement = deleteAnnouncement;
@@ -34,6 +35,31 @@ function AnnouncementsEditorListController($mdDialog, icons, Announcements, hubA
       .refreshAll()
       .finally(() => {
         ctrl.loading = false;
+      });
+  }
+
+  function publish(announcement, targetEvent) {
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent('This will publish the announcement, triggering any deliveries specified, and preventing any further edits to this announcement.')
+      .ariaLabel('Confirm publishing of announcement')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(() => {
+        ctrl.saving = true;
+
+        Announcements
+          .publishNow(announcement)
+          .then(() => {
+            logger.success('Announcement published');
+          })
+          .finally(() => {
+            ctrl.saving = false;
+          });
       });
   }
 
