@@ -1,8 +1,12 @@
 class KubernetesTokenSerializer < ActiveModel::Serializer
   attributes(
     :cluster,
-    :token, 
+    :token,
     :uid,
     :groups
   )
+
+  def token
+    object.decrypted_token
+  end
 end

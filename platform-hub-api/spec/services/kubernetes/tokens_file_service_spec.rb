@@ -10,21 +10,21 @@ describe Kubernetes::TokensFileService, type: :service do
       id: 'development-static-system-tokens',
       scope: 'kubernetes',
       data: [
-        {token: 'system-token', user: 'system-user', uid: 'system-uid', groups: ['system-group']}
+        {token: ENCRYPTOR.encrypt('system-token'), user: 'system-user', uid: 'system-uid', groups: ['system-group']}
       ]
     )
     create(:hash_record,
       id: 'development-static-user-tokens',
       scope: 'kubernetes',
       data: [
-        {token: 'user-token', user: 'user-user', uid: 'user-uid', groups: ['user-group']}
+        {token: ENCRYPTOR.encrypt('user-token'), user: 'user-user', uid: 'user-uid', groups: ['user-group']}
       ]
     )
     create(:hash_record,
       id: 'development-static-robot-tokens',
       scope: 'kubernetes',
       data: [
-        {token: 'robot-token', user: 'robot-user', uid: 'robot-uid', groups: ['robot-group']}
+        {token: ENCRYPTOR.encrypt('robot-token'), user: 'robot-user', uid: 'robot-uid', groups: ['robot-group']}
       ]
     )    
   end
@@ -68,7 +68,7 @@ describe Kubernetes::TokensFileService, type: :service do
         expect(tokens).to_not be_empty
         expect(tokens.size).to eq 1
         t = tokens.first
-        expect(t['token']).to eq "#{kind}-token"
+        expect(ENCRYPTOR.decrypt(t['token'])).to eq "#{kind}-token"
         expect(t['user']).to eq "#{kind}-user"
         expect(t['uid']).to eq "#{kind}-uid"
         expect(t['groups']).to eq ["#{kind}-group"]

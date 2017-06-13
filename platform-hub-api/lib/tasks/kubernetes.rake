@@ -1,4 +1,39 @@
 namespace :kubernetes do
+  
+  namespace :robots do
+
+    desc "Creates or updates robot token - `groups` as space separated string of group names: 'group1 group2'."
+    task :create_or_update, [:cluster, :robot_name, :groups] => [:environment] do |t, args|
+
+      unless [args.cluster, args.robot_name, args.groups].all?
+        raise "ERROR: Missing arguments! Required args: `cluster`,`kind`, `groups`."
+      end
+
+      puts Kubernetes::RobotTokenService.create_or_update(args.cluster, args.robot_name, args.groups.split(' '))
+    end
+
+    desc "Deletes robot token"
+    task :delete, [:cluster, :robot_name] => [:environment] do |t, args|
+
+      unless [args.cluster, args.robot_name].all?
+        raise "ERROR: Missing arguments! Required args: `cluster`,`kind`."
+      end
+
+      puts Kubernetes::RobotTokenService.delete(args.cluster, args.robot_name)
+    end
+
+    desc "Describes robot token"
+    task :describe, [:cluster, :robot_name] => [:environment] do |t, args|
+
+      unless [args.cluster, args.robot_name].all?
+        raise "ERROR: Missing arguments! Required args: `cluster`,`kind`."
+      end
+
+      puts Kubernetes::RobotTokenService.describe(args.cluster, args.robot_name)
+    end
+
+  end
+
   namespace :static do
 
     desc "Creates static kubernetes tokens for given cluster and kind from a file and stores them as HashRecord"
@@ -54,7 +89,7 @@ namespace :kubernetes do
     def parse_record(record)
       parts = record.gsub('"','').split(',')
       Hashie::Mash.new(
-        token: parts[0],
+        token: ENCRYPTOR.encrypt(parts[0]),
         user: parts[1],
         uid: parts[2],
         groups: parts.size > 3 ? parts[3..-1] : [],

@@ -39,7 +39,7 @@ describe Kubernetes::TokenService, type: :service do
       expect(tokens.size).to eq 1
       expect(tokens.first.identity_id).to eq kubernetes_identity.id
       expect(tokens.first.cluster).to eq cluster
-      expect(tokens.first.token).to eq token
+      expect(ENCRYPTOR.decrypt(tokens.first.token)).to eq token
       expect(tokens.first.uid).to eq uid
       expect(tokens.first.groups).to eq groups
     end
@@ -94,7 +94,7 @@ describe Kubernetes::TokenService, type: :service do
       tokens, deleted_token = subject.delete_token(kubernetes_identity.data, cluster)
       expect(tokens.size).to eq 0
       expect(deleted_token.cluster).to eq cluster
-      expect(deleted_token.token).to eq token
+      expect(ENCRYPTOR.decrypt(deleted_token.token)).to eq token
       expect(deleted_token.uid).to eq uid
     end
   end

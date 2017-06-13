@@ -63,7 +63,7 @@ pipeline:
   api_tests:
     image: ruby:2.3.3
     environment:
-      - SECRET_KEY_BASE=foobar
+      - SECRET_KEY_BASE=$(head -c30 < /dev/urandom | base64)
       - GITHUB_CLIENT_ID=NA
       - GITHUB_CLIENT_SECRET=NA
       - AGENT_GITHUB_TOKEN=noop
@@ -107,7 +107,7 @@ pipeline:
         -e PHUB_DB_USERNAME=phub
         -e PHUB_DB_PASSWORD=phub_password
         -e RAILS_LOG_TO_STDOUT=true
-        -e SECRET_KEY_BASE=foobar
+        -e SECRET_KEY_BASE=$(head -c30 < /dev/urandom | base64)
         -e GITHUB_CLIENT_ID=NA
         -e GITHUB_CLIENT_SECRET=NA
         -e AGENT_GITHUB_TOKEN=noop

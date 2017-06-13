@@ -19,7 +19,7 @@ module Kubernetes
         STATIC_TOKEN_KINDS.each do |kind|
           static_tokens(cluster.to_s, kind).each do |t|
             i = HashWithIndifferentAccess.new(t)
-            row = [i[:token], i[:user], i[:uid]]
+            row = [ENCRYPTOR.decrypt(i[:token]), i[:user], i[:uid]]
             row << i[:groups].join(',') unless i[:groups].empty?
             csv << row
           end
@@ -29,7 +29,7 @@ module Kubernetes
           user = i.user.email
           HashWithIndifferentAccess.new(i.data)[:tokens].each do |t|
             next if t[:cluster].to_sym != cluster.to_sym
-            csv << [t[:token], user, t[:uid], t[:groups].join(',')]
+            csv << [ENCRYPTOR.decrypt(t[:token]), user, t[:uid], t[:groups].join(',')]
           end
         end
       end
@@ -37,13 +37,13 @@ module Kubernetes
 
     private
     
-    # Static system tokens contain the full list of all core system tokens in use.
+    # Static `system` tokens contain the full list of all core system tokens in use.
     # For example tokens used by kublet, controller-manager, etc. 
     #
-    # Static user tokens contain the list of all user tokens currently in use.
+    # Static `user` tokens contain the list of all user tokens currently in use.
     #
-    # Static agent tokens contain all non-user specific tokens in use. 
-    # These can include bot / CI tokens etc.
+    # Static `robot` tokens contain all non-user specific tokens in use. 
+    # These can include various robots, CI tokens etc.
     def static_tokens(cluster, kind)
       unless STATIC_TOKEN_KINDS.include?(kind)
         raise Errors::UnknownStaticTokensKind, "`#{kind}` kind not supported."

@@ -8,6 +8,8 @@ module Kubernetes
     #   {"token" => "token2", user" => "user2", "uid" => "uid2", "groups" => []}
     #   ...
     # ]
+    # Note: All tokens are encrypted!
+
     def create_or_update(cluster, robot_name, groups = [])
       robot_tokens = get_robot_tokens(cluster)
 
@@ -18,7 +20,7 @@ module Kubernetes
       if record.nil?
         token = Kubernetes::TokenService.send(:generate_secure_random)
         record = Hashie::Mash.new(
-          token: token,
+          token: ENCRYPTOR.encrypt(token),
           user: robot_name,
           uid: Kubernetes::TokenService.send(:generate_secure_random),
           groups: Kubernetes::TokenService.send(:cleanup, groups)
@@ -31,7 +33,7 @@ module Kubernetes
       end
 
       robot_tokens.save!
-      puts "Created/updated robot account for `#{robot_name}` (token: #{record['token']})"
+      "Created/updated robot account for `#{robot_name}` (token: #{ENCRYPTOR.decrypt(record['token'])})"
     end
 
     def delete(cluster, robot_name)
@@ -42,7 +44,7 @@ module Kubernetes
       end
 
       robot_tokens.save!
-      puts "Deleted robot account for `#{robot_name.to_s}`"
+      "Deleted robot account for `#{robot_name.to_s}`"
     end
 
     def describe(cluster, robot_name)

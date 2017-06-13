@@ -12,6 +12,17 @@ class KubernetesToken
 
   belongs_to :identity
 
+  def initialize(attributes)
+    super(attributes)
+  end
+
+  def self.from_data(attributes)
+    params = attributes.extract!(:identity_id, :cluster, :uid, :groups)
+        .merge!(token: ENCRYPTOR.decrypt(attributes[:token]))
+
+    new(params)
+  end
+
   def [](attr)
     self.send(attr)
   end
@@ -19,4 +30,21 @@ class KubernetesToken
   def []=(attr, value)
     self.send("#{attr}=", value)
   end
+
+  def decrypted_token
+    ENCRYPTOR.decrypt(self.token)
+  end
+
+  def token=(val)
+    @token = ENCRYPTOR.encrypt(val)
+  end
+
+  protected
+
+  def token_must_not_be_blank
+    if decrypted_token.blank?
+      errors.add(:token, "can't be nil or empty string")
+    end
+  end
+
 end
