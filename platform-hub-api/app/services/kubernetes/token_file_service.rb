@@ -1,16 +1,26 @@
 require 'csv'
 
 module Kubernetes
-  module TokensFileService
+  module TokenFileService
     module Errors
       class UnknownStaticTokensKind < StandardError; end
     end
+
+    # Static `system` tokens contain the full list of all core system tokens in use.
+    # For example tokens used by kublet, controller-manager, etc. 
+    #
+    # Static `user` tokens contain the list of all user tokens currently in use.
+    #
+    # Static `robot` tokens contain all non-user specific tokens in use. 
+    # These can include various robots, CI tokens etc.
 
     STATIC_TOKEN_KINDS = [
       :system,
       :user,
       :robot
     ]
+
+    IDENTITY_BATCH_SIZE = 100
 
     extend self
 
@@ -25,7 +35,7 @@ module Kubernetes
           end
         end
 
-        Identity.kubernetes.all.each do |i|
+        Identity.kubernetes.find_each(batch_size: IDENTITY_BATCH_SIZE) do |i|
           user = i.user.email
           HashWithIndifferentAccess.new(i.data)[:tokens].each do |t|
             next if t[:cluster].to_sym != cluster.to_sym
@@ -37,18 +47,12 @@ module Kubernetes
 
     private
     
-    # Static `system` tokens contain the full list of all core system tokens in use.
-    # For example tokens used by kublet, controller-manager, etc. 
-    #
-    # Static `user` tokens contain the list of all user tokens currently in use.
-    #
-    # Static `robot` tokens contain all non-user specific tokens in use. 
-    # These can include various robots, CI tokens etc.
     def static_tokens(cluster, kind)
       unless STATIC_TOKEN_KINDS.include?(kind)
         raise Errors::UnknownStaticTokensKind, "`#{kind}` kind not supported."
       end
-      HashRecord.kubernetes.find_by!(id: "#{cluster}-static-#{kind}-tokens").data
+      hr = HashRecord.kubernetes.find_by(id: "#{cluster}-static-#{kind}-tokens")
+      hr.try(:data) || []
     end
 
   end

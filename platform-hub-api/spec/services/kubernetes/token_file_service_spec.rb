@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Kubernetes::TokensFileService, type: :service do
+describe Kubernetes::TokenFileService, type: :service do
 
   let(:cluster) { :development }
   let(:kind) { :robot }
@@ -42,7 +42,9 @@ describe Kubernetes::TokensFileService, type: :service do
     end
 
     before do
-      allow(Identity).to receive_message_chain(:kubernetes, :all) { [kubernetes_identity] }
+      allow(Identity).to receive_message_chain(:kubernetes, :find_each)
+        .with(batch_size: Kubernetes::TokenFileService::IDENTITY_BATCH_SIZE)
+        .and_yield(kubernetes_identity)
     end
 
     it 'compiles csv for static and platform managed tokens for given cluster' do
@@ -78,7 +80,7 @@ describe Kubernetes::TokensFileService, type: :service do
         expect do
          subject.send(:static_tokens, cluster, 'not-supported-kind')
         end.to raise_exception(
-          Kubernetes::TokensFileService::Errors::UnknownStaticTokensKind,
+          Kubernetes::TokenFileService::Errors::UnknownStaticTokensKind,
           '`not-supported-kind` kind not supported.'
         )
       end
