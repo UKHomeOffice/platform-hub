@@ -1,4 +1,7 @@
 %w(
+  .env
+  .env.local
+  .env.test
   .ruby-version
   .rbenv-vars
   tmp/restart.txt
