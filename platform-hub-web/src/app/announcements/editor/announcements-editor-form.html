@@ -21,7 +21,7 @@
             <md-select
               name="level"
               ng-model="$ctrl.announcement.level"
-              md-colors="::{background: '{{$ctrl.colours[$ctrl.announcement.level]}}'}"
+              md-colors="{background: '{{$ctrl.colours[$ctrl.announcement.level]}}'}"
               aria-label="Set a level for this announcement">
               <md-option
                 ng-repeat="l in $ctrl.levels"
@@ -112,6 +112,51 @@
             </md-input-container>
           </fieldset>
 
+          <br />
+
+          <fieldset>
+            <legend>
+              Deliver to
+            </legend>
+
+            <md-input-container class="md-block">
+              <label for="hub_users">Hub users to send emails to (optional):</label>
+              <md-select
+                name="hub_users"
+                multiple="false"
+                ng-model="$ctrl.announcement.deliver_to.hub_users"
+                aria-label="Specify which set of hub users to send emails to">
+                <md-option ng-value="">none</md-option>
+                <md-option ng-value="'all'">all</md-option>
+              </md-select>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="contact_lists">Contact list to send emails to (optional):</label>
+              <md-select
+                name="contact_lists"
+                multiple="false"
+                ng-model="$ctrl.announcement.deliver_to.contact_lists"
+                aria-label="Specify which contact list to send emails to">
+                <md-option ng-value="">none</md-option>
+                <md-option ng-repeat="l in $ctrl.contactLists" ng-value="l">{{l}}</md-option>
+              </md-select>
+            </md-input-container>
+
+            <md-input-container class="md-block hide-error-spacer">
+              <h4 class="md-body-1">Slack channels:</h4>
+              <md-chips
+                ng-model="$ctrl.announcement.deliver_to.slack_channels"
+                md-separator-keys="$ctrl.customKeys"
+                md-transform-chip="$ctrl.processSlackChannelName($chip)">
+              </md-chips>
+              <p class="md-body-2">
+                Make sure to press &lt;Enter&gt; or , or ; to add an entry to the list
+              </p>
+            </md-input-container>
+          </fieldset>
+
+          <br />
           <br />
 
           <div layout-padding>

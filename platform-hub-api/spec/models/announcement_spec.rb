@@ -5,39 +5,48 @@ RSpec.describe Announcement, type: :model do
   include_context 'time helpers'
 
   describe 'update protections' do
-    it 'should not allow updates after the initial status' do
+    it 'should not allow updates after the initial status has changed, except for status field' do
       a = create :announcement, title: 'foo'
       expect(a.title).to eq 'foo'
 
-      a.update title: 'bar'
+      a.update! title: 'bar'
       expect(a.title).to eq 'bar'
 
-      a.update status: :delivering
+      a.update! status: :delivering
+      expect(a.status).to eq 'delivering'
 
       expect {
-        a.update title: 'baz'
+        a.update! title: 'baz'
       }.to raise_error(ActiveRecord::ReadOnlyRecord)
+
+      a2 = Announcement.find(a.id)
+      a2.update! status: :delivered
+      expect(a2.status).to eq 'delivered'
     end
 
-    it 'should not allow updates after publish_at has been reached' do
+    it 'should not allow updates after publish_at has been reached, except for status field' do
       a = create :announcement, title: 'foo', publish_at: now + 1.hour
       expect(a.title).to eq 'foo'
 
-      a.update title: 'bar'
+      a.update! title: 'bar'
       expect(a.title).to eq 'bar'
 
-      a.update publish_at: now - 1.hour
+      a.update! publish_at: now - 1.hour
 
       expect {
-        a.update title: 'baz'
+        a.update! title: 'baz'
       }.to raise_error(ActiveRecord::ReadOnlyRecord)
+
+      a2 = Announcement.find(a.id)
+      a2.update! status: :delivered
+      expect(a2.status).to eq 'delivered'
     end
 
     it 'should still allow direct column update' do
       a = create :announcement, title: 'foo'
       expect(a.title).to eq 'foo'
 
-      a.update status: :delivering
+      a.update! status: :delivering
 
       previous_sticky = a.is_sticky
       a.update_column :is_sticky,  !previous_sticky
@@ -50,7 +59,7 @@ RSpec.describe Announcement, type: :model do
       a = create :announcement, title: 'foo'
       expect(a.title).to eq 'foo'
 
-      a.update status: :delivering
+      a.update! status: :delivering
 
       # Need to reload before we can destroy it
       Announcement.find(a.id).destroy

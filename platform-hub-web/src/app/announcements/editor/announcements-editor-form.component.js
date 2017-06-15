@@ -8,7 +8,7 @@ export const AnnouncementsEditorFormComponent = {
   controller: AnnouncementsEditorFormController
 };
 
-function AnnouncementsEditorFormController($state, Announcements, hubApiService, moment, logger) {
+function AnnouncementsEditorFormController($state, $mdConstant, Announcements, ContactLists, hubApiService, moment, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -17,6 +17,14 @@ function AnnouncementsEditorFormController($state, Announcements, hubApiService,
 
   ctrl.levels = Announcements.levels;
   ctrl.colours = Announcements.coloursForLevel;
+  ctrl.contactLists = ContactLists.listIds;
+
+  const semicolon = 186;
+  ctrl.customKeys = [
+    $mdConstant.KEY_CODE.ENTER,
+    $mdConstant.KEY_CODE.COMMA,
+    semicolon
+  ];
 
   ctrl.loading = true;
   ctrl.saving = false;
@@ -24,6 +32,7 @@ function AnnouncementsEditorFormController($state, Announcements, hubApiService,
   ctrl.announcement = null;
 
   ctrl.createOrUpdate = createOrUpdate;
+  ctrl.processSlackChannelName = processSlackChannelName;
 
   init();
 
@@ -44,7 +53,11 @@ function AnnouncementsEditorFormController($state, Announcements, hubApiService,
       is_global: true,
       is_sticky: false,
       publish_at: moment().add(1, 'day').format(),
-      deliver_to: {}
+      deliver_to: {
+        hub_users: undefined,
+        contact_lists: undefined,
+        slack_channels: []
+      }
     };
   }
 
@@ -96,6 +109,12 @@ function AnnouncementsEditorFormController($state, Announcements, hubApiService,
         .finally(() => {
           ctrl.saving = false;
         });
+    }
+  }
+
+  function processSlackChannelName(chip) {
+    if (!chip.startsWith('#')) {
+      return '#' + chip;
     }
   }
 

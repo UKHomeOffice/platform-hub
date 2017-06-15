@@ -483,6 +483,13 @@ CREATE INDEX index_audits_on_user_name ON audits USING btree (user_name);
 
 
 --
+-- Name: index_delayed_jobs_on_queue; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_delayed_jobs_on_queue ON delayed_jobs USING btree (queue);
+
+
+--
 -- Name: index_hash_records_on_scope; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -605,6 +612,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170420134436'),
 ('20170421083936'),
 ('20170602101700'),
-('20170608154827');
+('20170608154827'),
+('20170609140110');
 
 

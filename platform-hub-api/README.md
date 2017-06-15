@@ -33,6 +33,7 @@ You can override any config value by adding it to a `.env.local` file that you w
 - `AGENT_GITHUB_TOKEN` – the access token used for GitHub onboarding flows. This token MUST be for a user that has owner access to the GitHub organisation specified below.
 - `AGENT_GITHUB_ORG` – the GitHub organisation that users will be onboarded on to.
 - `AGENT_GITHUB_ORG_MAIN_TEAM_ID` – the integer ID of the GitHub team that users will be onboarded on to.
+- `SLACK_WEBHOOK` – the webhook URL for Slack integration – use wisely when developing locally, just in case unwanted messages get sent to a public Slack channel – set to `noop` or some other string to ensure nothing gets sent out.
 
 Note that these env files only work for local development and testing.
 
@@ -53,7 +54,7 @@ This will also set up your local tests database used when running the test suite
 #### Common tasks
 
 - `bin/rails server` – runs a local server to serve the API (`Ctrl+C` to stop)
-- `bin/rails jobs:work` – runs a non-daemonised delayed_job worker to process background jobs (`Ctrl+C` to stop)
+- `bin/rails jobs:work` – runs a non-daemonised [delayed_job](https://github.com/collectiveidea/delayed_job) worker to process background jobs (`Ctrl+C` to stop)
 - `bundle exec rspec` – runs the tests (specified in the `/spec` folder)
 - `bin/rails console` – runs a local Rails console to access your app
 - `bin/rails db:migrate` – runs database migrations to get your local database to the latest schema
@@ -66,6 +67,34 @@ See the [Rails CLI guide](http://guides.rubyonrails.org/command_line.html) for d
 - As much as possible, we try to break out coherent, well isolated and single responsibility tasks/logic into "services" in the `app/services` folder.
 - The services in `app/services/agents/*` are intended to provide "root" access to external services like GitHub, and thus should be used cautiously and be well tested wherever used!
 
+### Announcements delivery
+
+Announcements that need delivering (email, Slack, etc.) are processed in a background job (using [delayed_job](https://github.com/collectiveidea/delayed_job)). The processor job itself needs to be manually triggered using the following (this allows us to run it on a schedule):
+
+```bash
+bin/rails announcements:trigger_processor_job
+```
+
+… this puts a job on the queue. To work through the jobs in the queue, start up a worker:
+
+```bash
+bin/rails jobs:work
+```
+
+#### Slack delivery
+
+As long as you have a valid `SLACK_WEBHOOK` set in your `.env.local` (or passed in through your environment), delivery of announcements to Slack channels will work. **Be careful when using this in local development though – only send to Slack channels that are okay to receive test messsages**.
+
+#### Email delivery
+
+To set up local email delivery, ensure you have the following env variables set (either in `.env.local` or passed through your environment):
+
+- `EMAIL_SMTP_ADDRESS`
+- `EMAIL_SMTP_PORT`
+- `EMAIL_SMTP_USERNAME`
+- `EMAIL_SMTP_PASSWORD`
+
+**As usual, be careful when sending out emails from your local development environment!**
 
 ### Troubleshooting
 

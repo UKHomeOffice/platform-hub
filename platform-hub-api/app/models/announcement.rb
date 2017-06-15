@@ -14,7 +14,8 @@ class Announcement < ApplicationRecord
   enum status: {
     awaiting_delivery: 'awaiting_delivery',
     delivering: 'delivering',
-    delivered: 'delivered'
+    delivered: 'delivered',
+    delivery_failed: 'delivery_failed'
   }
 
   validates :title,
@@ -48,16 +49,21 @@ class Announcement < ApplicationRecord
   attr_default :status, :awaiting_delivery
 
   before_save do
-    readonly! if (
-      persisted? && (
-        self.status_was != 'awaiting_delivery' ||
-        self.publish_at_was <= DateTime.now.utc
+    # Ignore if it's new or only the `status` field has changed (which is allowed)
+    unless self.new_record? || self.changed == ['status']
+      is_published = self.publish_at_was <= DateTime.now.utc
+      is_not_awaiting_delivery = self.status_was != 'awaiting_delivery'
+
+      self.readonly! if (
+        is_published ||
+        is_not_awaiting_delivery
       )
-    )
+    end
   end
 
   scope :global, -> { where(is_global: true) }
   scope :published, -> { where('publish_at <= ?', DateTime.now.utc).order(publish_at: :desc) }
+  scope :awaiting_delivery, -> { where(status: :awaiting_delivery) }
 
   def mark_sticky!
     self.update_column :is_sticky, true
