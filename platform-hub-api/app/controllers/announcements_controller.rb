@@ -14,7 +14,7 @@ class AnnouncementsController < ApiJsonController
 
   # GET /announcement/global
   def global
-    @announcements = Announcement.global.published
+    @announcements = GlobalAnnouncementsService.get_announcements
 
     render json: @announcements
   end

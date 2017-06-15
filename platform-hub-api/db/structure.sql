@@ -252,6 +252,39 @@ CREATE TABLE projects (
 
 
 --
+-- Name: read_marks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE read_marks (
+    id integer NOT NULL,
+    readable_type character varying NOT NULL,
+    readable_id uuid,
+    reader_type character varying NOT NULL,
+    reader_id uuid,
+    "timestamp" timestamp without time zone
+);
+
+
+--
+-- Name: read_marks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE read_marks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: read_marks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE read_marks_id_seq OWNED BY read_marks.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -324,6 +357,13 @@ ALTER TABLE ONLY delayed_jobs ALTER COLUMN id SET DEFAULT nextval('delayed_jobs_
 
 
 --
+-- Name: read_marks id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY read_marks ALTER COLUMN id SET DEFAULT nextval('read_marks_id_seq'::regclass);
+
+
+--
 -- Name: announcements announcements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -388,6 +428,14 @@ ALTER TABLE ONLY projects
 
 
 --
+-- Name: read_marks read_marks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY read_marks
+    ADD CONSTRAINT read_marks_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -424,6 +472,34 @@ ALTER TABLE ONLY users
 --
 
 CREATE INDEX delayed_jobs_priority ON delayed_jobs USING btree (priority, run_at);
+
+
+--
+-- Name: index_announcements_on_is_global; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_announcements_on_is_global ON announcements USING btree (is_global);
+
+
+--
+-- Name: index_announcements_on_level; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_announcements_on_level ON announcements USING btree (level);
+
+
+--
+-- Name: index_announcements_on_publish_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_announcements_on_publish_at ON announcements USING btree (publish_at);
+
+
+--
+-- Name: index_announcements_on_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_announcements_on_status ON announcements USING btree (status);
 
 
 --
@@ -553,6 +629,20 @@ CREATE UNIQUE INDEX index_projects_on_slug ON projects USING btree (slug);
 
 
 --
+-- Name: index_read_marks_on_readable_type_and_readable_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_read_marks_on_readable_type_and_readable_id ON read_marks USING btree (readable_type, readable_id);
+
+
+--
+-- Name: index_read_marks_on_reader_type_and_reader_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_read_marks_on_reader_type_and_reader_id ON read_marks USING btree (reader_type, reader_id);
+
+
+--
 -- Name: index_support_request_templates_on_git_hub_repo; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -578,6 +668,13 @@ CREATE UNIQUE INDEX index_support_request_templates_on_slug ON support_request_t
 --
 
 CREATE INDEX index_users_on_role ON users USING btree (role);
+
+
+--
+-- Name: read_marks_reader_readable_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX read_marks_reader_readable_index ON read_marks USING btree (reader_id, reader_type, readable_type, readable_id);
 
 
 --
@@ -613,6 +710,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170421083936'),
 ('20170602101700'),
 ('20170608154827'),
-('20170609140110');
+('20170609140110'),
+('20170615152928'),
+('20170615160858');
 
 

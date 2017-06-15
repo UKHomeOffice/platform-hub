@@ -15,6 +15,7 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
   model.deleteIdentity = deleteIdentity;
   model.completeHubOnboarding = completeHubOnboarding;
   model.completeServicesOnboarding = completeServicesOnboarding;
+  model.globalAnnouncementsMarkAllRead = globalAnnouncementsMarkAllRead;
 
   return model;
 
@@ -65,6 +66,12 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
   function completeServicesOnboarding() {
     return hubApiService
       .completeServicesOnboarding()
+      .then(handleMeResourceFromApi);
+  }
+
+  function globalAnnouncementsMarkAllRead() {
+    return hubApiService
+      .globalAnnouncementsMarkAllRead()
       .then(handleMeResourceFromApi);
   }
 

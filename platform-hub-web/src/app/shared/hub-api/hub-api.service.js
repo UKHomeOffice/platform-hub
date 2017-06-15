@@ -10,6 +10,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.deleteMeIdentity = deleteMeIdentity;
   service.completeHubOnboarding = completeHubOnboarding;
   service.completeServicesOnboarding = completeServicesOnboarding;
+  service.globalAnnouncementsMarkAllRead = globalAnnouncementsMarkAllRead;
 
   service.getUsers = buildCollectionFetcher('users');
   service.searchUsers = searchUsers;
@@ -116,6 +117,18 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to complete services onboarding', response));
+        return $q.reject(response);
+      });
+  }
+
+  function globalAnnouncementsMarkAllRead() {
+    return $http
+      .post(`${apiEndpoint}/me/global_announcements/mark_all_read`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to mark all global announcements as read', response));
         return $q.reject(response);
       });
   }

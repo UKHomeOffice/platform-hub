@@ -6,6 +6,8 @@ class User < ApplicationRecord
   audited descriptor_field: :email
   has_associated_audits
 
+  acts_as_reader
+
   before_create :build_flags
 
   enum role: {

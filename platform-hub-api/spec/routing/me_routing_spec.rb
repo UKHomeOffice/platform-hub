@@ -29,5 +29,9 @@ RSpec.describe MeController, type: :routing do
       expect(:post => '/me/complete_services_onboarding').to route_to('me#complete_services_onboarding')
     end
 
+    it 'routes to #global_announcements_mark_all_read' do
+      expect(:post => '/me/global_announcements/mark_all_read').to route_to('me#global_announcements_mark_all_read')
+    end
+
   end
 end

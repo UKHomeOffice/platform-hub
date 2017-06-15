@@ -4,6 +4,13 @@
       <h3>
         <span>Global Announcements</span>
       </h3>
+      <span flex></span>
+      <md-button
+        aria-label="Mark all global announcements as read"
+        ng-click="$ctrl.markAllRead()">
+        <md-icon>{{$ctrl.markAllReadIcon}}</md-icon>
+        Mark all read
+      </md-button>
     </div>
   </md-toolbar>
 
