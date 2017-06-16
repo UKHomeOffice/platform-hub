@@ -79,6 +79,7 @@ Rails.application.routes.draw do
       patch '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
       delete '/tokens/:user_id/:cluster', to: 'tokens#destroy'
       get '/clusters', to: 'clusters#index'
+      get '/changeset/:cluster', to: 'changeset#index'
     end
   end
 
