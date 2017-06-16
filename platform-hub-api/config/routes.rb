@@ -80,6 +80,7 @@ Rails.application.routes.draw do
       delete '/tokens/:user_id/:cluster', to: 'tokens#destroy'
       get '/clusters', to: 'clusters#index'
       get '/changeset/:cluster', to: 'changeset#index'
+      post '/sync', to: 'sync#sync'
     end
   end
 
