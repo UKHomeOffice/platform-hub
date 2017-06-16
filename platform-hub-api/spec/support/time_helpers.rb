@@ -6,8 +6,13 @@ module TimeHelpers
       Timecop.freeze datetime
     end
 
-    let(:now) { DateTime.now.utc }
-    let(:now_json_value) { now.utc.iso8601 }
+    def now
+      DateTime.now.utc
+    end
+
+    def now_json_value
+      now.utc.iso8601
+    end
 
     before do
       move_time_to now
