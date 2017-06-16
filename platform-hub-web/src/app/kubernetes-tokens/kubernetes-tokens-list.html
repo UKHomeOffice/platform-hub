@@ -7,6 +7,12 @@
       </h3>
       <span flex></span>
       <md-button
+        aria-label="Sync tokens"
+        ui-sref="kubernetes-tokens.sync">
+        <md-icon>cloud_upload</md-icon>
+        Sync tokens
+      </md-button>
+      <md-button
         ng-if="$ctrl.user && ($ctrl.tokens.length < $ctrl.KubernetesClusters.all.length)"
         aria-label="Add new token"
         ui-sref="kubernetes-tokens.new({userId: $ctrl.user.id})">

@@ -15,6 +15,7 @@ function KubernetesTokensListController($state, roleCheckerService, hubApiServic
   ctrl.KubernetesClusters = KubernetesClusters;
   ctrl.searchSelectedUser = null;
   ctrl.loading = true;
+  ctrl.busy = false;
   ctrl.tokens = [];
   ctrl.searchText = '';
   ctrl.user = null;
@@ -56,9 +57,10 @@ function KubernetesTokensListController($state, roleCheckerService, hubApiServic
   function fetchKubernetesTokens() {
     ctrl.tokens = [];
 
-    const identity = _.find(ctrl.user.identities, i => {
-      return i.provider === 'kubernetes';
-    });
+    // const identity = _.find(ctrl.user.identities, i => {
+    //   return i.provider === 'kubernetes';
+    // });
+    const identity = _.find(ctrl.user.identities, 'provider', 'kubernetes');
 
     if (identity) {
       ctrl.tokens = identity.kubernetes_tokens;

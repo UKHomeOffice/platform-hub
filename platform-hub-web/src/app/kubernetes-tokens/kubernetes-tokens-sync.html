@@ -1,0 +1,93 @@
+<div class="kubernetes-tokens-upload-form">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>Sync Kubernetes Tokens to selected cluster</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+      <md-content layout-padding>
+
+          <md-input-container class="md-block">
+            <label for="cluster">Cluster:</label>
+            <md-select ng-model="$ctrl.cluster" 
+              name="cluster"
+              required
+              placeholder="Select the cluster"
+              ng-change="$ctrl.getChangeset()"
+              >
+              <md-option
+                ng-repeat="c in $ctrl.KubernetesClusters.all"
+                value="{{c.id}}">
+                {{c.description}}
+              </md-option>
+            </md-select>
+            <div ng-messages="$ctrl.kubernetesTokenUploadForm.cluster.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+      </md-content>
+
+      <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.changes.length > 0">
+
+        <div><strong>Changelog:</strong></div>        
+
+        <md-card ng-repeat="c in $ctrl.changes track by c.created_at">
+          <md-card-title>
+            <md-card-title-text>
+              <p>
+                <strong>Changed made by:</strong> {{c.user_name}}
+              </p>
+              <p>
+                <strong>Description:</strong> {{c.comment}}
+              </p>
+              <p>
+                <strong>Date:</strong> {{c.created_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+              </p>
+            </md-card-title-text>
+          </md-card-title>
+
+        </md-card>
+
+        <md-button
+          class="md-primary"
+          aria-label="Sync kubernetes tokens"
+          ng-disabled="!$ctrl.cluster"
+          ng-click="$ctrl.syncTokens($ctrl.cluster, $event)">
+          Sync
+        </md-button>
+
+      </md-content>
+
+      <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.changes.length == 0">
+        <md-card>
+          <md-card-title>
+            <md-card-title-text>
+              <span class="none-text">
+                There is no changes to be applied since last upload.
+              </span>
+            </md-card-title-text>
+          </md-card-title>
+        </md-card>
+
+        <md-button
+          class="md-primary"
+          aria-label="Sync kubernetes tokens"
+          ng-disabled="!$ctrl.cluster"
+          ng-click="$ctrl.syncTokens($ctrl.cluster, $event)">
+          Re-sync
+        </md-button>
+      </md-content>
+
+    </div>
+
+  </md-content>
+
+</div>

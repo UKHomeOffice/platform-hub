@@ -70,6 +70,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getKubernetesTokens = getKubernetesTokens;
   service.deleteKubernetesToken = deleteKubernetesToken;
   service.createOrUpdateKubernetesToken = createOrUpdateKubernetesToken;
+  service.getKubernetesTokensChangeset = getKubernetesTokensChangeset;
+  service.syncKubernetesTokens = syncKubernetesTokens;
 
   return service;
 
@@ -516,6 +518,38 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to create or update a "${data.cluster}" kubernetes token for ${user.id}`, response));
+        return $q.reject(response);
+      });
+  }
+
+  function getKubernetesTokensChangeset(cluster) {
+    if (_.isNull(cluster) || _.isEmpty(cluster)) {
+      throw new Error('"cluster" argument not specified or empty');
+    }
+
+    return $http
+      .get(`${apiEndpoint}/kubernetes/changeset/${cluster}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(`Failed to fetch kubernetes tokens changeset for "${cluster}" cluster – the API might be down. Try again later.`);
+        return $q.reject(response);
+      });
+  }
+
+  function syncKubernetesTokens(data) {
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/kubernetes/sync`, data)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Sync error', response));
         return $q.reject(response);
       });
   }
