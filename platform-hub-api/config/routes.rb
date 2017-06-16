@@ -48,8 +48,8 @@ Rails.application.routes.draw do
     end
 
     resources :support_request_templates do
-      get '/form_field_types', to: 'support_request_templates#form_field_types', on: :collection
-      get '/git_hub_repos', to: 'support_request_templates#git_hub_repos', on: :collection
+      get :form_field_types, on: :collection
+      get :git_hub_repos, on: :collection
     end
 
     resources :support_requests, only: [ :create ]
