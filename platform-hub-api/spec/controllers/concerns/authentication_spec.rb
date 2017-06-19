@@ -23,8 +23,7 @@ describe 'Authentication Concern', type: :controller do
     end
 
     it 'should check for a current user and then return a 401 Unauthorized' do
-      expect(User).not_to receive(:find_by_id)
-      expect(NewUserService).not_to receive(:new)
+      expect(AuthUserService).not_to receive(:get)
 
       get :index
       expect(response).to have_http_status(401)
@@ -37,12 +36,10 @@ describe 'Authentication Concern', type: :controller do
     end
 
     it 'should check for a current user and create one' do
-      new_user_service = double
-      user = double
+      user = instance_double('User')
 
-      expect(User).to receive(:find_by_id).with(test_auth_payload.sub).and_call_original
-      expect(NewUserService).to receive(:new).and_return(new_user_service)
-      expect(new_user_service).to receive(:create).with(test_auth_payload).and_return(user)
+      expect(AuthUserService).to receive(:get).and_return(user)
+      expect(user).to receive(:touch).with(:last_seen_at)
 
       get :index
       expect(response).to have_http_status(204)

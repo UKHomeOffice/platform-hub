@@ -8,7 +8,7 @@ import {UiModule} from './ui/ui.module';
 import {UtilModule} from './util/util.module';
 
 import {events} from './events.factory';
-import {homeEndpoint} from './home-endpoint.factory';
+import {homeEndpoints} from './home-endpoints.factory';
 import {icons} from './icons.factory';
 import {onboardingTrigger} from './onboarding-trigger.factory';
 import {roleCheckerService} from './role-checker.service';
@@ -23,7 +23,7 @@ export const SharedModule = angular
     UtilModule
   ])
   .factory('events', events)
-  .factory('homeEndpoint', homeEndpoint)
+  .factory('homeEndpoints', homeEndpoints)
   .factory('icons', icons)
   .factory('onboardingTrigger', onboardingTrigger)
   .service('roleCheckerService', roleCheckerService)

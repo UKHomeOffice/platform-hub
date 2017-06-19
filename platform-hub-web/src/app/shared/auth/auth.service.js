@@ -1,8 +1,7 @@
-export const authService = function ($window, $cookies, $q, $filter, $base64, $rootScope, jwtHelper, windowPopupService, events, apiEndpoint, homeEndpoint, logger, _) {
+export const authService = function ($window, $cookies, $q, $filter, $base64, $rootScope, jwtHelper, windowPopupService, events, apiEndpoint, homeEndpoints, logger, _) {
   'ngInject';
 
   const authEndpoint = `${apiEndpoint}/oauth`;
-  const completionUrlEncoded = $filter('bcEncode')($base64.encode(homeEndpoint));
 
   const accessCookieName = 'auth-access';
 
@@ -17,11 +16,12 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $r
   return service;
 
   function authenticate() {
+    const completionUrl = $filter('bcEncode')($base64.encode(homeEndpoints.homePreload));
     return windowPopupService.open(
-      `${authEndpoint}/authorize?state=${completionUrlEncoded}`,
+      `${authEndpoint}/authorize?state=${completionUrl}`,
       'authPopup',
       {},
-      homeEndpoint
+      homeEndpoints.home
     ).then(() => {
       broadcastAuthData();
 
@@ -35,11 +35,12 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $r
   }
 
   function logout() {
+    const completionUrl = $filter('bcEncode')($base64.encode(homeEndpoints.home));
     return windowPopupService.open(
-      `${authEndpoint}/logout?redirect=${completionUrlEncoded}`,
+      `${authEndpoint}/logout?redirect=${completionUrl}`,
       'logoutPopup',
       {},
-      homeEndpoint
+      homeEndpoints.home
     ).then(() => {
       broadcastAuthData();
 

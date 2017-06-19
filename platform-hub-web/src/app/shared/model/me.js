@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-export const Me = function ($window, windowPopupService, hubApiService, homeEndpoint, apiBackoffTimeMs, _) {
+export const Me = function ($window, windowPopupService, hubApiService, homeEndpoints, apiBackoffTimeMs, _) {
   'ngInject';
 
   const model = {};
@@ -43,7 +43,7 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
       hubApiService.getIdentityFlowStartEndpoint(provider),
       `${provider}IdentityFlowPopup`,
       {},
-      homeEndpoint
+      homeEndpoints.home
     ).then(() => {
       return refresh(true);
     });

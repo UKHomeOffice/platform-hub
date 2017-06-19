@@ -452,6 +452,14 @@ ALTER TABLE ONLY support_request_templates
 
 
 --
+-- Name: users user_email; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT user_email UNIQUE (email);
+
+
+--
 -- Name: user_flags user_flags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -712,6 +720,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170608154827'),
 ('20170609140110'),
 ('20170615152928'),
-('20170615160858');
+('20170615160858'),
+('20170619125933');
 
 
