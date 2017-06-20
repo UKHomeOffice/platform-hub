@@ -26,7 +26,7 @@
 
     <md-card
       ng-repeat="a in $ctrl.Announcements.all track by a.id"
-      md-colors="$ctrl.Announcements.isPublished(a) ? {background: 'blue-grey-50'} : {background: 'background'}">
+      md-colors="$ctrl.Announcements.isPublished(a) ? {background: 'blue-grey-50'} : {}">
       <div class="tinted-bar" md-colors="{background: '{{a.colour}}'}"></div>
       <md-card-title>
         <md-card-title-text>
