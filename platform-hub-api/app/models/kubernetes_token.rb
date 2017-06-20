@@ -2,6 +2,7 @@ class KubernetesToken
   include ActiveModel::Model
   include ActiveModel::Serialization
   include ActiveModel::Associations
+  include ActiveModel::Validations
 
   attr_accessor :identity_id, :cluster, :token, :uid, :groups
 
@@ -9,6 +10,7 @@ class KubernetesToken
   validates_inclusion_of :cluster, in: proc {
     HashRecord.kubernetes.find_by!(id: 'clusters').data.map {|c| c['id']}
   }
+  validate :token_must_not_be_blank
 
   belongs_to :identity
 
