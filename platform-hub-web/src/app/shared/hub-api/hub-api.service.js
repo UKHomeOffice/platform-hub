@@ -72,6 +72,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.createOrUpdateKubernetesToken = createOrUpdateKubernetesToken;
   service.getKubernetesTokensChangeset = getKubernetesTokensChangeset;
   service.syncKubernetesTokens = syncKubernetesTokens;
+  service.claimKubernetesToken = claimKubernetesToken;
 
   return service;
 
@@ -550,6 +551,22 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Sync error', response));
+        return $q.reject(response);
+      });
+  }
+
+  function claimKubernetesToken(data) {
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/kubernetes/claim`, data)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Claim error', response));
         return $q.reject(response);
       });
   }
