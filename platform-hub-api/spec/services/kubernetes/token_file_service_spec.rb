@@ -6,27 +6,24 @@ describe Kubernetes::TokenFileService, type: :service do
   let(:kind) { :robot }
 
   before do
-    create(:hash_record,
+    create(:kubernetes_static_tokens_hash_record, 
       id: 'development-static-system-tokens',
-      scope: 'kubernetes',
       data: [
         {token: ENCRYPTOR.encrypt('system-token'), user: 'system-user', uid: 'system-uid', groups: ['system-group']}
       ]
     )
-    create(:hash_record,
+    create(:kubernetes_static_tokens_hash_record, 
       id: 'development-static-user-tokens',
-      scope: 'kubernetes',
       data: [
         {token: ENCRYPTOR.encrypt('user-token'), user: 'user-user', uid: 'user-uid', groups: ['user-group']}
       ]
     )
-    create(:hash_record,
+    create(:kubernetes_static_tokens_hash_record, 
       id: 'development-static-robot-tokens',
-      scope: 'kubernetes',
       data: [
         {token: ENCRYPTOR.encrypt('robot-token'), user: 'robot-user', uid: 'robot-uid', groups: ['robot-group']}
       ]
-    )    
+    )
   end
 
   describe '.generate' do
