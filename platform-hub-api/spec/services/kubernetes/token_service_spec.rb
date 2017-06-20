@@ -13,7 +13,7 @@ describe Kubernetes::TokenService, type: :service do
     {
       identity_id: kubernetes_identity.id,
       cluster: cluster,
-      token: token,
+      token: ENCRYPTOR.encrypt(token),
       uid: uid,
       groups: groups
     }
@@ -72,19 +72,34 @@ describe Kubernetes::TokenService, type: :service do
         allow(kubernetes_identity).to receive(:data) { { tokens: [kube_token] } }
       end
 
-      it 'updates token and returns a <tokens, existing_token> tupple' do
+      it 'updates token value (if given) and groups only and returns a <tokens, existing_token> tupple' do
         tokens, new_token = subject.create_or_update_token(
           kubernetes_identity.data, 
           kubernetes_identity.id, 
           cluster, 
-          'new-group'
+          'new-group',
+          'new-token'
         )
         expect(tokens.size).to eq 1
         expect(new_token.identity_id).to eq kubernetes_identity.id
         expect(new_token.cluster).to eq cluster
-        expect(new_token.token).to_not be_empty
+        expect(ENCRYPTOR.decrypt(new_token.token)).to eq 'new-token'
         expect(new_token.uid).to_not be_empty
         expect(new_token.groups).to eq ['new-group']
+      end
+    end
+
+    context 'when token value is passed in arguments' do
+      it 'sets value of a token to one passed in args' do
+        tokens, new_token = subject.create_or_update_token(
+          kubernetes_identity.data,
+          kubernetes_identity.id,
+          'production',
+          'g1,g2,g3',
+          'token-value-passed-in-arguments'
+        )
+
+        expect(ENCRYPTOR.decrypt(new_token.token)).to eq 'token-value-passed-in-arguments'
       end
     end
   end
@@ -107,15 +122,41 @@ describe Kubernetes::TokenService, type: :service do
     end
   end
 
-  describe 'private methods' do
+  describe '.cleanup_groups' do
+    let(:groups) { 'group1,  group2     ,group3 , , , group4, group1' }
+    
+    it 'parses comma separated list of groups and converts it to de-dupped array' do
+      expect(subject.cleanup_groups(groups)).to match_array(['group1','group2','group3','group4'])
+    end
+  end
 
-    describe '.cleanup' do
-      let(:groups) { 'group1,  group2     ,group3 , , , group4, group1' }
-      
-      it 'parses comma separated list of groups and converts it to de-dupped array' do
-        expect(subject.send(:cleanup, groups)).to match_array(['group1','group2','group3','group4'])
+  describe '.token_value' do
+    context 'with no initial token passed as argument' do
+      it 'returns new unencrypted token value' do
+        val = subject.token_value
+        expect(val.length).to eq 36
+        expect(ENCRYPTOR.decrypt(val)).to be_nil
       end
     end
 
+    context 'with initial token passed in argument' do
+      context 'as encrypted value' do
+        let(:plain_token_value) { 'some-initial-token' }
+        let(:initial_token) { ENCRYPTOR.encrypt(plain_token_value) }
+
+        it 'decrypts and returns it' do
+          expect(subject.token_value(initial_token)).to eq plain_token_value
+        end
+      end
+      
+      context 'as plain string' do
+        let(:plain_token_value) { 'some-initial-token' }
+
+        it 'returns it' do
+          expect(subject.token_value(plain_token_value)).to eq plain_token_value
+        end
+      end
+    end
   end
+
 end
