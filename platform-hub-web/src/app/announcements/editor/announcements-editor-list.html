@@ -70,7 +70,7 @@
             Publish at:
           </span>
           <span>{{a.publish_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
-          (<strong><span am-time-ago="a.publish_at"></span></strong>)
+          (<strong><span am-time-ago="a.publish_at" md-colors="{color: 'accent'}"></span></strong>)
         </p>
 
         <p class="md-body-1">
@@ -102,12 +102,12 @@
           <span md-colors="{color: 'blue-grey-700'}">
             Created at:
           </span>
-          <span>{{a.created_at}}</span>
+          <span>{{a.created_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
           <span class="separator">|</span>
           <span md-colors="{color: 'blue-grey-700'}">
             Updated at:
           </span>
-          <span>{{a.updated_at}}</span>
+          <span>{{a.updated_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
         </p>
       </md-card-content>
 
