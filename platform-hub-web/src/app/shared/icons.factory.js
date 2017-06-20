@@ -14,7 +14,7 @@ export const icons = function () {
     platformThemes: 'lens',
     projects: 'group_work',
     services: 'cloud_circle',
-    supportRequests: 'feedback',
+    supportRequests: 'live_help',
     text: 'short_text',
     users: 'perm_identity'
   };
