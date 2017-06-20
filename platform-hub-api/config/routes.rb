@@ -81,6 +81,7 @@ Rails.application.routes.draw do
       get '/clusters', to: 'clusters#index'
       get '/changeset/:cluster', to: 'changeset#index'
       post '/sync', to: 'sync#sync'
+      post '/claim', to: 'claim#claim'
     end
   end
 
