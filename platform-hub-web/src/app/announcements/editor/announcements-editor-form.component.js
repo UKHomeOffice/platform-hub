@@ -90,7 +90,7 @@ function AnnouncementsEditorFormController($state, $mdConstant, Announcements, C
     ctrl.saving = true;
 
     if (ctrl.isNew) {
-      hubApiService
+      Announcements
         .createAnnouncement(ctrl.announcement)
         .then(() => {
           logger.success('Announcement created');
@@ -100,7 +100,7 @@ function AnnouncementsEditorFormController($state, $mdConstant, Announcements, C
           ctrl.saving = false;
         });
     } else {
-      hubApiService
+      Announcements
         .updateAnnouncement(ctrl.announcement.id, ctrl.announcement)
         .then(() => {
           logger.success('Announcement updated');
