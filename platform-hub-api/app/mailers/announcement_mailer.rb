@@ -8,7 +8,11 @@ class AnnouncementMailer < ApplicationMailer
 
     subject = "[#{announcement.level}] #{announcement.title}"
 
-    mail to: recipients, subject: subject
+    mail(
+      to: Rails.application.config.email_from_address,
+      bcc: recipients,
+      subject: subject
+    )
   end
 
 end

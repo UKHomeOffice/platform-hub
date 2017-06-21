@@ -38,7 +38,8 @@ RSpec.describe AnnouncementMailer, type: :mailer do
 
       it 'renders the email (both in text and html)' do
         expect(@email.from).to eq from
-        expect(@email.to).to eq recipients
+        expect(@email.to).to eq from
+        expect(@email.bcc).to eq recipients
         expect(@email.subject).to eq expected_subject
         expect(@email.text_part.body.to_s).to eq expected_text
         expect(@email.html_part.body.to_s).to match expected_html
