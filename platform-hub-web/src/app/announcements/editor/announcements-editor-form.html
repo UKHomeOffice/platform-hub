@@ -10,7 +10,7 @@
 
   <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading">
+  <md-content layout-padding ng-if="$ctrl.ready && !$ctrl.loading">
 
     <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout-padding>
       <md-content>
@@ -131,20 +131,23 @@
               </md-select>
             </md-input-container>
 
+            <br />
+
             <md-input-container class="md-block">
               <label for="contact_lists">Contact list to send emails to (optional):</label>
               <md-select
                 name="contact_lists"
-                multiple="false"
+                multiple="true"
                 ng-model="$ctrl.announcement.deliver_to.contact_lists"
-                aria-label="Specify which contact list to send emails to">
-                <md-option ng-value="">none</md-option>
-                <md-option ng-repeat="l in $ctrl.contactLists" ng-value="l">{{l}}</md-option>
+                aria-label="Specify which contact lists to send emails to">
+                <md-option ng-repeat="l in $ctrl.contactLists" ng-value="l.id">{{l.id}}</md-option>
               </md-select>
             </md-input-container>
 
+            <br />
+
             <md-input-container class="md-block hide-error-spacer">
-              <h4 class="md-body-1">Slack channels:</h4>
+              <h4 class="md-body-1">Slack channels (optional):</h4>
               <md-chips
                 ng-model="$ctrl.announcement.deliver_to.slack_channels"
                 md-separator-keys="$ctrl.customKeys"

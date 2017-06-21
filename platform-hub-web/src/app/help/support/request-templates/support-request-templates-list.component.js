@@ -8,7 +8,7 @@ function SupportRequestTemplatesListController(hubApiService) {
 
   const ctrl = this;
 
-  ctrl.loading = this;
+  ctrl.loading = false;
   ctrl.templates = [];
 
   init();

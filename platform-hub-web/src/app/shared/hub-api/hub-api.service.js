@@ -50,8 +50,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getAppSettings = buildSimpleFetcher('app_settings', 'app settings');
   service.updateAppSettings = buildSimpleUpdater('app_settings', 'app settings');
 
+  service.getContactLists = buildCollectionFetcher('contact_lists');
   service.getContactList = buildResourceFetcher('contact_lists');
   service.updateContactList = buildResourceUpdater('contact_lists');
+  service.deleteContactList = buildResourceDeletor('contact_lists');
 
   service.getGlobalAnnouncements = buildSimpleFetcher('announcements/global', 'global announcements');
   service.getAllAnnouncements = buildCollectionFetcher('announcements');

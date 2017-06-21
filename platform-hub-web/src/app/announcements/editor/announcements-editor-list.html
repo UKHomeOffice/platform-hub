@@ -83,7 +83,7 @@
           </span>
           <span class="indented" ng-if="a.deliver_to.contact_lists.length > 0">
             <br />
-            Contact lists = {{a.deliver_to.contact_lists}}
+            Contact lists = {{a.deliver_to.contact_lists.join(' ')}}
           </span>
           <span class="indented" ng-if="a.deliver_to.slack_channels.length > 0">
             <br />

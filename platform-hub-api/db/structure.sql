@@ -137,6 +137,18 @@ ALTER SEQUENCE audits_id_seq OWNED BY audits.id;
 
 
 --
+-- Name: contact_lists; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE contact_lists (
+    id character varying NOT NULL,
+    email_addresses character varying[],
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: delayed_jobs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -385,6 +397,14 @@ ALTER TABLE ONLY ar_internal_metadata
 
 ALTER TABLE ONLY audits
     ADD CONSTRAINT audits_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: contact_lists contact_lists_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY contact_lists
+    ADD CONSTRAINT contact_lists_pkey PRIMARY KEY (id);
 
 
 --
@@ -721,6 +741,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170609140110'),
 ('20170615152928'),
 ('20170615160858'),
-('20170619125933');
+('20170619125933'),
+('20170621140022');
 
 

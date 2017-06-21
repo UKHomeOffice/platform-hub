@@ -4,7 +4,10 @@ import {
   GlobalAnnouncements
 } from './announcements/announcements.module';
 import {AppSettingsForm} from './app-settings/app-settings.module';
-import {ContactListForm} from './contact-lists/contact-lists.module';
+import {
+  ContactListsForm,
+  ContactListsList
+} from './contact-lists/contact-lists.module';
 import {
   Faq,
   SupportRequestsForm,
@@ -268,13 +271,37 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
       }
     })
     .state('contact-lists', {
-      url: '/contact-lists/edit',
-      component: ContactListForm,
-      data: {
-        authenticate: true,
-        rolePermitted: 'admin'
-      }
+      abstract: true,
+      url: '/contact-lists',
+      template: '<ui-view></ui-view>'
     })
+      .state('contact-lists.list', {
+        url: '/list',
+        component: ContactListsList,
+        data: {
+          authenticate: true,
+          rolePermitted: 'admin'
+        }
+      })
+      .state('contact-lists.new', {
+        url: '/new',
+        component: ContactListsForm,
+        data: {
+          authenticate: true,
+          rolePermitted: 'admin'
+        }
+      })
+      .state('contact-lists.edit', {
+        url: '/edit/:id',
+        component: ContactListsForm,
+        resolve: {
+          transition: '$transition$'
+        },
+        data: {
+          authenticate: true,
+          rolePermitted: 'admin'
+        }
+      })
     .state('announcements', {
       abstract: true,
       url: '/announcements',
