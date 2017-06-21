@@ -47,10 +47,15 @@ class AnnouncementsProcessorService
     unless channels.blank?
       @logger.info "Sending to slack channels: #{channels}"
 
-      message = message_for_slack announcement
+      attachment = attachment_for_slack announcement
+      icon = icon_for_slack announcement
 
       channels.each do |c|
-        SLACK_NOTIFIER.ping message, channel: c
+        SLACK_NOTIFIER.post(
+          attachments: [attachment],
+          channel: c,
+          icon_emoji: icon
+        )
       end
     end
   end
@@ -71,14 +76,43 @@ class AnnouncementsProcessorService
     (hub_users_email_addresses + contact_lists_email_addresses).uniq
   end
 
-  def message_for_slack announcement
+  def attachment_for_slack announcement
+    {
+      pretext: "<!channel> #{announcement.level.titleize}:",
+      fallback: fallback_text_for_slack(announcement),
+      color: color_for_slack(announcement),
+      title: Slack::Notifier::Util::Escape.html(announcement.title),
+      text: Slack::Notifier::Util::Escape.html(announcement.text)
+    }
+  end
+
+  def fallback_text_for_slack announcement
     m = []
-    m << "<!channel>"
-    m << ""
-    m << "[#{announcement.level}] *#{Slack::Notifier::Util::Escape.html(announcement.title)}*"
-    m << ""
-    m << Slack::Notifier::Util::Escape.html(announcement.text)
-    m.join("\n")
+    m << "[#{announcement.level}] #{announcement.title}"
+    m << announcement.text
+    m.join(' - ');
+  end
+
+  def color_for_slack announcement
+    case announcement.level
+    when 'critical'
+      'danger'
+    when 'warning'
+      'warning'
+    else
+      'good'
+    end
+  end
+
+  def icon_for_slack announcement
+    case announcement.level
+    when 'critical'
+      ':bangbang:'
+    when 'warning'
+      ':warning:'
+    else
+      ':information_source:'
+    end
   end
 
 end
