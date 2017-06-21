@@ -1,6 +1,6 @@
 namespace :kubernetes do
 
-  namespace :clusters do
+  namespace :cluster do
 
     desc "Add kubernetes cluster to list of managed clusters"
     task :create_or_update, [:id, :description, :s3_region, :s3_bucket_name, :s3_access_key_id, :s3_secret_access_key, :object_key] => [:environment] do |t, args|
@@ -20,109 +20,49 @@ namespace :kubernetes do
       puts Kubernetes::ClusterService.delete(args.id)
     end
 
-    def clusters_config
-      HashRecord.kubernetes.find_or_create_by!(id: 'clusters') do |r|
-        r.data = []
-      end
-    end
-
   end
 
   
-  namespace :robots do
+  namespace :static_token do
 
-    desc "Creates or updates robot token - `groups` as space separated string of group names: 'group1 group2'."
-    task :create_or_update, [:cluster, :robot_name, :groups] => [:environment] do |t, args|
+    desc "Creates or updates static token - `groups` as semicolon separated string of group names: 'group1;group2'."
+    task :create_or_update, [:cluster, :kind, :user_name, :groups] => [:environment] do |t, args|
 
-      unless [args.cluster, args.robot_name, args.groups].all?
-        raise "ERROR: Missing arguments! Required args: `cluster`,`kind`, `groups`."
+      unless [args.cluster, args.kind, args.user_name, args.groups].all?
+        raise "ERROR: Missing arguments! Required args: `cluster`,`kind`,`user_name`,`groups`."
       end
 
-      puts Kubernetes::RobotTokenService.create_or_update(args.cluster, args.robot_name, args.groups.split(' '))
+      puts Kubernetes::StaticTokenService.create_or_update(args.cluster, args.kind, args.user_name, args.groups.split(';'))
     end
 
-    desc "Deletes robot token"
-    task :delete, [:cluster, :robot_name] => [:environment] do |t, args|
+    desc "Deletes static token"
+    task :delete, [:cluster, :kind, :user_name] => [:environment] do |t, args|
 
-      unless [args.cluster, args.robot_name].all?
-        raise "ERROR: Missing arguments! Required args: `cluster`,`kind`."
+      unless [args.cluster, args.kind, args.user_name].all?
+        raise "ERROR: Missing arguments! Required args: `cluster`,`kind`,`user_name`."
       end
 
-      puts Kubernetes::RobotTokenService.delete(args.cluster, args.robot_name)
+      puts Kubernetes::StaticTokenService.delete_by_name(args.cluster, args.kind, args.user_name)
     end
 
-    desc "Describes robot token"
-    task :describe, [:cluster, :robot_name] => [:environment] do |t, args|
+    desc "Describes static token"
+    task :describe, [:cluster, :kind, :user_name] => [:environment] do |t, args|
 
-      unless [args.cluster, args.robot_name].all?
-        raise "ERROR: Missing arguments! Required args: `cluster`,`kind`."
+      unless [args.cluster, args.kind, args.user_name].all?
+        raise "ERROR: Missing arguments! Required args: `cluster`,`kind`,`user_name`."
       end
 
-      puts Kubernetes::RobotTokenService.describe(args.cluster, args.robot_name)
+      puts Kubernetes::StaticTokenService.describe(args.cluster, args.kind, args.user_name)
     end
 
-  end
-
-  namespace :static do
-
-    desc "Creates static kubernetes tokens for given cluster and kind from a file and stores them as HashRecord"
-    task :tokens, [:cluster, :kind, :tokens_file_path] => [:environment] do |t, args|
+    desc "Imports static kubernetes tokens for given cluster and kind from a file and stores them as HashRecord"
+    task :import, [:cluster, :kind, :tokens_file_path] => [:environment] do |t, args|
       
       unless [args.cluster, args.kind].all?
         raise "ERROR: Missing arguments! Required args: `cluster`,`kind`."
       end
 
-      # Static tokens can be imported from a file or standard input.
-      # If file path hasn't been provided in args user will be prompt to input data manually.
-
-      if args.tokens_file_path.present? # Load from file
-        if File.exists? args.tokens_file_path
-          data = File.read(args.tokens_file_path).split("\n").map do |l|
-            parse_record(l)
-          end
-        else
-          raise "ERROR: File doesn't exist!"
-        end
-      else # Prompt user for manual input        
-        begin
-          STDOUT.puts "Input tokens (in source format) and hit ENTER):"
-          input = multi_gets
-        end until input.present?
-
-        data = input.split("\n").map do |l|
-          parse_record(l)
-        end
-      end
-
-      key = "#{args.cluster}-static-#{args.kind}-tokens"
-
-      if data.present?
-        if HashRecord.kubernetes.exists?(id: key)
-          HashRecord.kubernetes.find_by!(id: key).destroy
-        end
-
-        HashRecord.kubernetes.create!(id: key, data: data)
-
-        puts "INFO: Created kubernetes HashRecord for #{key}!"
-      else
-        puts "INFO: Doing nothing. Empty static tokens data!"
-      end
-    end
-
-    def multi_gets all_text=""
-      while all_text << STDIN.gets
-        return all_text if all_text["\n\n"]
-      end
-    end
-
-    def parse_record(record)
-      parts = record.gsub('"','').split(',')
-      Hashie::Mash.new(
-        token: ENCRYPTOR.encrypt(parts[0]),
-        user: parts[1],
-        uid: parts[2],
-        groups: parts.size > 3 ? parts[3..-1] : [],
-      )
+      puts Kubernetes::StaticTokenService.import(args.cluster, args.kind, args.tokens_file_path)
     end
 
   end
