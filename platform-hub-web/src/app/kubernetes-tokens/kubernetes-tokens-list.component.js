@@ -6,7 +6,7 @@ export const KubernetesTokensListComponent = {
   controller: KubernetesTokensListController
 };
 
-function KubernetesTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, KubernetesClusters) {
+function KubernetesTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, KubernetesClusters, icons) {
   'ngInject';
 
   const ctrl = this;
@@ -20,9 +20,15 @@ function KubernetesTokensListController($state, roleCheckerService, hubApiServic
   ctrl.searchText = '';
   ctrl.user = null;
 
+  ctrl.menuIcon = icons.menu;
+  ctrl.syncTokensIcon = icons.syncTokens;
+  ctrl.addTokenIcon = icons.addToken;
+  ctrl.revokeTokenIcon = icons.revokeToken;
+
   ctrl.searchUsers = searchUsers;
   ctrl.deleteToken = deleteToken;
   ctrl.filterKubernetesTokensByUser = filterKubernetesTokensByUser;
+  ctrl.revokeToken = revokeToken;
 
   init();
 
@@ -57,9 +63,6 @@ function KubernetesTokensListController($state, roleCheckerService, hubApiServic
   function fetchKubernetesTokens() {
     ctrl.tokens = [];
 
-    // const identity = _.find(ctrl.user.identities, i => {
-    //   return i.provider === 'kubernetes';
-    // });
     const identity = _.find(ctrl.user.identities, 'provider', 'kubernetes');
 
     if (identity) {
@@ -89,5 +92,33 @@ function KubernetesTokensListController($state, roleCheckerService, hubApiServic
 
   function searchUsers(query) {
     return hubApiService.searchUsers(query);
+  }
+
+  function revokeToken(targetEvent) {
+    const confirm = $mdDialog.prompt()
+      .title('Revoke kubernetes token')
+      .textContent('This will revoke existing kubernetes token entirely.')
+      .placeholder('Kubernetes token you would like to revoke')
+      .ariaLabel('Revoke token')
+      .initialValue('')
+      .targetEvent(targetEvent)
+      .ok('Revoke token')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(revokedToken => {
+        ctrl.busy = true;
+
+        hubApiService
+          .revokeKubernetesToken({token: revokedToken})
+          .then(() => {
+            logger.success('Kubernetes token revoked successfully!');
+            $state.reload();
+          })
+          .finally(() => {
+            ctrl.busy = false;
+          });
+      });
   }
 }

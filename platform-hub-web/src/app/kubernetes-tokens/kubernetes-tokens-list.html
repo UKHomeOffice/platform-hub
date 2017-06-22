@@ -6,19 +6,38 @@
         <span ng-if="$ctrl.user">for {{$ctrl.user.name}} ({{$ctrl.user.email}})</span>
       </h3>
       <span flex></span>
-      <md-button
-        aria-label="Sync tokens"
-        ui-sref="kubernetes-tokens.sync">
-        <md-icon>cloud_upload</md-icon>
-        Sync tokens
-      </md-button>
+
       <md-button
         ng-if="$ctrl.user && ($ctrl.tokens.length < $ctrl.KubernetesClusters.all.length)"
         aria-label="Add new token"
         ui-sref="kubernetes-tokens.new({userId: $ctrl.user.id})">
-        <md-icon>add_box</md-icon>
+        <md-icon>{{$ctrl.addTokenIcon}}</md-icon>
         New
       </md-button>
+
+      <md-menu>
+        <md-button aria-label="Action menu" class="md-icon-button" ng-click="$mdMenu.open($event)">
+          <md-icon md-menu-origin md-svg-icon="menu"></md-icon>
+        </md-button>
+        <md-menu-content width="4">
+          <md-menu-item>
+            <md-button 
+              aria-label="Sync tokens"
+              ui-sref="kubernetes-tokens.sync">
+              <md-icon>{{$ctrl.syncTokensIcon}}</md-icon>
+              Sync tokens
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button 
+              aria-label="Revoke token"
+              ng-click="$ctrl.revokeToken($event)">
+              <md-icon>{{$ctrl.revokeTokenIcon}}</md-icon>
+              Revoke token
+            </md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
     </div>
   </md-toolbar>
 

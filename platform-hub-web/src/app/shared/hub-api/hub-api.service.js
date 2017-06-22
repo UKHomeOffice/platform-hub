@@ -73,6 +73,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getKubernetesTokensChangeset = getKubernetesTokensChangeset;
   service.syncKubernetesTokens = syncKubernetesTokens;
   service.claimKubernetesToken = claimKubernetesToken;
+  service.revokeKubernetesToken = revokeKubernetesToken;
 
   return service;
 
@@ -567,6 +568,22 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Claim error', response));
+        return $q.reject(response);
+      });
+  }
+
+  function revokeKubernetesToken(data) {
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/kubernetes/revoke`, data)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Revocation error', response));
         return $q.reject(response);
       });
   }
