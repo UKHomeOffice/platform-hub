@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     get '/me', to: 'me#show'
     post '/me/complete_hub_onboarding', to: 'me#complete_hub_onboarding'
     post '/me/complete_services_onboarding', to: 'me#complete_services_onboarding'
+    post '/me/global_announcements/mark_all_read', to: 'me#global_announcements_mark_all_read'
 
     constraints service: /github/ do
 
@@ -48,8 +49,8 @@ Rails.application.routes.draw do
     end
 
     resources :support_request_templates do
-      get '/form_field_types', to: 'support_request_templates#form_field_types', on: :collection
-      get '/git_hub_repos', to: 'support_request_templates#git_hub_repos', on: :collection
+      get :form_field_types, on: :collection
+      get :git_hub_repos, on: :collection
     end
 
     resources :support_requests, only: [ :create ]

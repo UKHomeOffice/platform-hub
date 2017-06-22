@@ -35,7 +35,8 @@ RSpec.describe MeController, type: :controller do
           ],
           'flags' => Hash[UserFlags.flag_names.map {|f| [f, false]}],
           'is_managerial' => true,
-          'is_technical' => true
+          'is_technical' => true,
+          'global_announcements_unread_count' => 0
         })
       end
     end
@@ -119,6 +120,44 @@ RSpec.describe MeController, type: :controller do
         end
       end
 
+    end
+  end
+
+  describe '#global_announcements_mark_all_read' do
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :global_announcements_mark_all_read
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+      before do
+        # Make sure current_user exists in db before doing anything else
+        current_user
+
+        # New users get all announcements already marked unread, so let's play
+        # with time to make sure we're well into the future
+        move_time_to 1.day.from_now
+
+        # We're now in the future… woohoo!
+        create :announcement, is_global: true, publish_at: (now - 1.minute)
+        create :announcement, is_global: true, publish_at: (now + 1.hour)
+        create :announcement, is_global: false, publish_at: (now + 1.hour)
+        create :announcement, is_global: true, publish_at: (now - 1.hour)
+        create :announcement, is_global: false, publish_at: (now - 1.hour)
+      end
+
+      it 'marks all announcements as read' do
+        # First, double check we're getting the correct count
+        get :show
+        expect(response).to be_success
+        expect(json_response['global_announcements_unread_count']).to eq 2
+
+        # Now mark all as readonly
+        post :global_announcements_mark_all_read
+        expect(response).to be_success
+        expect(json_response['global_announcements_unread_count']).to eq 0
+      end
     end
   end
 

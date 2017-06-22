@@ -68,9 +68,17 @@
 
             <md-sidemenu-button
               ui-sref="announcements.global"
-              ui-sref-active="active">
+              ui-sref-active="active"
+              layout-align="space-between">
               <md-icon>{{$ctrl.announcementsIcon}}</md-icon>
               <span>Global Announcements</span>
+              <span flex></span>
+              <span
+                ng-if="$ctrl.Me.data.global_announcements_unread_count > 0"
+                md-colors="{background: 'accent-100', color: 'accent'}"
+                class="badge-counter float-right text-center">
+                {{$ctrl.Me.data.global_announcements_unread_count}}
+              </span>
             </md-sidemenu-button>
           </md-sidemenu-group>
 

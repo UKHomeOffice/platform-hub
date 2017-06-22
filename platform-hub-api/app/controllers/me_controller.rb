@@ -60,6 +60,12 @@ class MeController < ApiJsonController
     end
   end
 
+  def global_announcements_mark_all_read
+    GlobalAnnouncementsService.mark_all_read_for current_user
+
+    render_me_resource
+  end
+
   private
 
   def render_me_resource

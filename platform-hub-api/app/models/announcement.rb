@@ -5,6 +5,8 @@ class Announcement < ApplicationRecord
   audited descriptor_field: :title
   has_associated_audits
 
+  acts_as_readable :on => :publish_at
+
   enum level: {
     info: 'info',
     warning: 'warning',

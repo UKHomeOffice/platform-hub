@@ -25,7 +25,7 @@ module AuthenticationHelpers
     def test_auth_payload
       @test_auth_payload ||= Hashie::Mash.new({
         jti: '8db593b2-b40f-4e85-9fad-91932dd55430',
-        exp: (DateTime.now + 11.hours).strftime('%s'),
+        exp: (DateTime.now + 1.week).strftime('%s'),
         nbf: 0,
         iat: (DateTime.now - 1.hour).strftime('%s'),
         iss: 'https://sso.example.org',
