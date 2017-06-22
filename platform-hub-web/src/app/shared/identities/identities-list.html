@@ -42,7 +42,10 @@
   <br />
 
   <div layout-padding ng-if="$ctrl.Identities.getOther().length > 0">
-    <div class="md-whiteframe-z1" layout-padding>
+    <div
+      class="md-whiteframe-z1"
+      md-colors="{background: 'green-50'}"
+      layout-padding>
       <div>
         <h3 class="md-title">
           Other services
@@ -50,9 +53,7 @@
 
         <p class="md-body-1">
           You already have access via single sign-on, or may need to request access separately.
-        </p>
-        <p class="md-body-1">
-          The hub may manage these for you in the future.
+          May be managed by the hub in the future.
         </p>
 
         <md-list>

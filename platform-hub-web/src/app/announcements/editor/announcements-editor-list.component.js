@@ -5,7 +5,7 @@ export const AnnouncementsEditorListComponent = {
   controller: AnnouncementsEditorListController
 };
 
-function AnnouncementsEditorListController($mdDialog, icons, Announcements, hubApiService, logger) {
+function AnnouncementsEditorListController($mdDialog, icons, Announcements, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -66,8 +66,8 @@ function AnnouncementsEditorListController($mdDialog, icons, Announcements, hubA
   function markSticky(announcement) {
     ctrl.saving = true;
 
-    hubApiService
-      .announcementMarkSticky(announcement.id)
+    Announcements
+      .markSticky(announcement)
       .then(() => {
         logger.success('Marked announcement as sticky');
         announcement.is_sticky = true;
@@ -80,8 +80,8 @@ function AnnouncementsEditorListController($mdDialog, icons, Announcements, hubA
   function unmarkSticky(announcement) {
     ctrl.saving = true;
 
-    hubApiService
-      .announcementUnmarkSticky(announcement.id)
+    Announcements
+      .unmarkSticky(announcement)
       .then(() => {
         logger.success('Unmarked announcement as sticky');
         announcement.is_sticky = false;
@@ -105,8 +105,8 @@ function AnnouncementsEditorListController($mdDialog, icons, Announcements, hubA
       .then(() => {
         ctrl.saving = true;
 
-        hubApiService
-          .deleteAnnouncement(announcement.id)
+        Announcements
+          .deleteAnnouncement(announcement)
           .then(() => {
             logger.success('Announcement deleted');
             refreshAllAnnouncements();

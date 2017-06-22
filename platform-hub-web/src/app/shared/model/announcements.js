@@ -31,11 +31,16 @@ export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApi
   model.isEditable = isEditable;
   model.isPublished = isPublished;
   model.publishNow = publishNow;
+  model.markSticky = markSticky;
+  model.unmarkSticky = unmarkSticky;
+  model.createAnnouncement = createAnnouncement;
+  model.updateAnnouncement = updateAnnouncement;
+  model.deleteAnnouncement = deleteAnnouncement;
 
   return model;
 
-  function refreshGlobal() {
-    if (_.isNull(globalFetcherPromise)) {
+  function refreshGlobal(force) {
+    if (force || _.isNull(globalFetcherPromise)) {
       globalFetcherPromise = hubApiService
         .getGlobalAnnouncements()
         .then(results => {
@@ -89,7 +94,57 @@ export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApi
 
   function publishNow(announcement) {
     announcement.publish_at = moment.utc().format();
-    return hubApiService.updateAnnouncement(announcement.id, announcement);
+    return hubApiService
+      .updateAnnouncement(announcement.id, announcement)
+      .then(() => {
+        return refreshGlobal(true);
+      });
+  }
+
+  function markSticky(announcement) {
+    return hubApiService
+      .announcementMarkSticky(announcement.id)
+      .then(() => {
+        return refreshGlobal(true);
+      });
+  }
+
+  function unmarkSticky(announcement) {
+    return hubApiService
+      .announcementUnmarkSticky(announcement.id)
+      .then(() => {
+        return refreshGlobal(true);
+      });
+  }
+
+  function createAnnouncement(data) {
+    return hubApiService
+      .createAnnouncement(data)
+      .then(announcement => {
+        return refreshGlobal(true)
+          .then(() => {
+            return announcement;
+          });
+      });
+  }
+
+  function updateAnnouncement(id, data) {
+    return hubApiService
+      .updateAnnouncement(id, data)
+      .then(announcement => {
+        return refreshGlobal(true)
+          .then(() => {
+            return announcement;
+          });
+      });
+  }
+
+  function deleteAnnouncement(announcement) {
+    return hubApiService
+      .deleteAnnouncement(announcement.id)
+      .then(() => {
+        return refreshGlobal(true);
+      });
   }
 
   function processAnnouncementsFromApi(results) {

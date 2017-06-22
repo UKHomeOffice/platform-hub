@@ -91,11 +91,11 @@ describe AnnouncementsProcessorService, type: :service do
       expect(announcement_mailer).to receive(:announcement_email).with(@a5, expected_a5_recipients).and_return(a5_mailer)
       expect(a5_mailer).to receive(:deliver_later)
 
-      expect(slack_notifier).to receive(:ping)
-        .with(anything, { channel: '#foo' })
+      expect(slack_notifier).to receive(:post)
+        .with(attachments: anything, channel: '#foo', icon_emoji: anything)
         .exactly(2).times
-      expect(slack_notifier).to receive(:ping)
-        .with(anything, { channel: '#bar' })
+      expect(slack_notifier).to receive(:post)
+        .with(attachments: anything, channel: '#bar', icon_emoji: anything)
         .once
 
       @service.run

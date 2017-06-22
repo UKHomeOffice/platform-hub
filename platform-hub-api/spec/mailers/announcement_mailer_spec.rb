@@ -23,7 +23,7 @@ RSpec.describe AnnouncementMailer, type: :mailer do
         "#{text}\n\n"  # Because we have extra newlines in the template
       end
       let :expected_html do
-        "<div>#{text}</div>"
+        "<div>#{text}</div>\n<br><br>"
       end
 
       before do

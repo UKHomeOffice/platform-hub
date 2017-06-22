@@ -26,7 +26,7 @@
 
     <md-card
       ng-repeat="a in $ctrl.Announcements.all track by a.id"
-      md-colors="$ctrl.Announcements.isPublished(a) ? {background: 'blue-grey-50'} : {background: 'background'}">
+      md-colors="$ctrl.Announcements.isPublished(a) ? {background: 'blue-grey-50'} : {}">
       <div class="tinted-bar" md-colors="{background: '{{a.colour}}'}"></div>
       <md-card-title>
         <md-card-title-text>
@@ -70,7 +70,7 @@
             Publish at:
           </span>
           <span>{{a.publish_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
-          (<strong><span am-time-ago="a.publish_at"></span></strong>)
+          (<strong><span am-time-ago="a.publish_at" md-colors="{color: 'accent'}"></span></strong>)
         </p>
 
         <p class="md-body-1">
@@ -102,12 +102,12 @@
           <span md-colors="{color: 'blue-grey-700'}">
             Created at:
           </span>
-          <span>{{a.created_at}}</span>
+          <span>{{a.created_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
           <span class="separator">|</span>
           <span md-colors="{color: 'blue-grey-700'}">
             Updated at:
           </span>
-          <span>{{a.updated_at}}</span>
+          <span>{{a.updated_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
         </p>
       </md-card-content>
 
