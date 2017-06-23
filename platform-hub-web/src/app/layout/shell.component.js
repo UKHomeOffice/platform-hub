@@ -89,7 +89,7 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
     },
     {
       title: 'Contact Lists',
-      state: 'contact-lists',
+      state: 'contact-lists.list',
       icon: icons.contactList
     }
   ];

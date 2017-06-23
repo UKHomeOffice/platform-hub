@@ -8,7 +8,7 @@ export const AnnouncementsEditorFormComponent = {
   controller: AnnouncementsEditorFormController
 };
 
-function AnnouncementsEditorFormController($state, $mdConstant, Announcements, ContactLists, hubApiService, moment, logger) {
+function AnnouncementsEditorFormController($state, $mdConstant, Announcements, hubApiService, moment, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -17,7 +17,6 @@ function AnnouncementsEditorFormController($state, $mdConstant, Announcements, C
 
   ctrl.levels = Announcements.levels;
   ctrl.colours = Announcements.coloursForLevel;
-  ctrl.contactLists = ContactLists.listIds;
 
   const semicolon = 186;
   ctrl.customKeys = [
@@ -26,9 +25,11 @@ function AnnouncementsEditorFormController($state, $mdConstant, Announcements, C
     semicolon
   ];
 
+  ctrl.ready = false;
   ctrl.loading = true;
   ctrl.saving = false;
   ctrl.isNew = true;
+  ctrl.contactLists = null;
   ctrl.announcement = null;
 
   ctrl.createOrUpdate = createOrUpdate;
@@ -39,12 +40,26 @@ function AnnouncementsEditorFormController($state, $mdConstant, Announcements, C
   function init() {
     ctrl.isNew = !id;
 
+    loadContactLists();
+
     if (ctrl.isNew) {
       ctrl.announcement = initEmptyAnnouncement();
       ctrl.loading = false;
     } else {
       loadAnnouncement();
     }
+  }
+
+  function loadContactLists() {
+    ctrl.ready = false;
+    ctrl.contactLists = null;
+
+    hubApiService
+      .getContactLists()
+      .then(lists => {
+        ctrl.contactLists = lists;
+        ctrl.ready = true;
+      });
   }
 
   function initEmptyAnnouncement() {
@@ -55,7 +70,7 @@ function AnnouncementsEditorFormController($state, $mdConstant, Announcements, C
       publish_at: moment().add(1, 'day').format(),
       deliver_to: {
         hub_users: undefined,
-        contact_lists: undefined,
+        contact_lists: [],
         slack_channels: []
       }
     };

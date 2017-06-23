@@ -1,0 +1,57 @@
+<div class="contact-lists-list">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>All Contact Lists</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        aria-label="Add new contact list"
+        ui-sref="contact-lists.new">
+        <md-icon>add_box</md-icon>
+        New
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.lists.length > 0">
+
+    <md-card ng-repeat="l in $ctrl.lists track by l.id">
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            {{l.id}}
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content>
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Email addresses:
+          </span>
+          <br />
+          <span ng-repeat="e in l.email_addresses">
+            <span>{{e}}</span><span ng-if="!$last">, </span>
+          </span>
+        </p>
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          aria-label="Edit this contact list"
+          ui-sref="contact-lists.edit({id: l.id})">
+          Edit
+        </md-button>
+        <md-button
+          aria-label="Delete this contact list"
+          ng-click="$ctrl.deleteList(l, $event)">
+          Delete
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+</div>

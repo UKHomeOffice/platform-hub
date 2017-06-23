@@ -59,7 +59,9 @@ Rails.application.routes.draw do
 
     resource :app_settings, only: [ :show, :update ]
 
-    resources :contact_lists, only: [ :show, :update ], constraints: { id: /[a-zA-Z]\w*/ }
+    resources :contact_lists,
+      except: [ :create ],
+      constraints: { id: ContactList::ID_REGEX }
 
     resources :announcements do
       get :global, on: :collection

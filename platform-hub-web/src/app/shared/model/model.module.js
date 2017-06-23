@@ -5,7 +5,6 @@ import {UtilModule} from '../util/util.module';
 
 import {Announcements} from './announcements';
 import {AppSettings} from './app-settings';
-import {ContactLists} from './contact-lists';
 import {Identities} from './identities';
 import {Me} from './me';
 import {PlatformThemes} from './platform-themes';
@@ -19,7 +18,6 @@ export const ModelModule = angular
   ])
   .service('Announcements', Announcements)
   .service('AppSettings', AppSettings)
-  .service('ContactLists', ContactLists)
   .service('Identities', Identities)
   .service('Me', Me)
   .service('PlatformThemes', PlatformThemes)
