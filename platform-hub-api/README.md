@@ -12,6 +12,15 @@ A [Ruby on Rails](http://rubyonrails.org/) 5.0 API-only stack to provide a mainl
 
 If you're using [RVM](https://rvm.io/) or some other Ruby manager, it may pick up the `.ruby-version` file automatically and use / set up the correct version of Ruby for you. If not, you'll need to install Ruby v2.3.3.
 
+#### Package Dependencies
+
+The following packages are required to run the API (may vary across Operating Systems):
+* [Ruby v2.3.3](https://www.ruby-lang.org/en/). If you're using [RVM](https://rvm.io/) or some other Ruby manager, it may pick up the `.ruby-version` file automatically and use / set up the correct version of Ruby for you. If not, you'll need to install Ruby v2.3.3 (included in the below list)
+* Developer Packages:
+** Debian/Ubuntu: `sudo apt-get install ruby ruby-dev postgresql-client libpq-dev`
+** Fedora/CentOS: `sudo yum install rubygems ruby-devel postgresql-client postgresql-devel`
+** OSX: `brew install ruby ruby-build postgresql`
+
 #### Bundler
 
 [Bundler](http://bundler.io/) is used for dependency management. Install this with `gem install bundler`.
