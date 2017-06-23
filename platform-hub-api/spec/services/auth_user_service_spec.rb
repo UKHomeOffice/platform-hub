@@ -1,18 +1,18 @@
 require 'rails_helper'
 
-describe NewUserService, type: :service do
+describe AuthUserService, type: :service do
 
   # Typically, service tests should be more "unit-y", with minimal dependencies
   # and mocking out boundaries. We make an exception in this particular case:
-  # we allow persistence to the db, and we then we check the db state explicitly
-  # given the nature of this service (it's sole responsibility is to create a
-  # new user).
+  # we allow persistence to the db, and we check the db state explicitly
+  # given the nature of this service (since it's sole responsibility is to map
+  # auth tokens to users, creating a new one if needed).
 
   include_context 'authentication helpers'
 
-  describe "#create" do
+  describe "#get" do
     before do
-      @user = subject.create auth_token_payload
+      @user = AuthUserService.get auth_token_payload
     end
 
     context 'with an empty auth_token_payload' do

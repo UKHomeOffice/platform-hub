@@ -13,7 +13,10 @@ import {
   SupportRequestTemplatesForm,
   SupportRequestTemplatesList
 } from './help/help.module';
-import {AppHome} from './home/home.module';
+import {
+  AppHome,
+  HomePreload
+} from './home/home.module';
 import {IdentitiesManager} from './identities/identities.module';
 import {
   HubSetup,
@@ -45,6 +48,13 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         authenticate: false
       }
     })
+      .state('home.preload', {
+        url: '/preload',
+        component: HomePreload,
+        data: {
+          authenticate: true
+        }
+      })
     .state('onboarding', {
       abstract: true,
       url: '/onboarding',

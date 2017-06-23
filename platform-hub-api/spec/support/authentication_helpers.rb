@@ -11,11 +11,7 @@ module AuthenticationHelpers
     end
 
     let :current_user do
-      if User.exists?(id: current_user_id)
-        User.find current_user_id
-      else
-        NewUserService.new.create test_auth_payload
-      end
+      AuthUserService.get test_auth_payload
     end
 
     def test_auth_token

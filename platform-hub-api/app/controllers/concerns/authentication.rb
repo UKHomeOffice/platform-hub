@@ -21,8 +21,7 @@ module Authentication
 
   def create_or_fetch_user token
     # Important assumptions about the token:
-    # - it is already verified by the auth proxy in front
-    # - expiry has already been checked by the auth proxy in front (TODO: perhaps recheck here)
+    # - it is already verified by the auth proxy in front and we can trust the contents
     begin
       payload, _ = JWT.decode token, nil, false
     rescue JWT::ExpiredSignature
@@ -32,16 +31,10 @@ module Authentication
       return nil
     end
 
-    return nil if payload.blank? || payload['sub'].blank?
+    user = AuthUserService.get payload
 
-    id = payload['sub']
-
-    user = User.find_by_id(id)
-
-    if user.blank?
-      user = NewUserService.new.create payload
-    else
-      user.touch(:last_seen_at)
+    if user.present?
+      user.touch :last_seen_at
     end
 
     user
