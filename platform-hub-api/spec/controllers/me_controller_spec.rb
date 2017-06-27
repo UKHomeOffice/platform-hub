@@ -45,7 +45,7 @@ RSpec.describe MeController, type: :controller do
   describe '#complete_hub_onboarding' do
     it_behaves_like 'unauthenticated not allowed'  do
       before do
-        get :show
+        get :complete_hub_onboarding
       end
     end
 
@@ -78,10 +78,31 @@ RSpec.describe MeController, type: :controller do
     end
   end
 
+  describe '#agree_terms_of_service' do
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        get :agree_terms_of_service
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+      it 'should mark the agreed_to_terms_of_service flag as true' do
+        expect(current_user.flags.agreed_to_terms_of_service).to be false
+        post :agree_terms_of_service
+        expect(response).to be_success
+        expect(json_response['flags']['agreed_to_terms_of_service']).to be true
+        expect(Audit.count).to eq 1
+        audit = Audit.first
+        expect(audit.action).to eq 'agree_terms_of_service'
+        expect(audit.user.id).to eq current_user_id
+      end
+    end
+  end
+
   describe '#complete_services_onboarding' do
     it_behaves_like 'unauthenticated not allowed'  do
       before do
-        get :show
+        get :complete_services_onboarding
       end
     end
 

@@ -1,0 +1,40 @@
+<div class="terms-of-service">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h2>
+        Agree to the platform Terms of Service
+      </h2>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout-padding>
+
+      <div layout-padding md-colors="{background: 'blue-grey-50'}">
+        <div ng-bind-html="$ctrl.text"></div>
+      </div>
+
+      <br />
+
+      <div ng-if="$ctrl.Me.data.flags.agreed_to_terms_of_service" class="text-center">
+        <p class="md-body-2">
+          <em>You have already agreed to the platform Terms of Service</em>
+        </p>
+      </div>
+
+      <div ng-if="!$ctrl.Me.data.flags.agreed_to_terms_of_service" class="text-center">
+        <p class="md-body-2">
+          <em>You have not yet agreed to the platform Terms of Service</em>
+        </p>
+        <md-button class="md-primary md-raised" ng-click="$ctrl.agree()">
+          I agree to the Terms of Service for the platform
+        </md-button>
+      </div>
+
+    </div>
+
+  </md-content>
+</div>

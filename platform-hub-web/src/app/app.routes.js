@@ -35,6 +35,7 @@ import {
   ProjectsDetail,
   ProjectsList
 } from './projects/projects.module';
+import {TermsOfService} from './terms-of-service/terms-of-service.module';
 import {UsersList} from './users/users.module';
 
 export const appRoutes = function ($stateProvider, $urlRouterProvider, $locationProvider) {
@@ -58,6 +59,13 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           authenticate: true
         }
       })
+    .state('terms-of-service', {
+      url: '/terms-of-service',
+      component: TermsOfService,
+      data: {
+        authenticate: true
+      }
+    })
     .state('onboarding', {
       abstract: true,
       url: '/onboarding',

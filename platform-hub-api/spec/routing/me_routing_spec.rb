@@ -21,6 +21,10 @@ RSpec.describe MeController, type: :routing do
       end
     end
 
+    it 'routes to #agree_terms_of_service' do
+      expect(:post => '/me/agree_terms_of_service').to route_to('me#agree_terms_of_service')
+    end
+
     it 'routes to #complete_hub_onboarding' do
       expect(:post => '/me/complete_hub_onboarding').to route_to('me#complete_hub_onboarding')
     end

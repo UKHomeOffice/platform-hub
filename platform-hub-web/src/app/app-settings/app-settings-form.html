@@ -15,7 +15,7 @@
       <p class="md-body-1" md-colors="{background: 'accent-50'}">
         <strong>Note:</strong>
         everything you set here is available publicly (via the API).
-        Please don't put anything confidential in these app settings.
+        Please don't put anything confidential/sensitive in these app settings.
       </p>
 
       <md-content>
@@ -91,7 +91,7 @@
             <div layout-padding>
               <p class="md-body-1" md-colors="{background: 'accent-50'}">
                 <strong>Important:</strong>
-                this overview text (and any images in it) will be shown on the homepage for both logged in users AND visitors. Please don't put anything confidential in here!
+                this overview text (and any images in it) will be shown on the homepage for both logged in users AND visitors. Please don't put anything confidential/sensitive in here!
               </p>
 
               <br />
@@ -101,6 +101,38 @@
                   medium-editor
                   bind-options="$ctrl.editorOptions"
                   ng-model="$ctrl.settings.platform_overview">
+                </div>
+              </div>
+
+              <p class="md-body-1">
+                <span><strong>Tip:</strong></span>
+                this is a rich text editor – try highlighting some text for options
+              </p>
+            </div>
+          </div>
+
+          <br />
+          <hr />
+          <br />
+
+          <!-- Terms of Service text -->
+          <div>
+            <h3 class="md-subhead">Terms of Service text</h3>
+
+            <div class="layout-padding">
+              <p class="md-body-1" md-colors="{background: 'accent-50'}">
+                <strong>Important:</strong>
+                this text will be available publically (via the API).
+                Please don't put anything confidential/sensitive in this text.
+              </p>
+
+              <br />
+
+              <div layout-padding md-colors="{background: 'blue-grey-50'}">
+                <div
+                  medium-editor
+                  bind-options="$ctrl.editorOptions"
+                  ng-model="$ctrl.settings.terms_of_service_text">
                 </div>
               </div>
 

@@ -36,6 +36,7 @@ import {OnboardingModule} from './onboarding/onboarding.module';
 import {PlatformThemesModule} from './platform-themes/platform-themes.module';
 import {ProjectsModule} from './projects/projects.module';
 import {SharedModule} from './shared/shared.module';
+import {TermsOfServiceModule} from './terms-of-service/terms-of-service.module';
 import {UsersModule} from './users/users.module';
 
 import {appConfig} from './app.config';
@@ -66,6 +67,7 @@ angular
     PlatformThemesModule,
     ProjectsModule,
     SharedModule,
+    TermsOfServiceModule,
     UsersModule,
     'angular-jwt',
     'angular-loading-bar',

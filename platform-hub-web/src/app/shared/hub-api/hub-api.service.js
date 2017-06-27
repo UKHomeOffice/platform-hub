@@ -10,6 +10,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.deleteMeIdentity = deleteMeIdentity;
   service.completeHubOnboarding = completeHubOnboarding;
   service.completeServicesOnboarding = completeServicesOnboarding;
+  service.agreeTermsOfService = agreeTermsOfService;
   service.globalAnnouncementsMarkAllRead = globalAnnouncementsMarkAllRead;
 
   service.getUsers = buildCollectionFetcher('users');
@@ -119,6 +120,18 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to complete services onboarding', response));
+        return $q.reject(response);
+      });
+  }
+
+  function agreeTermsOfService() {
+    return $http
+      .post(`${apiEndpoint}/me/agree_terms_of_service`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Error occurred whilst agreeing to terms of service', response));
         return $q.reject(response);
       });
   }

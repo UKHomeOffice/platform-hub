@@ -23,6 +23,21 @@ class MeController < ApiJsonController
     head :no_content
   end
 
+  def agree_terms_of_service
+    current_user.update_flag :agreed_to_terms_of_service, true
+
+    if current_user.save
+      AuditService.log(
+        context: audit_context,
+        action: 'agree_terms_of_service'
+      )
+
+      render_me_resource
+    else
+      render_model_errors current_user.errors
+    end
+  end
+
   def complete_hub_onboarding
     current_user.is_managerial = params[:is_managerial]
     current_user.is_technical = params[:is_technical]

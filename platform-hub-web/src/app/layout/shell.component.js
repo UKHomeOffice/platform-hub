@@ -3,8 +3,10 @@ export const ShellComponent = {
   controller: ShellController
 };
 
-function ShellController($scope, $mdSidenav, authService, roleCheckerService, events, icons, AppSettings, PlatformThemes, Me) {
+function ShellController($scope, $mdSidenav, authService, roleCheckerService, events, icons, AppSettings, PlatformThemes, Me, _) {
   'ngInject';
+
+  $scope._ = _;
 
   const ctrl = this;
 
@@ -17,7 +19,30 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
 
   ctrl.isAdmin = false;
 
+  ctrl.flagMessages = [
+    {
+      flag: 'agreed_to_terms_of_service',
+      state: 'terms-of-service',
+      text: 'Agree to the Terms of Service'
+    },
+    {
+      flag: 'completed_hub_onboarding',
+      state: 'onboarding.hub-setup',
+      text: 'Complete your hub setup'
+    },
+    {
+      flag: 'completed_services_onboarding',
+      state: 'onboarding.services',
+      text: 'Complete your services onboarding'
+    }
+  ];
+
   ctrl.myAccountNavStates = [
+    {
+      title: 'Terms of Service',
+      state: 'terms-of-service',
+      icon: icons.termsOfService
+    },
     {
       title: 'Hub Setup',
       state: 'onboarding.hub-setup',
