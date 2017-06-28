@@ -16,9 +16,21 @@
       <md-content>
         <form name="$ctrl.templateForm" role="form" ng-submit="$ctrl.createOrUpdate()">
 
+          <md-input-container class="md-block">
+            <label for="title">Title:</label>
+            <input
+              name="title"
+              ng-model="$ctrl.template.title"
+              required
+              placeholder="The title for this kind of support request">
+            <div ng-messages="$ctrl.templateForm.title.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
           <div layout="row" flex>
             <md-input-container class="md-block md-icon-float" flex>
-              <label for="shortname">Shortname:</label>
+              <label for="shortname">Shortname (not shown to users):</label>
               <input
                 name="shortname"
                 ng-model="$ctrl.template.shortname"
@@ -32,7 +44,7 @@
             <md-button class="md-icon-button input-button-end" aria-label="info">
               <md-icon>info</md-icon>
               <md-tooltip md-direction="bottom">
-                This is the main label shown to users when they view the support request types available. Use the 'title' field below for a more descriptive title.
+                This is used as an identifier in URLs, and not shown to users when they make support requests.
               </md-tooltip>
             </md-button>
           </div>
@@ -58,18 +70,6 @@
               </md-tooltip>
             </md-button>
           </div>
-
-          <md-input-container class="md-block">
-            <label for="title">Title:</label>
-            <input
-              name="title"
-              ng-model="$ctrl.template.title"
-              required
-              placeholder="A more descriptive title for this kind of support request">
-            <div ng-messages="$ctrl.templateForm.title.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
 
           <md-input-container class="md-block">
             <label for="description">Description:</label>
