@@ -259,7 +259,8 @@ CREATE TABLE projects (
     name character varying NOT NULL,
     description text,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    cost_centre_code character varying
 );
 
 
@@ -744,6 +745,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170615160858'),
 ('20170619125933'),
 ('20170621140022'),
-('20170626134741');
+('20170626134741'),
+('20170628103710');
 
 

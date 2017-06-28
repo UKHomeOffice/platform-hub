@@ -135,7 +135,7 @@ class ProjectsController < ApiJsonController
 
   # Only allow a trusted parameter "white list" through
   def project_params
-    params.require(:project).permit(:shortname, :name, :description)
+    params.require(:project).permit(:shortname, :name, :description, :cost_centre_code)
   end
 
   # Currently we only have the ability to store one role per membership,

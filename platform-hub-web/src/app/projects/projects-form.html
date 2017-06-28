@@ -15,6 +15,7 @@
     <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout-padding>
       <md-content>
         <form name="$ctrl.projectForm" role="form" ng-submit="$ctrl.createOrUpdate()">
+
           <md-input-container class="md-block">
             <label for="shortname">Shortname:</label>
             <input
@@ -27,6 +28,7 @@
               <div ng-message="required">This is required.</div>
             </div>
           </md-input-container>
+
           <md-input-container class="md-block">
             <label for="name">Name:</label>
             <input
@@ -47,6 +49,14 @@
               rows="4"
               md-select-on-focus>
             </textarea>
+          </md-input-container>
+
+          <md-input-container class="md-block">
+            <label for="cost_centre_code">Cost centre code:</label>
+            <input
+              name="cost_centre_code"
+              ng-model="$ctrl.project.cost_centre_code"
+              placeholder="The cost centre code for this project">
           </md-input-container>
 
           <div>

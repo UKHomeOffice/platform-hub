@@ -56,18 +56,58 @@ RSpec.describe ProjectsController, type: :controller do
       end
 
       context 'for a project that exists' do
-        it 'should return the specified project resource' do
-          get :show, params: { id: @project.friendly_id }
-          expect(response).to be_success
-          expect(json_response).to eq({
-            'id' => @project.friendly_id,
-            'shortname' => @project.shortname,
-            'name' => @project.name,
-            'description' => @project.description,
-            'members_count' => 0,
-            'created_at' => now_json_value,
-            'updated_at' => now_json_value,
-          })
+        context 'for a regular user' do
+          it 'should return the specified project resource with no protected fields' do
+            get :show, params: { id: @project.friendly_id }
+            expect(response).to be_success
+            expect(json_response).to eq({
+              'id' => @project.friendly_id,
+              'shortname' => @project.shortname,
+              'name' => @project.name,
+              'description' => @project.description,
+              'members_count' => 0,
+              'created_at' => now_json_value,
+              'updated_at' => now_json_value,
+            })
+          end
+        end
+
+        it_behaves_like 'an admin' do
+          it 'should return the specified project resource with protected fields' do
+            get :show, params: { id: @project.friendly_id }
+            expect(response).to be_success
+            expect(json_response).to eq({
+              'id' => @project.friendly_id,
+              'shortname' => @project.shortname,
+              'name' => @project.name,
+              'description' => @project.description,
+              'members_count' => 0,
+              'cost_centre_code' => @project.cost_centre_code,
+              'created_at' => now_json_value,
+              'updated_at' => now_json_value,
+            })
+          end
+        end
+
+        context 'not an admin but is project team manager' do
+          before do
+            create :project_membership_as_manager, project: @project, user: current_user
+          end
+
+          it 'should return the specified project resource with protected fields' do
+            get :show, params: { id: @project.friendly_id }
+            expect(response).to be_success
+            expect(json_response).to eq({
+              'id' => @project.friendly_id,
+              'shortname' => @project.shortname,
+              'name' => @project.name,
+              'description' => @project.description,
+              'members_count' => 1,
+              'cost_centre_code' => @project.cost_centre_code,
+              'created_at' => now_json_value,
+              'updated_at' => now_json_value,
+            })
+          end
         end
       end
 
@@ -80,7 +120,8 @@ RSpec.describe ProjectsController, type: :controller do
         project: {
           shortname: 'foo',
           name: 'foobar',
-          description: 'swimming in foobar'
+          description: 'swimming in foobar',
+          cost_centre_code: 'SUPEREXPENSIVE'
         }
       }
     end
@@ -116,6 +157,7 @@ RSpec.describe ProjectsController, type: :controller do
             'name' => post_data[:project][:name],
             'description' => post_data[:project][:description],
             'members_count' => 0,
+            'cost_centre_code' => post_data[:project][:cost_centre_code],
             'created_at' => now_json_value,
             'updated_at' => now_json_value
           });
@@ -156,7 +198,8 @@ RSpec.describe ProjectsController, type: :controller do
         id: @project.friendly_id,
         project: {
           shortname: 'foo',
-          name: 'foobar'
+          name: 'foobar',
+          cost_centre_code: 'NOTSOEXPENSIVENOW'
         }
       }
     end
@@ -195,6 +238,7 @@ RSpec.describe ProjectsController, type: :controller do
           expect(updated.shortname).to eq put_data[:project][:shortname]
           expect(updated.name).to eq put_data[:project][:name]
           expect(updated.description).to eq existing_description
+          expect(updated.cost_centre_code).to eq put_data[:project][:cost_centre_code]
           expect(Audit.count).to eq 1
           audit = Audit.first
           expect(audit.action).to eq 'update'
