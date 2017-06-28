@@ -43,5 +43,16 @@ FactoryGirl.define do
       end
     end
 
+    factory :feature_flags_hash_record do
+      scope 'general'
+      id 'feature_flags'
+      data do
+        {
+          'some_flag': false,
+          'other_flag': true
+        }
+      end
+    end
+
   end
 end

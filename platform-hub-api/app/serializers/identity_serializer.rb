@@ -9,7 +9,7 @@ class IdentitySerializer < BaseSerializer
     :updated_at
   )
 
-  attribute :kubernetes_tokens, if: -> { object.kubernetes? } do
+  attribute :kubernetes_tokens, if: -> { object.kubernetes? && FeatureFlagService.is_enabled?(:kubernetes_tokens) } do
     ActiveModel::Serializer::CollectionSerializer.new(
       Kubernetes::TokenService.tokens_from_identity_data(object.data)
     )
