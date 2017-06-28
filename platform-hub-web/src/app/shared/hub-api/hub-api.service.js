@@ -75,6 +75,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.claimKubernetesToken = claimKubernetesToken;
   service.revokeKubernetesToken = revokeKubernetesToken;
 
+  service.getFeatureFlags = buildSimpleFetcher('feature_flags', 'feature flags');
+
   return service;
 
   function getMe() {

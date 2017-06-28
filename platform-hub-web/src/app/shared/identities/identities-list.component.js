@@ -7,12 +7,13 @@ export const IdentitiesListComponent = {
   controller: IdentitiesListController
 };
 
-function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiService) {
+function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiService, FeatureFlags) {
   'ngInject';
 
   const ctrl = this;
 
   ctrl.Identities = Identities;
+  ctrl.FeatureFlags = FeatureFlags;
 
   ctrl.userIdentities = {};
 

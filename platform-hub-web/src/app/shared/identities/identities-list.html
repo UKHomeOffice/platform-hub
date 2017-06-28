@@ -45,6 +45,7 @@
 
     <md-list-item
       ng-switch-when="kubernetes"
+      ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.FeatureFlags.keys.kubernetesTokens)"
       class="md-3-line md-long-text">
 
       <md-icon ng-if="i.connected" md-colors="{color: 'teal'}">check_circle</md-icon>
