@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     get '/healthz', to: 'healthcheck#show'
 
     get '/me', to: 'me#show'
+    post '/me/agree_terms_of_service', to: 'me#agree_terms_of_service'
     post '/me/complete_hub_onboarding', to: 'me#complete_hub_onboarding'
     post '/me/complete_services_onboarding', to: 'me#complete_services_onboarding'
     post '/me/global_announcements/mark_all_read', to: 'me#global_announcements_mark_all_read'

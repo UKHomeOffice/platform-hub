@@ -3,7 +3,7 @@ import angular from 'angular';
 import {HubSetupComponent} from './hub-setup.component';
 import {ServicesOnboardingComponent} from './services-onboarding.component';
 
-// Main section component name
+// Main section component names
 export const HubSetup = 'hubSetup';
 export const ServicesOnboarding = 'servicesOnboarding';
 

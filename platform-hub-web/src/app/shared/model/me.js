@@ -15,6 +15,7 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
   model.deleteIdentity = deleteIdentity;
   model.completeHubOnboarding = completeHubOnboarding;
   model.completeServicesOnboarding = completeServicesOnboarding;
+  model.agreeTermsOfService = agreeTermsOfService;
   model.globalAnnouncementsMarkAllRead = globalAnnouncementsMarkAllRead;
 
   return model;
@@ -66,6 +67,12 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
   function completeServicesOnboarding() {
     return hubApiService
       .completeServicesOnboarding()
+      .then(handleMeResourceFromApi);
+  }
+
+  function agreeTermsOfService() {
+    return hubApiService
+      .agreeTermsOfService()
       .then(handleMeResourceFromApi);
   }
 

@@ -30,28 +30,16 @@
       <md-content ng-if="$ctrl.isAuthenticated()">
 
         <md-card
-          ng-if="$ctrl.Me.data.id && !$ctrl.Me.data.flags.completed_hub_onboarding"
-          ui-sref="onboarding.hub-setup"
+          ng-repeat="fm in $ctrl.flagMessages track by fm.flag"
+          ng-if="$ctrl.Me.data.id && _.has($ctrl.Me.data.flags, fm.flag) && !$ctrl.Me.data.flags[fm.flag]"
+          ui-sref="{{fm.state}}"
           class="md-body-2"
-          md-colors="{background: 'accent-50'}"
+          md-colors="{background: 'accent-100'}"
           style="cursor: pointer;">
           <md-card-content layout="row" layout-align="space-between">
-            <span>Complete your hub setup</span>
+            <span>{{fm.text}}</span>
             <span flex></span>
-            <md-icon>forward</md-icon>
-          </md-card-content>
-        </md-card>
-
-        <md-card
-          ng-if="$ctrl.Me.data.id && !$ctrl.Me.data.flags.completed_services_onboarding"
-          ui-sref="onboarding.services"
-          class="md-body-2"
-          md-colors="{background: 'accent-50'}"
-          style="cursor: pointer;">
-          <md-card-content layout="row" layout-align="space-between">
-            <span>Complete your services onboarding</span>
-            <span flex></span>
-            <md-icon>forward</md-icon>
+            <md-icon md-colors="{color: 'accent'}">forward</md-icon>
           </md-card-content>
         </md-card>
 

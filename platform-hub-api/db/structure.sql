@@ -333,7 +333,8 @@ CREATE TABLE user_flags (
     completed_hub_onboarding boolean DEFAULT false,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    completed_services_onboarding boolean DEFAULT false
+    completed_services_onboarding boolean DEFAULT false,
+    agreed_to_terms_of_service boolean DEFAULT false
 );
 
 
@@ -742,6 +743,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170615152928'),
 ('20170615160858'),
 ('20170619125933'),
-('20170621140022');
+('20170621140022'),
+('20170626134741');
 
 

@@ -16,6 +16,7 @@ export const icons = function () {
     projects: 'group_work',
     services: 'cloud_circle',
     supportRequests: 'live_help',
+    termsOfService: 'assignment',
     text: 'short_text',
     users: 'perm_identity'
   };
