@@ -116,6 +116,11 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       title: 'Contact Lists',
       state: 'contact-lists.list',
       icon: icons.contactList
+    },
+    {
+      title: 'Kubernetes Tokens',
+      state: 'kubernetes-tokens.list',
+      icon: icons.kubernetes
     }
   ];
 

@@ -36,6 +36,11 @@ import {
   ProjectsList
 } from './projects/projects.module';
 import {TermsOfService} from './terms-of-service/terms-of-service.module';
+import {
+  KubernetesTokensForm,
+  KubernetesTokensList,
+  KubernetesTokensSync
+} from './kubernetes-tokens/kubernetes-tokens.module';
 import {UsersList} from './users/users.module';
 
 export const appRoutes = function ($stateProvider, $urlRouterProvider, $locationProvider) {
@@ -92,6 +97,58 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         authenticate: true
       }
     })
+    .state('kubernetes-tokens', {
+      abstract: true,
+      url: '/kubernetes-tokens',
+      template: '<ui-view></ui-view>'
+    })
+      .state('kubernetes-tokens.list', {
+        url: '/list/:userId',
+        component: KubernetesTokensList,
+        data: {
+          authenticate: true,
+          rolePermitted: 'admin'
+        },
+        resolve: {
+          transition: '$transition$'
+        },
+        params: {
+          userId: ''
+        }
+      })
+      .state('kubernetes-tokens.new', {
+        url: '/new/:userId',
+        component: KubernetesTokensForm,
+        resolve: {
+          transition: '$transition$'
+        },
+        data: {
+          authenticate: true,
+          rolePermitted: 'admin'
+        }
+      })
+      .state('kubernetes-tokens.edit', {
+        url: '/edit/:userId/:cluster',
+        component: KubernetesTokensForm,
+        resolve: {
+          transition: '$transition$'
+        },
+        data: {
+          authenticate: true,
+          rolePermitted: 'admin'
+        }
+      })
+      .state('kubernetes-tokens.sync', {
+        url: '/sync',
+        component: KubernetesTokensSync,
+        resolve: {
+          transition: '$transition$'
+        },
+        data: {
+          authenticate: true,
+          rolePermitted: 'admin'
+        }
+      })
     .state('projects', {
       abstract: true,
       url: '/projects',

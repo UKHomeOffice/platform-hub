@@ -14,6 +14,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.globalAnnouncementsMarkAllRead = globalAnnouncementsMarkAllRead;
 
   service.getUsers = buildCollectionFetcher('users');
+  service.getUser = buildResourceFetcher('users');
   service.searchUsers = searchUsers;
   service.makeAdmin = makeAdmin;
   service.revokeAdmin = revokeAdmin;
@@ -64,6 +65,15 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.deleteAnnouncement = buildResourceDeletor('announcements');
   service.announcementMarkSticky = announcementMarkSticky;
   service.announcementUnmarkSticky = announcementUnmarkSticky;
+
+  service.getKubernetesClusters = buildSimpleFetcher('kubernetes/clusters', 'kubernetes clusters');
+  service.getKubernetesTokens = getKubernetesTokens;
+  service.deleteKubernetesToken = deleteKubernetesToken;
+  service.createOrUpdateKubernetesToken = createOrUpdateKubernetesToken;
+  service.getKubernetesTokensChangeset = getKubernetesTokensChangeset;
+  service.syncKubernetesTokens = syncKubernetesTokens;
+  service.claimKubernetesToken = claimKubernetesToken;
+  service.revokeKubernetesToken = revokeKubernetesToken;
 
   return service;
 
@@ -477,5 +487,104 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       msg += `: ${errorDetails}`;
     }
     return msg;
+  }
+
+  function getKubernetesTokens(userId) {
+    return $http
+      .get(`${apiEndpoint}/kubernetes/tokens/${userId}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error('Failed to fetch user kubernetes tokens – the API might be down. Try again later.');
+        return $q.reject(response);
+      });
+  }
+
+  function deleteKubernetesToken(userId, cluster) {
+    return $http
+      .delete(`${apiEndpoint}/kubernetes/tokens/${userId}/${cluster}`)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse(`Failed to delete "'${cluster}'" kubernetes token for '${userId}'`, response));
+        return $q.reject(response);
+      });
+  }
+
+  function createOrUpdateKubernetesToken(user, data) {
+    return $http
+      .patch(`${apiEndpoint}/kubernetes/tokens/${user.id}/${data.cluster}`, {
+        groups: data.groups
+      })
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse(`Failed to create or update a "${data.cluster}" kubernetes token for ${user.id}`, response));
+        return $q.reject(response);
+      });
+  }
+
+  function getKubernetesTokensChangeset(cluster) {
+    if (_.isNull(cluster) || _.isEmpty(cluster)) {
+      throw new Error('"cluster" argument not specified or empty');
+    }
+
+    return $http
+      .get(`${apiEndpoint}/kubernetes/changeset/${cluster}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(`Failed to fetch kubernetes tokens changeset for "${cluster}" cluster – the API might be down. Try again later.`);
+        return $q.reject(response);
+      });
+  }
+
+  function syncKubernetesTokens(data) {
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/kubernetes/sync`, data)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Sync error', response));
+        return $q.reject(response);
+      });
+  }
+
+  function claimKubernetesToken(data) {
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/kubernetes/claim`, data)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Claim error', response));
+        return $q.reject(response);
+      });
+  }
+
+  function revokeKubernetesToken(data) {
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/kubernetes/revoke`, data)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Revocation error', response));
+        return $q.reject(response);
+      });
   }
 };

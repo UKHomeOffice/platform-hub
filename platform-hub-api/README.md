@@ -96,6 +96,102 @@ To set up local email delivery, ensure you have the following env variables set 
 
 **As usual, be careful when sending out emails from your local development environment!**
 
+### Kubernetes Tokens Management
+
+#### Managed clusters configuration
+
+Create a configuration for each individual cluster you want to manage tokens for. 
+In order to do that run the following from the console:
+
+```ruby
+bin/rails console
+
+Kubernetes::ClusterService.create_or_update(
+  id: 'development', 
+  description: 'Development cluster', 
+  s3_region: 'eu-west-1', 
+  s3_bucket_name: '<tokens-file-s3-bucket-name>', 
+  s3_access_key_id: '<tokens-file-s3-bucket-access-key-id>, 
+  s3_secret_access_key: '<tokens-file-s3-bucker-secret-access-key>', 
+  object_key: '</path/to/tokens-file.csv>'
+)
+```
+
+You can delete cluster configuration with the following:
+
+```ruby
+bin/rails console
+
+Kubernetes::ClusterService.delete(<cluster-id>)
+```
+where:
+- `<cluster-id>` is the id of the cluster configuration you want to remove from the hub.
+
+#### Import "static" tokens
+
+In order to import initial list of tokens for given cluster into the platform hub run the command below in the console: 
+
+```ruby
+bin/rails console
+
+Kubernetes::StaticTokenService.import(<cluster-id>, <kind>)
+```
+where:
+- `<cluster-id>` is the id of the cluster configuration eg. 'development'
+- `<kind>` is one of the following: `user`, `robot`, `system`. 
+
+Command above will prompt for tokens data in original format:
+```
+password1,user1,uid1,"group1,group2"
+password2,user2,uid2
+```
+
+Tokens should be split into 3 kinds: 
+  - `user` - All user specific tokens currently in use.
+  - `robot` - All non-user specific tokens, eg. robot accounts, CI tokens etc.
+  - `system` - All core system tokens in use, eg. tokens used by kublet, controller-manager, etc. 
+
+#### Create ad-hoc robot account
+
+```ruby
+bin/rails console
+
+Kubernetes::StaticTokenService.create_or_update(<cluster-id>, :robot, <robot-name>, '<groups>')
+```
+where 
+- `<cluster-id>` is the id of cluster for which we want to create a robot account eg. 'development'
+- `<robot-name>` is a name of the robot. This can be any meaningful string which identifies the robot.
+- `<groups>` is a semicolon separated list of group names for the robot eg. `group1;group2`.
+
+#### Delete robot account
+
+```ruby
+bin/rails console
+
+# By robot name
+Kubernetes::StaticTokenService.delete_by_name(<cluster-id>, :robot, <robot-name>)
+
+# By robot token
+Kubernetes::StaticTokenService.delete_by_token(<cluster-id>, :robot, <token>)
+```
+
+where:
+- `<cluster-id>` is the if of cluster where robot account lives. 
+- `<robot-name>` is a robot identifier which we want to remove.
+- `<token>` is token which we want to remove.
+
+#### Describe static kubernetes account
+
+```ruby
+bin/rails console
+
+Kubernetes::StaticTokenService.describe(<cluster-id>, <kind>, <user-name>)
+```
+where:
+- `<cluster-id>` is the if of cluster where robot account lives. 
+- `<kind>` is a kind of account eg. `user`, `robot`, `system`
+- `<user-name>` is a user identitfier which we want to describe.
+
 ### Troubleshooting
 
 #### Test database issues

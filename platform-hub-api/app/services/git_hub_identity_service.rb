@@ -14,13 +14,13 @@ class GitHubIdentityService
       {
         scope: '',
         redirect_uri: "#{@app_base_url}/api/#{@callback_url}",
-        state: @encryption_service.encrypt(existing_user.id)
+        state: Base64.encode64(@encryption_service.encrypt(existing_user.id))
       }
     )
   end
 
   def connect_identity code, state
-    user_id = @encryption_service.decrypt(state)
+    user_id = @encryption_service.decrypt(Base64.decode64(state))
     user = User.find_by_id(user_id)
 
     if user.blank?

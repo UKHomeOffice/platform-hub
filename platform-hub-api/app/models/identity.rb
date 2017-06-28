@@ -6,7 +6,8 @@ class Identity < ApplicationRecord
 
   enum provider: {
     keycloak: 'keycloak',
-    github: 'github'
+    github: 'github',
+    kubernetes: 'kubernetes'
   }
 
   belongs_to :user

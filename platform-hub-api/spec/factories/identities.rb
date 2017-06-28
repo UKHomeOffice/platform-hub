@@ -5,5 +5,9 @@ FactoryGirl.define do
     sequence :external_id do |n|
       "github_#{n}"
     end
+
+    factory :kubernetes_identity do
+      provider 'kubernetes'
+    end
   end
 end

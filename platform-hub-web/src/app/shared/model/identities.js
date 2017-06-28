@@ -13,6 +13,11 @@ export const Identities = function (AppSettings) {
       provider: 'github',
       title: 'GitHub',
       selfService: true
+    },
+    {
+      provider: 'kubernetes',
+      title: 'Kubernetes',
+      selfservice: false
     }
   ];
 

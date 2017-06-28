@@ -7,7 +7,7 @@ export const IdentitiesListComponent = {
   controller: IdentitiesListController
 };
 
-function IdentitiesListController($mdDialog, Identities, Me, _) {
+function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiService) {
   'ngInject';
 
   const ctrl = this;
@@ -16,8 +16,11 @@ function IdentitiesListController($mdDialog, Identities, Me, _) {
 
   ctrl.userIdentities = {};
 
+  ctrl.busy = false;
   ctrl.connect = connect;
   ctrl.disconnect = disconnect;
+  ctrl.showKubeTokens = false;
+  ctrl.claimKubeToken = claimKubeToken;
 
   init();
 
@@ -81,5 +84,33 @@ function IdentitiesListController($mdDialog, Identities, Me, _) {
         );
       });
     }
+  }
+
+  function claimKubeToken(targetEvent) {
+    const confirm = $mdDialog.prompt()
+      .title('Claim kubernetes token')
+      .textContent('This will claim existing kubernetes token and associate it with your kubernetes identity.')
+      .placeholder('Kubernetes token you would like to claim')
+      .ariaLabel('Claim token')
+      .initialValue('')
+      .targetEvent(targetEvent)
+      .ok('Claim token')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(claimedToken => {
+        ctrl.busy = true;
+
+        hubApiService
+          .claimKubernetesToken({token: claimedToken})
+          .then(() => {
+            logger.success('Kubernetes token claimed successfully!');
+            init();
+          })
+          .finally(() => {
+            ctrl.busy = false;
+          });
+      });
   }
 }

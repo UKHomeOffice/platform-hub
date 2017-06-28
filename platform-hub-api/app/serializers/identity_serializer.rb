@@ -8,4 +8,10 @@ class IdentitySerializer < BaseSerializer
     :created_at,
     :updated_at
   )
+
+  attribute :kubernetes_tokens, if: -> { object.kubernetes? } do
+    ActiveModel::Serializer::CollectionSerializer.new(
+      Kubernetes::TokenService.tokens_from_identity_data(object.data)
+    )
+  end
 end

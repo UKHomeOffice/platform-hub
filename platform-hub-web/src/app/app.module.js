@@ -31,6 +31,7 @@ import {ContactListsModule} from './contact-lists/contact-lists.module';
 import {HelpModule} from './help/help.module';
 import {HomeModule} from './home/home.module';
 import {IdentitiesModule} from './identities/identities.module';
+import {KubernetesTokensModule} from './kubernetes-tokens/kubernetes-tokens.module';
 import {LayoutModule} from './layout/layout.module';
 import {OnboardingModule} from './onboarding/onboarding.module';
 import {PlatformThemesModule} from './platform-themes/platform-themes.module';
@@ -62,6 +63,7 @@ angular
     HelpModule,
     HomeModule,
     IdentitiesModule,
+    KubernetesTokensModule,
     LayoutModule,
     OnboardingModule,
     PlatformThemesModule,

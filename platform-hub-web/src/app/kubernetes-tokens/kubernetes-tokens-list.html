@@ -1,0 +1,128 @@
+<div class="kubernetes-tokens-list">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>Kubernetes Tokens</span>
+        <span ng-if="$ctrl.user">for {{$ctrl.user.name}} ({{$ctrl.user.email}})</span>
+      </h3>
+      <span flex></span>
+
+      <md-button
+        ng-if="$ctrl.user && ($ctrl.tokens.length < $ctrl.KubernetesClusters.all.length)"
+        aria-label="Add new token"
+        ui-sref="kubernetes-tokens.new({userId: $ctrl.user.id})">
+        <md-icon>{{$ctrl.addTokenIcon}}</md-icon>
+        New
+      </md-button>
+
+      <md-menu>
+        <md-button aria-label="Action menu" class="md-icon-button" ng-click="$mdMenu.open($event)">
+          <md-icon md-menu-origin md-svg-icon="menu"></md-icon>
+        </md-button>
+        <md-menu-content width="4">
+          <md-menu-item>
+            <md-button 
+              aria-label="Sync tokens"
+              ui-sref="kubernetes-tokens.sync">
+              <md-icon>{{$ctrl.syncTokensIcon}}</md-icon>
+              Sync tokens
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button 
+              aria-label="Revoke token"
+              ng-click="$ctrl.revokeToken($event)">
+              <md-icon>{{$ctrl.revokeTokenIcon}}</md-icon>
+              Revoke token
+            </md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-toolbar md-colors="{background: 'primary-50'}">
+    <div class="md-toolbar-tools">
+      <md-autocomplete
+        md-no-cache="true"
+        md-selected-item="$ctrl.searchSelectedUser"
+        md-search-text="$ctrl.searchText"
+        md-items="user in $ctrl.searchUsers($ctrl.searchText)"
+        md-item-text="user.name"
+        md-min-length="1"
+        ng-model-options="{ debounce: 500 }"
+        placeholder="Filter by user name"
+        flex>
+        <md-item-template>
+          <span md-highlight-text="$ctrl.searchText" md-highlight-flags="^i">
+            {{user.name}}
+            ({{user.email}})
+          </span>
+        </md-item-template>
+        <md-not-found>
+          No users matching "{{$ctrl.searchText}}" were found.
+        </md-not-found>
+      </md-autocomplete>
+      <md-button
+        class="md-primary md-raised"
+        aria-label="Filter list by user"
+        ng-click="$ctrl.filterKubernetesTokensByUser()"
+        ng-disabled="!$ctrl.searchSelectedUser">
+        Filter
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.tokens.length > 0">
+
+    <md-card ng-repeat="t in $ctrl.tokens track by t.cluster">
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            {{t.cluster}} cluster
+          </span>
+          <p>
+            <strong>Token:</strong> {{t.token}}
+          </p>
+          <p>
+            <strong>UID:</strong> {{t.uid}}
+          </p>
+          <p>
+            <strong>Groups:</strong> {{t.groups.join(', ')}}
+          </p>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          class="md-primary"
+          aria-label="View and edit details for this token"
+          ui-sref="kubernetes-tokens.edit({userId: $ctrl.user.id, cluster: t.cluster})">
+          View and edit
+        </md-button>
+        <md-button
+          class="md-primary"
+          ng-click="$ctrl.deleteToken($ctrl.user.id, t.cluster, $event)"
+          aria-label="Remove kubernetes token">
+          Delete
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.tokens.length == 0">
+    <md-card>
+      <md-card-title>
+        <md-card-title-text>
+          <span class="none-text">
+            Selected user does not have any kubernetes access tokens yet. 
+            Add new token by clicking + sign above.
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+    </md-card>
+  </md-content>
+</div>
