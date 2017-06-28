@@ -11,37 +11,44 @@
 
   <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.gitHubRepos.length > 0">
 
-    <h4 class="md-title">My support requests</h4>
+    <div
+      class="md-whiteframe-z1"
+      md-colors="{background: 'green-50'}"
+      layout-padding>
+      <div>
 
-    <p class="md-body-1">
-      Support requests can be found in the 'Issues' tab of the following GitHub
-      <ng-pluralize
-        count="$ctrl.gitHubRepos.length"
-        when="{'1': 'repository', 'other': 'repositories'}">
-      </ng-pluralize>:
-    </p>
+        <h4 class="md-title">My support requests</h4>
 
-    <md-list flex>
-      <md-list-item
-        ng-repeat="r in $ctrl.gitHubRepos"
-        ng-href="{{r}}/issues" target="_blank">
-        <div class="md-list-item-text" layout="column">
-          <p>
-            {{r}}/issues
-          </p>
-        </div>
-      </md-list-item>
-    </md-list>
+        <p class="md-body-1">
+          Support requests can be found in the 'Issues' tab of the following GitHub
+          <ng-pluralize
+            count="$ctrl.gitHubRepos.length"
+            when="{'1': 'repository', 'other': 'repositories'}">
+          </ng-pluralize>:
+        </p>
 
-    <p class="md-body-1" md-colors="{background: 'blue-grey-50'}">
-      <strong>Tip:</strong>
-      you can filter the issues list to show only the issues mentioning you,
-      through the "Filters" dropdown next to the issues search bar.
-    </p>
+        <md-list flex>
+          <md-list-item
+            ng-repeat="r in $ctrl.gitHubRepos"
+            ng-href="{{r}}/issues" target="_blank">
+            <div class="md-list-item-text" layout="column">
+              <p>
+                {{r}}/issues
+              </p>
+            </div>
+          </md-list-item>
+        </md-list>
+
+        <p class="md-body-1">
+          <strong>Tip:</strong>
+          you can filter the issues list to show only the issues mentioning you,
+          through the "Filters" dropdown next to the issues search bar.
+        </p>
+
+      </div>
+    </div>
 
     <br />
-
-    <md-divider></md-divider>
 
   </md-content>
 
