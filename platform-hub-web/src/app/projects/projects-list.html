@@ -30,9 +30,21 @@
       </md-card-title>
 
       <md-card-content>
-        <p class="md-body-1" ng-if="p.description">
+        <p
+          class="md-body-1"
+          ng-if="p.description"
+          md-colors="{background: 'blue-grey-50'}"
+          layout-padding>
           {{p.description}}
         </p>
+
+        <p class="md-body-1" ng-if="p.cost_centre_code">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Cost centre code:
+          </span>
+          {{p.cost_centre_code}}
+        </p>
+
         <p class="md-body-2">
           <ng-pluralize
             count="p.members_count"

@@ -34,12 +34,24 @@
           ({{$ctrl.project.shortname}})
         </h3>
 
-        <p ng-if="$ctrl.project.description" class="md-body-1">
-          {{$ctrl.project.description}}
-        </p>
         <p ng-if="!$ctrl.project.description" class="md-body-1 none-text">
           No description set
         </p>
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-if="$ctrl.project.description">
+          {{$ctrl.project.description}}
+        </p>
+
+        <p class="md-body-1" ng-if="$ctrl.project.cost_centre_code">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Cost centre code:
+          </span>
+          {{$ctrl.project.cost_centre_code}}
+        </p>
+
+        <br />
 
         <md-divider></md-divider>
 
