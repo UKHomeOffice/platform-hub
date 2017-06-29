@@ -6,7 +6,7 @@ export const KubernetesTokensListComponent = {
   controller: KubernetesTokensListController
 };
 
-function KubernetesTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, KubernetesClusters, icons, FeatureFlags) {
+function KubernetesTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, KubernetesClusters, icons) {
   'ngInject';
 
   const ctrl = this;
@@ -34,10 +34,6 @@ function KubernetesTokensListController($state, roleCheckerService, hubApiServic
 
   function init() {
     ctrl.loading = true;
-
-    if (!FeatureFlags.isEnabled(FeatureFlags.keys.kubernetesTokens)) {
-      $state.go('home'); // feature disabled
-    }
 
     KubernetesClusters
       .refresh()

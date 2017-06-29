@@ -6,7 +6,7 @@ export const KubernetesTokensFormComponent = {
   controller: KubernetesTokensFormController
 };
 
-function KubernetesTokensFormController($state, hubApiService, logger, _, KubernetesClusters, FeatureFlags) {
+function KubernetesTokensFormController($state, hubApiService, logger, _, KubernetesClusters) {
   'ngInject';
 
   const ctrl = this;
@@ -29,10 +29,6 @@ function KubernetesTokensFormController($state, hubApiService, logger, _, Kubern
   function init() {
     ctrl.isNew = !cluster;
     ctrl.loading = true;
-
-    if (!FeatureFlags.isEnabled(FeatureFlags.keys.kubernetesTokens)) {
-      $state.go('home'); // feature disabled
-    }
 
     // Kubernetes clusters are defined as follows:
     // [

@@ -1,12 +1,12 @@
-export const appRun = function ($rootScope, $transitions, $state, authService, loginDialogService, roleCheckerService, events, AppSettings, Me, FeatureFlags, logger, _) {
+export const appRun = function ($q, $rootScope, $transitions, $state, authService, loginDialogService, roleCheckerService, events, AppSettings, Me, FeatureFlags, logger, _) {
   'ngInject';
 
   logger.debug('Starting app…');
 
-  // Inject lodash into templates that have rootScope access
+  // Inject lodash into templates that have rootScope access.
   $rootScope._ = _;
 
-  // Fetch AppSettings and inject into templates that have rootScope access
+  // Fetch public AppSettings and inject into templates that have rootScope access.
   AppSettings
     .refresh()
     .then(() => {
@@ -19,46 +19,7 @@ export const appRun = function ($rootScope, $transitions, $state, authService, l
     FeatureFlags.refresh();
   }
 
-  // Auth handling
-
-  const homeTargetState = $state.target('home');
-
-  function roleChecker(role) {
-    return roleCheckerService
-      .hasHubRole(role)
-      .then(hasRole => {
-        if (hasRole) {
-          return true;
-        }
-        return homeTargetState;
-      });
-  }
-
-  $transitions.onStart({}, transition => {
-    const toData = transition.$to().data;
-
-    const shouldAuthenticate = Boolean(toData.authenticate);
-
-    const shouldCheckRole = _.has(toData, 'rolePermitted');
-    const rolePermitted = toData.rolePermitted;
-
-    if (shouldAuthenticate && !authService.isAuthenticated()) {
-      return loginDialogService()
-        .then(() => {
-          if (shouldCheckRole) {
-            return roleChecker(rolePermitted);
-          }
-          return true;
-        })
-        .catch(() => {
-          return homeTargetState;
-        });
-    } else if (shouldCheckRole) {
-      return roleChecker(rolePermitted);
-    }
-  });
-
-  // Listen for auth data change and clear/fetch the Me profile data from the API
+  // Listen for auth data change and react accordingly.
   const authDataHandler = $rootScope.$on(events.auth.updated, (event, authData) => {
     Me.clear();
 
@@ -68,4 +29,84 @@ export const appRun = function ($rootScope, $transitions, $state, authService, l
     }
   });
   $rootScope.$on('$destroy', authDataHandler);
+
+  // ---------------------------------------------------------------------------
+  // Handle transitions to states – this takes into account authentication,
+  // feature flags and role checks.
+  //
+  // See the app.routes.spec.js file for the expected rules.
+
+  function onFail() {
+    return $state.target('home');
+  }
+
+  function reject() {
+    return $q.reject();
+  }
+
+  function authenticationChecker() {
+    if (authService.isAuthenticated()) {
+      return $q.resolve(true);
+    }
+
+    return loginDialogService
+      .run()
+      .catch(reject);
+  }
+
+  function featureFlagChecker(flag) {
+    return FeatureFlags
+      .refresh()
+      .then(() => {
+        if (FeatureFlags.isEnabled(flag)) {
+          return $q.resolve(true);
+        }
+        return reject();
+      })
+      .catch(reject);
+  }
+
+  function roleChecker(role) {
+    return roleCheckerService
+      .hasHubRole(role)
+      .then(hasRole => {
+        if (hasRole) {
+          return $q.resolve(true);
+        }
+        return reject();
+      })
+      .catch(reject);
+  }
+
+  $transitions.onStart({}, transition => {
+    const config = transition.$to().data;
+
+    const shouldAuthenticate = Boolean(config.authenticate);
+
+    const shouldCheckFeatureFlag = _.has(config, 'featureFlag');
+    const featureFlag = config.featureFlag;
+
+    const shouldCheckRole = _.has(config, 'rolePermitted');
+    const rolePermitted = config.rolePermitted;
+
+    // Assumption: if the route doesn't need authentication, then no other
+    // config option is supported and checked.
+
+    if (shouldAuthenticate) {
+      return authenticationChecker()
+        .then(() => {
+          if (shouldCheckFeatureFlag) {
+            return featureFlagChecker(featureFlag);
+          }
+          return true;
+        })
+        .then(() => {
+          if (shouldCheckRole) {
+            return roleChecker(rolePermitted);
+          }
+          return true;
+        })
+        .catch(onFail);
+    }
+  });
 };

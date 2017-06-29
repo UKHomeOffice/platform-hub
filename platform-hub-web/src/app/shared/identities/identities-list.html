@@ -36,16 +36,16 @@
           aria-label="Disconnect {{i.title}} identity">
           Disconnect
         </md-button>
-      
+
       </div>
 
       <md-divider></md-divider>
-    
+
     </md-list-item>
 
     <md-list-item
       ng-switch-when="kubernetes"
-      ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.FeatureFlags.keys.kubernetesTokens)"
+      ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)"
       class="md-3-line md-long-text">
 
       <md-icon ng-if="i.connected" md-colors="{color: 'teal'}">check_circle</md-icon>
@@ -65,19 +65,19 @@
           </ul>
         </div>
 
-        <md-button class="md-secondary md-raised" 
+        <md-button class="md-secondary md-raised"
           ng-click="$ctrl.claimKubeToken($event)"
           aria-label="Claim existing kubernetes token">
           Claim token
         </md-button>
 
-        <md-button class="md-secondary md-raised" 
+        <md-button class="md-secondary md-raised"
           ng-click="$ctrl.showKubeTokens = !$ctrl.showKubeTokens"
           aria-label="Show/Hide tokens">
           <span ng-if="!$ctrl.showKubeTokens">Show tokens</span>
           <span ng-if="$ctrl.showKubeTokens">Hide tokens</span>
         </md-button>
-        
+
       </div>
 
     </md-list-item>

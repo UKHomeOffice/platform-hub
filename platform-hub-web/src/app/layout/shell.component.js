@@ -3,7 +3,7 @@ export const ShellComponent = {
   controller: ShellController
 };
 
-function ShellController($scope, $mdSidenav, authService, roleCheckerService, events, icons, AppSettings, PlatformThemes, Me, FeatureFlags, _) {
+function ShellController($scope, $mdSidenav, authService, roleCheckerService, events, icons, AppSettings, PlatformThemes, Me, FeatureFlags, featureFlagKeys, _) {
   'ngInject';
 
   $scope._ = _;
@@ -122,7 +122,7 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       title: 'Kubernetes Tokens',
       state: 'kubernetes-tokens.list',
       icon: icons.kubernetes,
-      featureFlag: FeatureFlags.keys.kubernetesTokens
+      featureFlag: featureFlagKeys.kubernetesTokens
     }
   ];
 
