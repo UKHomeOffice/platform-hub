@@ -41,7 +41,7 @@ describe('arrayUtilsService', () => {
       describe('given empty sorted IDs', () => {
         const sortedIds = [];
 
-        it('should not return an empty list on the left and all items on the right', () => {
+        it('should return an empty list on the left and all items on the right', () => {
           const [left, right] = service.splitBySortedIds(source, sortedIds);
           expect(left).toEqual([]);
           expect(right).toEqual(source);
