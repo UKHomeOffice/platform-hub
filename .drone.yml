@@ -120,7 +120,7 @@ pipeline:
         --net=host
         -d
         platform-hub-api
-        /bin/sh -c "bin/rails server"
+        /bin/bash -l -c "bin/rails server"
       - sleep 5
       - curl -s -f http://127.0.0.1:30000/healthz
     when:
