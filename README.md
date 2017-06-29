@@ -1,4 +1,4 @@
-# Platform Hub – the software powering the HODDAT PaaS Hub
+# Platform Hub – the software powering the Application Container Platform Hub at the UK Home Office
 
 ## General architecture
 
