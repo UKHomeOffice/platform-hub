@@ -70,7 +70,7 @@ describe Kubernetes::ClusterService, type: :service do
         new_cluster_config[:s3_secret_access_key] = new_s3_secret_access_key
       end
 
-      it 'updates existing robot account record' do
+      it 'updates existing cluster configuration' do
         expect {
           subject.create_or_update(new_cluster_config)
         }.to change { @clusters_config.reload.data.size }.by(0)

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Kubernetes::ChangesetService, type: :service do
 
-  describe '#get_events' do
+  describe '.get_events' do
     let(:criteria) { double(:criteria) }
     let(:cluster) { 'development' }
     let(:last_sync_date) { 2.days.ago }
@@ -17,7 +17,7 @@ describe Kubernetes::ChangesetService, type: :service do
     end
   end
 
-  describe '#last_sync' do
+  describe '.last_sync' do
     let(:criteria) { double(:criteria) }
     let(:cluster) { 'development' }
 
@@ -48,7 +48,7 @@ describe Kubernetes::ChangesetService, type: :service do
   end
 
   describe 'private methods' do
-    describe '#audit_entities' do
+    describe '.audit_entities' do
       let(:criteria) { double(:criteria) }
       let(:actions) { [:sync_kubernetes_tokens] }
       let(:cluster) { 'development' }
