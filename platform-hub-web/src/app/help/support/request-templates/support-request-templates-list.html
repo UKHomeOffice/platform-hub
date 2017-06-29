@@ -22,15 +22,19 @@
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">
-            {{t.shortname}}
-          </span>
-          <span class="md-subhead">
             {{t.title}}
           </span>
         </md-card-title-text>
       </md-card-title>
 
       <md-card-content>
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Shortname (not shown to users):
+          </span>
+          {{t.shortname}}
+        </p>
+
         <p class="md-body-1">
           <span md-colors="{color: 'blue-grey-700'}">
             Target GitHub repo:
