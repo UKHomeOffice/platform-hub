@@ -42,6 +42,37 @@ RSpec.describe MeController, type: :controller do
     end
   end
 
+  describe '#delete_identity' do
+    it_behaves_like 'authenticated' do
+      before do
+        @identity = create(:identity,
+          user: current_user
+        )
+      end
+
+      context 'for an identity that exists' do
+        it 'should delete the identity successfully' do
+          expect(Audit.count).to eq 0
+          delete :delete_identity, params: {service: @identity.provider}
+          expect(response).to be_success
+          expect(current_user.identity(@identity.provider)).to be nil
+          expect(Audit.count).to eq 1
+          expect(Audit.first.action).to eq 'delete_identity'
+          expect(Audit.first.user.id).to eq current_user_id
+        end
+      end
+
+      context 'for a non-existent identity' do
+        it 'should fail and return a 404' do
+          delete :delete_identity, params: {service: 'kubernetes'}
+          expect(response).to have_http_status(404)
+          expect(json_response['error']['message']).to eq "Resource not found"
+          expect(Audit.count).to eq 0
+        end
+      end
+    end
+  end
+
   describe '#complete_hub_onboarding' do
     it_behaves_like 'unauthenticated not allowed'  do
       before do
