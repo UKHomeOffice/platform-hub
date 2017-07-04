@@ -14,6 +14,8 @@ Rails.application.routes.draw do
     post '/me/complete_services_onboarding', to: 'me#complete_services_onboarding'
     post '/me/global_announcements/mark_all_read', to: 'me#global_announcements_mark_all_read'
 
+    resources :feature_flags, only: [ :index ]
+
     constraints service: /kubernetes/ do
       delete '/me/identities/:service', to: 'me#delete_identity'
     end
@@ -72,17 +74,19 @@ Rails.application.routes.draw do
       post :unmark_sticky, on: :member
     end
 
-    namespace :kubernetes do
-      # Tokens management
-      get '/tokens/:user_id', to: 'tokens#index'
-      put '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
-      patch '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
-      delete '/tokens/:user_id/:cluster', to: 'tokens#destroy'
-      get '/clusters', to: 'clusters#index'
-      get '/changeset/:cluster', to: 'changeset#index'
-      post '/sync', to: 'sync#sync'
-      post '/claim', to: 'claim#claim'
-      post '/revoke', to: 'revoke#revoke'
+    constraints lambda { |request| FeatureFlagService.is_enabled?(:kubernetes_tokens) } do
+      namespace :kubernetes do
+	# Tokens management
+	get '/tokens/:user_id', to: 'tokens#index'
+	put '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
+	patch '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
+	delete '/tokens/:user_id/:cluster', to: 'tokens#destroy'
+	get '/clusters', to: 'clusters#index'
+	get '/changeset/:cluster', to: 'changeset#index'
+	post '/sync', to: 'sync#sync'
+	post '/claim', to: 'claim#claim'
+	post '/revoke', to: 'revoke#revoke'
+      end
     end
   end
 

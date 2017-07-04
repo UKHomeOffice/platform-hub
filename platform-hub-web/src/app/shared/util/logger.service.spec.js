@@ -74,7 +74,7 @@ describe('logger', () => {
 
   describe('calling error function', () => {
     it('should call $log.error and toastr.error exactly once with correct message', () => {
-      var dummyObj = sinon.stub();
+      const dummyObj = sinon.stub();
       service.error('[ERROR] This is an error:' + dummyObj);
 
       mockLog.debug.should.have.callCount(0);
@@ -123,7 +123,7 @@ describe('logger', () => {
     });
 
     it('should call $log.debug exactly once with object in message', () => {
-      var dummyObj = sinon.stub();
+      const dummyObj = sinon.stub();
       service.debug(dummyObj);
 
       mockLog.debug.should.have.callCount(1);
@@ -140,7 +140,7 @@ describe('logger', () => {
 
   describe('calling multiple functions', () => {
     it('should call the respective $log and toastr functions correctly with the right messages', () => {
-      var dummyObj = sinon.stub();
+      const dummyObj = sinon.stub();
       service.success('[SUCCESS] Test Message');
       service.debug('[DEBUG] Buggy Obj:' + dummyObj);
       service.info('[INFO] Another Message');

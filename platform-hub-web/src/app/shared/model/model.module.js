@@ -5,6 +5,7 @@ import {UtilModule} from '../util/util.module';
 
 import {Announcements} from './announcements';
 import {AppSettings} from './app-settings';
+import {FeatureFlags} from './feature-flags';
 import {Identities} from './identities';
 import {KubernetesClusters} from './kubernetes-clusters';
 import {Me} from './me';
@@ -19,6 +20,7 @@ export const ModelModule = angular
   ])
   .service('Announcements', Announcements)
   .service('AppSettings', AppSettings)
+  .service('FeatureFlags', FeatureFlags)
   .service('Identities', Identities)
   .service('KubernetesClusters', KubernetesClusters)
   .service('Me', Me)

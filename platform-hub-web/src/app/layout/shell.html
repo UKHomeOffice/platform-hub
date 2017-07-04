@@ -124,8 +124,9 @@
             <md-sidemenu-button
               ng-repeat="item in $ctrl.adminNavStates"
               ui-sref="{{item.state}}"
+              ng-if="!_.has(item, 'featureFlag') || $ctrl.FeatureFlags.isEnabled(item.featureFlag)"
               ui-sref-active="{ 'active': item.activeState || item.state }">
-              <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
+              <md-icon ng-if="item.icon">{{item.icon}}</md-icon>              
               <span>{{item.title}}</span>
             </md-sidemenu-button>
           </md-sidemenu-group>

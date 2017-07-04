@@ -1,4 +1,4 @@
-export const appRun = function ($rootScope, $transitions, $state, authService, loginDialogService, roleCheckerService, events, AppSettings, Me, logger, _) {
+export const appRun = function ($rootScope, $transitions, $state, authService, loginDialogService, roleCheckerService, events, AppSettings, Me, FeatureFlags, logger, _) {
   'ngInject';
 
   logger.debug('Starting app…');
@@ -12,6 +12,12 @@ export const appRun = function ($rootScope, $transitions, $state, authService, l
     .then(() => {
       $rootScope.AppSettings = AppSettings;
     });
+
+  // Fetch feature flags now if user is logged in (otherwise they will be
+  // fetched later when user does log in).
+  if (authService.isAuthenticated()) {
+    FeatureFlags.refresh();
+  }
 
   // Auth handling
 
@@ -58,6 +64,7 @@ export const appRun = function ($rootScope, $transitions, $state, authService, l
 
     if (!_.isNull(authData) && !_.isEmpty(authData)) {
       Me.refresh();
+      FeatureFlags.refresh();
     }
   });
   $rootScope.$on('$destroy', authDataHandler);
