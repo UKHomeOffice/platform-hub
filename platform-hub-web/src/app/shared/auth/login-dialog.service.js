@@ -1,7 +1,9 @@
 export const loginDialogService = function ($document, $mdDialog) {
   'ngInject';
 
-  return function (targetEvent) {
+  const service = {};
+
+  service.run = function (targetEvent) {
     return $mdDialog.show({
       template: require('./login-dialog.html'),
       controller: 'LoginDialogController',
@@ -14,4 +16,6 @@ export const loginDialogService = function ($document, $mdDialog) {
       fullscreen: true
     });
   };
+
+  return service;
 };

@@ -102,7 +102,10 @@ const apiEndpoint = '/api';
 angular
   .module(name)
   .constant('apiEndpoint', apiEndpoint)
-  .constant('apiBackoffTimeMs', 2000);
+  .constant('apiBackoffTimeMs', 2000)
+  .constant('featureFlagKeys', {
+    kubernetesTokens: 'kubernetes_tokens'
+  });
 
 // Run function
 angular

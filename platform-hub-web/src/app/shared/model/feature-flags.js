@@ -9,9 +9,6 @@ export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, 
 
   const data = {};
 
-  model.keys = {
-    kubernetesTokens: 'kubernetes_tokens'
-  };
   model.refresh = refresh;
   model.clear = clear;
   model.isEnabled = isEnabled;

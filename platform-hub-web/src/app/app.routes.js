@@ -43,7 +43,7 @@ import {
 } from './kubernetes-tokens/kubernetes-tokens.module';
 import {UsersList} from './users/users.module';
 
-export const appRoutes = function ($stateProvider, $urlRouterProvider, $locationProvider) {
+export const appRoutes = function ($stateProvider, $urlRouterProvider, $locationProvider, featureFlagKeys) {
   'ngInject';
 
   $locationProvider.html5Mode(true);
@@ -107,6 +107,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         component: KubernetesTokensList,
         data: {
           authenticate: true,
+          featureFlag: featureFlagKeys.kubernetesTokens,
           rolePermitted: 'admin'
         },
         resolve: {
@@ -124,6 +125,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         },
         data: {
           authenticate: true,
+          featureFlag: featureFlagKeys.kubernetesTokens,
           rolePermitted: 'admin'
         }
       })
@@ -135,6 +137,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         },
         data: {
           authenticate: true,
+          featureFlag: featureFlagKeys.kubernetesTokens,
           rolePermitted: 'admin'
         }
       })
@@ -146,6 +149,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         },
         data: {
           authenticate: true,
+          featureFlag: featureFlagKeys.kubernetesTokens,
           rolePermitted: 'admin'
         }
       })

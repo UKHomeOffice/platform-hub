@@ -6,7 +6,7 @@ export const KubernetesTokensSyncComponent = {
   controller: KubernetesTokensSyncController
 };
 
-function KubernetesTokensSyncController($state, hubApiService, logger, _, KubernetesClusters, $mdDialog, FeatureFlags) {
+function KubernetesTokensSyncController($state, hubApiService, logger, _, KubernetesClusters, $mdDialog) {
   'ngInject';
 
   const ctrl = this;
@@ -23,10 +23,6 @@ function KubernetesTokensSyncController($state, hubApiService, logger, _, Kubern
 
   function init() {
     ctrl.loading = true;
-
-    if (!FeatureFlags.isEnabled(FeatureFlags.keys.kubernetesTokens)) {
-      $state.go('home'); // feature disabled
-    }
 
     // Kubernetes clusters are defined as follows:
     // [
