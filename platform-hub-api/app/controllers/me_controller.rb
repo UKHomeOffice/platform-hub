@@ -12,15 +12,20 @@ class MeController < ApiJsonController
 
   def delete_identity
     # We assume that the `service` param has been validated by the route constraints
-    current_user.identity(params[:service]).destroy
+    user_identity = current_user.identity(params[:service])
+    if user_identity.present?
+      user_identity.destroy!
 
-    AuditService.log(
-      context: audit_context,
-      action: 'delete_identity',
-      comment: "User '#{current_user.email}' removed their #{params[:service]} identity"
-    )
+      AuditService.log(
+        context: audit_context,
+        action: 'delete_identity',
+        comment: "User '#{current_user.email}' removed their #{params[:service]} identity"
+      )
 
-    head :no_content
+      head :no_content
+    else
+      raise ActiveRecord::RecordNotFound
+    end
   end
 
   def agree_terms_of_service
