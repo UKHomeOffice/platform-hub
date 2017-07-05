@@ -71,7 +71,8 @@
           Claim token
         </md-button>
 
-        <md-button class="md-secondary md-raised"
+        <md-button class="md-secondary md-raised" 
+          ng-if="i.kubernetes_tokens.length > 0"
           ng-click="$ctrl.showKubeTokens = !$ctrl.showKubeTokens"
           aria-label="Show/Hide tokens">
           <span ng-if="!$ctrl.showKubeTokens">Show tokens</span>
