@@ -46,6 +46,7 @@
   <md-toolbar md-colors="{background: 'primary-50'}">
     <div class="md-toolbar-tools">
       <md-autocomplete
+        md-selected-item-change="$ctrl.filterKubernetesTokensByUser()"
         md-no-cache="true"
         md-selected-item="$ctrl.searchSelectedUser"
         md-search-text="$ctrl.searchText"
@@ -113,13 +114,25 @@
 
   </md-content>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.tokens.length == 0">
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.user && $ctrl.tokens.length == 0">
     <md-card>
       <md-card-title>
         <md-card-title-text>
           <span class="none-text">
             Selected user does not have any kubernetes access tokens yet. 
             Add new token by clicking + sign above.
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+    </md-card>
+  </md-content>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && !$ctrl.user">
+    <md-card>
+      <md-card-title>
+        <md-card-title-text>
+          <span class="none-text">
+            Please use search box above to find a user.
           </span>
         </md-card-title-text>
       </md-card-title>
