@@ -69,7 +69,7 @@ function ContactListsFormController($state, hubApiService, logger, _) {
     ctrl.saving = true;
 
     const data = {
-      email_addresses: _.filter(ctrl.contactList.emailAddressesString.split('\n'))
+      email_addresses: _.uniq(_.filter(ctrl.contactList.emailAddressesString.split('\n')))
     };
 
     hubApiService

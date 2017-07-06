@@ -33,7 +33,7 @@
             Email addresses:
           </span>
           <br />
-          <span ng-repeat="e in l.email_addresses">
+          <span ng-repeat="e in l.email_addresses track by $index">
             <span>{{e}}</span><span ng-if="!$last">, </span>
           </span>
         </p>
