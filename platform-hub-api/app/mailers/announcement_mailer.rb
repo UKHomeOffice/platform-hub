@@ -4,7 +4,7 @@ class AnnouncementMailer < ApplicationMailer
 
   def announcement_email announcement, recipients
     @announcement_text = announcement.text
-    @announcement_html = simple_format(announcement.text, {}, wrapper_tag: 'div')
+    @announcement_html = simple_format(Rinku.auto_link(announcement.text))
 
     subject = "[#{announcement.level}] #{announcement.title}"
 
