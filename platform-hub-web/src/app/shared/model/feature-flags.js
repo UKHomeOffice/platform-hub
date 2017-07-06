@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, logger, _) {
+export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, logger, featureFlagKeys, _) {
   'ngInject';
 
   const model = {};
@@ -38,7 +38,7 @@ export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, 
   }
 
   function isEnabled(featureKey) {
-    if (_.includes(model.keys, featureKey)) {
+    if (_.includes(featureFlagKeys, featureKey)) {
       return data[featureKey] || false;
     }
     return false;
