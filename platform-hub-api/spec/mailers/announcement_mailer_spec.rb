@@ -4,7 +4,7 @@ RSpec.describe AnnouncementMailer, type: :mailer do
 
   describe '.announcement_email' do
     context 'a very simple one line announcement' do
-      let(:from) { [ Rails.application.config.email_from_address ] }
+      let(:from) { Rails.application.config.email_from_address }
 
       let :recipients do
         [
@@ -37,8 +37,8 @@ RSpec.describe AnnouncementMailer, type: :mailer do
       end
 
       it 'renders the email (both in text and html)' do
-        expect(@email.from).to eq from
-        expect(@email.to).to eq from
+        expect(@email[:from].value).to eq from
+        expect(@email[:to].value).to eq from
         expect(@email.bcc).to eq recipients
         expect(@email.subject).to eq expected_subject
         expect(@email.text_part.body.to_s).to eq expected_text
