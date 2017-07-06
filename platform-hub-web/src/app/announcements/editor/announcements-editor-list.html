@@ -127,14 +127,14 @@
           Publish
         </md-button>
         <md-button
-          ng-if="!a.is_sticky"
+          ng-if="a.is_global && !a.is_sticky"
           ng-disabled="$ctrl.saving"
           aria-label="Mark this announcement as sticky"
           ng-click="$ctrl.markSticky(a)">
           Mark sticky
         </md-button>
         <md-button
-          ng-if="a.is_sticky"
+          ng-if="a.is_global && a.is_sticky"
           ng-disabled="$ctrl.saving"
           aria-label="Unmark this announcement as sticky"
           ng-click="$ctrl.unmarkSticky(a)">

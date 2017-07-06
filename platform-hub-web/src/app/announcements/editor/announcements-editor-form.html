@@ -53,7 +53,7 @@
             <textarea
               name="text"
               ng-model="$ctrl.announcement.text"
-              rows="8"
+              rows="10"
               required
               aria-label="Set a text for this announcement"
               md-select-on-focus>
@@ -63,26 +63,11 @@
             </div>
           </md-input-container>
 
-          <md-checkbox
-            name="is_global"
-            ng-model="$ctrl.announcement.is_global"
-            aria-label="Is this announcement a global one (i.e. visible to everyone in the hub)?">
-            Global? (Visible to everyone on the hub)
-          </md-checkbox>
-
-          <md-checkbox
-            name="is_sticky"
-            ng-model="$ctrl.announcement.is_sticky"
-            aria-label="Is this announcement a sticky one (i.e. pinned to the top of the hub)?">
-            Sticky? (Pinned to the top of the sidebar)
-          </md-checkbox>
-
-          <br />
           <br />
 
           <fieldset>
             <legend>
-              Publish at
+              Publish at (i.e. when to go 'live')
             </legend>
 
             <md-input-container class="md-block">
@@ -110,13 +95,49 @@
                 = <span am-time-ago="$ctrl.announcement.publish_at"></span>
               </p>
             </md-input-container>
+
+            <div layout-padding>
+              <p class="md-body-1" md-colors="::{background: 'accent-50'}">
+                <strong>Important:</strong>
+                announcements cannot be updated after being published
+              </p>
+            </div>
           </fieldset>
 
+          <br />
           <br />
 
           <fieldset>
             <legend>
-              Deliver to
+              Announcements can be shown in the hub…
+            </legend>
+
+            <md-input-container class="md-block">
+              <md-checkbox
+                name="is_global"
+                ng-model="$ctrl.announcement.is_global"
+                aria-label="Is this announcement a global one (i.e. visible to everyone in the hub)?">
+                Global? (visible to everyone on the hub)
+              </md-checkbox>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <md-checkbox
+                name="is_sticky"
+                ng-disabled="!$ctrl.announcement.is_global"
+                ng-model="$ctrl.announcement.is_sticky"
+                aria-label="Is this announcement a sticky one (i.e. pinned to the top of the hub)?">
+                Sticky? (pinned to the top of the sidebar)
+              </md-checkbox>
+            </md-input-container>
+          </fieldset>
+
+          <br />
+          <br />
+
+          <fieldset>
+            <legend>
+              … and announcements can be delivered outside of the hub
             </legend>
 
             <md-input-container class="md-block">
@@ -134,7 +155,7 @@
             <br />
 
             <md-input-container class="md-block">
-              <label for="contact_lists">Contact list to send emails to (optional):</label>
+              <label for="contact_lists">Contact lists to send emails to (optional):</label>
               <md-select
                 name="contact_lists"
                 multiple="true"
@@ -161,15 +182,6 @@
           </fieldset>
 
           <br />
-          <br />
-
-          <div layout-padding>
-            <p class="md-body-1" md-colors="::{background: 'accent-50'}">
-              <strong>Important:</strong>
-              you won't be able to update any announcement that becomes published (based on the published at datetime above)!
-            </p>
-          </div>
-
           <br />
 
           <div>
