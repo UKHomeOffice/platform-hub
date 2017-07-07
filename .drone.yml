@@ -5,7 +5,7 @@ pipeline:
     commands:
       - yum install -y git bzip2 bzip2-libs fontconfig
       - git config --global url."https://".insteadOf git://
-      - npm install -g yarn@0.20.3
+      - npm install -g yarn@0.27.5
       - cd platform-hub-web
       - rm -rf node_modules
       - yarn
