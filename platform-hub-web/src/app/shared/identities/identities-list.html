@@ -71,7 +71,7 @@
           Claim token
         </md-button>
 
-        <md-button class="md-secondary md-raised" 
+        <md-button class="md-secondary md-raised"
           ng-if="i.kubernetes_tokens.length > 0"
           ng-click="$ctrl.showKubeTokens = !$ctrl.showKubeTokens"
           aria-label="Show/Hide tokens">
@@ -102,17 +102,29 @@
           May be managed by the hub in the future.
         </p>
 
-        <md-list>
-          <md-list-item ng-repeat="i in $ctrl.Identities.getOther() track by i.title">
-
-            <div class="md-list-item-text md-offset">
-              <p>
-                {{i.title}}
-              </p>
-            </div>
-
-            <md-divider></md-divider>
-          </md-list-item>
+        <md-list flex>
+          <div ng-repeat="i in $ctrl.Identities.getOther() track by i.title">
+            <md-list-item
+              ng-if="i.url"
+              ng-href="{{i.url}}"
+              target="'_blank">
+              <div class="md-list-item-text">
+                <p>
+                  {{i.title}}
+                </p>
+              </div>
+              <md-divider></md-divider>
+            </md-list-item>
+            <md-list-item
+              ng-if="!i.url">
+              <div class="md-list-item-text">
+                <p>
+                  {{i.title}}
+                </p>
+              </div>
+              <md-divider></md-divider>
+            </md-list-item>
+          </div>
         </md-list>
       </div>
     </div>

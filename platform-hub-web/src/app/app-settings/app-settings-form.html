@@ -168,6 +168,18 @@
                     <div ng-message="required">This is required.</div>
                   </div>
                 </md-input-container>
+
+                <md-input-container class="md-block">
+                  <label for="service{{$index}}-url">Link URL (optional):</label>
+                  <input
+                    type="url"
+                    name="service{{$index}}-url"
+                    ng-model="service.url"
+                    aria-label="Optionally set a URL to link to the service">
+                  <div ng-messages="$ctrl.settingsForm['service' + $index + '-url'].$error">
+                    <div ng-message="url">Not a valid URL.</div>
+                  </div>
+                </md-input-container>
               </md-card-content>
               <md-card-actions layout="row" layout-align="end center">
                 <md-button
