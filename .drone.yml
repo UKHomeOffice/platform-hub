@@ -12,7 +12,7 @@ pipeline:
       - yarn run test
       - yarn run build
     when:
-      event: [push, tag, pull_request]
+      event: [push, tag]
 
   # Expects the optimized dist code to have been built
   web_build_image:
@@ -23,7 +23,7 @@ pipeline:
       - cd platform-hub-web
       - docker build -t platform-hub-web .
     when:
-      event: [push, tag, pull_request]
+      event: [push, tag]
 
   web_test_image:
     image: docker:1.12
@@ -32,7 +32,7 @@ pipeline:
     commands:
       - docker run --name platform-hub-web-test platform-hub-web /bin/sh -c "pwd && ls -lah && test -e index.html"
     when:
-      event: [push, tag, pull_request]
+      event: [push, tag]
 
   web_latest_image_to_quay:
     image: docker:1.12
@@ -82,7 +82,7 @@ pipeline:
       - bin/setup
       - bundle exec rspec
     when:
-      event: [push, tag, pull_request]
+      event: [push, tag]
 
   api_build_image:
     image: docker:1.12
@@ -92,7 +92,7 @@ pipeline:
       - cd platform-hub-api
       - docker build -t platform-hub-api .
     when:
-      event: [push, tag, pull_request]
+      event: [push, tag]
 
   api_test_image:
     image: docker:1.12
@@ -124,7 +124,7 @@ pipeline:
       - sleep 5
       - curl -s -f http://127.0.0.1:30000/healthz
     when:
-      event: [push, tag, pull_request]
+      event: [push, tag]
 
   api_latest_image_to_quay:
     image: docker:1.12
