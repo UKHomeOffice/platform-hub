@@ -131,7 +131,7 @@
                       <label>User scope (optional):</label>
                       <md-select
                         ng-model="resource.user_scope">
-                        <md-option md-option-empty></md-option>
+                        <md-option ng-value="undefined"></md-option>
                         <md-option
                           ng-repeat="s in $ctrl.userScopes"
                           ng-value="s.value">
