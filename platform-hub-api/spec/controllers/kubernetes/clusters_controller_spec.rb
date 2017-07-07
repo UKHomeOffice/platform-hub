@@ -27,7 +27,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
             expect(HashRecord.kubernetes.where(id: key).count).to eq 0
             get :index
             expect(response).to be_success
-            expect(json_response).to eq({})
+            expect(json_response).to eq([])
             expect(HashRecord.kubernetes.where(id: key).count).to eq 1
           end
         end
