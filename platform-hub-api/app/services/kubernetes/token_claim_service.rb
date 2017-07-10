@@ -11,33 +11,39 @@ module Kubernetes
     end
 
     def claim_token(user, token)
-      claim = lookup(token)
+      claims = lookup(token)
 
-      if claim.nil?
+      if claims.empty?
         raise Errors::TokenNotFound, "Token `#{token}` not found!"
       end
 
-      if claim.user.nil?
-        begin
-          ActiveRecord::Base.transaction do
-            migrate_claimed_token_to_user_kubernetes_identity(user, claim)
-            remove_claimed_token_from_static_list(claim)
-          end
-        rescue => e
-          raise
-        end
-        [ claim.cluster, "Claimed `#{claim.cluster}` token." ]
+      summary = []
 
-      elsif claim.user.present?
-        raise Errors::TokenAlreadyClaimed, "Token already claimed!"
+      claims.each do |claim|
+        if claim.user.nil?
+          begin
+            ActiveRecord::Base.transaction do
+              migrate_claimed_token_to_user_kubernetes_identity(user, claim)
+              remove_claimed_token_from_static_list(claim)
+            end
+          rescue
+            raise
+          end
+          summary << [ claim.cluster, "Claimed `#{claim.cluster}` token." ]
+
+        elsif claim.user.present?
+          raise Errors::TokenAlreadyClaimed, "Token already claimed!"
+        end
       end
+
+      summary
     end
 
     private
 
     def migrate_claimed_token_to_user_kubernetes_identity(user, claim)
-      identity = 
-        user.identity(:kubernetes) || 
+      identity =
+        user.identity(:kubernetes) ||
         user.identities.create!(
           provider: :kubernetes,
           external_id: user.email,

@@ -6,7 +6,7 @@ class KubernetesToken
 
   attr_accessor :identity_id, :cluster, :token, :uid, :groups
 
-  validates_presence_of :identity_id, :cluster, :token, :uid, :groups
+  validates_presence_of :identity_id, :cluster, :token, :uid
   validates_inclusion_of :cluster, in: proc {
     HashRecord.kubernetes.find_by!(id: 'clusters').data.map {|c| c['id']}
   }

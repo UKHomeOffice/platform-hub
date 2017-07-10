@@ -15,9 +15,10 @@ RSpec.describe Kubernetes::ClaimController, type: :controller do
     it_behaves_like 'authenticated' do
       let(:cluster) { 'development' }
       let(:msg) { 'message from service' }
+      let(:summary) { [ [cluster, msg] ] }
 
       it 'should claim token' do
-        expect(Kubernetes::TokenClaimService).to receive(:claim_token).with(current_user, token) { [ cluster, msg ] }
+        expect(Kubernetes::TokenClaimService).to receive(:claim_token).with(current_user, token) { summary }
         expect(AuditService).to receive(:log).with(
           context: anything,
           action: 'claim_kubernetes_token',

@@ -35,7 +35,7 @@ module Kubernetes
 
         static_tokens.save!
 
-        "Created/updated #{kind} account for `#{user_name}` (token: #{ENCRYPTOR.decrypt(record['token'])})"
+        "Created/updated #{kind} account for `#{user_name}` (token: #{ENCRYPTOR.decrypt(record.with_indifferent_access['token'])})"
       end      
     end
 

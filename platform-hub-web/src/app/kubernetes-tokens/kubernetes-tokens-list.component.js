@@ -110,17 +110,20 @@ function KubernetesTokensListController($state, roleCheckerService, hubApiServic
     $mdDialog
       .show(confirm)
       .then(revokedToken => {
-        ctrl.busy = true;
-
-        hubApiService
-          .revokeKubernetesToken({token: revokedToken})
-          .then(() => {
-            logger.success('Kubernetes token revoked successfully!');
-            $state.reload();
-          })
-          .finally(() => {
-            ctrl.busy = false;
-          });
+        if (_.isNull(revokedToken) || _.isEmpty(revokedToken)) {
+          logger.error('Kubernetes token not specified or empty!');
+        } else {
+          ctrl.busy = true;
+          hubApiService
+            .revokeKubernetesToken({token: revokedToken})
+            .then(() => {
+              logger.success('Kubernetes token revoked successfully!');
+              $state.reload();
+            })
+            .finally(() => {
+              ctrl.busy = false;
+            });
+        }
       });
   }
 }

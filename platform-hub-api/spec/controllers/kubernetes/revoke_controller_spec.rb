@@ -23,9 +23,10 @@ RSpec.describe Kubernetes::RevokeController, type: :controller do
       it_behaves_like 'an admin' do
         let(:cluster) { 'development' }
         let(:msg) { 'message from service' }
+        let(:summary) { [ [cluster, msg] ] }
 
         it 'should remove token' do
-          expect(Kubernetes::TokenRevokeService).to receive(:remove).with(token) { [ cluster, msg ] }
+          expect(Kubernetes::TokenRevokeService).to receive(:remove).with(token) { summary }
           expect(AuditService).to receive(:log).with(
             context: anything,
             action: 'revoke_kubernetes_token',

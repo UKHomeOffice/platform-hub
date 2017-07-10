@@ -66,15 +66,11 @@
           </md-input-container>
 
           <md-input-container class="md-block">
-            <label for="groups">Groups:</label>
+            <label for="groups">Groups (optional):</label>
             <input
               name="groups"
               ng-model="$ctrl.tokenData.groups"
-              required
               placeholder="Comma separated list of groups.">
-            <div ng-messages="$ctrl.kubernetesTokenForm.groups.$error">
-              <div ng-message="required">Groups are required.</div>
-            </div>
           </md-input-container>
 
           <div>
