@@ -21,7 +21,7 @@
         </md-button>
         <md-menu-content width="4">
           <md-menu-item>
-            <md-button 
+            <md-button
               aria-label="Sync tokens"
               ui-sref="kubernetes-tokens.sync">
               <md-icon>{{$ctrl.syncTokensIcon}}</md-icon>
@@ -29,7 +29,7 @@
             </md-button>
           </md-menu-item>
           <md-menu-item>
-            <md-button 
+            <md-button
               aria-label="Revoke token"
               ng-click="$ctrl.revokeToken($event)">
               <md-icon>{{$ctrl.revokeTokenIcon}}</md-icon>
@@ -119,7 +119,7 @@
       <md-card-title>
         <md-card-title-text>
           <span class="none-text">
-            Selected user does not have any kubernetes access tokens yet. 
+            Selected user does not have any kubernetes access tokens yet.
             Add new token by clicking + sign above.
           </span>
         </md-card-title-text>

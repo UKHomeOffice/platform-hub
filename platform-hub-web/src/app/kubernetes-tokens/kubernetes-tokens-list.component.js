@@ -48,22 +48,24 @@ function KubernetesTokensListController($state, roleCheckerService, hubApiServic
   }
 
   function filterKubernetesTokensByUser() {
-    loadUserAndTokens(ctrl.searchSelectedUser.id);
+    if (ctrl.searchSelectedUser) {
+      loadUserAndTokens(ctrl.searchSelectedUser.id);
+    }
   }
 
-  function loadUserAndTokens(user) {
+  function loadUserAndTokens(userId) {
     return hubApiService
-      .getUser(user)
+      .getUser(userId)
       .then(user => {
         ctrl.user = user;
-        fetchKubernetesTokens();
+        return fetchKubernetesTokens();
       });
   }
 
   function fetchKubernetesTokens() {
     ctrl.tokens = [];
 
-    const identity = _.find(ctrl.user.identities, 'provider', 'kubernetes');
+    const identity = _.find(ctrl.user.identities, ['provider', 'kubernetes']);
 
     if (identity) {
       ctrl.tokens = identity.kubernetes_tokens;

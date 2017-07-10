@@ -56,7 +56,7 @@ function KubernetesTokensFormController($state, hubApiService, logger, _, Kubern
   }
 
   function fetchClusterToken() {
-    const identity = _.find(ctrl.user.identities, 'provider', 'kubernetes');
+    const identity = _.find(ctrl.user.identities, ['provider', 'kubernetes']);
 
     if (identity) {
       ctrl.tokenData = _.find(identity.kubernetes_tokens, t => {
