@@ -102,17 +102,20 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
     $mdDialog
       .show(confirm)
       .then(claimedToken => {
-        ctrl.busy = true;
-
-        hubApiService
-          .claimKubernetesToken({token: claimedToken})
-          .then(() => {
-            logger.success('Kubernetes token claimed successfully!');
-            init();
-          })
-          .finally(() => {
-            ctrl.busy = false;
-          });
+        if (_.isNull(claimedToken) || _.isEmpty(claimedToken)) {
+          logger.error('Kubernetes token not specified or empty!');
+        } else {
+          ctrl.busy = true;
+          hubApiService
+            .claimKubernetesToken({token: claimedToken})
+            .then(() => {
+              logger.success('Kubernetes token claimed successfully!');
+              init();
+            })
+            .finally(() => {
+              ctrl.busy = false;
+            });
+        }
       });
   }
 }
