@@ -8,7 +8,7 @@
     </md-card-title>
     <md-card-content>
       <p class="md-body-1">
-        A portal for users of the {{$ctrl.AppSettings.getPlatformName()}}, currently providing self-serve tools for identity, onboarding and offboarding. With plans to provide more self-serve tools, docs, status and updates for the hosting platform, in one central place.
+        A portal for users of the {{$ctrl.AppSettings.getPlatformName()}}, currently providing information about the platform, support request forms, and self-serve tools for onboarding on to services. With plans to provide more self-serve tools, docs, status and updates for the platform in one central place.
       </p>
     </md-card-content>
   </md-card>
@@ -21,7 +21,7 @@
     </md-card-title>
     <md-card-content>
       <p class="md-body-1">
-        Login <em>(Menu > Login)</em> using Keycloak and a new account will be created for you on the hub
+        Login <em>(Sidebar > Login)</em> using Keycloak and a new account will be created for you on the hub
       </p>
     </md-card-content>
   </md-card>
@@ -35,19 +35,37 @@
     <md-card-content>
       <div class="md-body-1">
         <p>
-          Once you log in you can:
+          Once you log in…
         </p>
         <ul>
           <li>
-            <a ui-sref="identities">Manage your connected identities (currently: GitHub)</a>
+            You will be taken through an onboarding process:
             <ul>
               <li>
-                Needed to allow onboarding/offboarding to these services
+                <a ui-sref="terms-of-service">Agree to the Terms of Service</a>
+              </li>
+              <li>
+                <a ui-sref="onboarding.hub-setup">Configure your hub setup</a>
+              </li>
+              <li>
+                <a ui-sref="onboarding.services">Onboard on to platform services</a>
               </li>
             </ul>
           </li>
           <li>
-            <a ui-sref="projects.list">View projects and team members</a>
+            You can <a ui-sref="identities">manage your connected identities and any relevant auth info (e.g: GitHub, Kubernetes)</a>
+          </li>
+          <li>
+            You can <a ui-sref="announcements.global">view global announcements about the platform</a>
+          </li>
+          <li>
+            You can view information and resources about the various platform <em>themes</em> from the sidebar or <a ui-sref="home">homepage</a>
+          </li>
+          <li>
+            You can <a ui-sref="projects.list">view projects and team members</a>
+          </li>
+          <li>
+            You can <a ui-sref="help.support.requests.overview">make a support request</a>
           </li>
         </ul>
 
@@ -56,7 +74,7 @@
         </p>
         <ul>
           <li>
-            Add someone to your project (on the project page)
+            Add someone to your project team (on the project page)
           </li>
           <li>
             Remove a team member from your project (using the <em>Actions</em> button next to a team member, on the project page)
@@ -77,13 +95,15 @@
     </md-card-title>
     <md-card-content>
       <div class="md-body-1">
-        You need to be granted specific permissions to be able to do certain things on the hub
+        <p>
+          You need to be granted specific permissions to be able to do certain things on the hub
+        </p>
         <ul>
           <li>
             <strong>Project managers</strong> can manage a project's team and onboard/offboard team members
           </li>
           <li>
-            <strong>Admins</strong> manage the users and projects on the hub and grant special permissions to others
+            <strong>Admins</strong> manage announcements, users, projects and much more on the hub and grant special permissions to others
           </li>
         </ul>
       </div>
@@ -104,5 +124,31 @@
       </p>
     </md-card-content>
   </md-card>
+
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-title">Tips &amp; Tricks</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <div class="md-body-1">
+        <ul>
+          <li>
+            You can mark all global announcements as read by clicking on the "Mark all read" button on the top right hand side of the <a ui-sref="announcements.global">Global Announcements page</a>.
+          </li>
+          <li>
+            You can go back to the <a ui-sref="onboarding.services">platform services onboarding page</a> at any time and onboard yourself to services, regardless of whether you have previously onboarded or not (i.e. bad things should not happen if you onboard again).
+          </li>
+          <li ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)">
+            You can view all your Kubernetes tokens on your <a ui-sref="identities">connected identities page</a>.
+          </li>
+        </ul>
+      </div>
+    </md-card-content>
+  </md-card>
+
+  <br />
+  <br />
 
 </div>
