@@ -5,7 +5,7 @@ class Kubernetes::RevokeController < ApiJsonController
     authorize! :manage, :identity
     
     begin
-      cluster, msg = Kubernetes::TokenRevokeService.remove(params[:token])
+      summary = Kubernetes::TokenRevokeService.remove(params[:token])
     rescue Kubernetes::TokenRevokeService::Errors::TokenNotFound => e
       log_error e
       render_error "Kubernetes token not found.",
@@ -16,12 +16,14 @@ class Kubernetes::RevokeController < ApiJsonController
                     :unprocessable_entity and return
     end
 
-    AuditService.log(
-      context: audit_context,
-      action: 'revoke_kubernetes_token',
-      data: { cluster: cluster, token: params[:token] },
-      comment: msg
-    )
+    summary.each do |cluster, msg|
+      AuditService.log(
+        context: audit_context,
+        action: 'revoke_kubernetes_token',
+        data: { cluster: cluster, token: params[:token] },
+        comment: msg
+      )
+    end
 
     head :no_content
   end

@@ -7,7 +7,7 @@ class Kubernetes::ClaimController < ApiJsonController
   # POST /kubernetes/claim
   def claim
     begin
-      cluster, msg = Kubernetes::TokenClaimService.claim_token(current_user, params[:token])
+      summary = Kubernetes::TokenClaimService.claim_token(current_user, params[:token])
     rescue Kubernetes::TokenClaimService::Errors::TokenNotFound => e
       log_error e
       render_error "Kubernetes token not found.",
@@ -22,12 +22,14 @@ class Kubernetes::ClaimController < ApiJsonController
                     :unprocessable_entity and return
     end
 
-    AuditService.log(
-      context: audit_context,
-      action: 'claim_kubernetes_token',
-      data: { cluster: cluster, user_id: current_user.id, token: ENCRYPTOR.encrypt(params[:token]) },
-      comment: msg
-    )
+    summary.each do |cluster, msg|
+      AuditService.log(
+        context: audit_context,
+        action: 'claim_kubernetes_token',
+        data: { cluster: cluster, user_id: current_user.id, token: ENCRYPTOR.encrypt(params[:token]) },
+        comment: msg
+      )
+    end
 
     head :no_content
   end

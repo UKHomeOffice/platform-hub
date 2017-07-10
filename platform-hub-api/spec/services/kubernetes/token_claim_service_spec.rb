@@ -4,11 +4,11 @@ describe Kubernetes::TokenClaimService, type: :service do
 
   describe '.claim_token' do
     let(:user) { double }
-    let(:token) { 'some-token' }    
+    let(:token) { 'some-token' }
 
     context 'when token has not been found' do
       before do
-        expect(subject).to receive(:lookup).with(token) { nil }
+        expect(subject).to receive(:lookup).with(token) { [] }
       end
 
       it 'raises TokenNotFound error' do
@@ -23,9 +23,10 @@ describe Kubernetes::TokenClaimService, type: :service do
     context 'when token was found and is associated with user kubernetes identity' do
       let(:cluster) { 'development' }
       let(:claim) { double(user: user, cluster: cluster) }
+      let(:claims) { [ claim ] }
 
       before do
-        expect(subject).to receive(:lookup).with(token) { claim }
+        expect(subject).to receive(:lookup).with(token) { claims }
       end
 
       it 'overrides token value without modyfying anything else' do
@@ -41,16 +42,17 @@ describe Kubernetes::TokenClaimService, type: :service do
       let(:cluster) { 'development' }
       let(:user) { build(:user) }
       let(:claim) { double(user: nil, cluster: cluster) }
+      let(:claims) { [ claim ] }
 
       before do
-        expect(subject).to receive(:lookup).with(token) { claim }
+        expect(subject).to receive(:lookup).with(token) { claims }
       end
 
       it 'migrates claimed token to user kubernetes identity and removes it from static list' do
         expect(subject).to receive(:migrate_claimed_token_to_user_kubernetes_identity).with(user, claim)
         expect(subject).to receive(:remove_claimed_token_from_static_list).with(claim)
         res = subject.claim_token(user, token)
-        expect(res).to match [ cluster, "Claimed `#{cluster}` token." ]
+        expect(res).to match [[ cluster, "Claimed `#{cluster}` token." ]]
       end
 
     end
@@ -84,8 +86,8 @@ describe Kubernetes::TokenClaimService, type: :service do
       end
 
       before do
-        # configure managed kubernetes clusters 
-        create(:kubernetes_clusters_hash_record, 
+        # configure managed kubernetes clusters
+        create(:kubernetes_clusters_hash_record,
           data: [
             {
               id: cluster,
@@ -204,7 +206,7 @@ describe Kubernetes::TokenClaimService, type: :service do
       end
 
       before do
-        @dev_static_user_tokens = create(:kubernetes_static_tokens_hash_record, 
+        @dev_static_user_tokens = create(:kubernetes_static_tokens_hash_record,
           id: 'development-static-user-tokens',
           data: [
             {
@@ -218,7 +220,7 @@ describe Kubernetes::TokenClaimService, type: :service do
       end
 
       it 'removes claimed token from the static tokens hash record' do
-        expect do 
+        expect do
           subject.send(:remove_claimed_token_from_static_list, claim)
         end.to change { @dev_static_user_tokens.reload.data.size }.by(-1)
       end

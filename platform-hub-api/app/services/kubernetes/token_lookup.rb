@@ -4,12 +4,15 @@ module Kubernetes
     IDENTITY_BATCH_SIZE = 100
 
     def lookup(token, kind = 'user')
-      lookup_static_tokens(token, kind) || lookup_identities(token)
+      res = lookup_static_tokens(token, kind)
+      res.empty? ? lookup_identities(token) : res
     end
 
     def lookup_static_tokens(token, kind = 'user')
       clusters = HashRecord.kubernetes.find_by(id: 'clusters')
-      return nil if clusters.blank?
+      return [] if clusters.blank?
+
+      found = []
 
       clusters.data.each do |cluster|
         static_user_tokens = HashRecord.kubernetes.find_by(id: "#{cluster['id'].to_s}-static-#{kind.to_s}-tokens")
@@ -17,7 +20,7 @@ module Kubernetes
 
         existing_token = static_user_tokens.data.find {|t| ENCRYPTOR.decrypt(t['token']) == token }
         if existing_token
-          return Hashie::Mash.new(
+          found << Hashie::Mash.new(
             cluster: cluster['id'],
             data: {
               token: existing_token['token'],
@@ -29,18 +32,21 @@ module Kubernetes
           )
         end
       end
-      nil
+
+      found
     end
 
     def lookup_identities(token)
+      found = []
+
       Identity.kubernetes.find_each(batch_size: IDENTITY_BATCH_SIZE) do |i|
         identity_tokens = i.data['tokens']
         next if identity_tokens.blank?
 
-        existing_token = identity_tokens.find {|t| ENCRYPTOR.decrypt(t['token']) == token }
+        existing_tokens = identity_tokens.select {|t| ENCRYPTOR.decrypt(t['token']) == token }
 
-        if existing_token
-          return Hashie::Mash.new(
+        existing_tokens.map do |existing_token|
+          found << Hashie::Mash.new(
             cluster: existing_token['cluster'],
             data: {
               token: existing_token['token'],
@@ -51,8 +57,9 @@ module Kubernetes
           )
         end
       end
-      nil
+
+      found
     end
-    
+
   end
 end
