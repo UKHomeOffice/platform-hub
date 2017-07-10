@@ -28,6 +28,8 @@ function AppSettingsFormController($state, AppSettings, PlatformThemes, logger, 
   ctrl.update = update;
   ctrl.addOtherManagedService = addOtherManagedService;
   ctrl.removeOtherManagedService = removeOtherManagedService;
+  ctrl.moveOtherManagedServiceDown = moveOtherManagedServiceDown;
+  ctrl.moveOtherManagedServiceUp = moveOtherManagedServiceUp;
 
   init();
 
@@ -51,10 +53,6 @@ function AppSettingsFormController($state, AppSettings, PlatformThemes, logger, 
     ctrl.saving = true;
 
     ctrl.settings.visiblePlatformThemes = _.map(ctrl.visiblePlatformThemes, 'id');
-
-    if (ctrl.settings.other_managed_services) {
-      ctrl.settings.other_managed_services = _.sortBy(ctrl.settings.other_managed_services, ['title']);
-    }
 
     AppSettings
       .update(ctrl.settings)
@@ -86,5 +84,19 @@ function AppSettingsFormController($state, AppSettings, PlatformThemes, logger, 
 
   function removeOtherManagedService(ix) {
     ctrl.settings.other_managed_services.splice(ix, 1);
+  }
+
+  function moveOtherManagedServiceDown(ix) {
+    const services = ctrl.settings.other_managed_services;
+    const service1 = services[ix];
+    const service2 = services[ix + 1];
+    services.splice(ix, 2, service2, service1);
+  }
+
+  function moveOtherManagedServiceUp(ix) {
+    const services = ctrl.settings.other_managed_services;
+    const service1 = services[ix - 1];
+    const service2 = services[ix];
+    services.splice(ix - 1, 2, service2, service1);
   }
 }

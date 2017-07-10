@@ -188,6 +188,18 @@
                   <md-icon md-colors="{color: 'accent'}">delete</md-icon>
                   Remove
                 </md-button>
+                <md-button
+                  ng-disabled="$index == ($ctrl.settings.other_managed_services.length - 1) || $ctrl.settings.other_managed_services.length == 1"
+                  ng-click="$ctrl.moveOtherManagedServiceDown($index)">
+                  <md-icon>arrow_downward</md-icon>
+                  Move down
+                </md-button>
+                <md-button
+                  ng-disabled="$index == 0 || $ctrl.settings.other_managed_services.length == 1"
+                  ng-click="$ctrl.moveOtherManagedServiceUp($index)">
+                  <md-icon>arrow_upward</md-icon>
+                  Move up
+                </md-button>
               </md-card-actions>
             </md-card>
 
