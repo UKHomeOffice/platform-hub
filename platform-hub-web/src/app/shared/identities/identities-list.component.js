@@ -1,7 +1,8 @@
 export const IdentitiesListComponent = {
   bindings: {
     busy: '=',
-    onlySelfService: '<'
+    onlySelfService: '<',
+    expandOtherServices: '<'
   },
   template: require('./identities-list.html'),
   controller: IdentitiesListController
@@ -18,7 +19,6 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
 
   ctrl.userIdentities = {};
 
-  ctrl.busy = false;
   ctrl.connect = connect;
   ctrl.disconnect = disconnect;
   ctrl.showKubeTokens = false;
