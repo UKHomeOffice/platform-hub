@@ -383,4 +383,81 @@ RSpec.describe UsersController, type: :controller do
 
   end
 
+  describe 'POST #activate' do
+    before do
+      @user = create :user
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :activate, params: { id: @user.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :activate, params: { id: @user.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+        before do
+          @user.deactivate!
+        end
+
+        it 'should activate the specified user' do
+          expect(@user.is_active?).to be false
+          expect(Audit.count).to eq 0
+          post :activate, params: { id: @user.id }
+          expect(response).to be_success
+          expect(@user.reload.is_active?).to be true
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'make_active'
+          expect(audit.auditable).to eq @user
+          expect(audit.user.id).to eq current_user_id
+        end
+      end
+    end
+  end
+
+  describe 'POST #deactivate' do
+    before do
+      @user = create :admin_user
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :deactivate, params: { id: @user.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          post :deactivate, params: { id: @user.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        it 'should deactivate the specified user' do
+          expect(@user.is_active?).to be true
+          expect(Audit.count).to eq 0
+          post :deactivate, params: { id: @user.id }
+          expect(response).to be_success
+          expect(@user.reload.is_active?).to be false
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'make_inactive'
+          expect(audit.auditable).to eq @user
+          expect(audit.user.id).to eq current_user_id
+        end
+      end
+    end
+  end
+
 end

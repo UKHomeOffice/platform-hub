@@ -2,7 +2,15 @@ class UsersController < ApiJsonController
 
   include GitHubOnboardingHelpers
 
-  before_action :find_user, only: [ :show, :make_admin, :revoke_admin, :onboard_github, :offboard_github ]
+  before_action :find_user, only: [
+    :show,
+    :make_admin,
+    :revoke_admin,
+    :activate,
+    :deactivate,
+    :onboard_github,
+    :offboard_github
+  ]
 
   authorize_resource
 
@@ -43,6 +51,32 @@ class UsersController < ApiJsonController
     AuditService.log(
       context: audit_context,
       action: 'revoke_admin',
+      auditable: @user
+    )
+
+    head :no_content
+  end
+
+  # POST /users/:id/activate
+  def activate
+    @user.activate!
+
+    AuditService.log(
+      context: audit_context,
+      action: 'make_active',
+      auditable: @user
+    )
+
+    head :no_content
+  end
+
+  # POST /users/:id/deactivate
+  def deactivate
+    @user.deactivate!
+
+    AuditService.log(
+      context: audit_context,
+      action: 'make_inactive',
       auditable: @user
     )
 
