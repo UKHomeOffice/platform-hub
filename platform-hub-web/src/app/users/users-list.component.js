@@ -1,3 +1,5 @@
+/* eslint camelcase: 0 */
+
 export const UsersListComponent = {
   template: require('./users-list.html'),
   controller: UsersListController
@@ -13,6 +15,8 @@ function UsersListController(hubApiService, logger) {
 
   ctrl.makeAdmin = makeAdmin;
   ctrl.revokeAdmin = revokeAdmin;
+  ctrl.activateUser = activateUser;
+  ctrl.deactivateUser = deactivateUser;
 
   init();
 
@@ -49,6 +53,24 @@ function UsersListController(hubApiService, logger) {
       .then(() => {
         user.role = null;
         logger.success('Removed an admin');
+      });
+  }
+
+  function activateUser(user) {
+    hubApiService
+      .activateUser(user.id)
+      .then(() => {
+        user.is_active = true;
+        logger.success('User activated');
+      });
+  }
+
+  function deactivateUser(user) {
+    hubApiService
+      .deactivateUser(user.id)
+      .then(() => {
+        user.is_active = false;
+        logger.success('User deactivated');
       });
   }
 }

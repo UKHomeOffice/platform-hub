@@ -18,6 +18,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.searchUsers = searchUsers;
   service.makeAdmin = makeAdmin;
   service.revokeAdmin = revokeAdmin;
+  service.activateUser = activateUser;
+  service.deactivateUser = deactivateUser;
 
   service.getProjects = buildCollectionFetcher('projects');
   service.getProject = buildResourceFetcher('projects');
@@ -206,6 +208,32 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .post(`${apiEndpoint}/users/${userId}/revoke_admin`)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to revoke admin status', response));
+        return $q.reject(response);
+      });
+  }
+
+  function activateUser(userId) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/users/${userId}/activate`)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to activate user', response));
+        return $q.reject(response);
+      });
+  }
+
+  function deactivateUser(userId) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/users/${userId}/deactivate`)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to deactivate user', response));
         return $q.reject(response);
       });
   }

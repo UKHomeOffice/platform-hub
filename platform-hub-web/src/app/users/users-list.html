@@ -72,6 +72,20 @@
           ng-click="$ctrl.revokeAdmin(u)">
           Revoke admin
         </md-button>
+        <md-button
+          ng-if="u.is_active"
+          class="md-primary"
+          aria-label="Deactivate user"
+          ng-click="$ctrl.deactivateUser(u)">
+          Deactivate
+        </md-button>
+        <md-button
+          ng-if="!u.is_active"
+          class="md-primary"
+          aria-label="Activate user"
+          ng-click="$ctrl.activateUser(u)">
+          Activate
+        </md-button>
       </md-card-actions>
     </md-card>
 
