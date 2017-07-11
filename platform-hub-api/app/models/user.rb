@@ -56,6 +56,16 @@ class User < ApplicationRecord
     self.save!
   end
 
+  def deactivate!
+    self.is_active = false
+    self.save!
+  end
+
+  def activate!
+    self.is_active = true
+    self.save!
+  end
+
   def ensure_flags
     self.flags.presence || self.create_flags!(id: self.id)
   end
