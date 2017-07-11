@@ -324,6 +324,7 @@ RSpec.describe ProjectsController, type: :controller do
               'role' =>  user.role,
               'last_seen_at' => now_json_value,
               'enabled_identities' => [],
+              'is_active' => true,
               'is_managerial' => true,
               'is_technical' => true
             },

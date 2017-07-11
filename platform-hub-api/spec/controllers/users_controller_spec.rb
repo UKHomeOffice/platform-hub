@@ -97,6 +97,7 @@ RSpec.describe UsersController, type: :controller do
               'enabled_identities' => [],
               'identities' => [],
               'flags' => Hash[UserFlags.flag_names.map {|f| [f, false]}],
+              'is_active' => true,
               'is_managerial' => true,
               'is_technical' => true
             })
