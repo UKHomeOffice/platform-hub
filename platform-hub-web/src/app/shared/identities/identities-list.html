@@ -102,7 +102,13 @@
           May be managed by the hub in the future.
         </p>
 
-        <md-list flex>
+        <div ng-if="!$ctrl.expandOtherServices" layout="row" layout-align="end center">
+          <md-button class="md-primary" ng-click="$ctrl.expandOtherServices = true;">
+            Show
+          </md-button>
+        </div>
+
+        <md-list flex ng-if="$ctrl.expandOtherServices">
           <div ng-repeat="i in $ctrl.Identities.getOther() track by i.title">
             <md-list-item
               ng-if="i.url"
