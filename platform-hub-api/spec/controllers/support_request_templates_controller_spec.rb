@@ -22,14 +22,14 @@ RSpec.describe SupportRequestTemplatesController, type: :controller do
       end
 
       let :support_request_template_ids do
-        @support_request_templates.map(&:friendly_id)
+        @support_request_templates.sort_by(&:title).map(&:friendly_id)
       end
 
       it 'should return a list of all support request templates' do
         get :index
         expect(response).to be_success
         expect(json_response.length).to eq total_support_request_templates
-        expect(pluck_from_json_response('id')).to match_array support_request_template_ids
+        expect(pluck_from_json_response('id')).to eq support_request_template_ids
       end
 
     end
