@@ -7,7 +7,7 @@ class SupportRequestTemplatesController < ApiJsonController
 
   # GET /support_request_templates
   def index
-    @support_request_templates = SupportRequestTemplate.order(:shortname)
+    @support_request_templates = SupportRequestTemplate.order(:title)
 
     render json: @support_request_templates
   end
