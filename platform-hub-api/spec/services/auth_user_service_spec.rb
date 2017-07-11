@@ -10,7 +10,7 @@ describe AuthUserService, type: :service do
 
   include_context 'authentication helpers'
 
-  describe "#get" do
+  describe ".get" do
     before do
       @user = AuthUserService.get auth_token_payload
     end
@@ -61,6 +61,43 @@ describe AuthUserService, type: :service do
         expect(identity_record.external_name).to eq test_auth_payload.name
         expect(identity_record.external_email).to eq test_auth_payload.email
         expect(identity_record.data).to eq test_auth_payload
+      end
+    end
+  end
+
+  describe '.touch_and_update_main_identity' do
+    let(:user) { double }
+    let(:main_identity) { double(external_id: keycloak_external_id) }
+    let(:auth_payload) do
+      { 'sub' => keycloak_payload_sub } # only sub to simplify
+    end
+
+    before do
+      expect(main_identity).to receive(:with_lock).and_yield
+      expect(user).to receive(:with_lock).and_yield
+    end
+
+    context 'with keycloak external_id unchanged' do
+      let(:keycloak_external_id) { 'old-id' }
+      let(:keycloak_payload_sub) { 'old-id' }
+
+      it 'touches last_seen_at' do
+        expect(user).to receive(:main_identity) { main_identity }
+        expect(user).to receive(:touch).with(:last_seen_at)
+        expect(main_identity).to receive(:update!).never
+        subject.touch_and_update_main_identity user, auth_payload
+      end
+    end
+
+    context 'with keycloak externa_id changed' do
+      let(:keycloak_external_id) { 'old-id' }
+      let(:keycloak_payload_sub) { 'new-id' }
+
+      it 'touches last_seen_at and updates main identity external_id' do
+        expect(user).to receive(:main_identity) { main_identity }
+        expect(user).to receive(:touch).with(:last_seen_at)
+        expect(main_identity).to receive(:update!).with(external_id: keycloak_payload_sub)
+        subject.touch_and_update_main_identity user, auth_payload
       end
     end
   end

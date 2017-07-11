@@ -4,6 +4,7 @@ FactoryGirl.define do
     name { "Foo Bar #{id}" }
     email  { "#{name.gsub(' ', '').downcase}@example.com" }
     last_seen_at { Time.now }
+    is_active { true }
 
 
     factory :admin_user do
