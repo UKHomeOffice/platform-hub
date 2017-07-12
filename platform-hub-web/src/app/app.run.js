@@ -20,10 +20,10 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
   }
 
   // Listen for auth data change and react accordingly.
-  const authDataHandler = $rootScope.$on(events.auth.updated, (event, authData) => {
+  const authDataHandler = $rootScope.$on(events.auth.updated, () => {
     Me.clear();
 
-    if (!_.isNull(authData) && !_.isEmpty(authData)) {
+    if (authService.isAuthenticated()) {
       Me.refresh();
       FeatureFlags.refresh();
     }
