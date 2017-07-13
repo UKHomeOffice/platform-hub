@@ -41,8 +41,9 @@
           </md-card-title-text>
         </md-card-title>
         <md-card-content>
-          <p class="md-body-1">
-            {{t.description}}
+          <p
+            class="md-body-1"
+            ng-bind-html='t.description | simpleFormat'>
           </p>
         </md-card-content>
       </md-card>

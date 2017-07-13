@@ -40,7 +40,7 @@
             Description
           </span>
           <br />
-          {{t.description}}
+          <span ng-bind-html='t.description | simpleFormat'></span>
         </p>
 
         <p class="md-body-1">
