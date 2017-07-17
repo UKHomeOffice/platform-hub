@@ -61,7 +61,7 @@ pipeline:
 
 
   api_tests:
-    image: ruby:2.3.3
+    image: alpine:3.5
     environment:
       - SECRET_KEY_BASE=$(head -c30 < /dev/urandom | base64)
       - GITHUB_CLIENT_ID=NA
@@ -74,9 +74,10 @@ pipeline:
       - EMAIL_MAX_TO_ADDRESSES=10
       - SLACK_WEBHOOK=noop
     commands:
-      - echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
-      - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-      - apt-get update && apt-get install -y postgresql-client libpq-dev
+      - apk update && apk upgrade
+      - apk --update add ruby ruby-dev ruby-io-console ruby-json ruby-bigdecimal tzdata
+      - apk --update add postgresql-client postgresql-dev build-base libxml2-dev libxslt-dev libffi-dev
+      - gem install bundler --no-ri --no-rdoc
       - cd platform-hub-api
       - bundle install --jobs 20 --retry 5 --deployment --no-cache
       - bin/setup
@@ -120,7 +121,7 @@ pipeline:
         --net=host
         -d
         platform-hub-api
-        /bin/bash -l -c "bin/rails server"
+        bin/rails server
       - sleep 5
       - curl -s -f http://127.0.0.1:30000/healthz
     when:
