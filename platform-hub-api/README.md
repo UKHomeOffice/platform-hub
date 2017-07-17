@@ -43,6 +43,12 @@ You can override any config value by adding it to a `.env.local` file that you w
 - `AGENT_GITHUB_TOKEN` – the access token used for GitHub onboarding flows. This token MUST be for a user that has owner access to the GitHub organisation specified below.
 - `AGENT_GITHUB_ORG` – the GitHub organisation that users will be onboarded on to.
 - `AGENT_GITHUB_ORG_MAIN_TEAM_ID` – the integer ID of the GitHub team that users will be onboarded on to.
+- `AGENT_KEYCLOAK_CLIENT_ID` - Keycloak client ID. Make sure this is a test one and not a production one!
+- `AGENT_KEYCLOAK_CLIENT_SECRET` - Keycloak client secret. Make sure this is a test one and not a production one!
+- `AGENT_KEYCLOAK_USERNAME` - Keycloak agent username. This is a Keycloak user with sufficient privileges to manage users in AGENT_KEYCLOAK_REALM.
+- `AGENT_KEYCLOAK_PASSWORD` - Keycloak agent password.
+- `AGENT_KEYCLOAK_BASE_URL` - Keycloak base URL. Make sure this is not a production Keycloak URL!
+- `AGENT_KEYCLOAK_REALM` - The Keycloak realm in which users will be managed.
 - `SLACK_WEBHOOK` – the webhook URL for Slack integration – use wisely when developing locally, just in case unwanted messages get sent to a public Slack channel – set to `noop` or some other string to ensure nothing gets sent out.
 
 Note that these env files only work for local development and testing.
@@ -121,7 +127,7 @@ Kubernetes::ClusterService.create_or_update(
   description: 'Development cluster',
   s3_region: 'eu-west-1',
   s3_bucket_name: '<tokens-file-s3-bucket-name>',
-  s3_access_key_id: '<tokens-file-s3-bucket-access-key-id>', 
+  s3_access_key_id: '<tokens-file-s3-bucket-access-key-id>',
   s3_secret_access_key: '<tokens-file-s3-bucker-secret-access-key>',
   object_key: '</path/to/tokens-file.csv>'
 )
