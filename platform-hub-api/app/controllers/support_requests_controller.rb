@@ -1,6 +1,6 @@
 class SupportRequestsController < ApiJsonController
 
-  include AgentsInitializer
+  include Agents::GitHubAgentInstance
 
   skip_authorization_check :only => [ :create ]  # Any authenticated user can create a support request
 
