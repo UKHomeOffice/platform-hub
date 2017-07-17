@@ -1,6 +1,7 @@
 class UsersController < ApiJsonController
 
   include GitHubOnboardingHelpers
+  include UserActivation
 
   before_action :find_user, only: [
     :show,
@@ -26,9 +27,10 @@ class UsersController < ApiJsonController
     render json: @user
   end
 
-  # GET /users/search/:q
+  # GET /users/search/:q?include_deactivated=[true|false]
   def search
-    render json: User.search(params[:q])
+    scope = params[:include_deactivated] == 'true' ? User : User.active
+    render json: scope.search(params[:q])
   end
 
   # POST /users/:id/make_admin
@@ -59,28 +61,12 @@ class UsersController < ApiJsonController
 
   # POST /users/:id/activate
   def activate
-    @user.activate!
-
-    AuditService.log(
-      context: audit_context,
-      action: 'make_active',
-      auditable: @user
-    )
-
-    head :no_content
+    handle_user_activation_request
   end
 
   # POST /users/:id/deactivate
   def deactivate
-    @user.deactivate!
-
-    AuditService.log(
-      context: audit_context,
-      action: 'make_inactive',
-      auditable: @user
-    )
-
-    head :no_content
+    handle_user_deactivation_request
   end
 
   # POST /users/:id/onboard_github
@@ -100,5 +86,5 @@ class UsersController < ApiJsonController
   def find_user
     @user = User.find params[:id]
   end
-
+  
 end
