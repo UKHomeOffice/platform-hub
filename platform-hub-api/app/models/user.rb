@@ -38,6 +38,7 @@ class User < ApplicationRecord
     :against => :name,
     :using => :trigram
 
+  scope :active, -> { where(is_active: true) }
 
   def main_identity
     identity :keycloak
