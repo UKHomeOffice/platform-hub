@@ -1,0 +1,22 @@
+export const apiInterceptorService = function ($rootScope, events) {
+  'ngInject';
+
+  const service = {};
+
+  service.responseError = responseError;
+
+  return service;
+
+  function responseError(response) {
+    if (response.status === 401) {
+      $rootScope.$broadcast(events.auth.unauthorized, 'User unauthorized');
+    }
+    if (response.status === 403) {
+      $rootScope.$broadcast(events.auth.forbidden, 'Access forbidden');
+    }
+    if (response.status === 418) {
+      $rootScope.$broadcast(events.auth.deactivated, 'User deactivated');
+    }
+    return response;
+  }
+};

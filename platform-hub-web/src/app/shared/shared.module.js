@@ -12,6 +12,7 @@ import {homeEndpoints} from './home-endpoints.factory';
 import {icons} from './icons.factory';
 import {onboardingTrigger} from './onboarding-trigger.factory';
 import {roleCheckerService} from './role-checker.service';
+import {apiInterceptorService} from './api-interceptor.service';
 
 export const SharedModule = angular
   .module('app.shared', [
@@ -27,4 +28,5 @@ export const SharedModule = angular
   .factory('icons', icons)
   .factory('onboardingTrigger', onboardingTrigger)
   .service('roleCheckerService', roleCheckerService)
+  .service('apiInterceptorService', apiInterceptorService)
   .name;

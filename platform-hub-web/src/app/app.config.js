@@ -16,5 +16,6 @@ export const appConfig = function ($mdIconProvider, $mdThemingProvider, $httpPro
       return authService.getToken();
     }
   });
+  $httpProvider.interceptors.push('apiInterceptorService');
   $httpProvider.interceptors.push('jwtInterceptor');
 };
