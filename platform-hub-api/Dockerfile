@@ -2,7 +2,10 @@ FROM alpine:3.5
 
 ENV RAILS_ENV production
 
-RUN apk update && apk upgrade && apk --update add \
+RUN apk update && apk upgrade \
+    && apk --update add ca-certificates openssl \
+    && update-ca-certificates \
+    && apk --update add \
     ruby ruby-dev ruby-io-console ruby-json ruby-bigdecimal tzdata \
     postgresql-client postgresql-dev build-base libxml2-dev libxslt-dev \
     && echo 'gem: --no-document' > /etc/gemrc \

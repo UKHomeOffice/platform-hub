@@ -75,6 +75,8 @@ pipeline:
       - SLACK_WEBHOOK=noop
     commands:
       - apk update && apk upgrade
+      - apk --update add ca-certificates openssl
+      - update-ca-certificates
       - apk --update add ruby ruby-dev ruby-io-console ruby-json ruby-bigdecimal tzdata
       - apk --update add postgresql-client postgresql-dev build-base libxml2-dev libxslt-dev libffi-dev
       - gem install bundler --no-ri --no-rdoc
