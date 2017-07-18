@@ -1,0 +1,63 @@
+<div class="fields-listings">
+  <h5 md-colors="{color: 'blue-grey-700'}">
+    {{$ctrl.title}}:
+    ({{$ctrl.fields.length || 0}})
+  </h5>
+
+  <md-card ng-repeat="field in $ctrl.fields track by field.id">
+    <md-card-content>
+      <span class="badge float-right" md-colors="{background: 'accent'}">{{field.field_type}}</span>
+
+      <p class="md-body-1">
+        <span md-colors="{color: 'blue-grey-700'}">
+          ID:
+        </span>
+        {{field.id}}
+      </p>
+
+      <p class="md-body-1">
+        <span md-colors="{color: 'blue-grey-700'}">
+          Label:
+        </span>
+        {{field.label}}
+      </p>
+
+      <p class="md-body-1">
+        <span md-colors="{color: 'blue-grey-700'}">
+          Required field?
+        </span>
+        {{field.required}}
+      </p>
+
+      <p class="md-body-1" ng-if="field.placeholder">
+        <span md-colors="{color: 'blue-grey-700'}">
+          Placeholder text:
+        </span>
+        {{field.placeholder}}
+      </p>
+
+      <p class="md-body-1" ng-if="field.help_text">
+        <span md-colors="{color: 'blue-grey-700'}">
+          Help text:
+        </span>
+        <br />
+        {{field.help_text}}
+      </p>
+
+      <p class="md-body-1" ng-if="field.field_type == 'select'">
+        <span md-colors="{color: 'blue-grey-700'}">
+          Selection options:
+        </span>
+        <br />
+        {{field.options}}
+      </p>
+
+      <p class="md-body-1" ng-if="field.field_type == 'select'">
+        <span md-colors="{color: 'blue-grey-700'}">
+          Allow multiple selections?
+        </span>
+        {{field.multiple}}
+      </p>
+    </md-card-content>
+  </md-card>
+</div>
