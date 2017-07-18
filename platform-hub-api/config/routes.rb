@@ -68,6 +68,10 @@ Rails.application.routes.draw do
       except: [ :create ],
       constraints: { id: ContactList::ID_REGEX }
 
+    resources :announcement_templates do
+      get :form_field_types, on: :collection
+    end
+
     resources :announcements do
       get :global, on: :collection
       post :mark_sticky, on: :member

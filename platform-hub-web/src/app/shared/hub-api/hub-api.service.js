@@ -66,6 +66,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.announcementMarkSticky = announcementMarkSticky;
   service.announcementUnmarkSticky = announcementUnmarkSticky;
 
+  service.getAnnouncementTemplates = buildCollectionFetcher('announcement_templates');
+  service.getAnnouncementTemplate = buildResourceFetcher('announcement_templates');
+  service.createAnnouncementTemplate = buildResourceCreator('announcement_templates');
+  service.updateAnnouncementTemplate = buildResourceUpdater('announcement_templates');
+  service.deleteAnnouncementTemplate = buildResourceDeletor('announcement_templates');
+  service.getAnnouncementTemplateFormFieldTypes = buildSimpleFetcher('announcement_templates/form_field_types', 'field types');
+
   service.getKubernetesClusters = buildSimpleFetcher('kubernetes/clusters', 'kubernetes clusters');
   service.getKubernetesTokens = getKubernetesTokens;
   service.deleteKubernetesToken = deleteKubernetesToken;

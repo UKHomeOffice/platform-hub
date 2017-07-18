@@ -1,0 +1,129 @@
+<div class="announcement-templates-detail">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>Announcement Template: </span>
+        <span ng-cloak>{{$ctrl.template.shortname}}</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        ng-if="$ctrl.template"
+        aria-label="Edit this announcement template"
+        ui-sref="announcements.templates.edit({id: $ctrl.template.id})">
+        <md-icon>edit</md-icon>
+        Edit
+      </md-button>
+      <md-button
+        ng-if="$ctrl.template"
+        aria-label="Delete this announcement template"
+        ng-click="$ctrl.deleteTemplate($event)">
+        <md-icon>delete</md-icon>
+        Delete
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.template">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+      <md-content layout-padding>
+
+        <h3 class="md-title" layout="row">
+          {{$ctrl.template.shortname}}
+        </h3>
+
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-if="$ctrl.template.description"
+          ng-bind-html='$ctrl.template.description | simpleFormat'>
+        </p>
+
+        <br />
+
+        <md-divider></md-divider>
+
+        <div>
+          <fields-listings
+            title="Fields to fill in for the announcement"
+            fields="$ctrl.template.spec.fields">
+          </field-listings>
+        </div>
+
+        <br />
+        <md-divider></md-divider>
+
+        <div>
+          <h5 md-colors="{color: 'blue-grey-700'}">
+            Template definitions:
+          </h5>
+
+          <div>
+            <p class="md-body-1" md-colors="{color: 'blue-grey-700'}">
+              Title:
+            </p>
+            <p
+              class="md-body-1"
+              md-colors="{background: 'blue-grey-50'}"
+              ng-bind-html='$ctrl.template.spec.templates.title | simpleFormat'
+              layout-padding>
+            </p>
+          </div>
+
+          <div>
+            <p class="md-body-1" md-colors="{color: 'blue-grey-700'}">
+              On hub:
+            </p>
+            <p
+              class="md-body-1"
+              md-colors="{background: 'blue-grey-50'}"
+              ng-bind-html='$ctrl.template.spec.templates.on_hub | simpleFormat'
+              layout-padding>
+            </p>
+          </div>
+
+          <div>
+            <p class="md-body-1" md-colors="{color: 'blue-grey-700'}">
+              HTML email:
+            </p>
+            <p
+              class="md-body-1"
+              md-colors="{background: 'blue-grey-50'}"
+              ng-bind-html='$ctrl.template.spec.templates.email_html | simpleFormat'
+              layout-padding>
+            </p>
+          </div>
+
+          <div>
+            <p class="md-body-1" md-colors="{color: 'blue-grey-700'}">
+              Text email:
+            </p>
+            <p
+              class="md-body-1"
+              md-colors="{background: 'blue-grey-50'}"
+              ng-bind-html='$ctrl.template.spec.templates.email_text | simpleFormat'
+              layout-padding>
+            </p>
+          </div>
+
+          <div>
+            <p class="md-body-1" md-colors="{color: 'blue-grey-700'}">
+              Slack:
+            </p>
+            <p
+              class="md-body-1"
+              md-colors="{background: 'blue-grey-50'}"
+              ng-bind-html='$ctrl.template.spec.templates.slack | simpleFormat'
+              layout-padding>
+            </p>
+          </div>
+
+        </div>
+
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

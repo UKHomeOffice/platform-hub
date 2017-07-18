@@ -92,6 +92,12 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       icon: ctrl.announcementsIcon
     },
     {
+      title: 'Announcement Templates',
+      state: 'announcements.templates.list',
+      activeState: 'announcements.templates',
+      icon: ctrl.announcementsIcon
+    },
+    {
       title: 'Users',
       state: 'users',
       icon: icons.users

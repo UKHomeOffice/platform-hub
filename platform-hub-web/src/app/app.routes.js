@@ -1,6 +1,9 @@
 import {
   AnnouncementsEditorForm,
   AnnouncementsEditorList,
+  AnnouncementTemplatesDetail,
+  AnnouncementTemplatesForm,
+  AnnouncementTemplatesList,
   GlobalAnnouncements
 } from './announcements/announcements.module';
 import {AppSettingsForm} from './app-settings/app-settings.module';
@@ -414,5 +417,48 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         data: {
           authenticate: true
         }
-      });
+      })
+      .state('announcements.templates', {
+        abstract: true,
+        url: '/templates',
+        template: '<ui-view></ui-view>'
+      })
+        .state('announcements.templates.list', {
+          url: '/list',
+          component: AnnouncementTemplatesList,
+          data: {
+            authenticate: true,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('announcements.templates.detail', {
+          url: '/detail/:id',
+          component: AnnouncementTemplatesDetail,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('announcements.templates.new', {
+          url: '/new',
+          component: AnnouncementTemplatesForm,
+          data: {
+            authenticate: true,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('announcements.templates.edit', {
+          url: '/edit/:id',
+          component: AnnouncementTemplatesForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            rolePermitted: 'admin'
+          }
+        });
 };
