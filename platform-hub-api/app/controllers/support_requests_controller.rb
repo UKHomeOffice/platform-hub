@@ -8,11 +8,7 @@ class SupportRequestsController < ApiJsonController
   def create
     template = SupportRequestTemplate.friendly.find params[:template_id]
 
-    data = params[:data]
-    if data.blank?
-      render_error "Missing 'data' field", :unprocessable_entity
-      return
-    end
+    data = params.require(:data)
 
     formatted_result = SupportRequestFormatterService.format template, data, current_user
 
