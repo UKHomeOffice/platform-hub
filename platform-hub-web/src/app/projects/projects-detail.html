@@ -40,8 +40,8 @@
         <p
           class="md-body-1"
           md-colors="{background: 'blue-grey-50'}"
-          ng-if="$ctrl.project.description">
-          {{$ctrl.project.description}}
+          ng-if="$ctrl.project.description"
+          ng-bind-html='$ctrl.project.description | simpleFormat'>
         </p>
 
         <p class="md-body-1" ng-if="$ctrl.project.cost_centre_code">

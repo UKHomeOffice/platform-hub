@@ -32,10 +32,10 @@
       <md-card-content>
         <p
           class="md-body-1"
-          ng-if="p.description"
           md-colors="{background: 'blue-grey-50'}"
+          ng-if="p.description"
+          ng-bind-html='p.description | simpleFormat'
           layout-padding>
-          {{p.description}}
         </p>
 
         <p class="md-body-1" ng-if="p.cost_centre_code">

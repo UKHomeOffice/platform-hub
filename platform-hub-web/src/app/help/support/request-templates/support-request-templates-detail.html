@@ -52,7 +52,7 @@
             Description:
           </span>
           <br />
-          {{$ctrl.template.description}}
+          <span ng-bind-html='$ctrl.template.description | simpleFormat'></span>
         </p>
 
         <p class="md-body-1">

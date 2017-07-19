@@ -17,8 +17,9 @@
           {{$ctrl.theme.title}}
         </h1>
 
-        <p class="md-body-1">
-          {{$ctrl.theme.description}}
+        <p
+          class="md-body-1"
+          ng-bind-html='$ctrl.theme.description | simpleFormat'>
         </p>
 
         <div ng-if="$ctrl.theme.resources && $ctrl.theme.resources.length > 0">

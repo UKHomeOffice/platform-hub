@@ -85,8 +85,8 @@
             class="md-body-1"
             md-colors="{background: 'blue-grey-50'}"
             ng-if="t.description"
+            ng-bind-html='t.description | simpleFormat'
             layout-padding>
-            {{t.description}}
           </p>
         </div>
 

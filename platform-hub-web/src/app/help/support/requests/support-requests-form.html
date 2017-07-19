@@ -20,8 +20,8 @@
         <p
           class="md-body-1"
           md-colors="{background: 'blue-grey-50'}"
-          ng-if="$ctrl.template.description">
-          {{$ctrl.template.description}}
+          ng-if="$ctrl.template.description"
+          ng-bind-html='$ctrl.template.description | simpleFormat'>
         </p>
 
         <p
