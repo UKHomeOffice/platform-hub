@@ -8,7 +8,7 @@ export const AnnouncementTemplatesFormComponent = {
   controller: AnnouncementTemplatesFormController
 };
 
-function AnnouncementTemplatesFormController($state, hubApiService, formFieldsValidator, announcementTemplatePreviewPopupService, logger) {
+function AnnouncementTemplatesFormController($state, hubApiService, announcementTemplateValidator, announcementTemplatePreviewPopupService, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -81,7 +81,7 @@ function AnnouncementTemplatesFormController($state, hubApiService, formFieldsVa
       return;
     }
 
-    const errors = validate(ctrl.template);
+    const errors = announcementTemplateValidator.validator(ctrl.template);
     if (errors.length > 0) {
       logger.error(errors.join('<br />'));
       return;
@@ -118,9 +118,5 @@ function AnnouncementTemplatesFormController($state, hubApiService, formFieldsVa
       ctrl.template.spec.templates,
       targetEvent
     );
-  }
-
-  function validate(template) {
-    return formFieldsValidator.validate(template.spec.fields);
   }
 }
