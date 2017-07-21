@@ -13,5 +13,28 @@ FactoryGirl.define do
     factory :readonly_announcement do
       status :delivering
     end
+
+    factory :announcement_from_template do
+      title nil
+      text nil
+
+      association :original_template, factory: :announcement_template
+
+      template_data do
+        if original_template
+          original_template.spec['fields'].each_with_object({}) do |f, obj|
+            field_id = f['id']
+            obj[field_id] = "#{field_id} value"
+          end
+        end
+      end
+
+      after :build do |a, evaluator|
+        if evaluator.original_template
+          evaluator.original_template.save!
+          a.original_template = evaluator.original_template
+        end
+      end
+    end
   end
 end

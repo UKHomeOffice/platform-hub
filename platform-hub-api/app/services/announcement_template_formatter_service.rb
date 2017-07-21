@@ -1,4 +1,4 @@
-module AnnouncementFormatterService
+module AnnouncementTemplateFormatterService
 
   def self.format templates, data
     results = {
@@ -19,6 +19,10 @@ module AnnouncementFormatterService
         interpolate! template, field_name, string_value
       end
     end
+
+    # Special case for email HTML
+    results[:email_html] = Rinku.auto_link(results[:email_html])
+
     Results.new results
   end
 

@@ -8,12 +8,15 @@ export const AnnouncementsEditorFormComponent = {
   controller: AnnouncementsEditorFormController
 };
 
-function AnnouncementsEditorFormController($state, $mdConstant, Announcements, hubApiService, moment, logger) {
+function AnnouncementsEditorFormController($state, $mdConstant, $q, AnnouncementTemplates, Announcements, hubApiService, announcementTemplatePreviewPopupService, moment, logger) {
   'ngInject';
 
   const ctrl = this;
 
   const id = ctrl.transition && ctrl.transition.params().id;
+  const templateId = ctrl.transition && ctrl.transition.params().templateId;
+
+  ctrl.AnnouncementTemplates = AnnouncementTemplates;
 
   ctrl.levels = Announcements.levels;
   ctrl.colours = Announcements.coloursForLevel;
@@ -29,9 +32,12 @@ function AnnouncementsEditorFormController($state, $mdConstant, Announcements, h
   ctrl.loading = true;
   ctrl.saving = false;
   ctrl.isNew = true;
+  ctrl.selectedTemplate = null;
   ctrl.contactLists = null;
   ctrl.announcement = null;
 
+  ctrl.templateSelectChange = templateSelectChange;
+  ctrl.preview = preview;
   ctrl.createOrUpdate = createOrUpdate;
   ctrl.processSlackChannelName = processSlackChannelName;
 
@@ -40,31 +46,37 @@ function AnnouncementsEditorFormController($state, $mdConstant, Announcements, h
   function init() {
     ctrl.isNew = !id;
 
-    loadContactLists();
-
-    if (ctrl.isNew) {
-      ctrl.announcement = initEmptyAnnouncement();
-      ctrl.loading = false;
-    } else {
-      loadAnnouncement();
-    }
+    loadInitial()
+      .then(() => {
+        if (ctrl.isNew) {
+          ctrl.announcement = initEmptyAnnouncement();
+          if (ctrl.announcement.original_template_id) {
+            ctrl.selectedTemplate = AnnouncementTemplates.lookup(ctrl.announcement.original_template_id);
+          }
+          ctrl.loading = false;
+        } else {
+          loadAnnouncement();
+        }
+      });
   }
 
-  function loadContactLists() {
+  function loadInitial() {
     ctrl.ready = false;
     ctrl.contactLists = null;
 
-    hubApiService
-      .getContactLists()
-      .then(lists => {
-        ctrl.contactLists = lists;
-        ctrl.ready = true;
-      });
+    return $q.all({
+      templates: AnnouncementTemplates.refresh(),
+      contactLists: hubApiService.getContactLists()
+    }).then(results => {
+      ctrl.contactLists = results.contactLists;
+      ctrl.ready = true;
+    });
   }
 
   function initEmptyAnnouncement() {
     return {
       level: ctrl.levels[0],
+      original_template_id: templateId,
       is_global: true,
       is_sticky: false,
       publish_at: moment().add(1, 'day').format(),
@@ -79,15 +91,40 @@ function AnnouncementsEditorFormController($state, $mdConstant, Announcements, h
   function loadAnnouncement() {
     ctrl.loading = true;
     ctrl.announcement = null;
+    ctrl.selectedTemplate = null;
 
     hubApiService
       .getAnnouncement(id)
       .then(announcement => {
         ctrl.announcement = announcement;
+
+        if (ctrl.announcement.original_template_id) {
+          ctrl.selectedTemplate = AnnouncementTemplates.lookup(ctrl.announcement.original_template_id);
+        }
       })
       .finally(() => {
         ctrl.loading = false;
       });
+  }
+
+  function templateSelectChange() {
+    if (ctrl.announcement.original_template_id) {
+      ctrl.selectedTemplate = AnnouncementTemplates.lookup(ctrl.announcement.original_template_id);
+      ctrl.announcement.template_data = {};
+      ctrl.announcement.title = null;
+      ctrl.announcement.text = null;
+    } else {
+      ctrl.selectedTemplate = null;
+      ctrl.announcement.template_data = null;
+    }
+  }
+
+  function preview(targetEvent) {
+    announcementTemplatePreviewPopupService.openWithData(
+      ctrl.announcement.template_data,
+      ctrl.selectedTemplate.spec.templates,
+      targetEvent
+    );
   }
 
   function createOrUpdate() {

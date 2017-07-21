@@ -393,11 +393,17 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           }
         })
         .state('announcements.editor.new', {
-          url: '/new',
+          url: '/new/:templateId',
           component: AnnouncementsEditorForm,
+          resolve: {
+            transition: '$transition$'
+          },
           data: {
             authenticate: true,
             rolePermitted: 'admin'
+          },
+          params: {
+            templateId: ''
           }
         })
         .state('announcements.editor.edit', {

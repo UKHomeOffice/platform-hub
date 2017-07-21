@@ -16,9 +16,9 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.templates.length > 0">
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.AnnouncementTemplates.all.length > 0">
 
-    <md-card ng-repeat="t in $ctrl.templates track by t.id">
+    <md-card ng-repeat="t in $ctrl.AnnouncementTemplates.all track by t.id">
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">
@@ -70,6 +70,11 @@
           aria-label="View details of this announcement template"
           ui-sref="announcements.templates.detail({id: t.id})">
           Details
+        </md-button>
+        <md-button
+          aria-label="Use this to start an announcement using this template"
+          ui-sref="announcements.editor.new({templateId: t.id})">
+          Use
         </md-button>
       </md-card-actions>
     </md-card>

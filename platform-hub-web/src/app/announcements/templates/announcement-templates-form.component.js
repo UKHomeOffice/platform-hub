@@ -81,7 +81,7 @@ function AnnouncementTemplatesFormController($state, hubApiService, announcement
       return;
     }
 
-    const errors = announcementTemplateValidator.validator(ctrl.template);
+    const errors = announcementTemplateValidator.validate(ctrl.template);
     if (errors.length > 0) {
       logger.error(errors.join('<br />'));
       return;

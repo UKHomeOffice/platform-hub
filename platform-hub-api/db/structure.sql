@@ -84,15 +84,18 @@ CREATE TABLE announcement_templates (
 CREATE TABLE announcements (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     level character varying NOT NULL,
-    title character varying NOT NULL,
-    text text NOT NULL,
+    title character varying,
+    text text,
     is_global boolean DEFAULT false NOT NULL,
     is_sticky boolean DEFAULT false NOT NULL,
     deliver_to json NOT NULL,
     publish_at timestamp without time zone NOT NULL,
     status character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    original_template_id uuid,
+    template_definitions json,
+    template_data json
 );
 
 
@@ -243,7 +246,7 @@ CREATE TABLE platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying NOT NULL,
+    colour character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -557,6 +560,13 @@ CREATE INDEX index_announcements_on_level ON announcements USING btree (level);
 
 
 --
+-- Name: index_announcements_on_original_template_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_announcements_on_original_template_id ON announcements USING btree (original_template_id);
+
+
+--
 -- Name: index_announcements_on_publish_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -794,6 +804,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170628103710'),
 ('20170711131233'),
 ('20170712132824'),
-('20170717165305');
+('20170717165305'),
+('20170721125027');
 
 

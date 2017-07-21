@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe AnnouncementFormatterService, type: :service do
+describe AnnouncementTemplateFormatterService, type: :service do
 
   describe '.format' do
 
@@ -90,7 +90,7 @@ describe AnnouncementFormatterService, type: :service do
     end
 
     let :results do
-      AnnouncementFormatterService::Results.new(
+      AnnouncementTemplateFormatterService::Results.new(
         title: title_result,
         on_hub: on_hub_result,
         email_html: email_html_result,
@@ -100,7 +100,7 @@ describe AnnouncementFormatterService, type: :service do
     end
 
     it 'should apply the fields data to the templates and produce the expected output results' do
-      expect(AnnouncementFormatterService.format(templates, data)).to eq results
+      expect(AnnouncementTemplateFormatterService.format(templates, data)).to eq results
     end
   end
 

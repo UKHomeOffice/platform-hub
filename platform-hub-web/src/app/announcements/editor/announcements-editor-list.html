@@ -26,6 +26,7 @@
 
     <md-card
       ng-repeat="a in $ctrl.Announcements.all track by a.id"
+      ng-init="template = $ctrl.AnnouncementTemplates.lookup(a.original_template_id)"
       md-colors="$ctrl.Announcements.isPublished(a) ? {background: 'blue-grey-50'} : {}">
       <div class="tinted-bar" md-colors="{background: '{{a.colour}}'}"></div>
       <md-card-title>
@@ -53,14 +54,45 @@
               md-colors="{background: 'blue-grey'}">
               Published
             </small>
-            <span>{{a.title}}</span>
+
+            <span ng-if="a.title">
+              {{a.title}}
+            </span>
+
+            <span ng-if="a.preview">
+              {{a.preview.title}}
+            </span>
           </span>
         </md-card-title-text>
       </md-card-title>
 
       <md-card-content>
-        <div layout-padding class="md-body-1" md-colors="{background: '{{a.colour}}-100'}">
-          <div ng-bind-html='a.text | simpleFormat'></div>
+        <p
+          ng-if="template"
+          class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Template:
+          </span>
+          <span>{{template.shortname}}</span>
+        </p>
+
+        <p
+          ng-if="a.template_data"
+          class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Template data:
+          </span>
+          <span>{{a.template_data | json}}</span>
+        </p>
+
+        <br />
+
+        <div
+          class="md-body-1"
+          md-colors="{background: '{{a.colour}}-100'}"
+          layout-padding>
+          <div ng-if="a.text" ng-bind-html='a.text | simpleFormat'></div>
+          <div ng-if="a.preview" ng-bind-html='a.preview.on_hub'></div>
         </div>
 
         <br />
@@ -118,6 +150,12 @@
           aria-label="Edit this announcement"
           ui-sref="announcements.editor.edit({id: a.id})">
           Edit
+        </md-button>
+        <md-button
+          ng-if="a.preview"
+          aria-label="Preview the output for this announcement"
+          ng-click="$ctrl.preview(a, $event)">
+          Full Preview
         </md-button>
         <md-button
           ng-disabled="$ctrl.saving"

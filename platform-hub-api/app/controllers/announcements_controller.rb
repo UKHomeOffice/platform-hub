@@ -28,6 +28,13 @@ class AnnouncementsController < ApiJsonController
   def create
     @announcement = Announcement.new(announcement_params)
 
+    # Handle template, if specified
+    template_id = announcement_params[:original_template_id]
+    if template_id
+      template = AnnouncementTemplate.find template_id
+      @announcement.original_template = template
+    end
+
     if @announcement.save
       AuditService.log(
         context: audit_context,
@@ -104,11 +111,14 @@ class AnnouncementsController < ApiJsonController
 
   # Only allow a trusted parameter "white list" through
   def announcement_params
-    allowed_params = params.require(:announcement).permit(:level, :title, :text, :is_global, :is_sticky, :publish_at)
+    allowed_params = params.require(:announcement).permit(:level, :original_template_id, :title, :text, :is_global, :is_sticky, :publish_at)
 
     # Below is a workaround until Rails 5.1 lands and we can use the `foo: [{}]` syntax to permit the whole array of hashes
     if params[:announcement][:deliver_to]
       allowed_params[:deliver_to] = params[:announcement][:deliver_to]
+    end
+    if params[:announcement][:template_data]
+      allowed_params[:template_data] = params[:announcement][:template_data]
     end
     allowed_params.permit!
   end

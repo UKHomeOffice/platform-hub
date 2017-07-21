@@ -8,8 +8,4 @@ class AnnouncementTemplateSerializer < ActiveModel::Serializer
   )
 
   attribute :spec
-
-  def id
-    object.friendly_id
-  end
 end
