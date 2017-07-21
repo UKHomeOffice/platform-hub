@@ -1,0 +1,127 @@
+<md-dialog aria-label="Announcement template preview" flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50">
+  <md-toolbar class="md-toolbar-tools md-accent">
+    <h2>Preview an announcement template</h2>
+    <span flex></span>
+    <md-button
+      class="close-button md-icon-button"
+      ng-click="$ctrl.finish()"
+      aria-label="Close popup">
+      <md-icon>clear</md-icon>
+    </md-button>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.processing"></loading-indicator>
+
+  <md-dialog-content class="md-dialog-content" layout="column" layout-padding>
+
+    <div md-whiteframe="2" flex="100">
+      <form name="$ctrl.form">
+        <form-field
+          ng-repeat="field in $ctrl.fields track by field.id"
+          spec="field"
+          value="$ctrl.data[field.id]",
+          form="$ctrl.form">
+        </form-field>
+
+        <div layout="row" layout-align="center center">
+          <md-button
+            class="md-primary"
+            ng-disabled="$ctrl.processing || $ctrl.form.$invalid"
+            ng-class="{'md-raised': ($ctrl.form.$dirty && $ctrl.form.$valid) }"
+            aria-label="Preview the output results for this template"
+            ng-click="$ctrl.preview()">
+            Preview
+          </md-button>
+        </div>
+      </form>
+    </div>
+
+    <div ng-if="$ctrl.results">
+      <br />
+      <br />
+
+      <h4 class="md-subhead centred">Output</h4>
+
+      <div>
+        <p class="md-body-1" md-colors="{color: 'default-blue-grey-700'}">
+          Title:
+        </p>
+        <p
+          class="md-body-1"
+          md-colors="{background: 'default-blue-grey-50'}"
+          ng-bind-html='$ctrl.results.title | simpleFormat'
+          layout-padding>
+        </p>
+      </div>
+
+      <br />
+
+      <div>
+        <p class="md-body-1" md-colors="{color: 'default-blue-grey-700'}">
+          On hub:
+        </p>
+        <p
+          class="md-body-1"
+          md-colors="{background: 'default-blue-grey-50'}"
+          ng-bind-html='$ctrl.results.on_hub'
+          layout-padding>
+        </p>
+      </div>
+
+      <br />
+
+      <div>
+        <p class="md-body-1" md-colors="{color: 'default-blue-grey-700'}">
+          HTML email:
+        </p>
+        <p
+          class="md-body-1"
+          md-colors="{background: 'default-blue-grey-50'}"
+          ng-bind-html='$ctrl.results.email_html'
+          layout-padding>
+        </p>
+        <p class="md-body-2">
+          NOTE: actual HTML rendering will depend on email clients!
+        </p>
+      </div>
+
+      <br />
+
+      <div>
+        <p class="md-body-1" md-colors="{color: 'default-blue-grey-700'}">
+          Text email:
+        </p>
+        <p
+          class="md-body-1"
+          md-colors="{background: 'default-blue-grey-50'}"
+          ng-bind-html='$ctrl.results.email_text | simpleFormat'
+          layout-padding>
+        </p>
+      </div>
+
+      <br />
+
+      <div>
+        <p class="md-body-1" md-colors="{color: 'default-blue-grey-700'}">
+          Slack:
+        </p>
+        <p
+          class="md-body-1"
+          md-colors="{background: 'default-blue-grey-50'}"
+          ng-bind-html='$ctrl.results.slack | simpleFormat'
+          layout-padding>
+        </p>
+      </div>
+    </div>
+
+  </md-dialog-content>
+
+  <md-dialog-actions>
+    <md-button
+      class="md-primary"
+      ng-click="$ctrl.finish()"
+      aria-label="Finish">
+      Finish
+    </md-button>
+  </md-dialog-actions>
+</md-dialog>

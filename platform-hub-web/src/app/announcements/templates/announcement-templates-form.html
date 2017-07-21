@@ -126,7 +126,16 @@
             </md-input-container>
           </fieldset>
 
-          <br />
+          <div layout="row" layout-align="center center">
+            <md-button
+              class="md-accent md-raised"
+              aria-label="Preview the output results for this template"
+              ng-click="$ctrl.triggerPreview($event)"
+              ng-disabled="!$ctrl.template.spec.fields || $ctrl.template.spec.fields.length == 0">
+              Open Previewer
+            </md-button>
+          </div>
+
           <br />
 
           <div>

@@ -267,4 +267,91 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
     end
   end
 
+  describe 'GET #preview' do
+    let :templates do
+      {
+        'title' => '',
+        'on_hub' => '',
+        'email_html' => '',
+        'email_text' => '',
+        'slack' => ''
+      }
+    end
+
+    let :data do
+      { foo: 'bar' }
+    end
+
+    let :params do
+      {
+        templates: templates,
+        data: data
+      }
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        post :preview, params: params
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          post :preview, params: params
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        it 'should handle a missing "templates" param' do
+          post :preview, params: {}
+        end
+
+        it 'should handle a missing "data" param' do
+          post :preview, params: { templates: templates }
+        end
+
+        context 'with empty templates' do
+          it 'should return empty output results' do
+            post :preview, params: params
+            expect(json_response).to eq({
+              'title' => '',
+              'on_hub' => '',
+              'email_html' => '',
+              'email_text' => '',
+              'slack' => ''
+            })
+          end
+        end
+
+        context 'with non-empty templates' do
+          let :templates do
+            {
+              'title' => 'Ohai {{foo}}',
+              'on_hub' => 'Ohai {{foo}}',
+              'email_html' => 'Ohai {{foo}}',
+              'email_text' => 'Ohai {{foo}}',
+              'slack' => 'Ohai {{foo}}'
+            }
+          end
+
+          it 'should return output strings for each template with data interpolated' do
+            post :preview, params: params
+            expect(json_response).to eq({
+              'title' => 'Ohai bar',
+              'on_hub' => 'Ohai bar',
+              'email_html' => 'Ohai bar',
+              'email_text' => 'Ohai bar',
+              'slack' => 'Ohai bar'
+            })
+          end
+        end
+
+      end
+
+    end
+  end
+
 end

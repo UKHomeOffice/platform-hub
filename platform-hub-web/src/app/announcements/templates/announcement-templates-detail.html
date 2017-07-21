@@ -119,7 +119,15 @@
               layout-padding>
             </p>
           </div>
+        </div>
 
+        <div layout="row" layout-align="center center">
+          <md-button
+            class="md-accent md-raised"
+            aria-label="Preview the output results for this template"
+            ng-click="$ctrl.triggerPreview($event)">
+            Open Previewer
+          </md-button>
         </div>
 
       </md-content>

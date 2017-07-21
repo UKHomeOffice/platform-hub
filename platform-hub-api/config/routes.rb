@@ -70,6 +70,7 @@ Rails.application.routes.draw do
 
     resources :announcement_templates do
       get :form_field_types, on: :collection
+      post :preview, on: :collection
     end
 
     resources :announcements do

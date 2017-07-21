@@ -8,7 +8,7 @@ export const AnnouncementTemplatesFormComponent = {
   controller: AnnouncementTemplatesFormController
 };
 
-function AnnouncementTemplatesFormController($state, hubApiService, formFieldsValidator, logger) {
+function AnnouncementTemplatesFormController($state, hubApiService, formFieldsValidator, announcementTemplatePreviewPopupService, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -23,6 +23,7 @@ function AnnouncementTemplatesFormController($state, hubApiService, formFieldsVa
   ctrl.template = null;
 
   ctrl.createOrUpdate = createOrUpdate;
+  ctrl.triggerPreview = triggerPreview;
 
   init();
 
@@ -109,6 +110,14 @@ function AnnouncementTemplatesFormController($state, hubApiService, formFieldsVa
           ctrl.saving = false;
         });
     }
+  }
+
+  function triggerPreview(targetEvent) {
+    announcementTemplatePreviewPopupService.open(
+      ctrl.template.spec.fields,
+      ctrl.template.spec.templates,
+      targetEvent
+    );
   }
 
   function validate(template) {

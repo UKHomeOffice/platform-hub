@@ -69,6 +69,13 @@ class AnnouncementTemplatesController < ApiJsonController
     render json: AnnouncementTemplate.form_field_types
   end
 
+  # POST /announcement_templates/preview
+  def preview
+    templates, data = params.require([:templates, :data])
+    results = AnnouncementFormatterService.format templates, data
+    render json: results
+  end
+
   private
 
   def find_announcement_template

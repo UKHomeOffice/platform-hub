@@ -6,7 +6,7 @@ export const AnnouncementTemplatesDetailComponent = {
   controller: AnnouncementTemplatesDetailController
 };
 
-function AnnouncementTemplatesDetailController($mdDialog, $state, hubApiService, logger) {
+function AnnouncementTemplatesDetailController($mdDialog, $state, hubApiService, announcementTemplatePreviewPopupService, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -17,6 +17,7 @@ function AnnouncementTemplatesDetailController($mdDialog, $state, hubApiService,
   ctrl.template = null;
 
   ctrl.deleteTemplate = deleteTemplate;
+  ctrl.triggerPreview = triggerPreview;
 
   init();
 
@@ -62,5 +63,13 @@ function AnnouncementTemplatesDetailController($mdDialog, $state, hubApiService,
             ctrl.loading = false;
           });
       });
+  }
+
+  function triggerPreview(targetEvent) {
+    announcementTemplatePreviewPopupService.open(
+      ctrl.template.spec.fields,
+      ctrl.template.spec.templates,
+      targetEvent
+    );
   }
 }

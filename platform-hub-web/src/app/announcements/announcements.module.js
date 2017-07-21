@@ -2,6 +2,8 @@ import angular from 'angular';
 
 import {AnnouncementsEditorFormComponent} from './editor/announcements-editor-form.component';
 import {AnnouncementsEditorListComponent} from './editor/announcements-editor-list.component';
+import {AnnouncementTemplatePreviewPopupController} from './templates/announcement-template-preview-popup.controller';
+import {announcementTemplatePreviewPopupService} from './templates/announcement-template-preview-popup.service';
 import {AnnouncementTemplatesDetailComponent} from './templates/announcement-templates-detail.component';
 import {AnnouncementTemplatesFormComponent} from './templates/announcement-templates-form.component';
 import {AnnouncementTemplatesListComponent} from './templates/announcement-templates-list.component';
@@ -20,6 +22,8 @@ export const AnnouncementsModule = angular
   .module('app.announcements', [])
   .component(AnnouncementsEditorForm, AnnouncementsEditorFormComponent)
   .component(AnnouncementsEditorList, AnnouncementsEditorListComponent)
+  .controller('AnnouncementTemplatePreviewPopupController', AnnouncementTemplatePreviewPopupController)
+  .service('announcementTemplatePreviewPopupService', announcementTemplatePreviewPopupService)
   .component(AnnouncementTemplatesDetail, AnnouncementTemplatesDetailComponent)
   .component(AnnouncementTemplatesForm, AnnouncementTemplatesFormComponent)
   .component(AnnouncementTemplatesList, AnnouncementTemplatesListComponent)

@@ -31,5 +31,9 @@ RSpec.describe AnnouncementTemplatesController, type: :routing do
       expect(:get => '/announcement_templates/form_field_types').to route_to('announcement_templates#form_field_types')
     end
 
+    it 'routes to #preview' do
+      expect(:post => '/announcement_templates/preview').to route_to('announcement_templates#preview')
+    end
+
   end
 end
