@@ -8,7 +8,7 @@ export const SupportRequestTemplatesFormComponent = {
   controller: SupportRequestTemplatesFormController
 };
 
-function SupportRequestTemplatesFormController($q, $state, hubApiService, UserScopes, logger, _) {
+function SupportRequestTemplatesFormController($state, hubApiService, UserScopes, formFieldsValidator, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -16,8 +16,6 @@ function SupportRequestTemplatesFormController($q, $state, hubApiService, UserSc
   const id = ctrl.transition && ctrl.transition.params().id;
 
   ctrl.userScopes = UserScopes.all;
-
-  ctrl.fieldIdRegex = '\\w+';
 
   ctrl.ready = false;
   ctrl.loading = true;
@@ -27,10 +25,6 @@ function SupportRequestTemplatesFormController($q, $state, hubApiService, UserSc
   ctrl.template = null;
 
   ctrl.createOrUpdate = createOrUpdate;
-  ctrl.addFormField = addFormField;
-  ctrl.removeFormField = removeFormField;
-  ctrl.moveFieldDown = moveFieldDown;
-  ctrl.moveFieldUp = moveFieldUp;
 
   init();
 
@@ -118,48 +112,7 @@ function SupportRequestTemplatesFormController($q, $state, hubApiService, UserSc
     }
   }
 
-  function addFormField() {
-    if (!ctrl.template.form_spec.fields) {
-      ctrl.template.form_spec.fields = [];
-    }
-    ctrl.template.form_spec.fields.push({
-      field_type: ctrl.formFieldTypes[0],
-      required: true,
-      multiple: false
-    });
-  }
-
-  function removeFormField(ix) {
-    if (!_.isEmpty(ctrl.template.form_spec.fields)) {
-      ctrl.template.form_spec.fields.splice(ix, 1);
-    }
-  }
-
   function validate(template) {
-    const errors = [];
-
-    const formFields = template.form_spec.fields;
-
-    const uniq = _.uniq(_.map(formFields, 'id'));
-
-    if (uniq.length !== formFields.length) {
-      errors.push('Form field IDs must be unique – you\'ve used the same ID twice or more.');
-    }
-
-    return errors;
-  }
-
-  function moveFieldDown(ix) {
-    const fields = ctrl.template.form_spec.fields;
-    const field1 = fields[ix];
-    const field2 = fields[ix + 1];
-    fields.splice(ix, 2, field2, field1);
-  }
-
-  function moveFieldUp(ix) {
-    const fields = ctrl.template.form_spec.fields;
-    const field1 = fields[ix - 1];
-    const field2 = fields[ix];
-    fields.splice(ix - 1, 2, field2, field1);
+    return formFieldsValidator.validate(template.form_spec.fields);
   }
 }

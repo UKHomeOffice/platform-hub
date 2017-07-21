@@ -1,7 +1,8 @@
 require 'rails_helper'
-require 'rails_helper'
 
 RSpec.describe SupportRequestTemplate, type: :model do
+
+  it_behaves_like "validates hashes"
 
   describe 'a valid SupportRequestTemplate instance' do
 

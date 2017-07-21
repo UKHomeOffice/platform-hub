@@ -81,7 +81,7 @@ class SupportRequestTemplatesController < ApiJsonController
     @support_request_template = SupportRequestTemplate.friendly.find params[:id]
   end
 
-  # Only allow a trusted parameter "white list" through
+  # Only allow a trusted parameter "white list" through.
   def support_request_template_params
     allowed_params = params.require(:support_request_template).permit(:shortname, :git_hub_repo, :title, :description, :user_scope)
 

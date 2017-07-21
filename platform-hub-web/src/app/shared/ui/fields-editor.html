@@ -1,0 +1,181 @@
+<div class="fields-editor">
+
+  <label class="md-body-2">
+    {{$ctrl.title}}:
+    ({{$ctrl.fields.length || 0}})
+  </label>
+
+  <p class="none-text" ng-if="$ctrl.fields.length == 0">
+    No fields specified yet
+  </p>
+
+  <md-card ng-repeat="field in $ctrl.fields">
+    <md-card-content>
+
+      <div layout="row" flex>
+        <md-input-container class="md-block md-icon-float" flex>
+          <label>Type of field:</label>
+          <md-select ng-model="field.field_type" required>
+            <md-option
+              ng-repeat="o in $ctrl.fieldTypes"
+              ng-value="o">
+              {{o}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+        <md-button
+          class="md-icon-button input-button-end"
+          aria-label="Remove this field"
+          ng-click="$ctrl.remove($index)">
+          <md-icon md-colors="{color: 'accent'}">delete</md-icon>
+          <md-tooltip md-direction="bottom">
+            Remove this field
+          </md-tooltip>
+        </md-button>
+      </div>
+
+      <md-input-container class="md-block">
+        <md-checkbox
+          name="field{{$index}}-required"
+          ng-model="field.required"
+          aria-label="Is this field required to be filled in?">
+          Required to be filled in?
+        </md-checkbox>
+      </md-input-container>
+
+      <div layout="row" flex>
+        <md-input-container class="md-block md-icon-float" flex>
+          <label for="field{{$index}}-id">ID:</label>
+          <input
+            name="field{{$index}}-id"
+            ng-model="field.id"
+            ng-pattern="$ctrl.idRegex"
+            placeholder="e.g.: username_requested"
+            required>
+          <div ng-messages="$ctrl.form['field' + $index + '-id'].$error">
+            <div ng-message="required">This is required.</div>
+            <div ng-message="pattern">Only letters, numbers and underscores are allowed.</div>
+          </div>
+        </md-input-container>
+        <md-button class="md-icon-button input-button-end" aria-label="info">
+          <md-icon>info</md-icon>
+          <md-tooltip md-direction="bottom">
+            This is an internal ID for the field. Can only contain letters, numbers and underscores.
+          </md-tooltip>
+        </md-button>
+      </div>
+
+      <div layout="row" flex>
+        <md-input-container class="md-block md-icon-float" flex>
+          <label for="field{{$index}}-label">Label:</label>
+          <input
+            name="field{{$index}}-label"
+            ng-model="field.label"
+            placeholder="e.g. Username requested"
+            required>
+          <div ng-messages="$ctrl.form['field' + $index + '-label'].$error">
+            <div ng-message="required">This is required.</div>
+          </div>
+        </md-input-container>
+        <md-button class="md-icon-button input-button-end" aria-label="info">
+          <md-icon>info</md-icon>
+          <md-tooltip md-direction="bottom">
+            Descriptive label shown to users when filling in this field.
+          </md-tooltip>
+        </md-button>
+      </div>
+
+      <div layout="row" flex>
+        <md-input-container class="md-block md-icon-float" flex>
+          <label for="field{{$index}}-placeholder">Placeholder text (optional):</label>
+          <input
+            name="field{{$index}}-placeholder"
+            ng-model="field.placeholder">
+        </md-input-container>
+        <md-button class="md-icon-button input-button-end" aria-label="info">
+          <md-icon>info</md-icon>
+          <md-tooltip md-direction="bottom">
+            Text shown within the field. Use this to provide an example of the kind of input you'd like to see. Only used for text input fields.
+          </md-tooltip>
+        </md-button>
+      </div>
+
+      <div layout="row" flex>
+        <md-input-container class="md-block md-icon-float" flex>
+          <label for="field{{$index}}-help_text">Help text (optional):</label>
+          <textarea
+            name="field{{$index}}-help_text"
+            ng-model="field.help_text"
+            rows="4"
+            md-select-on-focus>
+          </textarea>
+        </md-input-container>
+        <md-button class="md-icon-button input-button-end" aria-label="info">
+          <md-icon>info</md-icon>
+          <md-tooltip md-direction="bottom">
+            The help text shown to the user when they are filling out the form for this type of support request.
+          </md-tooltip>
+        </md-button>
+      </div>
+
+      <div layout="row" flex ng-if="field.field_type == 'select'">
+        <md-input-container class="md-block md-icon-float" flex>
+          <label for="field{{$index}}-options">Options for the user to select from:</label>
+          <textarea
+            name="field{{$index}}-options"
+            ng-model="field.options"
+            rows="4"
+            placeholder="Add comma separated values here"
+            ng-required
+            md-select-on-focus>
+          </textarea>
+          <div ng-messages="$ctrl.form['field' + $index + '-options'].$error">
+            <div ng-message="required">This is required.</div>
+          </div>
+        </md-input-container>
+        <md-button class="md-icon-button input-button-end" aria-label="info">
+          <md-icon>info</md-icon>
+          <md-tooltip md-direction="bottom">
+            A list of options the user can select for this field.
+          </md-tooltip>
+        </md-button>
+      </div>
+
+      <md-input-container class="md-block" ng-if="field.field_type == 'select'">
+        <md-checkbox
+          name="field{{$index}}-multiple"
+          ng-model="field.multiple"
+          aria-label="Should the user be allowed to select multiple values from the options?">
+          Alow multiple values to be selected from the options?
+        </md-checkbox>
+      </md-input-container>
+
+    </md-card-content>
+
+    <md-card-actions layout="row" layout-align="end center">
+      <md-button
+        ng-disabled="$index == ($ctrl.fields.length - 1) || $ctrl.fields.length == 1"
+        ng-click="$ctrl.moveDown($index)">
+        <md-icon>arrow_downward</md-icon>
+        Move down
+      </md-button>
+      <md-button
+        ng-disabled="$index == 0 || $ctrl.fields.length == 1"
+        ng-click="$ctrl.moveUp($index)">
+        <md-icon>arrow_upward</md-icon>
+        Move up
+      </md-button>
+    </md-card-actions>
+  </md-card>
+
+  <div>
+    <md-button
+      class="md-raised"
+      aria-label="Add new field"
+      ng-click="$ctrl.add()">
+      <md-icon>add_box</md-icon>
+      Add new field
+    </md-button>
+  </div>
+
+</div>

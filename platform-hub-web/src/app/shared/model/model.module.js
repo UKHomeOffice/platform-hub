@@ -13,6 +13,8 @@ import {PlatformThemes} from './platform-themes';
 import {PlatformThemesResourceKinds} from './platform-themes-resource-kinds';
 import {UserScopes} from './user-scopes';
 
+import {formFieldsValidator} from './validators/form-fields-validator';
+
 export const ModelModule = angular
   .module('app.shared.model', [
     HubApiModule,
@@ -27,4 +29,5 @@ export const ModelModule = angular
   .service('PlatformThemes', PlatformThemes)
   .service('PlatformThemesResourceKinds', PlatformThemesResourceKinds)
   .service('UserScopes', UserScopes)
+  .service('formFieldsValidator', formFieldsValidator)
   .name;

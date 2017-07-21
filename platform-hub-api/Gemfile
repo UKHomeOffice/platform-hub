@@ -38,6 +38,7 @@ end
 
 group :test do
   gem 'timecop', '~> 0.8.1'
+  gem 'with_model', '~> 2.0'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
