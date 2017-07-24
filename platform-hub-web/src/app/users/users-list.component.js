@@ -11,6 +11,7 @@ function UsersListController(hubApiService, logger) {
   const ctrl = this;
 
   ctrl.loading = true;
+  ctrl.saving = false;
   ctrl.users = [];
 
   ctrl.makeAdmin = makeAdmin;
@@ -57,20 +58,30 @@ function UsersListController(hubApiService, logger) {
   }
 
   function activateUser(user) {
+    ctrl.saving = true;
+
     hubApiService
       .activateUser(user.id)
       .then(() => {
         user.is_active = true;
         logger.success('User activated');
+      })
+      .finally(() => {
+        ctrl.saving = false;
       });
   }
 
   function deactivateUser(user) {
+    ctrl.saving = true;
+
     hubApiService
       .deactivateUser(user.id)
       .then(() => {
         user.is_active = false;
         logger.success('User deactivated');
+      })
+      .finally(() => {
+        ctrl.saving = false;
       });
   }
 }

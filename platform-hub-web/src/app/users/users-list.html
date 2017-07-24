@@ -7,7 +7,7 @@
     </div>
   </md-toolbar>
 
-  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
 
   <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.users.length > 0">
 
@@ -17,6 +17,7 @@
           <span class="md-headline">
             {{u.name}}
             <small class="badge float-right" ng-if="u.role == 'admin'" md-colors="{background: 'accent'}">Admin</small>
+            <small class="badge float-right" ng-if="!u.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
           </span>
         </md-card-title-text>
       </md-card-title>
@@ -60,6 +61,7 @@
       <md-card-actions layout="row" layout-align="start center">
         <md-button
           ng-if="u.role != 'admin'"
+          ng-disabled="!u.is_active"
           class="md-primary"
           aria-label="Make user an admin"
           ng-click="$ctrl.makeAdmin(u)">
@@ -67,6 +69,7 @@
         </md-button>
         <md-button
           ng-if="u.role == 'admin'"
+          ng-disabled="!u.is_active"
           class="md-primary"
           aria-label="Revoke admin status for user"
           ng-click="$ctrl.revokeAdmin(u)">
@@ -74,6 +77,7 @@
         </md-button>
         <md-button
           ng-if="u.is_active"
+          ng-disabled="$ctrl.saving"
           class="md-primary"
           aria-label="Deactivate user"
           ng-click="$ctrl.deactivateUser(u)">
@@ -81,6 +85,7 @@
         </md-button>
         <md-button
           ng-if="!u.is_active"
+          ng-disabled="$ctrl.saving"
           class="md-primary"
           aria-label="Activate user"
           ng-click="$ctrl.activateUser(u)">

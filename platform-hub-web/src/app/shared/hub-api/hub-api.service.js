@@ -170,13 +170,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function searchUsers(query) {
+  function searchUsers(query, include_deactivated = false) {
     if (_.isNull(query) || _.isEmpty(query)) {
       throw new Error('"query" argument not specified or empty');
     }
 
     return $http
-      .get(`${apiEndpoint}/users/search/${query}`)
+      .get(`${apiEndpoint}/users/search/${query}?include_deactivated=${include_deactivated}`)
       .then(response => {
         return response.data;
       })
@@ -219,6 +219,12 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/activate`)
+      .then(response => {
+        // handle 4xx errors which are not picked up by `catch`.
+        if (response.data.error && response.data.error.status.toString().match(/4../)) {
+          return $q.reject(response);
+        }
+      })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to activate user', response));
         return $q.reject(response);
@@ -232,6 +238,12 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/deactivate`)
+      .then(response => {
+        // handle 4xx errors which are not picked up by `catch`.
+        if (response.data.error && response.data.error.status.toString().match(/4../)) {
+          return $q.reject(response);
+        }
+      })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to deactivate user', response));
         return $q.reject(response);
