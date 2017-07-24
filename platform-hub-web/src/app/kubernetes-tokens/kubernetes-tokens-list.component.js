@@ -93,7 +93,7 @@ function KubernetesTokensListController($state, roleCheckerService, hubApiServic
   }
 
   function searchUsers(query) {
-    return hubApiService.searchUsers(query);
+    return hubApiService.searchUsers(query, true);
   }
 
   function revokeToken(targetEvent) {
