@@ -104,6 +104,7 @@
                 <h3>
                   {{m.user.name}}
                   <small class="badge" ng-if="m.role == 'manager'" md-colors="{background: 'accent'}">Manager</small>
+                  <small class="badge" ng-if="!m.user.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
                 </h3>
                 <h4>{{m.user.email}}</h4>
               </div>
@@ -115,6 +116,7 @@
                 <md-menu-content width="4">
                   <md-menu-item ng-if="$ctrl.allowOnboardOrOffboardGitHub(m)">
                     <md-button
+                      ng-if="m.user.is_active"
                       ng-click="$ctrl.userOnboardGitHub(m.user.id, $event)"
                       aria-label="Onboard this user to the GitHub org and team">
                       Onboard GitHub
@@ -122,6 +124,7 @@
                   </md-menu-item>
                   <md-menu-item ng-if="$ctrl.allowOnboardOrOffboardGitHub(m)">
                     <md-button
+                      ng-if="m.user.is_active"
                       ng-click="$ctrl.userOffboardGitHub(m.user.id, $event)"
                       aria-label="Offboard this user to the GitHub org and team">
                       Offboard GitHub
@@ -129,6 +132,7 @@
                   </md-menu-item>
                   <md-menu-item ng-if="$ctrl.isAdmin && m.role != 'manager'">
                     <md-button
+                      ng-if="m.user.is_active"
                       ng-click="$ctrl.makeManager(m, $event)"
                       aria-label="Make this person a team manager">
                       Make manager
@@ -136,6 +140,7 @@
                   </md-menu-item>
                   <md-menu-item ng-if="$ctrl.isAdmin && m.role == 'manager'">
                     <md-button
+                      ng-if="m.user.is_active"
                       ng-click="$ctrl.demoteManager(m, $event)"
                       aria-label="Demote this person from their team manager role">
                       Demote manager
