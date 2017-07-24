@@ -4,6 +4,7 @@ module ApiJsonErrorHandler
   included do
     rescue_from ActiveRecord::RecordNotFound, with: :not_found_error
     rescue_from ActiveRecord::ReadOnlyRecord, with: :readonly_error
+    rescue_from ActionController::ParameterMissing, with: :missing_parameter_error
   end
 
   def render_error message, status
@@ -27,6 +28,10 @@ module ApiJsonErrorHandler
 
   def readonly_error
     render_error 'Resource is readonly', :unprocessable_entity
+  end
+
+  def missing_parameter_error err
+    render_error err.message, :unprocessable_entity
   end
 
 end

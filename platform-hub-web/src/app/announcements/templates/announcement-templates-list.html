@@ -1,13 +1,13 @@
-<div class="support-request-templates-list">
+<div class="announcement-templates-list">
   <md-toolbar md-scroll-shrink>
     <div class="md-toolbar-tools">
       <h3>
-        <span>All Support Request Templates</span>
+        <span>All Announcement Templates</span>
       </h3>
       <span flex></span>
       <md-button
-        aria-label="Add new support request template"
-        ui-sref="help.support.request-templates.new">
+        aria-label="Add new announcement template"
+        ui-sref="announcements.templates.new">
         <md-icon>add_box</md-icon>
         New
       </md-button>
@@ -22,61 +22,53 @@
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">
-            {{t.title}}
+            {{t.shortname}}
           </span>
         </md-card-title-text>
       </md-card-title>
 
       <md-card-content>
-        <p class="md-body-1">
-          <span md-colors="{color: 'blue-grey-700'}">
-            Shortname (not shown to users):
-          </span>
-          {{t.shortname}}
-        </p>
-
-        <p class="md-body-1">
-          <span md-colors="{color: 'blue-grey-700'}">
-            Target GitHub repo:
-          </span>
-          {{t.git_hub_repo}}
-        </p>
-
-        <p class="md-body-1">
-          <span md-colors="{color: 'blue-grey-700'}">
-            User scope:
-          </span>
-          {{t.user_scope || '--'}}
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-if="t.description"
+          ng-bind-html='t.description | simpleFormat'
+          layout-padding>
         </p>
 
         <p class="md-body-1">
           <span md-colors="{color: 'blue-grey-700'}">
             <ng-pluralize
-              count="t.form_spec.fields.length"
+              count="t.spec.fields.length"
               when="{'0': 'No fields specified',
               '1': '1 field specified: ',
               'other': '{} fields specified: '}">
             </ng-pluralize>
           </span>
 
-          <span ng-repeat="f in t.form_spec.fields track by f.id">
+          <span ng-repeat="f in t.spec.fields track by f.id">
             <span>{{f.id}}</span><span ng-if="!$last">, </span>
           </span>
         </p>
 
-        <p class="md-body-1">
-          <span md-colors="{color: 'blue-grey-700'}">
-            GitHub issue title:
-          </span>
-          {{t.git_hub_issue_spec.title_text}}
-        </p>
+        <div>
+          <p class="md-body-1" md-colors="{color: 'blue-grey-700'}">
+            Title template:
+          </p>
+          <p
+            class="md-body-1"
+            md-colors="{background: 'blue-grey-50'}"
+            ng-bind-html='t.spec.templates.title | simpleFormat'
+            layout-padding>
+          </p>
+        </div>
       </md-card-content>
 
       <md-card-actions layout="row" layout-align="start center">
         <md-button
           class="md-primary"
-          aria-label="View details for this support request template"
-          ui-sref="help.support.request-templates.detail({id: t.id})">
+          aria-label="View details of this announcement template"
+          ui-sref="announcements.templates.detail({id: t.id})">
           Details
         </md-button>
       </md-card-actions>

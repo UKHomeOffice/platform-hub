@@ -1,0 +1,159 @@
+<div class="announcement-templates-form">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span ng-if="$ctrl.isNew">New Announcement Template</span>
+        <span ng-if="!$ctrl.isNew">Edit Announcement Template</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="$ctrl.ready && !$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout-padding>
+      <md-content>
+        <form name="$ctrl.templateForm" role="form" ng-submit="$ctrl.createOrUpdate()">
+
+          <md-input-container class="md-block">
+            <label for="shortname">Shortname:</label>
+            <input
+              name="shortname"
+              ng-model="$ctrl.template.shortname"
+              required
+              placeholder="A short and memorable name for this template, e.g. 'Service downtime'">
+            <div ng-messages="$ctrl.templateForm.shortname.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <md-input-container class="md-block">
+            <label for="description">Description:</label>
+            <textarea
+              name="description"
+              ng-model="$ctrl.template.description"
+              rows="4"
+              required
+              md-select-on-focus>
+            </textarea>
+            <div ng-messages="$ctrl.templateForm.description.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <fields-editor
+            title="Fields to fill in for the announcement"
+            field-types="$ctrl.formFieldTypes"
+            fields="$ctrl.template.spec.fields"
+            form="$ctrl.templateForm">
+          </fields-editor>
+
+          <br />
+          <br />
+
+          <fieldset>
+            <legend>Template definitions</legend>
+
+            <md-input-container class="md-block">
+              <label for="templates_title">For the title (same across all formats):</label>
+              <textarea
+                name="templates_title"
+                ng-model="$ctrl.template.spec.templates.title"
+                rows="2"
+                required
+                aria-label="Template definition for the title">
+              </textarea>
+              <div ng-messages="$ctrl.templateForm.templates_title.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="templates_on_hub">Displaying on the hub (HTML allowed):</label>
+              <textarea
+                name="templates_on_hub"
+                ng-model="$ctrl.template.spec.templates.on_hub"
+                rows="10"
+                required
+                aria-label="Template definition for displaying on the hub">
+              </textarea>
+              <div ng-messages="$ctrl.templateForm.templates_on_hub.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="templates_email_html">For email HTML:</label>
+              <textarea
+                name="templates_email_html"
+                ng-model="$ctrl.template.spec.templates.email_html"
+                rows="10"
+                required
+                aria-label="Template definition for email HTML">
+              </textarea>
+              <div ng-messages="$ctrl.templateForm.templates_email_html.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="templates_email_text">For email text only:</label>
+              <textarea
+                name="templates_email_text"
+                ng-model="$ctrl.template.spec.templates.email_text"
+                rows="10"
+                required
+                aria-label="Template definition for email text only">
+              </textarea>
+              <div ng-messages="$ctrl.templateForm.templates_email_text.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="templates_slack">For Slack:</label>
+              <textarea
+                name="templates_slack"
+                ng-model="$ctrl.template.spec.templates.slack"
+                rows="10"
+                required
+                aria-label="Template definition for Slack messages">
+              </textarea>
+              <div ng-messages="$ctrl.templateForm.templates_slack.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+          </fieldset>
+
+          <div layout="row" layout-align="center center">
+            <md-button
+              class="md-accent md-raised"
+              aria-label="Preview the output results for this template"
+              ng-click="$ctrl.triggerPreview($event)"
+              ng-disabled="!$ctrl.template.spec.fields || $ctrl.template.spec.fields.length == 0">
+              Open Previewer
+            </md-button>
+          </div>
+
+          <br />
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="$ctrl.saving || $ctrl.templateForm.$invalid"
+              ng-class="{'md-raised': ($ctrl.templateForm.$dirty && $ctrl.templateForm.$valid) }"
+              aria-label="Save announcement template">
+              <span ng-if="$ctrl.isNew">Create</span>
+              <span ng-if="!$ctrl.isNew">Update</span>
+            </md-button>
+            <md-button ui-sref="announcements.templates.list" ng-disabled="$ctrl.saving">Cancel</md-button>
+          </div>
+
+        </form>
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

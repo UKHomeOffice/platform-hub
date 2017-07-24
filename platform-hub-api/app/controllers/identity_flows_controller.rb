@@ -1,5 +1,7 @@
 class IdentityFlowsController < AuthenticatedController
 
+  include ApiJsonErrorHandler
+
   skip_before_action :require_authentication, only: :callback
 
   # Note: only Github auth is supported for now
@@ -14,15 +16,7 @@ class IdentityFlowsController < AuthenticatedController
   def callback
     # Callback from external service's OAuth2 flow
 
-    code = params[:code]
-    if code.blank?
-      head :unprocessable_entity and return
-    end
-
-    state = params[:state]
-    if state.blank?
-      head :unprocessable_entity and return
-    end
+    code, state = params.require([:code, :state])
 
     begin
       identity = git_hub_identity_service.connect_identity code, state

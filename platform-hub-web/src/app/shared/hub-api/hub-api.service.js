@@ -66,6 +66,14 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.announcementMarkSticky = announcementMarkSticky;
   service.announcementUnmarkSticky = announcementUnmarkSticky;
 
+  service.getAnnouncementTemplates = buildCollectionFetcher('announcement_templates');
+  service.getAnnouncementTemplate = buildResourceFetcher('announcement_templates');
+  service.createAnnouncementTemplate = buildResourceCreator('announcement_templates');
+  service.updateAnnouncementTemplate = buildResourceUpdater('announcement_templates');
+  service.deleteAnnouncementTemplate = buildResourceDeletor('announcement_templates');
+  service.getAnnouncementTemplateFormFieldTypes = buildSimpleFetcher('announcement_templates/form_field_types', 'field types');
+  service.previewAnnouncementTemplate = previewAnnouncementTemplate;
+
   service.getKubernetesClusters = buildSimpleFetcher('kubernetes/clusters', 'kubernetes clusters');
   service.getKubernetesTokens = getKubernetesTokens;
   service.deleteKubernetesToken = deleteKubernetesToken;
@@ -360,6 +368,29 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .post(`${apiEndpoint}/announcements/${announcementId}/unmark_sticky`)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to unmark announcement as sticky', response));
+        return $q.reject(response);
+      });
+  }
+
+  function previewAnnouncementTemplate(templates, data) {
+    if (_.isNull(templates) || _.isEmpty(templates)) {
+      throw new Error('"templates" argument not specified or empty');
+    }
+
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/announcement_templates/preview`, {
+        templates: templates,
+        data: data
+      })
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to preview announcement template', response));
         return $q.reject(response);
       });
   }

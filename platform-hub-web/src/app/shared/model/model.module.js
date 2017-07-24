@@ -13,6 +13,7 @@ import {PlatformThemes} from './platform-themes';
 import {PlatformThemesResourceKinds} from './platform-themes-resource-kinds';
 import {UserScopes} from './user-scopes';
 
+import {announcementTemplateValidator} from './validators/announcement-template-validator';
 import {formFieldsValidator} from './validators/form-fields-validator';
 
 export const ModelModule = angular
@@ -29,5 +30,6 @@ export const ModelModule = angular
   .service('PlatformThemes', PlatformThemes)
   .service('PlatformThemesResourceKinds', PlatformThemesResourceKinds)
   .service('UserScopes', UserScopes)
+  .service('announcementTemplateValidator', announcementTemplateValidator)
   .service('formFieldsValidator', formFieldsValidator)
   .name;

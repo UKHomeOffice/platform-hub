@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 9.6.1
--- Dumped by pg_dump version 9.6.3
+-- Dumped by pg_dump version 9.6.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -61,6 +61,21 @@ SET search_path = public, pg_catalog;
 SET default_tablespace = '';
 
 SET default_with_oids = false;
+
+--
+-- Name: announcement_templates; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE announcement_templates (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    shortname character varying NOT NULL,
+    slug character varying NOT NULL,
+    description text NOT NULL,
+    spec json NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
 
 --
 -- Name: announcements; Type: TABLE; Schema: public; Owner: -
@@ -378,6 +393,14 @@ ALTER TABLE ONLY read_marks ALTER COLUMN id SET DEFAULT nextval('read_marks_id_s
 
 
 --
+-- Name: announcement_templates announcement_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY announcement_templates
+    ADD CONSTRAINT announcement_templates_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: announcements announcements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -502,6 +525,20 @@ ALTER TABLE ONLY users
 --
 
 CREATE INDEX delayed_jobs_priority ON delayed_jobs USING btree (priority, run_at);
+
+
+--
+-- Name: index_announcement_templates_on_shortname; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_announcement_templates_on_shortname ON announcement_templates USING btree (shortname);
+
+
+--
+-- Name: index_announcement_templates_on_slug; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_announcement_templates_on_slug ON announcement_templates USING btree (slug);
 
 
 --
@@ -746,6 +783,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170619125933'),
 ('20170621140022'),
 ('20170626134741'),
-('20170628103710');
+('20170628103710'),
+('20170712132824');
 
 
