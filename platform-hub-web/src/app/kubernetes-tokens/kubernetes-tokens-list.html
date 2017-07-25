@@ -4,11 +4,12 @@
       <h3>
         <span>Kubernetes Tokens</span>
         <span ng-if="$ctrl.user">for {{$ctrl.user.name}} ({{$ctrl.user.email}})</span>
+        <small class="badge" ng-if="$ctrl.user && !$ctrl.user.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
       </h3>
       <span flex></span>
 
       <md-button
-        ng-if="!$ctrl.loading && $ctrl.user && ($ctrl.tokens.length < $ctrl.KubernetesClusters.all.length)"
+        ng-if="!$ctrl.loading && $ctrl.user && $ctrl.user.is_active && ($ctrl.tokens.length < $ctrl.KubernetesClusters.all.length)"
         aria-label="Add new token"
         ui-sref="kubernetes-tokens.new({userId: $ctrl.user.id})">
         <md-icon>{{$ctrl.addTokenIcon}}</md-icon>
@@ -61,6 +62,7 @@
             {{user.name}}
             ({{user.email}})
           </span>
+          <small class="badge" ng-if="!user.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
         </md-item-template>
         <md-not-found>
           No users matching "{{$ctrl.searchText}}" were found.
@@ -98,6 +100,7 @@
 
       <md-card-actions layout="row" layout-align="start center">
         <md-button
+          ng-if="$ctrl.user.is_active"
           class="md-primary"
           aria-label="View and edit details for this token"
           ui-sref="kubernetes-tokens.edit({userId: $ctrl.user.id, cluster: t.cluster})">

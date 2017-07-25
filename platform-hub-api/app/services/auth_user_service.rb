@@ -1,6 +1,7 @@
 module AuthUserService
+  extend self
 
-  def self.get auth_token_payload
+  def get auth_token_payload
     return nil if auth_token_payload.blank? || auth_token_payload['email'].blank?
 
     email = auth_token_payload['email']
@@ -30,6 +31,21 @@ module AuthUserService
       retry unless (retries -= 1).zero?
     end
 
+  end
+
+  def touch_and_update_main_identity user, payload
+    user.with_lock do
+      user.touch :last_seen_at
+    end
+
+    i = user.main_identity
+    if i.present?
+      i.with_lock do
+        if i.external_id != payload['sub']
+          i.update!(external_id: payload['sub'])
+        end
+      end
+    end
   end
 
 end

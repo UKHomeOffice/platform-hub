@@ -1,7 +1,7 @@
 module GitHubOnboardingHelpers
   extend ActiveSupport::Concern
 
-  include AgentsInitializer
+  include Agents::GitHubAgentInstance
 
   def handle_onboard_github_request user, audit_context
     handle :onboard, user, audit_context

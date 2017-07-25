@@ -38,6 +38,7 @@ class User < ApplicationRecord
     :against => :name,
     :using => :trigram
 
+  scope :active, -> { where(is_active: true) }
 
   def main_identity
     identity :keycloak
@@ -53,6 +54,16 @@ class User < ApplicationRecord
 
   def revoke_admin!
     self.role = nil
+    self.save!
+  end
+
+  def deactivate!
+    self.is_active = false
+    self.save!
+  end
+
+  def activate!
+    self.is_active = true
     self.save!
   end
 

@@ -1,5 +1,5 @@
 class UserSerializer < BaseSerializer
-  attributes :id, :name, :email, :role, :last_seen_at
+  attributes :id, :name, :email, :role, :last_seen_at, :is_active
 
   has_many :identities, if: :is_admin_or_own?
 

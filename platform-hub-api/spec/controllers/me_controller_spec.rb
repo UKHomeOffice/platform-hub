@@ -34,6 +34,7 @@ RSpec.describe MeController, type: :controller do
             }
           ],
           'flags' => Hash[UserFlags.flag_names.map {|f| [f, false]}],
+          'is_active' => true,
           'is_managerial' => true,
           'is_technical' => true,
           'global_announcements_unread_count' => 0

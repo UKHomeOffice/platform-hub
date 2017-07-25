@@ -28,7 +28,29 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
       FeatureFlags.refresh();
     }
   });
+
+  // Listen for auth unauthorized event
+  const authUnauthorizedHandler = $rootScope.$on(events.auth.unauthorized, () => {
+    logger.error('User unauthorized.');
+    $state.go('home');
+  });
+
+  // Listen for auth forbidden event
+  const authForbiddenHandler = $rootScope.$on(events.auth.forbidden, () => {
+    logger.error('Access forbidden.');
+    $state.go('home');
+  });
+
+  // Listen for auth deactivated event
+  const authDeactivatedHandler = $rootScope.$on(events.auth.deactivated, () => {
+    logger.error('Contact an admin to properly activate your account on the hub');
+    $state.go('home');
+  });
+
   $rootScope.$on('$destroy', authDataHandler);
+  $rootScope.$on('$destroy', authUnauthorizedHandler);
+  $rootScope.$on('$destroy', authForbiddenHandler);
+  $rootScope.$on('$destroy', authDeactivatedHandler);
 
   // ---------------------------------------------------------------------------
   // Handle transitions to states – this takes into account authentication,

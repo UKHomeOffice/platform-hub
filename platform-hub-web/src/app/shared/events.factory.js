@@ -3,7 +3,10 @@ export const events = function () {
 
   return {
     auth: {
-      updated: 'auth:updated'
+      updated: 'auth:updated',
+      unauthorized: 'auth:unauthorized',
+      forbidden: 'auth:forbidden',
+      deactivated: 'auth:deactivated'
     }
   };
 };

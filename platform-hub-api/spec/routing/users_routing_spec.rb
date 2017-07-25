@@ -23,6 +23,14 @@ RSpec.describe UsersController, type: :routing do
       expect(:post => '/users/1/revoke_admin').to route_to('users#revoke_admin', :id => '1')
     end
 
+    it 'routes to #activate' do
+      expect(:post => '/users/1/activate').to route_to('users#activate', :id => '1')
+    end
+
+    it 'routes to #deactivate' do
+      expect(:post => '/users/1/deactivate').to route_to('users#deactivate', :id => '1')
+    end
+
     it 'routes to #onboard_github' do
       expect(:post => '/users/1/onboard_github').to route_to('users#onboard_github', :id => '1')
     end

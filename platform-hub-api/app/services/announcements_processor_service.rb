@@ -63,7 +63,7 @@ class AnnouncementsProcessorService
   def email_addresses_for announcement
     hub_users_email_addresses =
       if announcement.deliver_to['hub_users'] == 'all'
-        User.pluck(:email)
+        User.active.pluck(:email)
       else
         []
       end

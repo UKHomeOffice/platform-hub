@@ -97,6 +97,7 @@ RSpec.describe UsersController, type: :controller do
               'enabled_identities' => [],
               'identities' => [],
               'flags' => Hash[UserFlags.flag_names.map {|f| [f, false]}],
+              'is_active' => true,
               'is_managerial' => true,
               'is_technical' => true
             })
@@ -133,20 +134,32 @@ RSpec.describe UsersController, type: :controller do
           end
         end
 
-        context 'when users exist' do
+        context 'when users exist and include_deactivated param is true' do
           before do
             create_list :user, 3
-            @user = create :user, name: 'foobar'
+            @user = create :user, name: 'foobar', is_active: false
           end
 
           it 'should return expected results' do
-            get :search, params: { q: 'foo' }
+            get :search, params: { q: 'foo', include_deactivated: 'true' }
             expect(response).to be_success
             expect(json_response.length).to eq 1
             expect(json_response.first['id']).to eq @user.id
           end
         end
 
+        context 'when users exist and include_deactivated param is false' do
+          before do
+            create_list :user, 3
+            @user = create :user, name: 'foobar', is_active: false
+          end
+
+          it 'filters out deactivated users' do
+            get :search, params: { q: 'foo', include_deactivated: 'false' }
+            expect(response).to be_success
+            expect(json_response.length).to eq 0
+          end
+        end
       end
 
       context 'not an admin but is a project team manager of some project' do
@@ -381,6 +394,108 @@ RSpec.describe UsersController, type: :controller do
 
     end
 
+  end
+
+  describe 'POST #activate' do
+    before do
+      @user = create :user
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :activate, params: { id: @user.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :activate, params: { id: @user.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+        let(:keycloak_agent_service) { instance_double('Agents::KeycloakAgentService') }
+        let(:user_representation) { double }
+
+        before do
+          @user.deactivate!
+        end
+
+        it 'should activate the specified user' do
+          expect(keycloak_agent_service).to receive(:activate_user).with(@user).and_return(user_representation)
+          expect(UserActivationService).to receive(:keycloak_agent_service).and_return(keycloak_agent_service)
+
+          expect(@user.is_active?).to be false
+          expect(Audit.count).to eq 0
+          expect(controller).to receive(:handle_user_activation_request).and_call_original
+          expect(UserActivationService).to receive(:activate!).with(@user).and_call_original
+          post :activate, params: { id: @user.id }
+          expect(response).to be_success
+          expect(@user.reload.is_active?).to be true
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'activate'
+          expect(audit.auditable).to eq @user
+          expect(audit.user.id).to eq current_user_id
+        end
+
+        context 'with user activation service error' do
+          include_examples "verify responses to exceptions for user activation", :activate
+        end
+
+      end
+    end
+  end
+
+  describe 'POST #deactivate' do
+    before do
+      @user = create :admin_user
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :deactivate, params: { id: @user.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          post :deactivate, params: { id: @user.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+        let(:keycloak_agent_service) { instance_double('Agents::KeycloakAgentService') }
+        let(:user_representation) { double }
+
+        it 'should deactivate the specified user' do
+          expect(keycloak_agent_service).to receive(:deactivate_user).with(@user).and_return(user_representation)
+          expect(UserActivationService).to receive(:keycloak_agent_service).and_return(keycloak_agent_service)
+
+          expect(@user.is_active?).to be true
+          expect(Audit.count).to eq 0
+          expect(controller).to receive(:handle_user_deactivation_request).and_call_original
+          expect(UserActivationService).to receive(:deactivate!).with(@user).and_call_original
+          post :deactivate, params: { id: @user.id }
+          expect(response).to be_success
+          expect(@user.reload.is_active?).to be false
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'deactivate'
+          expect(audit.auditable).to eq @user
+          expect(audit.user.id).to eq current_user_id
+        end
+
+        context 'with user activation service error' do
+          include_examples "verify responses to exceptions for user activation", :deactivate
+        end
+
+      end
+    end
   end
 
 end

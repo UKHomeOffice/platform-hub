@@ -18,6 +18,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.searchUsers = searchUsers;
   service.makeAdmin = makeAdmin;
   service.revokeAdmin = revokeAdmin;
+  service.activateUser = activateUser;
+  service.deactivateUser = deactivateUser;
 
   service.getProjects = buildCollectionFetcher('projects');
   service.getProject = buildResourceFetcher('projects');
@@ -168,13 +170,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function searchUsers(query) {
+  function searchUsers(query, include_deactivated = false) {
     if (_.isNull(query) || _.isEmpty(query)) {
       throw new Error('"query" argument not specified or empty');
     }
 
     return $http
-      .get(`${apiEndpoint}/users/search/${query}`)
+      .get(`${apiEndpoint}/users/search/${query}?include_deactivated=${include_deactivated}`)
       .then(response => {
         return response.data;
       })
@@ -206,6 +208,44 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .post(`${apiEndpoint}/users/${userId}/revoke_admin`)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to revoke admin status', response));
+        return $q.reject(response);
+      });
+  }
+
+  function activateUser(userId) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/users/${userId}/activate`)
+      .then(response => {
+        // handle 4xx errors which are not picked up by `catch`.
+        if (response.data.error && response.data.error.status.toString().match(/4../)) {
+          return $q.reject(response);
+        }
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to activate user', response));
+        return $q.reject(response);
+      });
+  }
+
+  function deactivateUser(userId) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/users/${userId}/deactivate`)
+      .then(response => {
+        // handle 4xx errors which are not picked up by `catch`.
+        if (response.data.error && response.data.error.status.toString().match(/4../)) {
+          return $q.reject(response);
+        }
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to deactivate user', response));
         return $q.reject(response);
       });
   }

@@ -243,7 +243,7 @@ CREATE TABLE platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying,
+    colour character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -367,7 +367,8 @@ CREATE TABLE users (
     updated_at timestamp without time zone NOT NULL,
     role character varying,
     is_managerial boolean DEFAULT true,
-    is_technical boolean DEFAULT true
+    is_technical boolean DEFAULT true,
+    is_active boolean DEFAULT true
 );
 
 
@@ -731,6 +732,13 @@ CREATE UNIQUE INDEX index_support_request_templates_on_slug ON support_request_t
 
 
 --
+-- Name: index_users_on_is_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_is_active ON users USING btree (is_active);
+
+
+--
 -- Name: index_users_on_role; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -784,6 +792,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170621140022'),
 ('20170626134741'),
 ('20170628103710'),
-('20170712132824');
+('20170711131233'),
+('20170712132824'),
+('20170717165305');
 
 

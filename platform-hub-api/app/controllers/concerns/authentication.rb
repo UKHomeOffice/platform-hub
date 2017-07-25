@@ -4,11 +4,16 @@ module Authentication
   include ActionController::HttpAuthentication::Token
 
   def require_authentication
-    head :unauthorized unless authenticated?
+    head :unauthorized and return unless authenticated?
+    head 418 and return unless active?
   end
 
   def authenticated?
     current_user.present?
+  end
+
+  def active?
+    current_user.is_active?
   end
 
   def current_user
@@ -34,7 +39,7 @@ module Authentication
     user = AuthUserService.get payload
 
     if user.present?
-      user.touch :last_seen_at
+      AuthUserService.touch_and_update_main_identity user, payload
     end
 
     user
