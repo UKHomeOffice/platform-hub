@@ -5,7 +5,7 @@ export const UsersListComponent = {
   controller: UsersListController
 };
 
-function UsersListController(hubApiService, logger) {
+function UsersListController(hubApiService, Me, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -18,6 +18,7 @@ function UsersListController(hubApiService, logger) {
   ctrl.revokeAdmin = revokeAdmin;
   ctrl.activateUser = activateUser;
   ctrl.deactivateUser = deactivateUser;
+  ctrl.isNotCurrentUser = isNotCurrentUser;
 
   init();
 
@@ -83,5 +84,9 @@ function UsersListController(hubApiService, logger) {
       .finally(() => {
         ctrl.saving = false;
       });
+  }
+
+  function isNotCurrentUser(user) {
+    return Me.data.id !== user.id;
   }
 }

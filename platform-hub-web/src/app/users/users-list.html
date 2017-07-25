@@ -60,7 +60,7 @@
 
       <md-card-actions layout="row" layout-align="start center">
         <md-button
-          ng-if="u.role != 'admin'"
+          ng-if="$ctrl.isNotCurrentUser(u) && u.role != 'admin'"
           ng-disabled="!u.is_active"
           class="md-primary"
           aria-label="Make user an admin"
@@ -68,7 +68,7 @@
           Make admin
         </md-button>
         <md-button
-          ng-if="u.role == 'admin'"
+          ng-if="$ctrl.isNotCurrentUser(u) && u.role == 'admin'"
           ng-disabled="!u.is_active"
           class="md-primary"
           aria-label="Revoke admin status for user"
@@ -76,7 +76,7 @@
           Revoke admin
         </md-button>
         <md-button
-          ng-if="u.is_active"
+          ng-if="$ctrl.isNotCurrentUser(u) && u.is_active"
           ng-disabled="$ctrl.saving"
           class="md-primary"
           aria-label="Deactivate user"
@@ -84,7 +84,7 @@
           Deactivate
         </md-button>
         <md-button
-          ng-if="!u.is_active"
+          ng-if="$ctrl.isNotCurrentUser(u) && !u.is_active"
           ng-disabled="$ctrl.saving"
           class="md-primary"
           aria-label="Activate user"
