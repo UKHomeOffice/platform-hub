@@ -30,7 +30,7 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
         end
 
         let :announcement_template_ids do
-          @announcement_templates.sort_by(&:shortname).map(&:friendly_id)
+          @announcement_templates.sort_by(&:shortname).map(&:id)
         end
 
         it 'should return a list of all announcement templates' do
@@ -52,7 +52,7 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
 
     it_behaves_like 'unauthenticated not allowed'  do
       before do
-        get :show, params: { id: @announcement_template.friendly_id }
+        get :show, params: { id: @announcement_template.id }
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          get :show, params: { id: @announcement_template.friendly_id }
+          get :show, params: { id: @announcement_template.id }
         end
       end
 
@@ -75,10 +75,10 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
 
         context 'for a announcement template that exists' do
           it 'should return the specified announcement template resource' do
-            get :show, params: { id: @announcement_template.friendly_id }
+            get :show, params: { id: @announcement_template.id }
             expect(response).to be_success
             expect(json_response).to eq({
-              'id' => @announcement_template.friendly_id,
+              'id' => @announcement_template.id,
               'shortname' => @announcement_template.shortname,
               'description' => @announcement_template.description,
               'spec' => Hashie::Mash.new(@announcement_template.spec),
@@ -129,7 +129,7 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
           expect(response).to be_success
           expect(AnnouncementTemplate.count).to eq 1
           announcement_template = AnnouncementTemplate.first
-          announcement_template_external_id = announcement_template.friendly_id
+          announcement_template_external_id = announcement_template.id
           announcement_template_internal_id = announcement_template.id
           expect(json_response).to eq({
             'id' => announcement_template_external_id,
@@ -154,7 +154,7 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
   describe 'PUT #update' do
     let :put_data do
       {
-        id: @announcement_template.friendly_id,
+        id: @announcement_template.id,
         announcement_template: {
           shortname: 'foo'
         }

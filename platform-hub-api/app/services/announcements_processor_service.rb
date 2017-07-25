@@ -77,19 +77,29 @@ class AnnouncementsProcessorService
   end
 
   def attachment_for_slack announcement
+    if announcement.template_data.present?
+      output = AnnouncementTemplateFormatterService.format announcement.template_definitions, announcement.template_data
+      title = output.title
+      text = output.slack
+    else
+      title = announcement.title
+      text = announcement.text
+    end
+
     {
       pretext: "<!channel> #{announcement.level.titleize}:",
-      fallback: fallback_text_for_slack(announcement),
+      fallback: fallback_text_for_slack(announcement.level, title, text),
       color: color_for_slack(announcement),
-      title: Slack::Notifier::Util::Escape.html(announcement.title),
-      text: Slack::Notifier::Util::Escape.html(announcement.text)
+      title: Slack::Notifier::Util::Escape.html(title),
+      text: Slack::Notifier::Util::Escape.html(text),
+      mrkdwn_in: ['text']
     }
   end
 
-  def fallback_text_for_slack announcement
+  def fallback_text_for_slack level, title, text
     m = []
-    m << "[#{announcement.level}] #{announcement.title}"
-    m << announcement.text
+    m << "[#{level}] #{title}"
+    m << text
     m.join(' - ');
   end
 

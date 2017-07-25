@@ -12,11 +12,11 @@ FactoryGirl.define do
       fields_count 1
       templates do
         {
-          'title': 'Title {{field1}}',
-          'on_hub': 'On hub {{field1}}',
-          'email_html': 'Email HTML <p>{{field1}}</p>',
-          'email_text': 'Email text {{field1}}',
-          'slack': 'Slack {{field1}}'
+          'title': 'Title {{field0}}',
+          'on_hub': 'On hub {{field0}}',
+          'email_html': 'Email HTML <p>{{field0}}</p>',
+          'email_text': 'Email text {{field0}}',
+          'slack': 'Slack {{field0}}'
         }
       end
     end

@@ -7,6 +7,9 @@ class Announcement < ApplicationRecord
 
   acts_as_readable :on => :publish_at
 
+  belongs_to :original_template,
+    class_name: 'AnnouncementTemplate'
+
   enum level: {
     info: 'info',
     warning: 'warning',
@@ -20,11 +23,27 @@ class Announcement < ApplicationRecord
     delivery_failed: 'delivery_failed'
   }
 
+  before_validation :set_template_definitions
+
   validates :title,
-    presence: true
+    presence: true,
+    if: -> (a) { a.text.present? }
 
   validates :text,
-    presence: true
+    presence: true,
+    if: -> (a) { a.title.present? }
+
+  validates :original_template_id,
+    presence: true,
+    if: -> (a) { a.template_data.present? }
+
+  validates :template_definitions,
+    presence: true,
+    if: -> (a) { a.original_template_id.present? || a.template_data.present? }
+
+  validates :template_data,
+    presence: true,
+    if: -> (a) { a.original_template_id.present? || a.template_definitions.present? }
 
   validates :is_global,
     inclusion: { in: [ true, false ] }
@@ -43,6 +62,8 @@ class Announcement < ApplicationRecord
 
   validates :status,
     presence: true
+
+  validate :should_have_template_or_content
 
   attr_default :level, :info
   attr_default :is_global, false
@@ -73,6 +94,31 @@ class Announcement < ApplicationRecord
 
   def unmark_sticky!
     self.update_column :is_sticky, false
+  end
+
+  private
+
+  def should_have_template_or_content
+
+    # At this point we assume that some presence checks have been made (see above)
+
+    template_fields = [ self.original_template_id, self.template_definitions, self.template_data ]
+    content_fields = [ self.title, self.text ]
+
+    if template_fields.any?(&:present?) && content_fields.any?(&:present?)
+      errors[:base] << 'either a template can be specified or content directly, not both'
+    end
+
+    if template_fields.all?(&:blank?) && content_fields.all?(&:blank?)
+      errors[:base] << 'either specify a template or content directly - currently neither is specified'
+    end
+
+  end
+
+  def set_template_definitions
+    if self.original_template.present?
+      self.template_definitions = self.original_template.spec['templates']
+    end
   end
 
 end

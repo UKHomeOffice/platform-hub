@@ -3,30 +3,22 @@ export const AnnouncementTemplatesListComponent = {
   controller: AnnouncementTemplatesListController
 };
 
-function AnnouncementTemplatesListController(hubApiService) {
+function AnnouncementTemplatesListController(AnnouncementTemplates) {
   'ngInject';
 
   const ctrl = this;
 
-  ctrl.loading = false;
+  ctrl.AnnouncementTemplates = AnnouncementTemplates;
 
-  ctrl.templates = [];
+  ctrl.loading = false;
 
   init();
 
   function init() {
-    loadTemplates();
-  }
-
-  function loadTemplates() {
     ctrl.loading = true;
-    ctrl.templates = [];
 
-    hubApiService
-      .getAnnouncementTemplates()
-      .then(templates => {
-        ctrl.templates = templates;
-      })
+    AnnouncementTemplates
+      .refresh()
       .finally(() => {
         ctrl.loading = false;
       });

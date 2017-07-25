@@ -1,6 +1,8 @@
 <md-dialog aria-label="Announcement template preview" flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50">
   <md-toolbar class="md-toolbar-tools md-accent">
-    <h2>Preview an announcement template</h2>
+    <h2>
+      Announcement template preview
+    </h2>
     <span flex></span>
     <md-button
       class="close-button md-icon-button"
@@ -14,7 +16,7 @@
 
   <md-dialog-content class="md-dialog-content" layout="column" layout-padding>
 
-    <div md-whiteframe="2" flex="100">
+    <div md-whiteframe="2" flex="100" ng-if="!$ctrl.readOnly">
       <form name="$ctrl.form">
         <form-field
           ng-repeat="field in $ctrl.fields track by field.id"
@@ -37,10 +39,10 @@
     </div>
 
     <div ng-if="$ctrl.results">
-      <br />
-      <br />
+      <br ng-if="!$ctrl.readOnly" />
+      <br ng-if="!$ctrl.readOnly" />
 
-      <h4 class="md-subhead centred">Output</h4>
+      <h4 class="md-subhead centred" ng-if="!$ctrl.readOnly">Output</h4>
 
       <div>
         <p class="md-body-1" md-colors="{color: 'default-blue-grey-700'}">
@@ -60,12 +62,12 @@
         <p class="md-body-1" md-colors="{color: 'default-blue-grey-700'}">
           On hub:
         </p>
-        <p
+        <div
           class="md-body-1"
           md-colors="{background: 'default-blue-grey-50'}"
           ng-bind-html='$ctrl.results.on_hub'
           layout-padding>
-        </p>
+        </div>
       </div>
 
       <br />
@@ -74,14 +76,14 @@
         <p class="md-body-1" md-colors="{color: 'default-blue-grey-700'}">
           HTML email:
         </p>
-        <p
+        <div
           class="md-body-1"
           md-colors="{background: 'default-blue-grey-50'}"
           ng-bind-html='$ctrl.results.email_html'
           layout-padding>
-        </p>
-        <p class="md-body-2">
-          NOTE: actual HTML rendering will depend on email clients!
+        </div>
+        <p class="md-body-1">
+          <em>NOTE: actual HTML rendering will depend on email clients!</em>
         </p>
       </div>
 

@@ -36,33 +36,82 @@
           <br />
 
           <md-input-container class="md-block">
-            <label for="title">Title:</label>
-            <input
-              name="title"
-              ng-model="$ctrl.announcement.title"
-              required
-              placeholder="A title for this announcement – e.g. 'Service foo being upgraded on 23rd April'"
-              aria-label="Set a title for this announcement">
-            <div ng-messages="$ctrl.announcementForm.title.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
+            <label for="original_template_id">Use a template:</label>
+            <md-select
+              name="original_template_id"
+              multiple="false"
+              ng-model="$ctrl.announcement.original_template_id"
+              ng-change="$ctrl.templateSelectChange()"
+              aria-label="Optionally use a template for this announcement">
+              <md-option ng-if="$ctrl.isNew" ng-value="">none</md-option>
+              <md-option ng-repeat="t in $ctrl.AnnouncementTemplates.all track by t.id" ng-value="t.id">
+                <strong>{{t.shortname}}</strong>
+                ({{t.description}})
+              </md-option>
+            </md-select>
           </md-input-container>
 
-          <md-input-container class="md-block">
-            <label for="text">Text:</label>
-            <textarea
-              name="text"
-              ng-model="$ctrl.announcement.text"
-              rows="10"
-              required
-              aria-label="Set a text for this announcement"
-              md-select-on-focus>
-            </textarea>
-            <div ng-messages="$ctrl.announcementForm.text.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
+          <br />
 
+          <!-- Using a template -->
+          <fieldset ng-if="$ctrl.selectedTemplate">
+            <legend>
+              Data required for template
+            </legend>
+
+            <form-field
+              ng-repeat="field in $ctrl.selectedTemplate.spec.fields track by field.id"
+              spec="field"
+              value="$ctrl.announcement.template_data[field.id]",
+              form="$ctrl.form">
+            </form-field>
+
+            <div layout="row" layout-align="center center">
+              <md-button
+                class="md-accent md-raised"
+                aria-label="Preview the output for this announcement"
+                ng-click="$ctrl.preview($event)">
+                Preview
+              </md-button>
+            </div>
+          </fieldset>
+
+          <!-- Provide content -->
+          <fieldset ng-if="!$ctrl.selectedTemplate">
+            <legend>
+              Announcement content
+            </legend>
+
+            <md-input-container class="md-block">
+              <label for="title">Title:</label>
+              <input
+                name="title"
+                ng-model="$ctrl.announcement.title"
+                required
+                placeholder="A title for this announcement – e.g. 'Service foo being upgraded on 23rd April'"
+                aria-label="Set a title for this announcement">
+              <div ng-messages="$ctrl.announcementForm.title.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="text">Text:</label>
+              <textarea
+                name="text"
+                ng-model="$ctrl.announcement.text"
+                rows="10"
+                required
+                aria-label="Set a text for this announcement"
+                md-select-on-focus>
+              </textarea>
+              <div ng-messages="$ctrl.announcementForm.text.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+          </fieldset>
+
+          <br />
           <br />
 
           <fieldset>

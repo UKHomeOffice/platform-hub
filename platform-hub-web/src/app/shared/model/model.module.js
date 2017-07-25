@@ -3,6 +3,7 @@ import angular from 'angular';
 import {HubApiModule} from '../hub-api/hub-api.module';
 import {UtilModule} from '../util/util.module';
 
+import {AnnouncementTemplates} from './announcement-templates';
 import {Announcements} from './announcements';
 import {AppSettings} from './app-settings';
 import {FeatureFlags} from './feature-flags';
@@ -21,6 +22,7 @@ export const ModelModule = angular
     HubApiModule,
     UtilModule
   ])
+  .service('AnnouncementTemplates', AnnouncementTemplates)
   .service('Announcements', Announcements)
   .service('AppSettings', AppSettings)
   .service('FeatureFlags', FeatureFlags)

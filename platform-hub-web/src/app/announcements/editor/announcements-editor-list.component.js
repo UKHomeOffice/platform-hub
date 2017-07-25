@@ -5,18 +5,21 @@ export const AnnouncementsEditorListComponent = {
   controller: AnnouncementsEditorListController
 };
 
-function AnnouncementsEditorListController($mdDialog, icons, Announcements, logger) {
+function AnnouncementsEditorListController($q, $mdDialog, icons, AnnouncementTemplates, Announcements, announcementTemplatePreviewPopupService, logger) {
   'ngInject';
 
   const ctrl = this;
 
+  ctrl.AnnouncementTemplates = AnnouncementTemplates;
   ctrl.Announcements = Announcements;
   ctrl.isEditable = Announcements.isEditable;
   ctrl.announcementIcon = icons.announcements;
 
   ctrl.loading = true;
   ctrl.saving = false;
+  ctrl.templates = {};
 
+  ctrl.preview = preview;
   ctrl.publish = publish;
   ctrl.markSticky = markSticky;
   ctrl.unmarkSticky = unmarkSticky;
@@ -25,17 +28,25 @@ function AnnouncementsEditorListController($mdDialog, icons, Announcements, logg
   init();
 
   function init() {
-    refreshAllAnnouncements();
+    reload();
   }
 
-  function refreshAllAnnouncements() {
+  function reload() {
     ctrl.loading = true;
 
-    Announcements
-      .refreshAll()
-      .finally(() => {
-        ctrl.loading = false;
-      });
+    $q.all([
+      AnnouncementTemplates.refresh(),
+      Announcements.refreshAll()
+    ]).finally(() => {
+      ctrl.loading = false;
+    });
+  }
+
+  function preview(announcement, targetEvent) {
+    announcementTemplatePreviewPopupService.openWithResults(
+      announcement.preview,
+      targetEvent
+    );
   }
 
   function publish(announcement, targetEvent) {
@@ -109,7 +120,7 @@ function AnnouncementsEditorListController($mdDialog, icons, Announcements, logg
           .deleteAnnouncement(announcement)
           .then(() => {
             logger.success('Announcement deleted');
-            refreshAllAnnouncements();
+            reload();
           })
           .finally(() => {
             ctrl.saving = false;

@@ -35,14 +35,20 @@
             <md-icon md-colors="::{color: '{{a.colour}}'}">
               {{$ctrl.announcementIcon}}
             </md-icon>
-            <span>{{a.title}}</span>
+            <span ng-if="a.title">
+              {{a.title}}
+            </span>
+            <span ng-if="a.preview">
+              {{a.preview.title}}
+            </span>
           </span>
         </md-card-title-text>
       </md-card-title>
       <md-card-content>
         <br />
         <div class="md-body-1">
-          <div ng-bind-html='a.text | simpleFormat'></div>
+          <div ng-if="a.text" ng-bind-html='a.text | simpleFormat'></div>
+          <div ng-if="a.preview" ng-bind-html='a.preview.on_hub'></div>
         </div>
         <br />
         <p class="md-body-2" style="text-align: right;">

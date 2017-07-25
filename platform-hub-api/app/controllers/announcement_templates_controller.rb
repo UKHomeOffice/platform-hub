@@ -72,14 +72,14 @@ class AnnouncementTemplatesController < ApiJsonController
   # POST /announcement_templates/preview
   def preview
     templates, data = params.require([:templates, :data])
-    results = AnnouncementFormatterService.format templates, data
+    results = AnnouncementTemplateFormatterService.format templates, data
     render json: results
   end
 
   private
 
   def find_announcement_template
-    @announcement_template = AnnouncementTemplate.friendly.find params[:id]
+    @announcement_template = AnnouncementTemplate.find params[:id]
   end
 
   # Only allow a trusted parameter "white list" through.
