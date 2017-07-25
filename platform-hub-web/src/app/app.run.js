@@ -44,7 +44,11 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
   // Listen for auth deactivated event
   const authDeactivatedHandler = $rootScope.$on(events.auth.deactivated, () => {
     logger.error('Contact an admin to properly activate your account on the hub');
-    $state.go('home');
+    authService
+      .logout()
+      .then(() => {
+        $state.go('home');
+      });
   });
 
   $rootScope.$on('$destroy', authDataHandler);
