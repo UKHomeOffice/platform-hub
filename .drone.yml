@@ -83,13 +83,12 @@ pipeline:
       - apk update && apk upgrade
       - apk --update add ca-certificates openssl
       - update-ca-certificates
-      - apk --update add ruby ruby-dev ruby-io-console ruby-json ruby-bigdecimal tzdata
-      - apk --update add postgresql-client postgresql-dev build-base libxml2-dev libxslt-dev libffi-dev
-      - gem install bundler --no-ri --no-rdoc
+      - apk --update add bash ruby ruby-irb ruby-rake ruby-io-console ruby-json ruby-bigdecimal libstdc++ tzdata postgresql-client
+      - apk --update add build-base ruby-dev libc-dev postgresql-dev libxml2-dev libxslt-dev libffi-dev
+      - "echo 'gem: --no-document' > /etc/gemrc && gem install bundler -v 1.14.6"
       - cd platform-hub-api
-      - bundle install --jobs 20 --retry 5 --deployment --no-cache
-      - bin/setup
-      - bundle exec rspec
+      - "/bin/bash -c 'bundle install --jobs 20 --retry 5 --deployment --no-cache'"
+      - "/bin/bash -c 'bin/setup && bundle exec rspec'"
     when:
       event: [push, tag]
 
