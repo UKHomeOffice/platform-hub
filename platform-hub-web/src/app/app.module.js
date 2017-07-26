@@ -28,6 +28,7 @@ import 'angular-medium-editor';
 import {AnnouncementsModule} from './announcements/announcements.module';
 import {AppSettingsModule} from './app-settings/app-settings.module';
 import {ContactListsModule} from './contact-lists/contact-lists.module';
+import {FeatureFlagsModule} from './feature-flags/feature-flags.module';
 import {HelpModule} from './help/help.module';
 import {HomeModule} from './home/home.module';
 import {IdentitiesModule} from './identities/identities.module';
@@ -60,6 +61,7 @@ angular
     AnnouncementsModule,
     AppSettingsModule,
     ContactListsModule,
+    FeatureFlagsModule,
     HelpModule,
     HomeModule,
     IdentitiesModule,

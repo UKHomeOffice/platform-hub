@@ -16,10 +16,10 @@ FactoryGirl.define do
             description: 'Development cluster',
             config: {
               s3_bucket: {
-                region: 'eu-west-1', 
+                region: 'eu-west-1',
                 bucket_name: 'dev-bucket-name',
-                access_key_id: ENCRYPTOR.encrypt('access-key-id'), 
-                secret_access_key: ENCRYPTOR.encrypt('secret-access-key'), 
+                access_key_id: ENCRYPTOR.encrypt('access-key-id'),
+                secret_access_key: ENCRYPTOR.encrypt('secret-access-key'),
                 object_key: 'path/to/tokens.csv',
               }
             }
@@ -29,10 +29,10 @@ FactoryGirl.define do
             description: 'Production cluster',
             config: {
               s3_bucket: {
-                region: 'eu-west-1', 
+                region: 'eu-west-1',
                 bucket_name: 'prod-bucket-name',
-                access_key_id: ENCRYPTOR.encrypt('access-key-id'), 
-                secret_access_key: ENCRYPTOR.encrypt('secret-access-key'), 
+                access_key_id: ENCRYPTOR.encrypt('access-key-id'),
+                secret_access_key: ENCRYPTOR.encrypt('secret-access-key'),
                 object_key: 'path/to/tokens.csv',
               }
             }
@@ -48,8 +48,8 @@ FactoryGirl.define do
         [
           {
             token: ENCRYPTOR.encrypt('token'),
-            user: 'user', 
-            uid: 'uid', 
+            user: 'user',
+            uid: 'uid',
             groups: [ 'group' ],
           }
         ]
@@ -59,11 +59,18 @@ FactoryGirl.define do
     factory :feature_flags_hash_record do
       scope 'general'
       id 'feature_flags'
-      data do
-        {
-          'some_flag': false,
-          'other_flag': true
-        }
+
+      transient do
+        flags do
+          {
+            'some_flag': false,
+            'other_flag': true
+          }
+        end
+      end
+
+      after :build do |hr, evaluator|
+        hr.data = evaluator.flags
       end
     end
 

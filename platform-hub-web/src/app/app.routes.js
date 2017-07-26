@@ -11,6 +11,7 @@ import {
   ContactListsForm,
   ContactListsList
 } from './contact-lists/contact-lists.module';
+import {FeatureFlagsForm} from './feature-flags/feature-flags.module';
 import {
   Faq,
   SupportRequestsForm,
@@ -337,6 +338,14 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
     .state('app-settings', {
       url: '/app-settings/edit',
       component: AppSettingsForm,
+      data: {
+        authenticate: true,
+        rolePermitted: 'admin'
+      }
+    })
+    .state('feature-flags', {
+      url: '/feature-flags/edit',
+      component: FeatureFlagsForm,
       data: {
         authenticate: true,
         rolePermitted: 'admin'

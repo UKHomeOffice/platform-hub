@@ -1,3 +1,4 @@
+
 require 'rails_helper'
 
 describe FeatureFlagService, type: :service do
@@ -12,9 +13,9 @@ describe FeatureFlagService, type: :service do
     @state2 = false
 
     create(:feature_flags_hash_record,
-      data: {
-	@flag1 => @state1,
-	@flag2 => @state2
+      flags: {
+      	@flag1 => @state1,
+      	@flag2 => @state2
       }
     )
   end
@@ -74,8 +75,8 @@ describe FeatureFlagService, type: :service do
   describe 'private methods' do
     describe '.feature_flags' do
       it 'finds or creates general hash record by id' do
-	expect(HashRecord).to receive_message_chain(:general, :find_or_create_by!).with(id: 'feature_flags')
-	subject.send(:feature_flags)
+        expect(HashRecord).to receive_message_chain(:general, :find_or_create_by!).with(id: 'feature_flags')
+        subject.send(:feature_flags)
       end
     end
   end

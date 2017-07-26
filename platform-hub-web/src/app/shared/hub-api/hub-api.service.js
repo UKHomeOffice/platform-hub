@@ -86,6 +86,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.revokeKubernetesToken = revokeKubernetesToken;
 
   service.getFeatureFlags = buildSimpleFetcher('feature_flags', 'feature flags');
+  service.updateFeatureFlag = buildResourceUpdater('feature_flags');
 
   return service;
 
