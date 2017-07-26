@@ -6,10 +6,10 @@ RUN apk update && apk upgrade \
     && apk --update add ca-certificates openssl \
     && update-ca-certificates \
     && apk --update add \
-    ruby ruby-dev ruby-io-console ruby-json ruby-bigdecimal tzdata \
-    postgresql-client postgresql-dev build-base libxml2-dev libxslt-dev \
+    bash ruby ruby-irb ruby-rake ruby-io-console ruby-json ruby-bigdecimal libstdc++ tzdata \
+    postgresql-client \
     && echo 'gem: --no-document' > /etc/gemrc \
-    && gem install bundler
+    && gem install bundler -v 1.14.6
 
 # Create app user and directory, set permissions
 WORKDIR /app
@@ -17,9 +17,14 @@ COPY . .
 RUN addgroup -S app \
     && adduser -S -g app app \
     && chown -R app:app /app
-USER app
-ENV HOME /app
 
-# Install deps, start server
-RUN bundle install --jobs 20 --retry 5 --deployment --without development test --no-cache
+# Install deps
+RUN apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev && \
+    apk --update add postgresql-dev libxml2-dev libxslt-dev && \
+    /bin/bash -c 'sudo -u app env NOKOGIRI_USE_SYSTEM_LIBRARIES=true bundle install --jobs 20 --retry 5 --deployment --without development test --no-cache' && \
+    apk del build_deps
+
+ENV HOME /app
+USER app
+
 CMD bundle exec rails s
