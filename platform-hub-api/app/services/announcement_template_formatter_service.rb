@@ -20,7 +20,8 @@ module AnnouncementTemplateFormatterService
       end
     end
 
-    # Special case for email HTML
+    # Special case for on hub + email HTML
+    results[:on_hub] = Rinku.auto_link(results[:on_hub])
     results[:email_html] = Rinku.auto_link(results[:email_html])
 
     Results.new results
