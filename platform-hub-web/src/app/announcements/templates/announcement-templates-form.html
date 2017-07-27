@@ -93,6 +93,17 @@
               </div>
             </md-input-container>
 
+            <div>
+              <md-button
+                class="md-raised"
+                aria-label="Copy email HTML to email text and strip out tags"
+                ng-click="$ctrl.copyAndStripEmailHtmlToText()">
+                Copy email HTML to email text and strip out tags
+              </md-button>
+            </div>
+
+            <br />
+
             <md-input-container class="md-block">
               <label for="templates_email_text">For email text only:</label>
               <textarea
