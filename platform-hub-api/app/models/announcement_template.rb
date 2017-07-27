@@ -28,7 +28,6 @@ class AnnouncementTemplate < ApplicationRecord
 
   @form_field_types = FormFieldsService.validate_types(Set[
     'text',
-    'textarea',
     'number',
     'select',
     'email',
