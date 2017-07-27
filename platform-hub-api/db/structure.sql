@@ -70,7 +70,7 @@ CREATE TABLE announcement_templates (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     shortname character varying NOT NULL,
     slug character varying NOT NULL,
-    description text NOT NULL,
+    description text,
     spec json NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -805,6 +805,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170711131233'),
 ('20170712132824'),
 ('20170717165305'),
-('20170721125027');
+('20170721125027'),
+('20170727103721');
 
 

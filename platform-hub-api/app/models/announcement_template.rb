@@ -16,9 +16,6 @@ class AnnouncementTemplate < ApplicationRecord
     presence: true,
     uniqueness: { case_sensitive: false }
 
-  validates :description,
-    presence: true
-
   validates :spec,
     presence: true
 

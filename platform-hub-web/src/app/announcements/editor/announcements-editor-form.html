@@ -46,7 +46,7 @@
               <md-option ng-if="$ctrl.isNew" ng-value="">none</md-option>
               <md-option ng-repeat="t in $ctrl.AnnouncementTemplates.all track by t.id" ng-value="t.id">
                 <strong>{{t.shortname}}</strong>
-                ({{t.description}})
+                <span ng-if="t.description">({{t.description}})</span>
               </md-option>
             </md-select>
           </md-input-container>

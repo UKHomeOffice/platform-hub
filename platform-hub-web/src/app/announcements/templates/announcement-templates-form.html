@@ -29,17 +29,13 @@
           </md-input-container>
 
           <md-input-container class="md-block">
-            <label for="description">Description:</label>
+            <label for="description">Description (optional):</label>
             <textarea
               name="description"
               ng-model="$ctrl.template.description"
               rows="4"
-              required
               md-select-on-focus>
             </textarea>
-            <div ng-messages="$ctrl.templateForm.description.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
           </md-input-container>
 
           <fields-editor
