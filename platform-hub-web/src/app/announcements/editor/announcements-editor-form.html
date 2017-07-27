@@ -59,21 +59,24 @@
               Data required for template
             </legend>
 
-            <form-field
-              ng-repeat="field in $ctrl.selectedTemplate.spec.fields track by field.id"
-              spec="field"
-              value="$ctrl.announcement.template_data[field.id]",
-              form="$ctrl.form">
-            </form-field>
+            <ng-form name="$ctrl.templateDataForm" role="form">
+              <form-field
+                ng-repeat="field in $ctrl.selectedTemplate.spec.fields track by field.id"
+                spec="field"
+                value="$ctrl.announcement.template_data[field.id]",
+                form="$ctrl.form">
+              </form-field>
 
-            <div layout="row" layout-align="center center">
-              <md-button
-                class="md-accent md-raised"
-                aria-label="Preview the output for this announcement"
-                ng-click="$ctrl.preview($event)">
-                Preview
-              </md-button>
-            </div>
+              <div layout="row" layout-align="center center">
+                <md-button
+                  class="md-accent md-raised"
+                  aria-label="Preview the output for this announcement"
+                  ng-click="$ctrl.preview($event)"
+                  ng-disabled="$ctrl.templateDataForm.$invalid">
+                  Preview
+                </md-button>
+              </div>
+            </ng-form>
           </fieldset>
 
           <!-- Provide content -->
