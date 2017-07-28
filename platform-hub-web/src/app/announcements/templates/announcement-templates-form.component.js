@@ -21,6 +21,7 @@ function AnnouncementTemplatesFormController($state, hubApiService, announcement
   ctrl.isNew = true;
   ctrl.formFieldTypes = null;
   ctrl.template = null;
+  ctrl.templatesHelpExpanded = false;
 
   ctrl.createOrUpdate = createOrUpdate;
   ctrl.copyAndStripEmailHtmlToText = copyAndStripEmailHtmlToText;
