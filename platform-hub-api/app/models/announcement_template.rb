@@ -16,9 +16,6 @@ class AnnouncementTemplate < ApplicationRecord
     presence: true,
     uniqueness: { case_sensitive: false }
 
-  validates :description,
-    presence: true
-
   validates :spec,
     presence: true
 
@@ -28,7 +25,6 @@ class AnnouncementTemplate < ApplicationRecord
 
   @form_field_types = FormFieldsService.validate_types(Set[
     'text',
-    'textarea',
     'number',
     'select',
     'email',

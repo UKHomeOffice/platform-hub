@@ -21,8 +21,10 @@ function AnnouncementTemplatesFormController($state, hubApiService, announcement
   ctrl.isNew = true;
   ctrl.formFieldTypes = null;
   ctrl.template = null;
+  ctrl.templatesHelpExpanded = false;
 
   ctrl.createOrUpdate = createOrUpdate;
+  ctrl.copyAndStripEmailHtmlToText = copyAndStripEmailHtmlToText;
   ctrl.triggerPreview = triggerPreview;
 
   init();
@@ -110,6 +112,12 @@ function AnnouncementTemplatesFormController($state, hubApiService, announcement
           ctrl.saving = false;
         });
     }
+  }
+
+  function copyAndStripEmailHtmlToText() {
+    const email_html = ctrl.template.spec.templates.email_html;
+    const text = email_html ? String(email_html).replace(/<[^>]+>/gm, '') : '';
+    ctrl.template.spec.templates.email_text = text;
   }
 
   function triggerPreview(targetEvent) {

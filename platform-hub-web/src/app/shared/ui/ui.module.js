@@ -5,6 +5,7 @@ import {FieldsListingsComponent} from './fields-listings.component';
 import {FormFieldComponent} from './form-field.component';
 import {LoadingIndicatorComponent} from './loading-indicator.component';
 import {SimpleFormatFilter} from './simple-format.filter';
+import {validateEmails} from './validate-emails.directive';
 
 export const UiModule = angular
   .module('app.shared.ui', [])
@@ -13,4 +14,5 @@ export const UiModule = angular
   .component('formField', FormFieldComponent)
   .component('loadingIndicator', LoadingIndicatorComponent)
   .filter('simpleFormat', SimpleFormatFilter)
+  .directive('validateEmails', validateEmails)
   .name;

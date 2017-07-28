@@ -29,17 +29,13 @@
           </md-input-container>
 
           <md-input-container class="md-block">
-            <label for="description">Description:</label>
+            <label for="description">Description (optional):</label>
             <textarea
               name="description"
               ng-model="$ctrl.template.description"
               rows="4"
-              required
               md-select-on-focus>
             </textarea>
-            <div ng-messages="$ctrl.templateForm.description.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
           </md-input-container>
 
           <fields-editor
@@ -54,6 +50,76 @@
 
           <fieldset>
             <legend>Template definitions</legend>
+
+            <div layout-padding>
+              <div
+                style="cursor: pointer"
+                md-colors="{background: 'green-50'}"
+                ng-click="$ctrl.templatesHelpExpanded = !$ctrl.templatesHelpExpanded">
+                <h4 class="md-subhead text-center">
+                  Help
+                  <span ng-if="!$ctrl.templatesHelpExpanded">…</span>
+                </h4>
+
+                <div ng-if="$ctrl.templatesHelpExpanded" class="md-body-1">
+                  <ul>
+                    <li>
+                      Any fields you specify (above) can be referenced in template definitions, like this:
+                      <code ng-non-bindable>{{field_id}}</code>
+                    </li>
+                    <li>
+                      The following template definitions need to be specified:
+
+                      <ul>
+                        <li>
+                          <strong>Title</strong> – used on the hub, as the email subject line and as the title in the Slack message (which becomes bolded for the latter). Don't use any special formatting symbols nor HTML in here.
+                        </li>
+                        <li>
+                          <strong>On the hub message body</strong> – used as the body of the announcement message when shown on the hub. You can use HTML tags here to layout and add emphasis, etc.
+                        </li>
+                        <li>
+                          <strong>Email HTML and email text</strong> – used when sending out emails. Both formats will be sent in one email (using multipart emails) and the text version is a fallback for email clients that can't render HTML.
+                        </li>
+                        <li>
+                          <strong>Slack message body</strong> – used in the Slack message. You can use all
+                          <a
+                            href="https://get.slack.help/hc/en-us/articles/202288908-Format-your-messages"
+                            target="_blank"
+                            ng-click="$event.stopPropagation()">
+                              the usual Slack formatting here
+                          </a>.
+                        </li>
+                      </ul>
+
+                    </li>
+                    <li>
+                      Use the 'Open Previewer' button to check how your template definitions look with real data.
+                    </li>
+                    <li>
+                      Where HTML is supported:
+
+                      <ul>
+                        <li>
+                          No special editing capabilities are provided – you will need to specify raw HTML.
+                        </li>
+                        <li>
+                          Use <code>&lt;p&gt;…&lt;&sol;p&gt;</code> blocks to separate out paragraphs of text.
+                        </li>
+                        <li>
+                          Use <code>&lt;strong&gt;…&lt;&sol;strong&gt;</code> and <code>&lt;em&gt;…&lt;&sol;em&gt;</code> to bolden and italicise text.
+                        </li>
+                      </ul>
+
+                    </li>
+                    <li>
+                      All URLs in template definitions (except title), or provided via a field input, are "auto linked" – i.e. made clickable. Where HTML is supported, you <strong>do not</strong> need to wrap your URLs in an <code>&lt;a&gt;…&lt;&sol;a&gt;</code> tag to make it a link.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <br />
+            </div>
 
             <md-input-container class="md-block">
               <label for="templates_title">For the title (same across all formats):</label>
@@ -70,7 +136,7 @@
             </md-input-container>
 
             <md-input-container class="md-block">
-              <label for="templates_on_hub">Displaying on the hub (HTML allowed):</label>
+              <label for="templates_on_hub">Displaying on the hub message body (HTML allowed):</label>
               <textarea
                 name="templates_on_hub"
                 ng-model="$ctrl.template.spec.templates.on_hub"
@@ -97,6 +163,17 @@
               </div>
             </md-input-container>
 
+            <div>
+              <md-button
+                class="md-raised"
+                aria-label="Copy email HTML to email text and strip out tags"
+                ng-click="$ctrl.copyAndStripEmailHtmlToText()">
+                Copy email HTML to email text and strip out tags
+              </md-button>
+            </div>
+
+            <br />
+
             <md-input-container class="md-block">
               <label for="templates_email_text">For email text only:</label>
               <textarea
@@ -112,7 +189,7 @@
             </md-input-container>
 
             <md-input-container class="md-block">
-              <label for="templates_slack">For Slack:</label>
+              <label for="templates_slack">For Slack message body:</label>
               <textarea
                 name="templates_slack"
                 ng-model="$ctrl.template.spec.templates.slack"

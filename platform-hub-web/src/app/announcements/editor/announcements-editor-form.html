@@ -35,7 +35,7 @@
 
           <br />
 
-          <md-input-container class="md-block">
+          <md-input-container class="md-block" ng-if="$ctrl.AnnouncementTemplates.all.length > 0">
             <label for="original_template_id">Use a template:</label>
             <md-select
               name="original_template_id"
@@ -46,7 +46,7 @@
               <md-option ng-if="$ctrl.isNew" ng-value="">none</md-option>
               <md-option ng-repeat="t in $ctrl.AnnouncementTemplates.all track by t.id" ng-value="t.id">
                 <strong>{{t.shortname}}</strong>
-                ({{t.description}})
+                <span ng-if="t.description">({{t.description}})</span>
               </md-option>
             </md-select>
           </md-input-container>
@@ -59,21 +59,24 @@
               Data required for template
             </legend>
 
-            <form-field
-              ng-repeat="field in $ctrl.selectedTemplate.spec.fields track by field.id"
-              spec="field"
-              value="$ctrl.announcement.template_data[field.id]",
-              form="$ctrl.form">
-            </form-field>
+            <ng-form name="$ctrl.templateDataForm" role="form">
+              <form-field
+                ng-repeat="field in $ctrl.selectedTemplate.spec.fields track by field.id"
+                spec="field"
+                value="$ctrl.announcement.template_data[field.id]",
+                form="$ctrl.form">
+              </form-field>
 
-            <div layout="row" layout-align="center center">
-              <md-button
-                class="md-accent md-raised"
-                aria-label="Preview the output for this announcement"
-                ng-click="$ctrl.preview($event)">
-                Preview
-              </md-button>
-            </div>
+              <div layout="row" layout-align="center center">
+                <md-button
+                  class="md-accent md-raised"
+                  aria-label="Preview the output for this announcement"
+                  ng-click="$ctrl.preview($event)"
+                  ng-disabled="$ctrl.templateDataForm.$invalid">
+                  Preview
+                </md-button>
+              </div>
+            </ng-form>
           </fieldset>
 
           <!-- Provide content -->

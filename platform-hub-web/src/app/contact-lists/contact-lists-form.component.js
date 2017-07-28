@@ -38,9 +38,7 @@ function ContactListsFormController($state, hubApiService, logger, _) {
   }
 
   function initEmptyContactList() {
-    return {
-      emailAddressesString: ''
-    };
+    return {};
   }
 
   function loadContactList() {
@@ -50,10 +48,7 @@ function ContactListsFormController($state, hubApiService, logger, _) {
     hubApiService
       .getContactList(id)
       .then(contactList => {
-        ctrl.contactList = {
-          id: contactList.id,
-          emailAddressesString: contactList.email_addresses.join('\n')
-        };
+        ctrl.contactList = contactList;
       })
       .finally(() => {
         ctrl.loading = false;
@@ -68,12 +63,16 @@ function ContactListsFormController($state, hubApiService, logger, _) {
 
     ctrl.saving = true;
 
-    const data = {
-      email_addresses: _.uniq(_.filter(ctrl.contactList.emailAddressesString.split('\n')))
-    };
+    ctrl.contactList.email_addresses =
+      _.uniq(
+        _.map(
+          ctrl.contactList.email_addresses,
+          _.trim
+        )
+      );
 
     hubApiService
-      .updateContactList(ctrl.contactList.id, data)
+      .updateContactList(ctrl.contactList.id, ctrl.contactList)
       .then(() => {
         logger.success(`Contact list ${ctrl.isNew ? 'created' : 'updated'}`);
         $state.go('contact-lists.list');

@@ -34,17 +34,30 @@
           </md-input-container>
 
           <md-input-container class="md-block">
-            <label for="emailAddresses">Email addresses:</label>
+            <label for="email_addresses">Email addresses:</label>
             <textarea
-              name="emailAddresses"
-              ng-model="$ctrl.contactList.emailAddressesString"
-              rows="10"
-              md-select-on-focus>
+              name="email_addresses"
+              ng-model="$ctrl.contactList.email_addresses"
+              ng-model-options="{debounce : 500}"
+              ng-list="&#10;"
+              ng-trim="false"
+              required
+              validate-emails
+              rows="10">
             </textarea>
-            <p class="md-body-1" md-colors="{background: 'accent-50'}">
-              Specify one email address per line
-            </p>
+            <div ng-messages="$ctrl.contactListForm.email_addresses.$error">
+              <div ng-message="required">This is required.</div>
+              <div ng-message="validateEmails">Must contain valid email addresses.</div>
+            </div>
           </md-input-container>
+          <p
+            class="md-body-1"
+            md-colors="{background: 'accent-50'}"
+            layout-padding>
+            Specify one email address per line
+          </p>
+
+          <br />
 
           <div>
             <md-button
