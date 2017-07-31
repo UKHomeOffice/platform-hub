@@ -14,7 +14,7 @@ module FeatureFlagService
   def create_or_update(flag, value)
     f = feature_flags
     f.with_lock do
-      f.data[flag.to_s] = value
+      f.data[flag.to_s] = ActiveRecord::Type::Boolean.new.deserialize(value)
       f.save!
       "Created/updated feature flags"
     end

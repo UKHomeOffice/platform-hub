@@ -8,6 +8,7 @@ export const icons = function () {
     contactList: 'contacts',
     externalLink: 'link',
     faq: 'question_answer',
+    featureFlags: 'flag',
     home: 'home',
     hubSetup: 'settings',
     identities: 'account_box',

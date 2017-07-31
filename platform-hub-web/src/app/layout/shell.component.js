@@ -103,11 +103,6 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       icon: icons.users
     },
     {
-      title: 'App Settings',
-      state: 'app-settings',
-      icon: icons.appSettings
-    },
-    {
       title: 'Platform Themes',
       state: 'platform-themes.editor.list',
       activeState: 'platform-themes.editor',
@@ -129,6 +124,16 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       state: 'kubernetes-tokens.list',
       icon: icons.kubernetes,
       featureFlag: featureFlagKeys.kubernetesTokens
+    },
+    {
+      title: 'Feature Flags',
+      state: 'feature-flags',
+      icon: icons.featureFlags
+    },
+    {
+      title: 'App Settings',
+      state: 'app-settings',
+      icon: icons.appSettings
     }
   ];
 

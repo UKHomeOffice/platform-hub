@@ -10,8 +10,8 @@ export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, 
   const data = {};
 
   model.refresh = refresh;
-  model.clear = clear;
   model.isEnabled = isEnabled;
+  model.update = update;
 
   return model;
 
@@ -33,14 +33,14 @@ export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, 
     return fetcherPromise;
   }
 
-  function clear() {
-    angular.copy({}, data);
-  }
-
   function isEnabled(featureKey) {
     if (_.includes(featureFlagKeys, featureKey)) {
       return data[featureKey] || false;
     }
     return false;
+  }
+
+  function update(flag, state) {
+    return hubApiService.updateFeatureFlag(flag, {state});
   }
 };

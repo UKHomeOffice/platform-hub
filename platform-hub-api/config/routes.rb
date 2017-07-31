@@ -14,7 +14,9 @@ Rails.application.routes.draw do
     post '/me/complete_services_onboarding', to: 'me#complete_services_onboarding'
     post '/me/global_announcements/mark_all_read', to: 'me#global_announcements_mark_all_read'
 
-    resources :feature_flags, only: [ :index ]
+    resources :feature_flags, only: [ :index ] do
+      put '/:flag', to: 'feature_flags#update_flag', on: :collection
+    end
 
     constraints service: /kubernetes/ do
       delete '/me/identities/:service', to: 'me#delete_identity'
