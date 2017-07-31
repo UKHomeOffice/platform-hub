@@ -61,7 +61,7 @@
           <li>
             You can view information and resources about the various platform <em>themes</em> from the sidebar or <a ui-sref="home">homepage</a>
           </li>
-          <li>
+          <li ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.projects)">
             You can <a ui-sref="projects.list">view projects and team members</a>
           </li>
           <li>
@@ -69,10 +69,10 @@
           </li>
         </ul>
 
-        <p>
+        <p ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.projects)">
           If you are made a project manager, you can:
         </p>
-        <ul>
+        <ul ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.projects)">
           <li>
             Add someone to your project team (on the project page)
           </li>
@@ -87,7 +87,7 @@
     </md-card-content>
   </md-card>
 
-  <md-card>
+  <md-card ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.projects)">
     <md-card-title>
       <md-card-title-text>
         <span class="md-title">Why can't I create new projects or perform certain actions?</span>

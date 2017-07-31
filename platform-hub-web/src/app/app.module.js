@@ -106,7 +106,8 @@ angular
   .constant('apiEndpoint', apiEndpoint)
   .constant('apiBackoffTimeMs', 2000)
   .constant('featureFlagKeys', {
-    kubernetesTokens: 'kubernetes_tokens'
+    kubernetesTokens: 'kubernetes_tokens',
+    projects: 'projects'
   });
 
 // Run function

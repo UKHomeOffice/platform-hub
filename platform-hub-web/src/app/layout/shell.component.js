@@ -66,7 +66,8 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       title: 'Projects',
       state: 'projects.list',
       activeState: 'projects',
-      icon: icons.projects
+      icon: icons.projects,
+      featureFlag: featureFlagKeys.projects
     }
   ];
 
@@ -139,6 +140,7 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
 
   ctrl.toggleMenu = toggleMenu;
   ctrl.isAuthenticated = isAuthenticated;
+  ctrl.shouldShowSection = shouldShowSection;
 
   init();
 
@@ -175,5 +177,11 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
 
   function isAuthenticated() {
     return authService.isAuthenticated();
+  }
+
+  function shouldShowSection(section) {
+    return section.some(e => {
+      return !_.has(e, 'featureFlag') || FeatureFlags.isEnabled(e.featureFlag);
+    });
   }
 }

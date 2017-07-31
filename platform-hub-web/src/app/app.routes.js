@@ -166,7 +166,8 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         url: '/list',
         component: ProjectsList,
         data: {
-          authenticate: true
+          authenticate: true,
+          featureFlag: featureFlagKeys.projects
         }
       })
       .state('projects.detail', {
@@ -176,7 +177,8 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           transition: '$transition$'
         },
         data: {
-          authenticate: true
+          authenticate: true,
+          featureFlag: featureFlagKeys.projects
         }
       })
       .state('projects.new', {
@@ -184,6 +186,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         component: ProjectsForm,
         data: {
           authenticate: true,
+          featureFlag: featureFlagKeys.projects,
           rolePermitted: 'admin'
         }
       })
@@ -195,6 +198,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         },
         data: {
           authenticate: true,
+          featureFlag: featureFlagKeys.projects,
           rolePermitted: 'admin'
         }
       })

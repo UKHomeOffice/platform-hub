@@ -47,7 +47,7 @@ Rails.application.routes.draw do
       post :offboard_github, on: :member
     end
 
-    resources :projects do
+    resources :projects, constraints: lambda { |request| FeatureFlagService.is_enabled?(:projects) } do
       get '/memberships', to: 'projects#memberships', on: :member
       put '/memberships/:user_id', to: 'projects#add_membership', on: :member
       delete '/memberships/:user_id', to: 'projects#remove_membership', on: :member
