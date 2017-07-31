@@ -70,7 +70,7 @@
             </md-sidemenu-button>
           </md-sidemenu-group>
 
-          <md-sidemenu-group>
+          <md-sidemenu-group ng-if="$ctrl.PlatformThemes.visible.length > 0">
             <md-subheader class="md-no-sticky">Platform Themes</md-subheader>
 
             <md-sidemenu-button
@@ -82,11 +82,12 @@
             </md-sidemenu-button>
           </md-sidemenu-group>
 
-          <md-sidemenu-group>
+          <md-sidemenu-group ng-if="$ctrl.shouldShowSection($ctrl.myAccountNavStates)">
             <md-subheader class="md-no-sticky">My Account</md-subheader>
 
             <md-sidemenu-button
               ng-repeat="item in $ctrl.myAccountNavStates"
+              ng-if="!_.has(item, 'featureFlag') || $ctrl.FeatureFlags.isEnabled(item.featureFlag)"
               ui-sref="{{item.state}}"
               ui-sref-active="{ 'active': item.activeState || item.state }">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
@@ -94,11 +95,12 @@
             </md-sidemenu-button>
           </md-sidemenu-group>
 
-          <md-sidemenu-group>
+          <md-sidemenu-group ng-if="$ctrl.shouldShowSection($ctrl.orgNavStates)">
             <md-subheader class="md-no-sticky">Org</md-subheader>
 
             <md-sidemenu-button
               ng-repeat="item in $ctrl.orgNavStates"
+              ng-if="!_.has(item, 'featureFlag') || $ctrl.FeatureFlags.isEnabled(item.featureFlag)"
               ui-sref="{{item.state}}"
               ui-sref-active="{ 'active': item.activeState || item.state }">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
@@ -106,11 +108,12 @@
             </md-sidemenu-button>
           </md-sidemenu-group>
 
-          <md-sidemenu-group>
+          <md-sidemenu-group ng-if="$ctrl.shouldShowSection($ctrl.helpNavStates)">
             <md-subheader class="md-no-sticky">Help &amp; Support</md-subheader>
 
             <md-sidemenu-button
               ng-repeat="item in $ctrl.helpNavStates"
+              ng-if="!_.has(item, 'featureFlag') || $ctrl.FeatureFlags.isEnabled(item.featureFlag)"
               ui-sref="{{item.state}}"
               ui-sref-active="{ 'active': item.activeState || item.state }">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
@@ -118,15 +121,15 @@
             </md-sidemenu-button>
           </md-sidemenu-group>
 
-          <md-sidemenu-group ng-if="$ctrl.isAdmin">
+          <md-sidemenu-group ng-if="$ctrl.isAdmin && $ctrl.shouldShowSection($ctrl.adminNavStates)">
             <md-subheader class="md-no-sticky">Admin</md-subheader>
 
             <md-sidemenu-button
               ng-repeat="item in $ctrl.adminNavStates"
-              ui-sref="{{item.state}}"
               ng-if="!_.has(item, 'featureFlag') || $ctrl.FeatureFlags.isEnabled(item.featureFlag)"
+              ui-sref="{{item.state}}"
               ui-sref-active="{ 'active': item.activeState || item.state }">
-              <md-icon ng-if="item.icon">{{item.icon}}</md-icon>              
+              <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
               <span>{{item.title}}</span>
             </md-sidemenu-button>
           </md-sidemenu-group>
