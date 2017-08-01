@@ -69,6 +69,8 @@ describe AnnouncementsProcessorService, type: :service do
       @a5 = create :announcement, publish_at: 1.hour.ago, status: :awaiting_delivery, deliver_to: a5_deliver_to
       @a6 = create :announcement, publish_at: 1.hour.from_now, status: :awaiting_delivery, deliver_to: {}
       @a7 = create :announcement, publish_at: 1.hour.ago, status: :awaiting_delivery, deliver_to: {}
+      @a8 = create :announcement, publish_at: 1.hour.ago, status: :awaiting_delivery, deliver_to: { slack_channels: [], contact_lists: [] }
+      @a9 = create :announcement, publish_at: 1.hour.ago, status: :awaiting_delivery, deliver_to: { hub_users: nil }
 
       @service = AnnouncementsProcessorService.new 50, Rails.logger
     end
@@ -78,6 +80,8 @@ describe AnnouncementsProcessorService, type: :service do
       expect(@service).to receive(:process).with(@a4).and_call_original
       expect(@service).to receive(:process).with(@a5).and_call_original
       expect(@service).to receive(:process).with(@a7).and_call_original
+      expect(@service).to receive(:process).with(@a8).and_call_original
+      expect(@service).to receive(:process).with(@a9).and_call_original
 
       a2_mailer = double
       expect(announcement_mailer).to receive(:announcement_email).with(@a2, expected_a2_recipients).and_return(a2_mailer)
@@ -100,10 +104,15 @@ describe AnnouncementsProcessorService, type: :service do
 
       @service.run
 
+      expect(@a1.reload.status).to eq 'delivered'
       expect(@a2.reload.status).to eq 'delivered'
+      expect(@a3.reload.status).to eq 'delivering'
       expect(@a4.reload.status).to eq 'delivered'
       expect(@a5.reload.status).to eq 'delivered'
-      expect(@a7.reload.status).to eq 'delivered'
+      expect(@a6.reload.status).to eq 'awaiting_delivery'
+      expect(@a7.reload.status).to eq 'delivery_not_required'
+      expect(@a8.reload.status).to eq 'delivery_not_required'
+      expect(@a9.reload.status).to eq 'delivery_not_required'
     end
 
   end
