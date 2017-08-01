@@ -68,6 +68,13 @@
 
       <md-card-content>
         <p
+          class="md-body-2"
+          md-colors="{color: 'accent'}"
+          ng-if="!$ctrl.Announcements.isPublished(a)">
+          Not yet published
+        </p>
+
+        <p
           ng-if="template"
           class="md-body-1">
           <span md-colors="{color: 'blue-grey-700'}">
