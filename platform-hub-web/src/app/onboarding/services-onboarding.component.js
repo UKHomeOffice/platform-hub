@@ -3,7 +3,7 @@ export const ServicesOnboardingComponent = {
   controller: ServicesOnboardingController
 };
 
-function ServicesOnboardingController($state, Me, logger) {
+function ServicesOnboardingController($state, $mdDialog, Me, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -13,17 +13,29 @@ function ServicesOnboardingController($state, Me, logger) {
 
   ctrl.finish = finish;
 
-  function finish() {
-    ctrl.processing = true;
+  function finish(targetEvent) {
+    const confirm = $mdDialog.confirm()
+      .title('Please accept and confirm the following details before continuing')
+      .textContent('By continuing, you accept and confirm that your GitHub account has a) 2-Factor Auth (2FA) set up and switched on, and b) a full name has been set on your GitHub profile. Please don\'t continue until this is the case.')
+      .ariaLabel('Accept and confirm details before continuing with services onboarding')
+      .targetEvent(targetEvent)
+      .ok('Continue')
+      .cancel('Cancel');
 
-    Me
-      .completeServicesOnboarding()
+    $mdDialog
+      .show(confirm)
       .then(() => {
-        logger.success('You have successfully been onboarded to services');
-        $state.go('home');
-      })
-      .finally(() => {
-        ctrl.processing = false;
+        ctrl.processing = true;
+
+        Me
+          .completeServicesOnboarding()
+          .then(() => {
+            logger.success('You have successfully onboarded to services');
+            $state.go('home');
+          })
+          .finally(() => {
+            ctrl.processing = false;
+          });
       });
   }
 }

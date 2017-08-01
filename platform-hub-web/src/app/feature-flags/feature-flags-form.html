@@ -11,14 +11,14 @@
 
   <md-content layout-padding ng-if="!$ctrl.loading">
 
-    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout="column" layout-align="center center" layout-padding>
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout="column" layout-padding>
       <md-switch
         ng-repeat="k in $ctrl.featureFlagKeys"
         class="md-primary"
         ng-model="$ctrl.flags[k]"
         aria-label="Feature flag: {{k}}"
         ng-change="$ctrl.update(k, $ctrl.flags[k])"
-        ng-disabled="$ctrl.saving">
+        md-no-ink>
         <strong>{{k}}</strong>
         <span class="badge" ng-if="$ctrl.flags[k]" md-colors="{background: 'green'}">active</span>
         <span class="badge" ng-if="!$ctrl.flags[k]" md-colors="{background: 'blue-grey'}">disabled</span>

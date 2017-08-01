@@ -7,7 +7,7 @@ export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, 
 
   let fetcherPromise = null;
 
-  const data = {};
+  model.data = {};
 
   model.refresh = refresh;
   model.isEnabled = isEnabled;
@@ -19,10 +19,7 @@ export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, 
     if (force || _.isNull(fetcherPromise)) {
       fetcherPromise = hubApiService
         .getFeatureFlags()
-        .then(flags => {
-          angular.copy(flags, data);
-          return data;
-        })
+        .then(handleFeatureFlagsResourceFromApi)
         .finally(() => {
           // Reuse the same promise for some time, to prevent smashing the API
           $window.setTimeout(() => {
@@ -35,12 +32,18 @@ export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, 
 
   function isEnabled(featureKey) {
     if (_.includes(featureFlagKeys, featureKey)) {
-      return data[featureKey] || false;
+      return model.data[featureKey] || false;
     }
     return false;
   }
 
   function update(flag, state) {
-    return hubApiService.updateFeatureFlag(flag, {state});
+    return hubApiService
+      .updateFeatureFlag(flag, {state})
+      .then(handleFeatureFlagsResourceFromApi);
+  }
+
+  function handleFeatureFlagsResourceFromApi(flags) {
+    angular.copy(flags, model.data);
   }
 };
