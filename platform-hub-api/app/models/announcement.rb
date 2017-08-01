@@ -18,6 +18,7 @@ class Announcement < ApplicationRecord
 
   enum status: {
     awaiting_delivery: 'awaiting_delivery',
+    delivery_not_required: 'delivery_not_required',
     delivering: 'delivering',
     delivered: 'delivered',
     delivery_failed: 'delivery_failed'
@@ -94,6 +95,15 @@ class Announcement < ApplicationRecord
 
   def unmark_sticky!
     self.update_column :is_sticky, false
+  end
+
+  def has_delivery_targets?
+    d = self.deliver_to
+    return d.present? && !d.empty? && (
+      (d['hub_users'].present? && !d['hub_users'].empty?) ||
+      (d['contact_lists'].present? && !d['contact_lists'].empty?) ||
+      (d['slack_channels'].present? && !d['slack_channels'].empty?)
+    )
   end
 
   private

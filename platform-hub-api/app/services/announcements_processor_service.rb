@@ -15,16 +15,20 @@ class AnnouncementsProcessorService
     @logger.info "Processing announcement #{announcement.id} - #{announcement.level} - '#{announcement.title}'"
 
     begin
+
       announcement.update! status: :delivering
 
-      unless announcement.deliver_to.blank?
+      if announcement.has_delivery_targets?
         process_for_email_delivery announcement
         process_for_slack_delivery announcement
+
+        # At this point we have to assume that any delivery mechanism triggered has
+        # worked as expected
+        announcement.update! status: :delivered
+      else
+        announcement.update! status: :delivery_not_required
       end
 
-      # At this point we have to assume that any delivery mechanism triggered has
-      # worked as expected
-      announcement.update! status: :delivered
     rescue => e
       @logger.error "Failed to finish processing announcement #{announcement.id} - a partial delivery may have occurred! Exception: type = #{e.class.name}, message = #{e.message}, backtrace = #{e.backtrace.join("\n")}"
       announcement.update! status: :delivery_failed

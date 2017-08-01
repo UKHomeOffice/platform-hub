@@ -116,17 +116,21 @@
           <span md-colors="{color: 'blue-grey-700'}">
             Deliver to:
           </span>
+          <span class="indented none-text" ng-if="!$ctrl.Announcements.hasDeliveryTargets(a)">
+            <br />
+            No delivery targets specified for this announcement
+          </span>
           <span class="indented" ng-if="a.deliver_to.hub_users.length > 0">
             <br />
             Hub users = {{a.deliver_to.hub_users}}
           </span>
           <span class="indented" ng-if="a.deliver_to.contact_lists.length > 0">
             <br />
-            Contact lists = {{a.deliver_to.contact_lists.join(' ')}}
+            Contact lists = {{a.deliver_to.contact_lists.join(', ')}}
           </span>
           <span class="indented" ng-if="a.deliver_to.slack_channels.length > 0">
             <br />
-            Slack channels = {{a.deliver_to.slack_channels.join(' ')}}
+            Slack channels = {{a.deliver_to.slack_channels.join(', ')}}
           </span>
         </p>
 

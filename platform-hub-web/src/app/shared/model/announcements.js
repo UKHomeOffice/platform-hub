@@ -33,6 +33,7 @@ export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApi
   model.publishNow = publishNow;
   model.markSticky = markSticky;
   model.unmarkSticky = unmarkSticky;
+  model.hasDeliveryTargets = hasDeliveryTargets;
   model.createAnnouncement = createAnnouncement;
   model.updateAnnouncement = updateAnnouncement;
   model.deleteAnnouncement = deleteAnnouncement;
@@ -115,6 +116,15 @@ export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApi
       .then(() => {
         return refreshGlobal(true);
       });
+  }
+
+  function hasDeliveryTargets(announcement) {
+    const d = announcement.deliver_to;
+    return d && !_.isEmpty(d) && (
+      (d.hub_users && !_.isEmpty(d.hub_users)) ||
+      (d.contact_lists && !_.isEmpty(d.contact_lists)) ||
+      (d.slack_channels && !_.isEmpty(d.slack_channels))
+    );
   }
 
   function createAnnouncement(data) {
