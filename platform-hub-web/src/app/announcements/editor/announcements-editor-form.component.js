@@ -76,7 +76,7 @@ function AnnouncementsEditorFormController($state, $mdConstant, $q, Announcement
   function initEmptyAnnouncement() {
     return {
       level: ctrl.levels[0],
-      original_template_id: templateId,
+      original_template_id: templateId || undefined,  // `templateId` will be an empty string if none is provided in the state params
       is_global: true,
       is_sticky: false,
       publish_at: moment().add(1, 'day').format(),
