@@ -19,17 +19,11 @@ function FeatureFlagsFormController(featureFlagKeys, FeatureFlags) {
   init();
 
   function init() {
-    reload();
-  }
-
-  function reload() {
     ctrl.loading = true;
 
     FeatureFlags
       .refresh()
-      .then(flags => {
-        angular.copy(flags, ctrl.flags);
-      })
+      .then(copyFlagsLocally)
       .finally(() => {
         ctrl.loading = false;
       });
@@ -40,9 +34,13 @@ function FeatureFlagsFormController(featureFlagKeys, FeatureFlags) {
 
     FeatureFlags
       .update(flag, state)
-      .then(reload)
+      .then(copyFlagsLocally)
       .finally(() => {
         ctrl.saving = false;
       });
+  }
+
+  function copyFlagsLocally() {
+    angular.copy(FeatureFlags.data, ctrl.flags);
   }
 }

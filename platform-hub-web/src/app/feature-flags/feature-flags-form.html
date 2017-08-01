@@ -18,7 +18,6 @@
         ng-model="$ctrl.flags[k]"
         aria-label="Feature flag: {{k}}"
         ng-change="$ctrl.update(k, $ctrl.flags[k])"
-        ng-disabled="$ctrl.saving"
         md-no-ink>
         <strong>{{k}}</strong>
         <span class="badge" ng-if="$ctrl.flags[k]" md-colors="{background: 'green'}">active</span>
