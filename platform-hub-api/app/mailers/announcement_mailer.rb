@@ -2,7 +2,7 @@ class AnnouncementMailer < ApplicationMailer
 
   include ActionView::Helpers::TextHelper
 
-  def announcement_email announcement, recipients
+  def announcement_email announcement, recipients, is_reminder = false
     if announcement.template_data.present?
       output = AnnouncementTemplateFormatterService.format announcement.template_definitions, announcement.template_data
       @announcement_title = output.title
@@ -15,6 +15,10 @@ class AnnouncementMailer < ApplicationMailer
     end
 
     subject = "[#{announcement.level}] #{@announcement_title}"
+
+    if is_reminder
+      subject = "Reminder: #{subject}"
+    end
 
     mail(
       to: Rails.application.config.email_from_address,

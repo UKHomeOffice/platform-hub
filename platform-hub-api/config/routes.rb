@@ -82,6 +82,7 @@ Rails.application.routes.draw do
       get :global, on: :collection
       post :mark_sticky, on: :member
       post :unmark_sticky, on: :member
+      post :resend, on: :member
     end
 
     constraints lambda { |request| FeatureFlagService.is_enabled?(:kubernetes_tokens) } do

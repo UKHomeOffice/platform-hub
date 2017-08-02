@@ -33,6 +33,7 @@ export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApi
   model.publishNow = publishNow;
   model.markSticky = markSticky;
   model.unmarkSticky = unmarkSticky;
+  model.resend = resend;
   model.hasDeliveryTargets = hasDeliveryTargets;
   model.createAnnouncement = createAnnouncement;
   model.updateAnnouncement = updateAnnouncement;
@@ -113,6 +114,14 @@ export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApi
   function unmarkSticky(announcement) {
     return hubApiService
       .announcementUnmarkSticky(announcement.id)
+      .then(() => {
+        return refreshGlobal(true);
+      });
+  }
+
+  function resend(announcement) {
+    return hubApiService
+      .announcementResend(announcement.id)
       .then(() => {
         return refreshGlobal(true);
       });

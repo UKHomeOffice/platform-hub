@@ -67,6 +67,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.deleteAnnouncement = buildResourceDeletor('announcements');
   service.announcementMarkSticky = announcementMarkSticky;
   service.announcementUnmarkSticky = announcementUnmarkSticky;
+  service.announcementResend = announcementResend;
 
   service.getAnnouncementTemplates = buildCollectionFetcher('announcement_templates');
   service.getAnnouncementTemplate = buildResourceFetcher('announcement_templates');
@@ -409,6 +410,19 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .post(`${apiEndpoint}/announcements/${announcementId}/unmark_sticky`)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to unmark announcement as sticky', response));
+        return $q.reject(response);
+      });
+  }
+
+  function announcementResend(announcementId) {
+    if (_.isNull(announcementId) || _.isEmpty(announcementId)) {
+      throw new Error('"announcementId" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/announcements/${announcementId}/resend`)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to mark announcement for resending', response));
         return $q.reject(response);
       });
   }

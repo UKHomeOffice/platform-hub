@@ -14,7 +14,7 @@
     </div>
   </md-toolbar>
 
-  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+  <loading-indicator loading="$ctrl.loading || $ctrl.processing"></loading-indicator>
 
   <md-content layout-padding ng-if="!ctrl.loading && $ctrl.Announcements.all.length == 0">
     <p class="md-body-2 none-text text-center">
@@ -169,28 +169,35 @@
           Full Preview
         </md-button>
         <md-button
-          ng-disabled="$ctrl.saving"
+          ng-disabled="$ctrl.processing"
           ng-if="!$ctrl.Announcements.isPublished(a)"
           aria-label="Publish this announcement now"
           ng-click="$ctrl.publish(a, $event)">
           Publish
         </md-button>
         <md-button
+          ng-disabled="$ctrl.processing"
+          ng-if="$ctrl.Announcements.isPublished(a)"
+          aria-label="Resend this announcement now"
+          ng-click="$ctrl.resend(a, $event)">
+          Resend reminder
+        </md-button>
+        <md-button
           ng-if="a.is_global && !a.is_sticky"
-          ng-disabled="$ctrl.saving"
+          ng-disabled="$ctrl.processing"
           aria-label="Mark this announcement as sticky"
           ng-click="$ctrl.markSticky(a)">
           Mark sticky
         </md-button>
         <md-button
           ng-if="a.is_global && a.is_sticky"
-          ng-disabled="$ctrl.saving"
+          ng-disabled="$ctrl.processing"
           aria-label="Unmark this announcement as sticky"
           ng-click="$ctrl.unmarkSticky(a)">
           Unmark sticky
         </md-button>
         <md-button
-          ng-disabled="$ctrl.saving"
+          ng-disabled="$ctrl.processing"
           aria-label="Delete this announcement"
           ng-click="$ctrl.deleteAnnouncement(a, $event)">
           Delete

@@ -1,6 +1,6 @@
 class AnnouncementsController < ApiJsonController
 
-  before_action :find_announcement, only: [ :show, :update, :destroy, :mark_sticky, :unmark_sticky ]
+  before_action :find_announcement, only: [ :show, :update, :destroy, :mark_sticky, :unmark_sticky, :resend ]
 
   skip_authorization_check :only => [ :global ]
   authorize_resource except: [ :global ]
@@ -99,6 +99,19 @@ class AnnouncementsController < ApiJsonController
       action: 'unmark_sticky',
       auditable: @announcement
     )
+
+    head :no_content
+  end
+
+  # POST /announcements/:id/resend
+  def resend
+    if @announcement.mark_for_resend!
+      AuditService.log(
+        context: audit_context,
+        action: 'resend',
+        auditable: @announcement
+      )
+    end
 
     head :no_content
   end

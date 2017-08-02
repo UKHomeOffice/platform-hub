@@ -14,6 +14,10 @@ FactoryGirl.define do
       status :delivering
     end
 
+    factory :published_announcement do
+      publish_at { 1.hour.ago }
+    end
+
     factory :announcement_from_template do
       title nil
       text nil
@@ -30,10 +34,15 @@ FactoryGirl.define do
       end
 
       after :build do |a, evaluator|
-        if evaluator.original_template
-          evaluator.original_template.save!
-          a.original_template = evaluator.original_template
+        t = evaluator.original_template
+        if t
+          t.save! if t.new_record?
+          a.original_template = t
         end
+      end
+
+      factory :published_announcement_from_template do
+        publish_at { 1.hour.ago }
       end
     end
   end

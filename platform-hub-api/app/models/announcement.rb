@@ -18,6 +18,7 @@ class Announcement < ApplicationRecord
 
   enum status: {
     awaiting_delivery: 'awaiting_delivery',
+    awaiting_resend: 'awaiting_resend',
     delivery_not_required: 'delivery_not_required',
     delivering: 'delivering',
     delivered: 'delivered',
@@ -87,7 +88,7 @@ class Announcement < ApplicationRecord
 
   scope :global, -> { where(is_global: true) }
   scope :published, -> { where('publish_at <= ?', DateTime.now.utc).order(publish_at: :desc) }
-  scope :awaiting_delivery, -> { where(status: :awaiting_delivery) }
+  scope :awaiting_delivery_or_resend, -> { where(status: [ :awaiting_delivery, :awaiting_resend ]) }
 
   def mark_sticky!
     self.update_column :is_sticky, true
@@ -104,6 +105,20 @@ class Announcement < ApplicationRecord
       (d['contact_lists'].present? && !d['contact_lists'].empty?) ||
       (d['slack_channels'].present? && !d['slack_channels'].empty?)
     )
+  end
+
+  def published?
+    self.publish_at <= DateTime.now.utc
+  end
+
+  def mark_for_resend!
+    if self.published?
+      self.status = :awaiting_resend
+      self.save!
+      true
+    else
+      false
+    end
   end
 
   private
@@ -126,7 +141,10 @@ class Announcement < ApplicationRecord
   end
 
   def set_template_definitions
-    if self.original_template.present?
+    if self.original_template.present? && (
+      self.new_record? ||
+      !self.published?
+    )
       self.template_definitions = self.original_template.spec['templates']
     end
   end
