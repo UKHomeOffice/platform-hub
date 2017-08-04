@@ -1,5 +1,13 @@
 class AnnouncementTemplate < ApplicationRecord
 
+  TEMPLATE_DEFINITION_TYPES = [
+    :title,
+    :on_hub,
+    :email_html,
+    :email_text,
+    :slack
+  ]
+
   include FriendlyId
   include Audited
   include ValidateHashes
@@ -37,13 +45,7 @@ class AnnouncementTemplate < ApplicationRecord
         'fields' => [[
           FormFieldsService.field_schema(AnnouncementTemplate.form_field_types)
         ]],
-        'templates' => {
-          'title' => String,
-          'on_hub' => String,
-          'email_html' => String,
-          'email_text' => String,
-          'slack' => String
-        }
+        'templates' => TEMPLATE_DEFINITION_TYPES.map { |t| [ t.to_s, String ] }.to_h
       },
       unique_checks: [
         { array_path: 'fields', obj_key: 'id' }
