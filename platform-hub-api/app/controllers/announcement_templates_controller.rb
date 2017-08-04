@@ -72,7 +72,9 @@ class AnnouncementTemplatesController < ApiJsonController
   # POST /announcement_templates/preview
   def preview
     templates, data = params.require([:templates, :data])
-    results = AnnouncementTemplateFormatterService.format templates, data
+    templates = templates.permit(*AnnouncementTemplate::TEMPLATE_DEFINITION_TYPES)
+    data.permit!
+    results = AnnouncementTemplateFormatterService.format templates.to_h, data.to_h
     render json: results
   end
 
