@@ -173,9 +173,13 @@ services:
     command:
       - "-s"
       - "overlay"
+    when:
+      event: push
 
   postgres:
     image: postgres:9.6.1
     environment:
       - POSTGRES_USER=phub
       - POSTGRES_PASSWORD=phub_password
+    when:
+      event: push
