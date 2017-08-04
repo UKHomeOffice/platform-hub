@@ -1,6 +1,6 @@
 {
   "name": "platform-hub-web",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Jiten (Jits) Bhagat <dev@jits.co.uk>",
   "private": true,
   "engines": {

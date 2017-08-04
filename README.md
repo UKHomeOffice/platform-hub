@@ -57,5 +57,4 @@ The general process to trigger a new release of Docker images:
 - Push tags using `git push --tags`
 - Monitor the triggered drone build to ensure it builds and pushes images sucessfully
 
-
-
+Bob.
