@@ -6,21 +6,28 @@ class AnnouncementsProcessorService
   end
 
   def run
-    Announcement.published.awaiting_delivery.each(&method(:process))
+    Announcement.published.awaiting_delivery_or_resend.each(&method(:process))
   end
 
   private
 
   def process announcement
-    @logger.info "Processing announcement #{announcement.id} - #{announcement.level} - '#{announcement.title}'"
+    title = if announcement.template_data.present?
+      AnnouncementTemplateFormatterService.format(announcement.template_definitions, announcement.template_data).title
+    else
+      announcement.title
+    end
+    @logger.info "Processing announcement #{announcement.id} - #{announcement.level} - '#{title}'"
 
     begin
+
+      is_reminder = announcement.awaiting_resend?
 
       announcement.update! status: :delivering
 
       if announcement.has_delivery_targets?
-        process_for_email_delivery announcement
-        process_for_slack_delivery announcement
+        process_for_email_delivery announcement, is_reminder
+        process_for_slack_delivery announcement, is_reminder
 
         # At this point we have to assume that any delivery mechanism triggered has
         # worked as expected
@@ -35,24 +42,28 @@ class AnnouncementsProcessorService
     end
   end
 
-  def process_for_email_delivery announcement
+  def process_for_email_delivery announcement, is_reminder
     email_addresses = email_addresses_for announcement
     unless email_addresses.blank?
       @logger.info "Sending email to #{email_addresses.length} unique addresses (in batches of #{@email_batch_size})"
 
       email_addresses.each_slice(@email_batch_size) do |addresses|
-        AnnouncementMailer.announcement_email(announcement, addresses).deliver_later
+        AnnouncementMailer.announcement_email(announcement, addresses, is_reminder).deliver_later
       end
     end
   end
 
-  def process_for_slack_delivery announcement
+  def process_for_slack_delivery announcement, is_reminder
     channels = announcement.deliver_to['slack_channels']
     unless channels.blank?
       @logger.info "Sending to slack channels: #{channels}"
 
       attachment = attachment_for_slack announcement
       icon = icon_for_slack announcement
+
+      if is_reminder
+        attachment[:title] = "Reminder: #{attachment[:title]}"
+      end
 
       channels.each do |c|
         SLACK_NOTIFIER.post(

@@ -39,5 +39,9 @@ RSpec.describe AnnouncementsController, type: :routing do
       expect(:post => '/announcements/1/unmark_sticky').to route_to('announcements#unmark_sticky', :id => '1')
     end
 
+    it 'routes to #resend' do
+      expect(:post => '/announcements/1/resend').to route_to('announcements#resend', :id => '1')
+    end
+
   end
 end

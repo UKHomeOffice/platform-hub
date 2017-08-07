@@ -1,7 +1,7 @@
 module AnnouncementTemplateFormatterService
 
   def self.format templates, data
-    templates = HashWithIndifferentAccess.new(templates)
+    templates = templates.with_indifferent_access
 
     results = AnnouncementTemplate::TEMPLATE_DEFINITION_TYPES.map do |t|
       [ t, templates[t].clone ]

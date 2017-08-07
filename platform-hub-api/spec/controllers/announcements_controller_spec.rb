@@ -496,4 +496,62 @@ RSpec.describe AnnouncementsController, type: :controller do
     end
   end
 
+  describe 'POST #resend' do
+    before do
+      @announcement = create :announcement
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :resend, params: { id: @announcement.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :resend, params: { id: @announcement.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        context 'for a published announcement' do
+          before do
+            @announcement = create :published_announcement
+          end
+
+          it 'should set the status to \'awaiting_resend\'' do
+            expect(Audit.count).to eq 0
+            get :resend, params: { id: @announcement.id }
+            expect(response).to be_success
+            expect(@announcement.reload.status).to eq 'awaiting_resend'
+            expect(Audit.count).to eq 1
+            audit = Audit.first
+            expect(audit.action).to eq 'resend'
+            expect(audit.auditable).to eq @announcement
+            expect(audit.user.id).to eq current_user_id
+          end
+        end
+
+        context 'for an unpublished announcement' do
+          before do
+            @announcement = create :announcement
+          end
+
+          it 'should not change the status (and thus should not trigger redelivery)' do
+            expect(Audit.count).to eq 0
+            get :resend, params: { id: @announcement.id }
+            expect(response).to be_success
+            expect(@announcement.reload.status).to eq 'awaiting_delivery'
+            expect(Audit.count).to eq 0
+          end
+        end
+
+      end
+
+    end
+  end
+
 end

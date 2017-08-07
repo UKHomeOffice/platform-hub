@@ -16,13 +16,14 @@ function AnnouncementsEditorListController($q, $mdDialog, icons, AnnouncementTem
   ctrl.announcementIcon = icons.announcements;
 
   ctrl.loading = true;
-  ctrl.saving = false;
+  ctrl.processing = false;
   ctrl.templates = {};
 
   ctrl.preview = preview;
   ctrl.publish = publish;
   ctrl.markSticky = markSticky;
   ctrl.unmarkSticky = unmarkSticky;
+  ctrl.resend = resend;
   ctrl.deleteAnnouncement = deleteAnnouncement;
 
   init();
@@ -61,7 +62,7 @@ function AnnouncementsEditorListController($q, $mdDialog, icons, AnnouncementTem
     $mdDialog
       .show(confirm)
       .then(() => {
-        ctrl.saving = true;
+        ctrl.processing = true;
 
         Announcements
           .publishNow(announcement)
@@ -69,13 +70,13 @@ function AnnouncementsEditorListController($q, $mdDialog, icons, AnnouncementTem
             logger.success('Announcement published');
           })
           .finally(() => {
-            ctrl.saving = false;
+            ctrl.processing = false;
           });
       });
   }
 
   function markSticky(announcement) {
-    ctrl.saving = true;
+    ctrl.processing = true;
 
     Announcements
       .markSticky(announcement)
@@ -84,12 +85,12 @@ function AnnouncementsEditorListController($q, $mdDialog, icons, AnnouncementTem
         announcement.is_sticky = true;
       })
       .finally(() => {
-        ctrl.saving = false;
+        ctrl.processing = false;
       });
   }
 
   function unmarkSticky(announcement) {
-    ctrl.saving = true;
+    ctrl.processing = true;
 
     Announcements
       .unmarkSticky(announcement)
@@ -98,7 +99,33 @@ function AnnouncementsEditorListController($q, $mdDialog, icons, AnnouncementTem
         announcement.is_sticky = false;
       })
       .finally(() => {
-        ctrl.saving = false;
+        ctrl.processing = false;
+      });
+  }
+
+  function resend(announcement, targetEvent) {
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent('This will mark the announcement for resending, which will send out new reminder messages to the specified delivery targets.')
+      .ariaLabel('Confirm resending of announcement')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(() => {
+        ctrl.processing = true;
+
+        Announcements
+          .resend(announcement)
+          .then(() => {
+            logger.success('Announcement has been marked for resending – it will be sent out soon');
+            reload();
+          })
+          .finally(() => {
+            ctrl.processing = false;
+          });
       });
   }
 
@@ -114,7 +141,7 @@ function AnnouncementsEditorListController($q, $mdDialog, icons, AnnouncementTem
     $mdDialog
       .show(confirm)
       .then(() => {
-        ctrl.saving = true;
+        ctrl.processing = true;
 
         Announcements
           .deleteAnnouncement(announcement)
@@ -123,7 +150,7 @@ function AnnouncementsEditorListController($q, $mdDialog, icons, AnnouncementTem
             reload();
           })
           .finally(() => {
-            ctrl.saving = false;
+            ctrl.processing = false;
           });
       });
   }
