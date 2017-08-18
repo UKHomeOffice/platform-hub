@@ -29,7 +29,6 @@ describe Kubernetes::TokenFileService, type: :service do
   describe '.generate' do
     let(:token) { 'some-token' }
     let(:uid) { 'some-uid' }
-    let(:groups) { ['group1', 'group2'] }
     let(:kubernetes_identity) do
       instance_double('Identity', provider: :kubernetes, user: build(:user), data: {
         tokens: [
@@ -44,19 +43,41 @@ describe Kubernetes::TokenFileService, type: :service do
         .and_yield(kubernetes_identity)
     end
 
-    it 'compiles csv for static and platform managed tokens for given cluster' do
-      tokens_csv = subject.generate(cluster)
-      parsed = CSV.parse(tokens_csv)
-      expect(parsed.size).to eq 4
-      expect(parsed[0][0]).to eq 'system-token'
-      expect(parsed[1][0]).to eq 'user-token'
-      expect(parsed[2][0]).to eq 'robot-token'
-      t = parsed.last
-      expect(t[0]).to eq token
-      expect(t[1]).to eq kubernetes_identity.user.email
-      expect(t[2]).to eq uid
-      expect(t[3]).to eq groups.join(',')
+    context 'for platform managed token with groups specified' do
+      let(:groups) { ['group1', 'group2'] }
+
+      it 'compiles csv for static and platform managed tokens for given cluster' do
+        tokens_csv = subject.generate(cluster)
+        parsed = CSV.parse(tokens_csv)
+        expect(parsed.size).to eq 4
+        expect(parsed[0][0]).to eq 'system-token'
+        expect(parsed[1][0]).to eq 'user-token'
+        expect(parsed[2][0]).to eq 'robot-token'
+        t = parsed.last
+        expect(t[0]).to eq token
+        expect(t[1]).to eq kubernetes_identity.user.email
+        expect(t[2]).to eq uid
+        expect(t[3]).to eq groups.join(',')
+      end
     end
+
+    context 'for platform managed token with empty groups' do
+      let(:groups) { nil }
+
+      it 'compiles csv for static and platform managed tokens for given cluster' do
+        tokens_csv = subject.generate(cluster)
+        parsed = CSV.parse(tokens_csv)
+        expect(parsed.size).to eq 4
+        expect(parsed[0][0]).to eq 'system-token'
+        expect(parsed[1][0]).to eq 'user-token'
+        expect(parsed[2][0]).to eq 'robot-token'
+        t = parsed.last
+        expect(t[0]).to eq token
+        expect(t[1]).to eq kubernetes_identity.user.email
+        expect(t[2]).to eq uid
+        expect(t[3]).to eq nil
+      end
+    end    
   end
 
   describe 'private methods' do

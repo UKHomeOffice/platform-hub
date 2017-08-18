@@ -39,7 +39,9 @@ module Kubernetes
           user = i.user.email
           HashWithIndifferentAccess.new(i.data)[:tokens].each do |t|
             next if t[:cluster].to_sym != cluster.to_sym
-            csv << [ENCRYPTOR.decrypt(t[:token]), user, t[:uid], t[:groups].join(',')]
+            row = [ENCRYPTOR.decrypt(t[:token]), user, t[:uid]]
+            row << t[:groups].join(',') unless t[:groups].blank?
+            csv << row
           end
         end
       end
