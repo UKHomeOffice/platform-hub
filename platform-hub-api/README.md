@@ -172,6 +172,10 @@ Tokens should be split into 3 kinds:
 ```ruby
 bin/rails console
 
+Kubernetes::StaticTokenService.create_or_update(<cluster-id>, :robot, <robot-name>)
+
+# Or with optional groups
+
 Kubernetes::StaticTokenService.create_or_update(<cluster-id>, :robot, <robot-name>, '<groups>')
 ```
 where
@@ -185,7 +189,7 @@ where
 bin/rails console
 
 # By robot name
-Kubernetes::StaticTokenService.delete_by_name(<cluster-id>, :robot, <robot-name>)
+Kubernetes::StaticTokenService.delete_by_user_name(<cluster-id>, :robot, <robot-name>)
 
 # By robot token
 Kubernetes::StaticTokenService.delete_by_token(<cluster-id>, :robot, <token>)
