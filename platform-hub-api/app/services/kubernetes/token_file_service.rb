@@ -30,7 +30,7 @@ module Kubernetes
           static_tokens(cluster.to_s, kind).each do |t|
             i = HashWithIndifferentAccess.new(t)
             row = [ENCRYPTOR.decrypt(i[:token]), i[:user], i[:uid]]
-            row << i[:groups].join(',') unless i[:groups].empty?
+            row << i[:groups].join(',') unless i[:groups].blank?
             csv << row
           end
         end

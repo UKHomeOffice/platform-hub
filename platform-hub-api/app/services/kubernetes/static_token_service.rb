@@ -122,7 +122,9 @@ module Kubernetes
     private
 
     def get_static_tokens(cluster, kind)
-      HashRecord.kubernetes.find_by!(id: "#{cluster.to_s}-static-#{kind.to_s}-tokens")
+      HashRecord.kubernetes.find_or_create_by!(id: "#{cluster.to_s}-static-#{kind.to_s}-tokens") do |r|
+        r.data = []
+      end
     end
 
     def multi_gets all_text=""
