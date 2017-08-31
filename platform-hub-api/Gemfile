@@ -21,7 +21,7 @@ gem 'delayed_job_active_record', '~> 4.1', '>= 4.1.2'
 gem 'slack-notifier', '~> 2.2', '>= 2.2.2'
 gem 'unread', '~> 0.9.1'
 gem 'aws-sdk', '~> 2'
-gem 'rinku', '~> 2.0', '>= 2.0.2'
+gem 'rinku', '~> 2.0', '>= 2.0.3'
 gem 'faraday', '~> 0.11' # locked faraday at version matching one of octokit sub-depencies
 
 group :development, :test do
