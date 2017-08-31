@@ -6,7 +6,7 @@ RUN apk update && apk upgrade \
     && apk --update add ca-certificates openssl \
     && update-ca-certificates \
     && apk --update add \
-    bash ruby ruby-irb ruby-rake ruby-io-console ruby-json ruby-bigdecimal libstdc++ tzdata \
+    bash curl ruby ruby-irb ruby-rake ruby-io-console ruby-json ruby-bigdecimal libstdc++ tzdata \
     postgresql-client \
     && echo 'gem: --no-document' > /etc/gemrc \
     && gem install bundler -v 1.14.6

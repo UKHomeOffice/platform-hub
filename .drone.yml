@@ -16,46 +16,49 @@ pipeline:
 
   # Expects the optimized dist code to have been built
   web_build_image:
-    image: docker:1.12
+    image: docker:17.07.0-ce
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - cd platform-hub-web
-      - docker build -t platform-hub-web .
+      - docker build -t platform-hub-web:$${DRONE_COMMIT_SHA} .
     when:
       event: [push, tag]
 
   web_test_image:
-    image: docker:1.12
-    environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+    image: platform-hub-web:${DRONE_COMMIT_SHA}
     commands:
-      - docker run --name platform-hub-web-test platform-hub-web /bin/sh -c "pwd && ls -lah && test -e index.html"
+      - cd /app
+      - ls -lah
+      - test -e index.html
     when:
       event: [push, tag]
 
   web_latest_image_to_quay:
-    image: docker:1.12
+    image: docker:17.07.0-ce
+    secrets:
+      - docker_password
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker login -u="ukhomeofficedigital+platform_hub" -p=${DOCKER_PASSWORD} quay.io
-      - docker tag platform-hub-web quay.io/ukhomeofficedigital/platform-hub-web:latest
-      - docker tag platform-hub-web quay.io/ukhomeofficedigital/platform-hub-web:${DRONE_COMMIT_SHA}
+      - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag platform-hub-web:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-web:latest
+      - docker push quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_COMMIT_SHA}
       - docker push quay.io/ukhomeofficedigital/platform-hub-web:latest
-      - docker push quay.io/ukhomeofficedigital/platform-hub-web:${DRONE_COMMIT_SHA}
     when:
       event: push
       branch: master
 
   web_tag_image_to_quay:
-    image: docker:1.12
+    image: docker:17.07.0-ce
+    secrets:
+      - docker_password
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker login -u="ukhomeofficedigital+platform_hub" -p=${DOCKER_PASSWORD} quay.io
-      - docker tag platform-hub-web quay.io/ukhomeofficedigital/platform-hub-web:${DRONE_TAG}
-      - docker push quay.io/ukhomeofficedigital/platform-hub-web:${DRONE_TAG}
+      - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag platform-hub-web:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_TAG}
+      - docker push quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_TAG}
     when:
       event: tag
 
@@ -64,6 +67,7 @@ pipeline:
     image: alpine:3.5
     environment:
       - SECRET_KEY_BASE=$(head -c30 < /dev/urandom | base64)
+      - PHUB_DB_HOST=postgres
       - GITHUB_CLIENT_ID=NA
       - GITHUB_CLIENT_SECRET=NA
       - AGENT_GITHUB_TOKEN=noop
@@ -93,86 +97,78 @@ pipeline:
       event: [push, tag]
 
   api_build_image:
-    image: docker:1.12
+    image: docker:17.07.0-ce
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - cd platform-hub-api
-      - docker build -t platform-hub-api .
+      - docker build -t platform-hub-api:$${DRONE_COMMIT_SHA} .
     when:
       event: [push, tag]
 
   api_test_image:
-    image: docker:1.12
+    image: platform-hub-api:${DRONE_COMMIT_SHA}
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+      - PORT=30000
+      - PHUB_DB_HOST=postgres
+      - PHUB_DB_NAME=phub_development
+      - PHUB_DB_USERNAME=phub
+      - PHUB_DB_PASSWORD=phub_password
+      - RAILS_LOG_TO_STDOUT=true
+      - SECRET_KEY_BASE=$(head -c30 < /dev/urandom | base64)
+      - GITHUB_CLIENT_ID=NA
+      - GITHUB_CLIENT_SECRET=NA
+      - AGENT_GITHUB_TOKEN=noop
+      - AGENT_GITHUB_ORG=noop
+      - AGENT_GITHUB_ORG_MAIN_TEAM_ID=noop
+      - AGENT_KEYCLOAK_CLIENT_ID=noop
+      - AGENT_KEYCLOAK_CLIENT_SECRET=noop
+      - AGENT_KEYCLOAK_USERNAME=noop
+      - AGENT_KEYCLOAK_PASSWORD=noop
+      - AGENT_KEYCLOAK_BASE_URL=noop
+      - AGENT_KEYCLOAK_REALM=noop
+      - APP_BASE_URL="http://localhost:$${PORT}"
+      - EMAIL_FROM_ADDRESS="test@example.org"
+      - EMAIL_MAX_TO_ADDRESSES=10
+      - SLACK_WEBHOOK=noop
     commands:
-      - >
-        docker run
-        --name platform-hub-api-test
-        -e PORT=30000
-        -e PHUB_DB_NAME=phub_development
-        -e PHUB_DB_USERNAME=phub
-        -e PHUB_DB_PASSWORD=phub_password
-        -e RAILS_LOG_TO_STDOUT=true
-        -e SECRET_KEY_BASE=$(head -c30 < /dev/urandom | base64)
-        -e GITHUB_CLIENT_ID=NA
-        -e GITHUB_CLIENT_SECRET=NA
-        -e AGENT_GITHUB_TOKEN=noop
-        -e AGENT_GITHUB_ORG=noop
-        -e AGENT_GITHUB_ORG_MAIN_TEAM_ID=noop
-        -e AGENT_KEYCLOAK_CLIENT_ID=noop
-        -e AGENT_KEYCLOAK_CLIENT_SECRET=noop
-        -e AGENT_KEYCLOAK_USERNAME=noop
-        -e AGENT_KEYCLOAK_PASSWORD=noop
-        -e AGENT_KEYCLOAK_BASE_URL=noop
-        -e AGENT_KEYCLOAK_REALM=noop
-        -e APP_BASE_URL="http://localhost:3000"
-        -e EMAIL_FROM_ADDRESS="test@example.org"
-        -e EMAIL_MAX_TO_ADDRESSES=10
-        -e SLACK_WEBHOOK=noop
-        --net=host
-        -d
-        platform-hub-api
-        bin/rails server
+      - cd /app
+      - bin/rails server &
       - sleep 5
-      - curl -s -f http://127.0.0.1:30000/healthz
+      - curl -s -f http://127.0.0.1:$${PORT}/healthz
     when:
       event: [push, tag]
 
   api_latest_image_to_quay:
-    image: docker:1.12
+    image: docker:17.07.0-ce
+    secrets:
+      - docker_password
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker login -u="ukhomeofficedigital+platform_hub" -p=${DOCKER_PASSWORD} quay.io
-      - docker tag platform-hub-api quay.io/ukhomeofficedigital/platform-hub-api:latest
-      - docker tag platform-hub-api quay.io/ukhomeofficedigital/platform-hub-api:${DRONE_COMMIT_SHA}
+      - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:latest
+      - docker push quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_COMMIT_SHA}
       - docker push quay.io/ukhomeofficedigital/platform-hub-api:latest
-      - docker push quay.io/ukhomeofficedigital/platform-hub-api:${DRONE_COMMIT_SHA}
     when:
       event: push
       branch: master
 
   api_tag_image_to_quay:
-    image: docker:1.12
+    image: docker:17.07.0-ce
+    secrets:
+      - docker_password
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker login -u="ukhomeofficedigital+platform_hub" -p=${DOCKER_PASSWORD} quay.io
-      - docker tag platform-hub-api quay.io/ukhomeofficedigital/platform-hub-api:${DRONE_TAG}
-      - docker push quay.io/ukhomeofficedigital/platform-hub-api:${DRONE_TAG}
+      - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_TAG}
+      - docker push quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_TAG}
     when:
       event: tag
 
 services:
-
-  dind:
-    image: docker:1.12-dind
-    privileged: true
-    command:
-      - "-s"
-      - "overlay"
 
   postgres:
     image: postgres:9.6.1
