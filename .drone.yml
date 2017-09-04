@@ -42,6 +42,7 @@ pipeline:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag platform-hub-web:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_COMMIT_SHA}
       - docker tag platform-hub-web:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-web:latest
       - docker push quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_COMMIT_SHA}
       - docker push quay.io/ukhomeofficedigital/platform-hub-web:latest
@@ -148,6 +149,7 @@ pipeline:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_COMMIT_SHA}
       - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:latest
       - docker push quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_COMMIT_SHA}
       - docker push quay.io/ukhomeofficedigital/platform-hub-api:latest
