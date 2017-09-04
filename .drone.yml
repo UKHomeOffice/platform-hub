@@ -12,7 +12,7 @@ pipeline:
       - yarn run test
       - yarn run build
     when:
-      event: [push, tag]
+      event: [pull_request, tag]
 
   # Expects the optimized dist code to have been built
   web_build_image:
@@ -23,7 +23,7 @@ pipeline:
       - cd platform-hub-web
       - docker build -t platform-hub-web .
     when:
-      event: [push, tag]
+      event: [pull_request, tag]
 
   web_test_image:
     image: docker:1.12
@@ -32,7 +32,7 @@ pipeline:
     commands:
       - docker run --name platform-hub-web-test platform-hub-web /bin/sh -c "pwd && ls -lah && test -e index.html"
     when:
-      event: [push, tag]
+      event: [pull_request, tag]
 
   web_latest_image_to_quay:
     image: docker:1.12
@@ -45,7 +45,7 @@ pipeline:
       - docker push quay.io/ukhomeofficedigital/platform-hub-web:latest
       - docker push quay.io/ukhomeofficedigital/platform-hub-web:${DRONE_COMMIT_SHA}
     when:
-      event: push
+      event: pull_request
       branch: master
 
   web_tag_image_to_quay:
@@ -90,7 +90,7 @@ pipeline:
       - "/bin/bash -c 'bundle install --jobs 20 --retry 5 --deployment --no-cache'"
       - "/bin/bash -c 'bin/setup && bundle exec rspec'"
     when:
-      event: [push, tag]
+      event: [pull_request, tag]
 
   api_build_image:
     image: docker:1.12
@@ -100,7 +100,7 @@ pipeline:
       - cd platform-hub-api
       - docker build -t platform-hub-api .
     when:
-      event: [push, tag]
+      event: [pull_request, tag]
 
   api_test_image:
     image: docker:1.12
@@ -138,7 +138,7 @@ pipeline:
       - sleep 5
       - curl -s -f http://127.0.0.1:30000/healthz
     when:
-      event: [push, tag]
+      event: [pull_request, tag]
 
   api_latest_image_to_quay:
     image: docker:1.12
@@ -151,7 +151,7 @@ pipeline:
       - docker push quay.io/ukhomeofficedigital/platform-hub-api:latest
       - docker push quay.io/ukhomeofficedigital/platform-hub-api:${DRONE_COMMIT_SHA}
     when:
-      event: push
+      event: pull_request
       branch: master
 
   api_tag_image_to_quay:
@@ -173,9 +173,13 @@ services:
     command:
       - "-s"
       - "overlay"
+    when:
+      event: pull_request
 
   postgres:
     image: postgres:9.6.1
     environment:
       - POSTGRES_USER=phub
       - POSTGRES_PASSWORD=phub_password
+    when:
+      event: pull_request
