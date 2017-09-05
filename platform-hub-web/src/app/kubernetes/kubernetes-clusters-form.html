@@ -1,0 +1,136 @@
+<div class="kubernetes-clusters-form">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span ng-if="$ctrl.isNew">New Kubernetes Cluster Config</span>
+        <span ng-if="!$ctrl.isNew && !$ctrl.loading">Edit "{{$ctrl.cluster.id}}" Cluster Config</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+      <md-content layout-padding>
+        <form name="$ctrl.clusterForm" role="form" ng-submit="$ctrl.createOrUpdate()">
+
+          <md-input-container class="md-block">
+            <label for="id">ID:</label>
+            <input
+              name="id"
+              ng-model="$ctrl.cluster.id"
+              placeholder="e.g.: dev-1"
+              ng-disabled="!$ctrl.isNew"
+              required>
+            <div ng-messages="$ctrl.clusterForm.id.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <md-input-container class="md-block">
+            <label for="description">Short description:</label>
+            <input
+              name="description"
+              ng-model="$ctrl.cluster.description"
+              required>
+            <div ng-messages="$ctrl.clusterForm.description.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <fieldset>
+            <legend>S3 bucket config for tokens sync</legend>
+
+            <p
+              "md-body-1"
+              md-colors="{background: 'green-50'}"
+              ng-if="!$ctrl.isNew"
+              layout-padding>
+              Note: existing config values are not made visible – you can only set new values here.
+            </p>
+
+            <br />
+
+            <md-input-container class="md-block">
+              <label for="s3_region">AWS region:</label>
+              <input
+                name="s3_region"
+                ng-model="$ctrl.cluster.s3_region"
+                placeholder="e.g.: eu-west-2"
+                required>
+              <div ng-messages="$ctrl.clusterForm.s3_region.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="s3_bucket_name">Bucket name:</label>
+              <input
+                name="s3_bucket_name"
+                ng-model="$ctrl.cluster.s3_bucket_name"
+                required>
+              <div ng-messages="$ctrl.clusterForm.s3_bucket_name.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="s3_access_key_id">Access key ID:</label>
+              <input
+                name="s3_access_key_id"
+                ng-model="$ctrl.cluster.s3_access_key_id"
+                required>
+              <div ng-messages="$ctrl.clusterForm.s3_access_key_id.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="s3_secret_access_key">Secret access key:</label>
+              <input
+                name="s3_secret_access_key"
+                ng-model="$ctrl.cluster.s3_secret_access_key"
+                required>
+              <div ng-messages="$ctrl.clusterForm.s3_secret_access_key.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="object_key">Object key:</label>
+              <input
+                name="object_key"
+                ng-model="$ctrl.cluster.object_key"
+                placeholder="/path/to/tokens-file.csv"
+                required>
+              <div ng-messages="$ctrl.clusterForm.object_key.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+          </fieldset>
+
+          <br />
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="$ctrl.saving || $ctrl.clusterForm.$invalid"
+              ng-class="{'md-raised': ($ctrl.clusterForm.$dirty && $ctrl.clusterForm.$valid) }"
+              aria-label="Save cluster config">
+              <span ng-if="$ctrl.isNew">Create</span>
+              <span ng-if="!$ctrl.isNew">Update</span>
+            </md-button>
+            <md-button ui-sref="kubernetes.clusters.list" ng-disabled="$ctrl.saving">Cancel</md-button>
+          </div>
+
+        </form>
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

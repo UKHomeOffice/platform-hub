@@ -24,8 +24,7 @@
               name="cluster"
               required
               placeholder="Select the cluster"
-              ng-disabled="!$ctrl.isNew && $ctrl.tokenData.cluster"
-              >
+              ng-disabled="!$ctrl.isNew && $ctrl.tokenData.cluster">
               <md-option
                 ng-repeat="c in $ctrl.KubernetesClusters.all"
                 ng-if="!$ctrl.isNew || ($ctrl.isNew && !$ctrl.assignedKubernetesClusters.includes(c.id))"

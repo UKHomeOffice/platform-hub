@@ -86,17 +86,20 @@
           <span class="md-headline">
             {{t.cluster}} cluster
           </span>
-          <p>
-            <strong>Token:</strong> {{t.token}}
-          </p>
-          <p>
-            <strong>UID:</strong> {{t.uid}}
-          </p>
-          <p>
-            <strong>Groups:</strong> {{t.groups.join(', ')}}
-          </p>
         </md-card-title-text>
       </md-card-title>
+
+      <md-card-content>
+        <p class="md-body-1">
+          <strong>Token:</strong> {{t.token}}
+        </p>
+        <p class="md-body-1">
+          <strong>UID:</strong> {{t.uid}}
+        </p>
+        <p class="md-body-1">
+          <strong>Groups:</strong> {{t.groups.join(', ')}}
+        </p>
+      </md-card-content>
 
       <md-card-actions layout="row" layout-align="start center">
         <md-button

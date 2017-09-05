@@ -26,6 +26,8 @@ import {
 } from './home/home.module';
 import {IdentitiesManager} from './identities/identities.module';
 import {
+  KubernetesClustersForm,
+  KubernetesClustersList,
   KubernetesUserTokensForm,
   KubernetesUserTokensList,
   KubernetesTokensSync
@@ -118,6 +120,41 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           rolePermitted: 'admin'
         }
       })
+      .state('kubernetes.clusters', {
+        abstract: true,
+        url: '/clusters',
+        template: '<ui-view></ui-view>'
+      })
+        .state('kubernetes.clusters.list', {
+          url: '/list',
+          component: KubernetesClustersList,
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('kubernetes.clusters.new', {
+          url: '/new',
+          component: KubernetesClustersForm,
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('kubernetes.clusters.edit', {
+          url: '/edit/:id',
+          component: KubernetesClustersForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
       .state('kubernetes.user-tokens', {
         abstract: true,
         url: '/user-tokens',

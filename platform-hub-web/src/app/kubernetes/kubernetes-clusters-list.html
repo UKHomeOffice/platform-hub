@@ -1,0 +1,43 @@
+<div class="kubernetes-clusters-list">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>All Kubernetes Cluster Configs</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        aria-label="Add new cluster config"
+        ui-sref="kubernetes.clusters.new">
+        <md-icon>add_box</md-icon>
+        New
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.KubernetesClusters.all.length > 0">
+
+    <md-card ng-repeat="c in $ctrl.KubernetesClusters.all track by c.id">
+      <md-card-title>
+        <span class="md-headline">
+          {{c.id}}
+        </span>
+      </md-card-title>
+      <md-card-content>
+        <p class="md-body-1">
+          {{c.description}}
+        </p>
+      </md-card-content>
+      <md-card-actions layout="row">
+        <md-button
+          class="md-primary"
+          aria-label="Edit cluster config"
+          ui-sref="kubernetes.clusters.edit({id: c.id})">
+          Edit
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+</div>

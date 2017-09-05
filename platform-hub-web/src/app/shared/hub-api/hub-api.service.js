@@ -78,6 +78,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.previewAnnouncementTemplate = previewAnnouncementTemplate;
 
   service.getKubernetesClusters = buildSimpleFetcher('kubernetes/clusters', 'kubernetes clusters');
+  service.createOrUpdateKubernetesCluster = buildResourceUpdater('kubernetes/clusters');
   service.getKubernetesTokens = getKubernetesTokens;
   service.deleteKubernetesToken = deleteKubernetesToken;
   service.createOrUpdateKubernetesToken = createOrUpdateKubernetesToken;
@@ -578,6 +579,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function getKubernetesTokens(userId) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
     return $http
       .get(`${apiEndpoint}/kubernetes/tokens/${userId}`)
       .then(response => {
@@ -590,6 +595,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function deleteKubernetesToken(userId, cluster) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
+    if (_.isNull(cluster) || _.isEmpty(cluster)) {
+      throw new Error('"cluster" argument not specified or empty');
+    }
     return $http
       .delete(`${apiEndpoint}/kubernetes/tokens/${userId}/${cluster}`)
       .catch(response => {
