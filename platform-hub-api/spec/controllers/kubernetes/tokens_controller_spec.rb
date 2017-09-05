@@ -42,7 +42,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          post :index, params: { user_id: user.id }
+          get :index, params: { user_id: user.id }
         end
       end
 
@@ -55,7 +55,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
          expect(json_response.first['token']).to eq token
          expect(json_response.first['uid']).to eq uid
          expect(json_response.first['groups']).to match_array groups
-        end 
+        end
       end
 
     end
@@ -66,7 +66,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
     it_behaves_like 'unauthenticated not allowed' do
       before do
-        get :create_or_update, params: { user_id: user.id, cluster: cluster }
+        put :create_or_update, params: { user_id: user.id, cluster: cluster }
       end
     end
 
@@ -74,15 +74,15 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          post :create_or_update, params: { user_id: user.id, cluster: cluster }
+          put :create_or_update, params: { user_id: user.id, cluster: cluster }
         end
       end
 
       it_behaves_like 'an admin' do
         let(:new_groups) { ['new-group'] }
         let(:tokens) { double(:tokens) }
-        let(:created_or_updated_token) do 
-          build(:kubernetes_token, 
+        let(:created_or_updated_token) do
+          build(:kubernetes_token,
             identity_id: kubernetes_identity.id,
             cluster: cluster,
             token: token,
@@ -111,10 +111,10 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             comment: "Kubernetes `#{cluster}` token created or updated for user '#{kubernetes_identity.user.email}' - Assigned groups: #{created_or_updated_token.groups}"
           )
 
-          get :create_or_update, params: { 
-            user_id: user.id, 
-            cluster: cluster, 
-            token: { groups: new_groups } 
+          put :create_or_update, params: {
+            user_id: user.id,
+            cluster: cluster,
+            token: { groups: new_groups }
           }
 
           expect(response).to be_success
@@ -122,7 +122,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
           expect(json_response['token']).to eq token
           expect(json_response['uid']).to eq uid
           expect(json_response['groups']).to match_array new_groups
-        end 
+        end
       end
 
     end
@@ -133,7 +133,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
     it_behaves_like 'unauthenticated not allowed' do
       before do
-        get :destroy, params: { user_id: user.id, cluster: cluster }
+        delete :destroy, params: { user_id: user.id, cluster: cluster }
       end
     end
 
@@ -141,7 +141,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          post :destroy, params: { user_id: user.id, cluster: cluster }
+          delete :destroy, params: { user_id: user.id, cluster: cluster }
         end
       end
 
@@ -163,7 +163,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             comment: "Kubernetes `#{cluster}` token removed for user '#{kubernetes_identity.user.email}'"
           )
 
-          post :destroy, params: { user_id: user.id, cluster: cluster }
+          delete :destroy, params: { user_id: user.id, cluster: cluster }
 
           expect(response).to have_http_status(:no_content)
         end
