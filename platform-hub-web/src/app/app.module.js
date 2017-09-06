@@ -32,7 +32,7 @@ import {FeatureFlagsModule} from './feature-flags/feature-flags.module';
 import {HelpModule} from './help/help.module';
 import {HomeModule} from './home/home.module';
 import {IdentitiesModule} from './identities/identities.module';
-import {KubernetesTokensModule} from './kubernetes-tokens/kubernetes-tokens.module';
+import {KubernetesModule} from './kubernetes/kubernetes.module';
 import {LayoutModule} from './layout/layout.module';
 import {OnboardingModule} from './onboarding/onboarding.module';
 import {PlatformThemesModule} from './platform-themes/platform-themes.module';
@@ -65,7 +65,7 @@ angular
     HelpModule,
     HomeModule,
     IdentitiesModule,
-    KubernetesTokensModule,
+    KubernetesModule,
     LayoutModule,
     OnboardingModule,
     PlatformThemesModule,
