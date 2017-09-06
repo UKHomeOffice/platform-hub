@@ -11,7 +11,7 @@ module Kubernetes
     # Note: All tokens are encrypted!
 
     def create_or_update(cluster, kind, user_name, groups = [])
-      static_tokens = get_static_tokens(cluster, kind)
+      static_tokens = get_static_tokens_hash_record(cluster, kind)
 
       static_tokens.with_lock do
         record = static_tokens.data.find do |t|
@@ -29,18 +29,18 @@ module Kubernetes
 
           static_tokens.data << record
         else
-          record['groups'] = groups.present? ? 
+          record['groups'] = groups.present? ?
             Kubernetes::TokenService.cleanup_groups(groups) : []
         end
 
         static_tokens.save!
 
         "Created/updated #{kind} account for `#{user_name}` (token: #{ENCRYPTOR.decrypt(record.with_indifferent_access['token'])})"
-      end      
+      end
     end
 
     def delete_by_user_name(cluster, kind, user_name)
-      static_tokens = get_static_tokens(cluster, kind)
+      static_tokens = get_static_tokens_hash_record(cluster, kind)
 
       static_tokens.with_lock do
         static_tokens.data.reject! do |t|
@@ -54,7 +54,7 @@ module Kubernetes
     end
 
     def delete_by_token(cluster, kind, token)
-      static_tokens = get_static_tokens(cluster, kind)
+      static_tokens = get_static_tokens_hash_record(cluster, kind)
 
       static_tokens.with_lock do
         static_tokens.data.reject! do |t|
@@ -68,7 +68,7 @@ module Kubernetes
     end
 
     def describe(cluster, kind, user_name)
-      static_tokens = get_static_tokens(cluster, kind)
+      static_tokens = get_static_tokens_hash_record(cluster, kind)
 
       record = static_tokens.data.find do |t|
         t['user'] == user_name.to_s
@@ -119,13 +119,13 @@ module Kubernetes
       end
     end
 
-    private
-
-    def get_static_tokens(cluster, kind)
+    def get_static_tokens_hash_record(cluster, kind)
       HashRecord.kubernetes.find_or_create_by!(id: "#{cluster.to_s}-static-#{kind.to_s}-tokens") do |r|
         r.data = []
       end
     end
+
+    private
 
     def multi_gets all_text=""
       while all_text << STDIN.gets

@@ -56,6 +56,19 @@ FactoryGirl.define do
       end
     end
 
+    factory :kubernetes_robot_tokens_hash_record do
+      scope 'kubernetes'
+      data []
+
+      transient do
+        cluster 'test'
+      end
+
+      after :build do |hr, evaluator|
+        hr.id = "#{evaluator.cluster}-static-robot-tokens"
+      end
+    end
+
     factory :feature_flags_hash_record do
       scope 'general'
       id 'feature_flags'

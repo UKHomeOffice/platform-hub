@@ -2,13 +2,13 @@ class Kubernetes::TokensController < ApiJsonController
 
   before_action :find_identity
 
-  # GET /:user_id
+  # GET /kubernetes/tokens/:user_id
   def index
     authorize! :read, :identity
     render json: Kubernetes::TokenService.tokens_from_identity_data(identity_data)
   end
 
-  # PATCH/PUT /:user_id/:cluster
+  # PATCH/PUT /kubernetes/tokens/:user_id/:cluster
   def create_or_update
     authorize! :manage, :identity
     tokens, created_or_updated_token = Kubernetes::TokenService.create_or_update_token(
@@ -35,13 +35,13 @@ class Kubernetes::TokensController < ApiJsonController
         )
 
         render json: created_or_updated_token
-      else 
+      else
         render_model_errors @identity.errors
       end
     end
   end
 
-  # DELETE /:user_id/:cluster
+  # DELETE /kubernetes/tokens/:user_id/:cluster
   def destroy
     authorize! :manage, :identity
     tokens, _ = Kubernetes::TokenService.delete_token(identity_data, params[:cluster])
@@ -59,7 +59,7 @@ class Kubernetes::TokensController < ApiJsonController
         )
 
         head :no_content
-      else 
+      else
         render_model_errors @identity.errors
       end
     end

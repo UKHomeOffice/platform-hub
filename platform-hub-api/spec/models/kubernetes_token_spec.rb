@@ -12,13 +12,13 @@ RSpec.describe KubernetesToken, type: :model do
   describe '#new' do
     it 'encrypts plain token upon creation of a new object' do
       expect(@kube_token.token).to_not be_empty
-      expect(@kube_token.token).to match /--[\p{Alnum}]{40}/
+      expect(@kube_token.token).to match(/--[\p{Alnum}]{40}/)
       expect(@kube_token.token).to_not eq token
     end
 
     it 'encrypts token on the fly when new value is set' do
       @kube_token.token = new_token
-      expect(@kube_token.token).to match /--[\p{Alnum}]{40}/
+      expect(@kube_token.token).to match(/--[\p{Alnum}]{40}/)
       expect(@kube_token.token).to_not eq new_token
       expect(@kube_token.decrypted_token).to eq new_token
     end

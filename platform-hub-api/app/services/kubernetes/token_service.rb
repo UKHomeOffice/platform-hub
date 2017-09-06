@@ -11,7 +11,7 @@ module Kubernetes
     def create_or_update_token(data, identity_id, cluster, groups, token = nil)
       tokens = tokens_from_identity_data(data)
       existing_token = tokens.find {|t| t.cluster == cluster}
-      
+
       if existing_token
         existing_token.token = token_value(token) if token.present? # set token only if provided
         existing_token.groups = cleanup_groups(groups)

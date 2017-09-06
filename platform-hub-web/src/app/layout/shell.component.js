@@ -139,6 +139,12 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       featureFlag: featureFlagKeys.kubernetesTokens
     },
     {
+      title: 'Kubernetes Robot Tokens',
+      state: 'kubernetes.robot-tokens.list',
+      icon: icons.kubernetesTokens,
+      featureFlag: featureFlagKeys.kubernetesTokens
+    },
+    {
       title: 'Feature Flags',
       state: 'feature-flags',
       icon: icons.featureFlags

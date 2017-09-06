@@ -116,6 +116,8 @@ To set up local email delivery, ensure you have the following env variables set 
 
 #### Managed clusters configuration
 
+_**NOTE: most of this can now be done directly in the Hub UI. The instructions below have been kept for posterity.**_
+
 Create a configuration for each individual cluster you want to manage tokens for.
 In order to do that run the following from the console:
 
@@ -169,6 +171,8 @@ Tokens should be split into 3 kinds:
 
 #### Create ad-hoc robot account
 
+_**NOTE: this can now be done directly in the Hub UI. The instructions below have been kept for posterity.**_
+
 ```ruby
 bin/rails console
 
@@ -184,6 +188,8 @@ where
 - `<groups>` is a semicolon separated list of group names for the robot eg. `group1;group2`.
 
 #### Delete robot account
+
+_**NOTE: this can now be done directly in the Hub UI. The instructions below have been kept for posterity.**_
 
 ```ruby
 bin/rails console

@@ -96,7 +96,7 @@
         <p class="md-body-1">
           <strong>UID:</strong> {{t.uid}}
         </p>
-        <p class="md-body-1">
+        <p class="md-body-1" ng-if="t.groups && t.groups.length > 0">
           <strong>Groups:</strong> {{t.groups.join(', ')}}
         </p>
       </md-card-content>

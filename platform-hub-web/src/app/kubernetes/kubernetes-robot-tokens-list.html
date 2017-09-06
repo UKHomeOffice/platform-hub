@@ -1,0 +1,77 @@
+<div class="kubernetes-robot-tokens-list">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>Kubernetes Robot Tokens By Cluster</span>
+        <span ng-if="$ctrl.cluster">'{{$ctrl.cluster}}''</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        ng-if="!$ctrl.loading && $ctrl.KubernetesClusters.all.length > 0"
+        aria-label="Add new robot token for the specified cluster"
+        ui-sref="kubernetes.robot-tokens.new({cluster: $ctrl.cluster})">
+        <md-icon>{{$ctrl.addTokenIcon}}</md-icon>
+        New
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.busy"></loading-indicator>
+
+  <md-toolbar md-colors="{background: 'primary-50'}">
+    <div class="md-toolbar-tools">
+      <md-select
+        ng-if="!$ctrl.loading && $ctrl.KubernetesClusters.all.length > 0"
+        placeholder="Select a cluster"
+        ng-model="$ctrl.cluster"
+        ng-change="$ctrl.handleClusterChange()">
+        <md-option
+          ng-repeat="c in $ctrl.KubernetesClusters.all track by c.id"
+          ng-value="c.id">
+          {{c.id}} ({{c.description}})
+        </md-option>
+      </md-select>
+    </div>
+  </md-toolbar>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.tokens.length > 0">
+
+    <md-card ng-repeat="t in $ctrl.tokens track by t.name">
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            {{t.name}}
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content>
+        <p class="md-body-1">
+          <strong>Token:</strong> {{t.token}}
+        </p>
+        <p class="md-body-1">
+          <strong>UID:</strong> {{t.uid}}
+        </p>
+        <p class="md-body-1" ng-if="t.groups && t.groups.length > 0">
+          <strong>Groups:</strong> {{t.groups.join(', ')}}
+        </p>
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          class="md-primary"
+          aria-label="View and edit details for this token"
+          ui-sref="kubernetes.robot-tokens.edit({cluster: t.cluster, name: t.name})">
+          View and edit
+        </md-button>
+        <md-button
+          class="md-primary"
+          ng-click="$ctrl.deleteToken(t.cluster, t.name, $event)"
+          aria-label="Remove kubernetes robot token">
+          Delete
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </div>
+</div>

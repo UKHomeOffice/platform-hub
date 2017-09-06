@@ -82,6 +82,9 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getKubernetesTokens = getKubernetesTokens;
   service.deleteKubernetesToken = deleteKubernetesToken;
   service.createOrUpdateKubernetesToken = createOrUpdateKubernetesToken;
+  service.getKubernetesRobotTokens = getKubernetesRobotTokens;
+  service.deleteKubernetesRobotToken = deleteKubernetesRobotToken;
+  service.createOrUpdateKubernetesRobotToken = createOrUpdateKubernetesRobotToken;
   service.getKubernetesTokensChangeset = getKubernetesTokensChangeset;
   service.syncKubernetesTokens = syncKubernetesTokens;
   service.claimKubernetesToken = claimKubernetesToken;
@@ -620,6 +623,58 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to create or update a "${data.cluster}" kubernetes token for ${user.id}`, response));
+        return $q.reject(response);
+      });
+  }
+
+  function getKubernetesRobotTokens(cluster) {
+    if (_.isNull(cluster) || _.isEmpty(cluster)) {
+      throw new Error('"cluster" argument not specified or empty');
+    }
+
+    return $http
+      .get(`${apiEndpoint}/kubernetes/robot_tokens/${cluster}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error('Failed to fetch kubernetes robot tokens – the API might be down. Try again later.');
+        return $q.reject(response);
+      });
+  }
+
+  function deleteKubernetesRobotToken(cluster, name) {
+    if (_.isNull(cluster) || _.isEmpty(cluster)) {
+      throw new Error('"cluster" argument not specified or empty');
+    }
+
+    if (_.isNull(name) || _.isEmpty(name)) {
+      throw new Error('"name" argument not specified or empty');
+    }
+
+    return $http
+      .delete(`${apiEndpoint}/kubernetes/robot_tokens/${cluster}/${name}`)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse(`Failed to delete robot token '${name}' for cluster '${cluster}'`, response));
+        return $q.reject(response);
+      });
+  }
+
+  function createOrUpdateKubernetesRobotToken(cluster, name, groups) {
+    if (_.isNull(cluster) || _.isEmpty(cluster)) {
+      throw new Error('"cluster" argument not specified or empty');
+    }
+
+    if (_.isNull(name) || _.isEmpty(name)) {
+      throw new Error('"name" argument not specified or empty');
+    }
+
+    return $http
+      .put(`${apiEndpoint}/kubernetes/robot_tokens/${cluster}/${name}`, {
+        groups: groups
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse(`Failed to create or update robot token '${name}' for cluster '${cluster}'`, response));
         return $q.reject(response);
       });
   }
