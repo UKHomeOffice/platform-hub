@@ -1,8 +1,8 @@
-<div class="kubernetes-tokens-list">
+<div class="kubernetes-user-tokens-list">
   <md-toolbar md-scroll-shrink>
     <div class="md-toolbar-tools">
       <h3>
-        <span>Kubernetes Tokens</span>
+        <span>Kubernetes User Tokens</span>
         <span ng-if="$ctrl.user">for {{$ctrl.user.name}} ({{$ctrl.user.email}})</span>
         <small class="badge" ng-if="$ctrl.user && !$ctrl.user.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
       </h3>
@@ -11,7 +11,7 @@
       <md-button
         ng-if="!$ctrl.loading && $ctrl.user && $ctrl.user.is_active && ($ctrl.tokens.length < $ctrl.KubernetesClusters.all.length)"
         aria-label="Add new token"
-        ui-sref="kubernetes-tokens.new({userId: $ctrl.user.id})">
+        ui-sref="kubernetes.user-tokens.new({userId: $ctrl.user.id})">
         <md-icon>{{$ctrl.addTokenIcon}}</md-icon>
         New
       </md-button>
@@ -24,7 +24,7 @@
           <md-menu-item>
             <md-button
               aria-label="Sync tokens"
-              ui-sref="kubernetes-tokens.sync">
+              ui-sref="kubernetes.tokens-sync">
               <md-icon>{{$ctrl.syncTokensIcon}}</md-icon>
               Sync tokens
             </md-button>
@@ -103,7 +103,7 @@
           ng-if="$ctrl.user.is_active"
           class="md-primary"
           aria-label="View and edit details for this token"
-          ui-sref="kubernetes-tokens.edit({userId: $ctrl.user.id, cluster: t.cluster})">
+          ui-sref="kubernetes.user-tokens.edit({userId: $ctrl.user.id, cluster: t.cluster})">
           View and edit
         </md-button>
         <md-button

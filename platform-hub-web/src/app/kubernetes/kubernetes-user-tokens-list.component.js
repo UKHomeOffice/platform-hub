@@ -1,12 +1,12 @@
-export const KubernetesTokensListComponent = {
+export const KubernetesUserTokensListComponent = {
   bindings: {
     transition: '<'
   },
-  template: require('./kubernetes-tokens-list.html'),
-  controller: KubernetesTokensListController
+  template: require('./kubernetes-user-tokens-list.html'),
+  controller: KubernetesUserTokensListController
 };
 
-function KubernetesTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, KubernetesClusters, icons) {
+function KubernetesUserTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, KubernetesClusters, icons) {
   'ngInject';
 
   const ctrl = this;

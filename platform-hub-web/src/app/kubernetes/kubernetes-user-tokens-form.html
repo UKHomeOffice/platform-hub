@@ -1,4 +1,4 @@
-<div class="kubernetes-tokens-form">
+<div class="kubernetes-user-tokens-form">
   <md-toolbar md-scroll-shrink>
     <div class="md-toolbar-tools">
       <h3>
@@ -85,7 +85,7 @@
               <span ng-if="$ctrl.isNew">Create</span>
               <span ng-if="!$ctrl.isNew">Update</span>
             </md-button>
-            <md-button ui-sref="kubernetes-tokens.list({userId: $ctrl.user.id})" ng-disabled="$ctrl.saving">Cancel</md-button>
+            <md-button ui-sref="kubernetes.user-tokens.list({userId: $ctrl.user.id})" ng-disabled="$ctrl.saving">Cancel</md-button>
            </div>
         </form>
       </md-content>

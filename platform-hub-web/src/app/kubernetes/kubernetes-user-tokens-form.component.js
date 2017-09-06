@@ -1,12 +1,12 @@
-export const KubernetesTokensFormComponent = {
+export const KubernetesUserTokensFormComponent = {
   bindings: {
     transition: '<'
   },
-  template: require('./kubernetes-tokens-form.html'),
-  controller: KubernetesTokensFormController
+  template: require('./kubernetes-user-tokens-form.html'),
+  controller: KubernetesUserTokensFormController
 };
 
-function KubernetesTokensFormController($state, hubApiService, logger, _, KubernetesClusters) {
+function KubernetesUserTokensFormController($state, hubApiService, logger, _, KubernetesClusters) {
   'ngInject';
 
   const ctrl = this;
@@ -81,7 +81,7 @@ function KubernetesTokensFormController($state, hubApiService, logger, _, Kubern
         } else {
           logger.success(t.cluster + ' kubernetes token updated');
         }
-        $state.go('kubernetes-tokens.list', {userId: ctrl.user.id});
+        $state.go('kubernetes.user-tokens.list', {userId: ctrl.user.id});
       })
       .finally(() => {
         ctrl.saving = false;

@@ -26,6 +26,11 @@ import {
 } from './home/home.module';
 import {IdentitiesManager} from './identities/identities.module';
 import {
+  KubernetesUserTokensForm,
+  KubernetesUserTokensList,
+  KubernetesTokensSync
+} from './kubernetes/kubernetes.module';
+import {
   HubSetup,
   ServicesOnboarding
 } from './onboarding/onboarding.module';
@@ -40,11 +45,6 @@ import {
   ProjectsList
 } from './projects/projects.module';
 import {TermsOfService} from './terms-of-service/terms-of-service.module';
-import {
-  KubernetesTokensForm,
-  KubernetesTokensList,
-  KubernetesTokensSync
-} from './kubernetes-tokens/kubernetes-tokens.module';
 import {UsersList} from './users/users.module';
 
 export const appRoutes = function ($stateProvider, $urlRouterProvider, $locationProvider, featureFlagKeys) {
@@ -101,52 +101,13 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         authenticate: true
       }
     })
-    .state('kubernetes-tokens', {
+    .state('kubernetes', {
       abstract: true,
-      url: '/kubernetes-tokens',
+      url: '/kubernetes',
       template: '<ui-view></ui-view>'
     })
-      .state('kubernetes-tokens.list', {
-        url: '/list/:userId',
-        component: KubernetesTokensList,
-        data: {
-          authenticate: true,
-          featureFlag: featureFlagKeys.kubernetesTokens,
-          rolePermitted: 'admin'
-        },
-        resolve: {
-          transition: '$transition$'
-        },
-        params: {
-          userId: ''
-        }
-      })
-      .state('kubernetes-tokens.new', {
-        url: '/new/:userId',
-        component: KubernetesTokensForm,
-        resolve: {
-          transition: '$transition$'
-        },
-        data: {
-          authenticate: true,
-          featureFlag: featureFlagKeys.kubernetesTokens,
-          rolePermitted: 'admin'
-        }
-      })
-      .state('kubernetes-tokens.edit', {
-        url: '/edit/:userId/:cluster',
-        component: KubernetesTokensForm,
-        resolve: {
-          transition: '$transition$'
-        },
-        data: {
-          authenticate: true,
-          featureFlag: featureFlagKeys.kubernetesTokens,
-          rolePermitted: 'admin'
-        }
-      })
-      .state('kubernetes-tokens.sync', {
-        url: '/sync',
+      .state('kubernetes.tokens-sync', {
+        url: '/tokens-sync',
         component: KubernetesTokensSync,
         resolve: {
           transition: '$transition$'
@@ -157,6 +118,50 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           rolePermitted: 'admin'
         }
       })
+      .state('kubernetes.user-tokens', {
+        abstract: true,
+        url: '/user-tokens',
+        template: '<ui-view></ui-view>'
+      })
+        .state('kubernetes.user-tokens.list', {
+          url: '/list/:userId',
+          component: KubernetesUserTokensList,
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          },
+          resolve: {
+            transition: '$transition$'
+          },
+          params: {
+            userId: ''
+          }
+        })
+        .state('kubernetes.user-tokens.new', {
+          url: '/new/:userId',
+          component: KubernetesUserTokensForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('kubernetes.user-tokens.edit', {
+          url: '/edit/:userId/:cluster',
+          component: KubernetesUserTokensForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
     .state('projects', {
       abstract: true,
       url: '/projects',

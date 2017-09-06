@@ -121,8 +121,14 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       icon: icons.contactList
     },
     {
-      title: 'Kubernetes Tokens',
-      state: 'kubernetes-tokens.list',
+      title: 'Kubernetes Tokens Sync',
+      state: 'kubernetes.tokens-sync',
+      icon: icons.syncTokens,
+      featureFlag: featureFlagKeys.kubernetesTokens
+    },
+    {
+      title: 'Kubernetes User Tokens',
+      state: 'kubernetes.user-tokens.list',
       icon: icons.kubernetes,
       featureFlag: featureFlagKeys.kubernetesTokens
     },
