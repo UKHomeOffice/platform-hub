@@ -87,16 +87,26 @@ Rails.application.routes.draw do
 
     constraints lambda { |request| FeatureFlagService.is_enabled?(:kubernetes_tokens) } do
       namespace :kubernetes do
-	# Tokens management
-	get '/tokens/:user_id', to: 'tokens#index'
-	put '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
-	patch '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
-	delete '/tokens/:user_id/:cluster', to: 'tokens#destroy'
-	get '/clusters', to: 'clusters#index'
-	get '/changeset/:cluster', to: 'changeset#index'
-	post '/sync', to: 'sync#sync'
-	post '/claim', to: 'claim#claim'
-	post '/revoke', to: 'revoke#revoke'
+        # Tokens management
+        get '/tokens/:user_id', to: 'tokens#index'
+        put '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
+        patch '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
+        delete '/tokens/:user_id/:cluster', to: 'tokens#destroy'
+
+        get '/robot_tokens/:cluster', to: 'robot_tokens#index'
+        put '/robot_tokens/:cluster/:name', to: 'robot_tokens#create_or_update'
+        patch '/robot_tokens/:cluster/:name', to: 'robot_tokens#create_or_update'
+        delete '/robot_tokens/:cluster/:name', to: 'robot_tokens#destroy'
+
+        get '/clusters', to: 'clusters#index'
+        put '/clusters/:id', to: 'clusters#create_or_update'
+        patch '/clusters/:id', to: 'clusters#create_or_update'
+
+        get '/changeset/:cluster', to: 'changeset#index'
+
+        post '/sync', to: 'sync#sync'
+        post '/claim', to: 'claim#claim'
+        post '/revoke', to: 'revoke#revoke'
       end
     end
   end

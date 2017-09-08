@@ -1,11 +1,9 @@
-<div class="kubernetes-user-tokens-form">
+<div class="kubernetes-robot-tokens-form">
   <md-toolbar md-scroll-shrink>
     <div class="md-toolbar-tools">
       <h3>
-        <span ng-if="$ctrl.isNew && $ctrl.user.is_active">New User Token</span>
-        <span ng-if="!$ctrl.isNew">Edit "{{$ctrl.tokenData.cluster}}" token</span>
-        for {{$ctrl.user.name}} ({{$ctrl.user.email}})
-        <small class="badge" ng-if="!$ctrl.user.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
+        <span ng-if="$ctrl.isNew">New Robot Token</span>
+        <span ng-if="!$ctrl.isNew">Edit Robot Token</span>
       </h3>
     </div>
   </md-toolbar>
@@ -27,8 +25,7 @@
               ng-disabled="!$ctrl.isNew && $ctrl.tokenData.cluster">
               <md-option
                 ng-repeat="c in $ctrl.KubernetesClusters.all track by c.id"
-                ng-if="!$ctrl.isNew || ($ctrl.isNew && !$ctrl.assignedKubernetesClusters.includes(c.id))"
-                value="{{c.id}}">
+                ng-value="c.id">
                 {{c.id}} ({{c.description}})
               </md-option>
             </md-select>
@@ -38,6 +35,20 @@
           </md-input-container>
 
           <br />
+
+          <md-input-container class="md-block">
+            <label for="name">Name:</label>
+            <input
+              name="name"
+              ng-model="$ctrl.tokenData.name"
+              ng-disabled="!$ctrl.isNew"
+              required
+              placeholder="Name of this robot token"
+              autofocus>
+            <div ng-messages="$ctrl.kubernetesTokenForm.name.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
 
           <md-input-container class="md-block" ng-if="!$ctrl.isNew">
             <label for="token">Token:</label>
@@ -79,14 +90,13 @@
             <md-button
               type="submit"
               class="md-primary"
-              ng-if="$ctrl.user.is_active"
               ng-disabled="$ctrl.saving || !$ctrl.kubernetesTokenForm.$valid"
               ng-class="{'md-raised': ($ctrl.kubernetesTokenForm.$dirty && $ctrl.kubernetesTokenForm.$valid) }"
               aria-label="Save Token">
               <span ng-if="$ctrl.isNew">Create</span>
               <span ng-if="!$ctrl.isNew">Update</span>
             </md-button>
-            <md-button ui-sref="kubernetes.user-tokens.list({userId: $ctrl.user.id})" ng-disabled="$ctrl.saving">Cancel</md-button>
+            <md-button ui-sref="kubernetes.robot-tokens.list({cluster: $ctrl.tokenData.cluster})" ng-disabled="$ctrl.saving">Cancel</md-button>
            </div>
         </form>
       </md-content>

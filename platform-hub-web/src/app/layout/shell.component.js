@@ -127,9 +127,21 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       featureFlag: featureFlagKeys.kubernetesTokens
     },
     {
+      title: 'Kubernetes Clusters',
+      state: 'kubernetes.clusters.list',
+      icon: icons.kubernetesClusters,
+      featureFlag: featureFlagKeys.kubernetesTokens
+    },
+    {
       title: 'Kubernetes User Tokens',
       state: 'kubernetes.user-tokens.list',
-      icon: icons.kubernetes,
+      icon: icons.kubernetesTokens,
+      featureFlag: featureFlagKeys.kubernetesTokens
+    },
+    {
+      title: 'Kubernetes Robot Tokens',
+      state: 'kubernetes.robot-tokens.list',
+      icon: icons.kubernetesTokens,
       featureFlag: featureFlagKeys.kubernetesTokens
     },
     {

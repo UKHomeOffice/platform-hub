@@ -10,11 +10,13 @@ export const KubernetesClusters = function ($window, hubApiService, apiBackoffTi
   model.all = [];
 
   model.refresh = refresh;
+  model.get = get;
+  model.createOrUpdate = createOrUpdate;
 
   return model;
 
-  function refresh() {
-    if (_.isNull(fetcherPromise)) {
+  function refresh(force) {
+    if (force || _.isNull(fetcherPromise)) {
       fetcherPromise = hubApiService
         .getKubernetesClusters()
         .then(clusters => {
@@ -29,5 +31,20 @@ export const KubernetesClusters = function ($window, hubApiService, apiBackoffTi
         });
     }
     return fetcherPromise;
+  }
+
+  function get(id) {
+    return refresh()
+      .then(clusters => {
+        return _.find(clusters, ['id', id]);
+      });
+  }
+
+  function createOrUpdate(id, data) {
+    return hubApiService
+      .createOrUpdateKubernetesCluster(id, data)
+      .then(() => {
+        return refresh(true);
+      });
   }
 };

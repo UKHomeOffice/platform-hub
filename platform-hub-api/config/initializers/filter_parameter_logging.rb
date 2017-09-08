@@ -12,5 +12,9 @@ Rails.application.config.filter_parameters += [
   :session,
   :cookie,
   :csrf,
-  :salt
+  :salt,
+  :s3_bucket_name,
+  :s3_access_key_id,
+  :s3_secret_access_key,
+  :object_key
 ]

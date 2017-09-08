@@ -26,9 +26,13 @@ import {
 } from './home/home.module';
 import {IdentitiesManager} from './identities/identities.module';
 import {
+  KubernetesClustersForm,
+  KubernetesClustersList,
+  KubernetesRobotTokensForm,
+  KubernetesRobotTokensList,
+  KubernetesTokensSync,
   KubernetesUserTokensForm,
-  KubernetesUserTokensList,
-  KubernetesTokensSync
+  KubernetesUserTokensList
 } from './kubernetes/kubernetes.module';
 import {
   HubSetup,
@@ -118,6 +122,41 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           rolePermitted: 'admin'
         }
       })
+      .state('kubernetes.clusters', {
+        abstract: true,
+        url: '/clusters',
+        template: '<ui-view></ui-view>'
+      })
+        .state('kubernetes.clusters.list', {
+          url: '/list',
+          component: KubernetesClustersList,
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('kubernetes.clusters.new', {
+          url: '/new',
+          component: KubernetesClustersForm,
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('kubernetes.clusters.edit', {
+          url: '/edit/:id',
+          component: KubernetesClustersForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
       .state('kubernetes.user-tokens', {
         abstract: true,
         url: '/user-tokens',
@@ -153,6 +192,53 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         .state('kubernetes.user-tokens.edit', {
           url: '/edit/:userId/:cluster',
           component: KubernetesUserTokensForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+      .state('kubernetes.robot-tokens', {
+        abstract: true,
+        url: '/robot-tokens',
+        template: '<ui-view></ui-view>'
+      })
+        .state('kubernetes.robot-tokens.list', {
+          url: '/list/:cluster',
+          component: KubernetesRobotTokensList,
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          },
+          resolve: {
+            transition: '$transition$'
+          },
+          params: {
+            cluster: ''
+          }
+        })
+        .state('kubernetes.robot-tokens.new', {
+          url: '/new/:cluster',
+          component: KubernetesRobotTokensForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          },
+          params: {
+            cluster: ''
+          }
+        })
+        .state('kubernetes.robot-tokens.edit', {
+          url: '/edit/:cluster/:name',
+          component: KubernetesRobotTokensForm,
           resolve: {
             transition: '$transition$'
           },
