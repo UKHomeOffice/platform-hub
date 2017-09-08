@@ -8,7 +8,7 @@ describe AnnouncementsProcessorService, type: :service do
     let(:announcement_mailer) { class_double('announcement_mailer') }
     let(:slack_notifier) { instance_double('Slack::Notifier') }
 
-    let!(:hub_user_1) { create :user, email: 'hub_user_1@example.org' }
+    let!(:hub_user_1) { create :user, email: 'hub_user_1@example.org', created_at: 1.second.ago }
     let!(:hub_user_2) { create :user, email: 'hub_user_2@example.org' }
 
     let :foo_contact_list do
@@ -100,7 +100,11 @@ describe AnnouncementsProcessorService, type: :service do
     it 'should process pending announcements that need to be delivered' do
       expect(@service).to receive(:process).with(@a2).and_call_original
       a2_mailer = double
-      expect(announcement_mailer).to receive(:announcement_email).with(@a2, expected_a2_recipients, false).and_return(a2_mailer)
+      expect(announcement_mailer).to receive(:announcement_email).with(
+        @a2.tap { |a| a.status = :delivering },
+        expected_a2_recipients,
+        false
+      ).and_return(a2_mailer)
       expect(a2_mailer).to receive(:deliver_later)
       expect(slack_notifier).to receive(:post)
         .with(attachments: anything, channel: '#foo', icon_emoji: anything)
@@ -109,7 +113,11 @@ describe AnnouncementsProcessorService, type: :service do
 
       expect(@service).to receive(:process).with(@a4).and_call_original
       a4_mailer = double
-      expect(announcement_mailer).to receive(:announcement_email).with(@a4, expected_a4_recipients, false).and_return(a4_mailer)
+      expect(announcement_mailer).to receive(:announcement_email).with(
+        @a4.tap { |a| a.status = :delivering },
+        expected_a4_recipients,
+        false
+      ).and_return(a4_mailer)
       expect(a4_mailer).to receive(:deliver_later)
 
       expect(@service).to receive(:process).with(@a5).and_call_original
@@ -124,14 +132,22 @@ describe AnnouncementsProcessorService, type: :service do
 
       expect(@service).to receive(:process).with(@a10).and_call_original
       a10_mailer = double
-      expect(announcement_mailer).to receive(:announcement_email).with(@a10, expected_a10_recipients, true).and_return(a10_mailer)
+      expect(announcement_mailer).to receive(:announcement_email).with(
+        @a10.tap { |a| a.status = :delivering },
+        expected_a10_recipients,
+        true
+      ).and_return(a10_mailer)
       expect(a10_mailer).to receive(:deliver_later)
       expect(slack_notifier).to receive(:post)
         .with(attachments: anything, channel: '#baz', icon_emoji: anything)
 
       expect(@service).to receive(:process).with(@a11).and_call_original
       a11_mailer = double
-      expect(announcement_mailer).to receive(:announcement_email).with(@a11, expected_a10_recipients, false).and_return(a11_mailer)
+      expect(announcement_mailer).to receive(:announcement_email).with(
+        @a11.tap { |a| a.status = :delivering },
+        expected_a10_recipients,
+        false
+      ).and_return(a11_mailer)
       expect(a11_mailer).to receive(:deliver_later)
       expect(slack_notifier).to receive(:post)
         .with(attachments: anything, channel: '#baz', icon_emoji: anything)
