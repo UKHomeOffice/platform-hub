@@ -16,7 +16,7 @@
 
           <md-input-container class="md-block">
             <label for="cluster">Cluster:</label>
-            <md-select ng-model="$ctrl.cluster" 
+            <md-select ng-model="$ctrl.cluster"
               name="cluster"
               required
               placeholder="Select the cluster"
@@ -25,7 +25,7 @@
               <md-option
                 ng-repeat="c in $ctrl.KubernetesClusters.all"
                 value="{{c.id}}">
-                {{c.description}}
+                {{c.id}} ({{c.description}})
               </md-option>
             </md-select>
             <div ng-messages="$ctrl.kubernetesTokenUploadForm.cluster.$error">
@@ -37,7 +37,7 @@
 
       <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.changes.length > 0">
 
-        <div><strong>Changelog:</strong></div>        
+        <div><strong>Changelog:</strong></div>
 
         <md-card ng-repeat="c in $ctrl.changes track by c.created_at">
           <md-card-title>

@@ -187,6 +187,9 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             authenticate: true,
             featureFlag: featureFlagKeys.kubernetesTokens,
             rolePermitted: 'admin'
+          },
+          params: {
+            userId: ''
           }
         })
         .state('kubernetes.user-tokens.edit', {

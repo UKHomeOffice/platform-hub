@@ -57,19 +57,20 @@
           ID: {{i.external_id}}
         </p>
 
+        <p ng-if="i.kubernetes_tokens.length == 0">
+          No tokens currently available for you
+        </p>
+
         <div ng-if="$ctrl.showKubeTokens">
           <ul>
             <li ng-repeat="t in i.kubernetes_tokens">
-              {{t.cluster}}: <strong>{{t.token}}</strong> (Groups: {{t.groups.join(', ')}})
+              {{t.cluster}}: <strong>{{t.token}}</strong>
+              <span ng-if="t.group.length > 0">
+                (Groups: {{t.groups.join(', ')}})
+              </span>
             </li>
           </ul>
         </div>
-
-        <md-button class="md-secondary md-raised"
-          ng-click="$ctrl.claimKubeToken($event)"
-          aria-label="Claim existing kubernetes token">
-          Claim token
-        </md-button>
 
         <md-button class="md-secondary md-raised"
           ng-if="i.kubernetes_tokens.length > 0"

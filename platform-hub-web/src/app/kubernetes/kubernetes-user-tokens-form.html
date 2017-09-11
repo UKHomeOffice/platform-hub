@@ -2,10 +2,8 @@
   <md-toolbar md-scroll-shrink>
     <div class="md-toolbar-tools">
       <h3>
-        <span ng-if="$ctrl.isNew && $ctrl.user.is_active">New User Token</span>
-        <span ng-if="!$ctrl.isNew">Edit "{{$ctrl.tokenData.cluster}}" token</span>
-        for {{$ctrl.user.name}} ({{$ctrl.user.email}})
-        <small class="badge" ng-if="!$ctrl.user.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
+        <span ng-if="$ctrl.isNew">New Kubernetes User Token</span>
+        <span ng-if="!$ctrl.isNew">Edit Kubernetes User Token</span>
       </h3>
     </div>
   </md-toolbar>
@@ -17,6 +15,33 @@
     <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
       <md-content layout-padding>
         <form name="$ctrl.kubernetesTokenForm" role="form" ng-submit="$ctrl.createOrUpdate()">
+
+          <md-autocomplete
+            md-input-name="user"
+            md-no-cache="true"
+            md-selected-item="$ctrl.user"
+            md-search-text="$ctrl.searchText"
+            md-items="user in $ctrl.searchUsers($ctrl.searchText)"
+            md-item-text="user.name + ' (' + user.email + ')'"
+            md-min-length="1"
+            ng-model-options="{ debounce: 500 }"
+            placeholder="Search for a user…"
+            md-require-match
+            md-floating-label="User"
+            ng-disabled="!$ctrl.isNew"
+            required
+            flex>
+            <md-item-template>
+              <span md-highlight-text="$ctrl.searchText" md-highlight-flags="^i">
+                {{user.name}}
+                ({{user.email}})
+              </span>
+              <small class="badge" ng-if="!user.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
+            </md-item-template>
+            <md-not-found>
+              No users matching "{{$ctrl.searchText}}" were found.
+            </md-not-found>
+          </md-autocomplete>
 
           <md-input-container class="md-block">
             <label for="cluster">Cluster:</label>
@@ -79,7 +104,7 @@
             <md-button
               type="submit"
               class="md-primary"
-              ng-if="$ctrl.user.is_active"
+              ng-if="!$ctrl.user || $ctrl.user.is_active"
               ng-disabled="$ctrl.saving || !$ctrl.kubernetesTokenForm.$valid"
               ng-class="{'md-raised': ($ctrl.kubernetesTokenForm.$dirty && $ctrl.kubernetesTokenForm.$valid) }"
               aria-label="Save Token">

@@ -58,6 +58,11 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
       .getUser(userId)
       .then(user => {
         ctrl.user = user;
+
+        if (!ctrl.searchSelectedUser) {
+          ctrl.searchSelectedUser = user;
+        }
+
         return fetchKubernetesTokens();
       });
   }
