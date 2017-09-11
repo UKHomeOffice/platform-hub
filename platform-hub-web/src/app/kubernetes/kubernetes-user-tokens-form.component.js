@@ -20,8 +20,10 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
   ctrl.isNew = true;
   ctrl.tokenData = null;
   ctrl.assignedKubernetesClusters = null;
+  ctrl.searchText = '';
   ctrl.user = null;
 
+  ctrl.searchUsers = searchUsers;
   ctrl.createOrUpdate = createOrUpdate;
 
   init();
@@ -39,7 +41,9 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
     KubernetesClusters
       .refresh()
       .then(() => {
-        return loadUserAndToken();
+        if (userId) {
+          return loadUserAndToken();
+        }
       })
       .finally(() => {
         ctrl.loading = false;
@@ -51,7 +55,10 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
       .getUser(userId)
       .then(user => {
         ctrl.user = user;
-        fetchClusterToken();
+
+        if (cluster) {
+          fetchClusterToken();
+        }
       });
   }
 
@@ -68,6 +75,10 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
       ctrl.tokenData = {};
       ctrl.assignedKubernetesClusters = [];
     }
+  }
+
+  function searchUsers(query) {
+    return hubApiService.searchUsers(query, true);
   }
 
   function createOrUpdate() {

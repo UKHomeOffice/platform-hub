@@ -3,13 +3,20 @@
     <div class="md-toolbar-tools">
       <h3>
         <span>Kubernetes User Tokens</span>
-        <span ng-if="$ctrl.user">for {{$ctrl.user.name}} ({{$ctrl.user.email}})</span>
+        <span ng-if="$ctrl.user">for {{$ctrl.user.name}}</span>
         <small class="badge" ng-if="$ctrl.user && !$ctrl.user.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
       </h3>
       <span flex></span>
 
       <md-button
-        ng-if="!$ctrl.loading && $ctrl.user && $ctrl.user.is_active && ($ctrl.tokens.length < $ctrl.KubernetesClusters.all.length)"
+        ng-if="
+          !$ctrl.loading &&
+          (
+            !$ctrl.user || (
+              $ctrl.user.is_active &&
+              $ctrl.tokens.length < $ctrl.KubernetesClusters.all.length
+            )
+          )"
         aria-label="Add new token"
         ui-sref="kubernetes.user-tokens.new({userId: $ctrl.user.id})">
         <md-icon>{{$ctrl.addTokenIcon}}</md-icon>
@@ -52,10 +59,10 @@
         md-selected-item="$ctrl.searchSelectedUser"
         md-search-text="$ctrl.searchText"
         md-items="user in $ctrl.searchUsers($ctrl.searchText)"
-        md-item-text="user.name"
+        md-item-text="user.name + ' (' + user.email + ')'"
         md-min-length="1"
         ng-model-options="{ debounce: 500 }"
-        placeholder="Filter by user name"
+        placeholder="Search for a user to view tokens…"
         flex>
         <md-item-template>
           <span md-highlight-text="$ctrl.searchText" md-highlight-flags="^i">
@@ -129,24 +136,21 @@
     </md-card>
 
     <md-card ng-if="!$ctrl.loading && $ctrl.user && $ctrl.tokens.length == 0">
-      <md-card-title>
-        <md-card-title-text>
-          <span class="none-text">
-            Selected user does not have any kubernetes access tokens yet.
-            Add new token by clicking + sign above.
-          </span>
-        </md-card-title-text>
-      </md-card-title>
+      <md-card-content>
+        <p class="md-body-1 none-text">
+          {{$ctrl.user.name}} does not have any kubernetes access tokens yet.
+          <br />
+          <a ui-sref="kubernetes.user-tokens.new({userId: $ctrl.user.id})">You can generate a new token for them</a>
+        </p>
+      </md-card-content>
     </md-card>
 
     <md-card ng-if="!$ctrl.loading && !$ctrl.user">
-      <md-card-title>
-        <md-card-title-text>
-          <span class="none-text">
-            Please use search box above to find a user.
-          </span>
-        </md-card-title-text>
-      </md-card-title>
+      <md-card-content>
+        <p class="md-body-1 none-text">
+          To view tokens, first search for a user in the search box above.
+        </p>
+      </md-card-content>
     </md-card>
 
   </md-content>
