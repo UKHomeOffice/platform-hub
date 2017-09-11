@@ -57,6 +57,10 @@
           ID: {{i.external_id}}
         </p>
 
+        <p ng-if="i.kubernetes_tokens.length == 0">
+          No tokens currently available for you
+        </p>
+
         <div ng-if="$ctrl.showKubeTokens">
           <ul>
             <li ng-repeat="t in i.kubernetes_tokens">
