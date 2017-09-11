@@ -22,7 +22,6 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
   ctrl.connect = connect;
   ctrl.disconnect = disconnect;
   ctrl.showKubeTokens = false;
-  ctrl.claimKubeToken = claimKubeToken;
 
   init();
 
@@ -86,36 +85,5 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
         );
       });
     }
-  }
-
-  function claimKubeToken(targetEvent) {
-    const confirm = $mdDialog.prompt()
-      .title('Claim kubernetes token')
-      .textContent('This will claim existing kubernetes token and associate it with your kubernetes identity.')
-      .placeholder('Kubernetes token you would like to claim')
-      .ariaLabel('Claim token')
-      .initialValue('')
-      .targetEvent(targetEvent)
-      .ok('Claim token')
-      .cancel('Cancel');
-
-    $mdDialog
-      .show(confirm)
-      .then(claimedToken => {
-        if (_.isNull(claimedToken) || _.isEmpty(claimedToken)) {
-          logger.error('Kubernetes token not specified or empty!');
-        } else {
-          ctrl.busy = true;
-          hubApiService
-            .claimKubernetesToken({token: claimedToken})
-            .then(() => {
-              logger.success('Kubernetes token claimed successfully!');
-              init();
-            })
-            .finally(() => {
-              ctrl.busy = false;
-            });
-        }
-      });
   }
 }

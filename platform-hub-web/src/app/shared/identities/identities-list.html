@@ -66,12 +66,6 @@
         </div>
 
         <md-button class="md-secondary md-raised"
-          ng-click="$ctrl.claimKubeToken($event)"
-          aria-label="Claim existing kubernetes token">
-          Claim token
-        </md-button>
-
-        <md-button class="md-secondary md-raised"
           ng-if="i.kubernetes_tokens.length > 0"
           ng-click="$ctrl.showKubeTokens = !$ctrl.showKubeTokens"
           aria-label="Show/Hide tokens">
