@@ -78,9 +78,19 @@
     </div>
   </md-toolbar>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.tokens.length > 0">
+  <md-content layout-padding>
 
-    <md-card ng-repeat="t in $ctrl.tokens track by t.cluster">
+    <p
+      class="md-body-1"
+      md-colors="{background: 'yellow-50'}">
+      After making any changes make sure you
+      <a ui-sref="kubernetes.tokens-sync">sync the relevant cluster(s)</a>
+      to push your changes live
+    </p>
+
+    <md-card
+      ng-if="!$ctrl.loading && $ctrl.tokens.length > 0"
+      ng-repeat="t in $ctrl.tokens track by t.cluster">
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">
@@ -118,10 +128,7 @@
       </md-card-actions>
     </md-card>
 
-  </md-content>
-
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.user && $ctrl.tokens.length == 0">
-    <md-card>
+    <md-card ng-if="!$ctrl.loading && $ctrl.user && $ctrl.tokens.length == 0">
       <md-card-title>
         <md-card-title-text>
           <span class="none-text">
@@ -131,10 +138,8 @@
         </md-card-title-text>
       </md-card-title>
     </md-card>
-  </md-content>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && !$ctrl.user">
-    <md-card>
+    <md-card ng-if="!$ctrl.loading && !$ctrl.user">
       <md-card-title>
         <md-card-title-text>
           <span class="none-text">
@@ -143,5 +148,6 @@
         </md-card-title-text>
       </md-card-title>
     </md-card>
+
   </md-content>
 </div>
