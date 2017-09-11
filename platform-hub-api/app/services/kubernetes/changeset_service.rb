@@ -6,6 +6,8 @@ module Kubernetes
       :update_kubernetes_identity,
       :revoke_kubernetes_token,
       :claim_kubernetes_token,
+      :update_kubernetes_robot_token,
+      :destroy_kubernetes_robot_token
     ]
 
     def get_events(cluster, since)
