@@ -64,7 +64,10 @@
         <div ng-if="$ctrl.showKubeTokens">
           <ul>
             <li ng-repeat="t in i.kubernetes_tokens">
-              {{t.cluster}}: <strong>{{t.token}}</strong> (Groups: {{t.groups.join(', ')}})
+              {{t.cluster}}: <strong>{{t.token}}</strong>
+              <span ng-if="t.group.length > 0">
+                (Groups: {{t.groups.join(', ')}})
+              </span>
             </li>
           </ul>
         </div>
