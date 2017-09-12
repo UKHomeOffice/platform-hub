@@ -1,5 +1,17 @@
 namespace :kubernetes do
 
+  desc "Trigger the Kubernetes sync tokens job if it's not already in the queue"
+  task trigger_tokens_sync: :environment do
+    if !FeatureFlagService.is_enabled?(:kubernetes_tokens)
+      puts 'Kubernetes tokens feature flag is turned off... will not trigger another one'
+    elsif TokensSyncJob.is_already_queued
+      puts 'Tokens sync job already in queue... will not trigger another one'
+    else
+      puts 'Triggering the tokens sync job'
+      TokensSyncJob.perform_later
+    end
+  end
+
   namespace :cluster do
 
     desc "Add kubernetes cluster to list of managed clusters"
@@ -22,7 +34,7 @@ namespace :kubernetes do
 
   end
 
-  
+
   namespace :static_token do
 
     desc "Creates or updates static token - `groups` as semicolon separated string of group names: 'group1;group2'."
@@ -57,7 +69,7 @@ namespace :kubernetes do
 
     desc "Imports static kubernetes tokens for given cluster and kind from a file and stores them as HashRecord"
     task :import, [:cluster, :kind, :tokens_file_path] => [:environment] do |t, args|
-      
+
       unless [args.cluster, args.kind].all?
         raise "ERROR: Missing arguments! Required args: `cluster`,`kind`."
       end
