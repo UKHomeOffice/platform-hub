@@ -107,6 +107,8 @@ Rails.application.routes.draw do
         post '/sync', to: 'sync#sync'
         post '/claim', to: 'claim#claim'
         post '/revoke', to: 'revoke#revoke'
+
+        get '/groups/privileged', to: 'groups#privileged'
       end
     end
   end
