@@ -6,7 +6,7 @@ export const KubernetesUserTokensListComponent = {
   controller: KubernetesUserTokensListController
 };
 
-function KubernetesUserTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, KubernetesClusters, icons) {
+function KubernetesUserTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, KubernetesClusters, icons, kubernetesTokenEscalatePrivilegePopupService) {
   'ngInject';
 
   const ctrl = this;
@@ -26,6 +26,7 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
   ctrl.revokeTokenIcon = icons.revokeToken;
 
   ctrl.searchUsers = searchUsers;
+  ctrl.escalatePrivilege = escalatePrivilege;
   ctrl.deleteToken = deleteToken;
   ctrl.filterKubernetesTokensByUser = filterKubernetesTokensByUser;
   ctrl.revokeToken = revokeToken;
@@ -75,6 +76,14 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
     if (identity) {
       ctrl.tokens = identity.kubernetes_tokens;
     }
+  }
+
+  function escalatePrivilege(user, cluster, targetEvent) {
+    kubernetesTokenEscalatePrivilegePopupService.open(
+      user,
+      cluster,
+      targetEvent
+    ).then(filterKubernetesTokensByUser);
   }
 
   function deleteToken(userId, cluster, targetEvent) {

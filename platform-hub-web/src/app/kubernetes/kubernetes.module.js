@@ -4,6 +4,8 @@ import {KubernetesClustersFormComponent} from './kubernetes-clusters-form.compon
 import {KubernetesClustersListComponent} from './kubernetes-clusters-list.component';
 import {KubernetesRobotTokensFormComponent} from './kubernetes-robot-tokens-form.component';
 import {KubernetesRobotTokensListComponent} from './kubernetes-robot-tokens-list.component';
+import {KubernetesTokenEscalatePrivilegePopupController} from './kubernetes-token-escalate-privilege-popup.controller';
+import {kubernetesTokenEscalatePrivilegePopupService} from './kubernetes-token-escalate-privilege-popup.service';
 import {KubernetesTokensSyncComponent} from './kubernetes-tokens-sync.component';
 import {KubernetesUserTokensFormComponent} from './kubernetes-user-tokens-form.component';
 import {KubernetesUserTokensListComponent} from './kubernetes-user-tokens-list.component';
@@ -23,6 +25,8 @@ export const KubernetesModule = angular
   .component(KubernetesClustersList, KubernetesClustersListComponent)
   .component(KubernetesRobotTokensForm, KubernetesRobotTokensFormComponent)
   .component(KubernetesRobotTokensList, KubernetesRobotTokensListComponent)
+  .controller('KubernetesTokenEscalatePrivilegePopupController', KubernetesTokenEscalatePrivilegePopupController)
+  .service('kubernetesTokenEscalatePrivilegePopupService', kubernetesTokenEscalatePrivilegePopupService)
   .component(KubernetesTokensSync, KubernetesTokensSyncComponent)
   .component(KubernetesUserTokensForm, KubernetesUserTokensFormComponent)
   .component(KubernetesUserTokensList, KubernetesUserTokensListComponent)
