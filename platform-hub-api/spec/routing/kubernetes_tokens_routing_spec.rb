@@ -24,6 +24,10 @@ RSpec.describe Kubernetes::TokensController, type: :routing do
         expect(:delete => '/kubernetes/tokens/1/prod').to route_to('kubernetes/tokens#destroy', :user_id => '1', :cluster => 'prod')
       end
 
+      it 'routes to #escalate' do
+        expect(:post => '/kubernetes/tokens/1/prod/escalate').to route_to('kubernetes/tokens#escalate', :user_id => '1', :cluster => 'prod')
+      end
+
       it 'does not route when user ID not specified' do
         expect(:put => '/kubernetes/tokens').not_to be_routable
       end
@@ -44,6 +48,10 @@ RSpec.describe Kubernetes::TokensController, type: :routing do
 
       it 'route to #destroy is not routable' do
         expect(:delete => '/kubernetes/tokens/1/prod').to_not be_routable
+      end
+
+      it 'route to #escalate is not routable' do
+        expect(:post => '/kubernetes/tokens/1/prod/escalate').to_not be_routable
       end
     end
 
