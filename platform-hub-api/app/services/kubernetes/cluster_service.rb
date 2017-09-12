@@ -24,7 +24,7 @@ module Kubernetes
     # There are respective rake tasks to facilitate kubernetes clusters configuration management
 
     def create_or_update(opts = {})
-      configuration = clusters_config
+      configuration = clusters_config_hash_record
 
       cluster_config_index = configuration.data.find_index {|c| c['id'] == opts[:id] }
 
@@ -57,7 +57,7 @@ module Kubernetes
     end
 
     def delete(cluster_id)
-      configuration = clusters_config
+      configuration = clusters_config_hash_record
       configuration.with_lock do
         configuration.data.reject! do |c|
           c['id'] == cluster_id.to_s
@@ -67,12 +67,18 @@ module Kubernetes
       end
     end
 
-    private
-
-    def clusters_config
+    def clusters_config_hash_record
       HashRecord.kubernetes.find_or_create_by!(id: 'clusters') do |r|
         r.data = []
       end
+    end
+
+    def list
+      clusters_config_hash_record.data
+    end
+
+    def get id
+      list.find {|c| c['id'] == id} || {}
     end
 
   end

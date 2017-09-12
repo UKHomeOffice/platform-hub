@@ -9,7 +9,7 @@ module Kubernetes
     def sync_tokens(opts = {})
       raise 'Missing `cluster` in options.' if opts[:cluster].blank?
 
-      begin 
+      begin
         body = Kubernetes::TokenFileService.generate(opts[:cluster])
         raise Errors::TokensFileBlank, 'Tokens file empty!' if body.blank?
 
@@ -27,7 +27,7 @@ module Kubernetes
       end
     end
 
-    private 
+    private
 
     def s3_bucket(config)
       client = Aws::S3::Client.new(config[:credentials])
@@ -35,8 +35,11 @@ module Kubernetes
     end
 
     def get_s3_config(cluster)
-      config = get_cluster_data(cluster)['config']['s3_bucket']
+      cluster = Kubernetes::ClusterService.get cluster
+      config = cluster.dig 'config', 's3_bucket'
+
       raise 'Cluster S3 configuration not found!' if config.blank?
+
       {
         :bucket_name => config['bucket_name'],
         :object_key => config['object_key'],
@@ -46,10 +49,6 @@ module Kubernetes
           secret_access_key: ENCRYPTOR.decrypt(config['secret_access_key']),
         }
       }
-    end
-
-    def get_cluster_data(cluster)
-      HashRecord.kubernetes.find_by!(id: 'clusters').data.find {|c| c['id'] == cluster} || {}
     end
 
   end

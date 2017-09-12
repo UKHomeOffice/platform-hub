@@ -8,7 +8,7 @@ class KubernetesTokenBase
 
   validates_presence_of :cluster, :token, :uid
   validates_inclusion_of :cluster, in: proc {
-    HashRecord.kubernetes.find_by!(id: 'clusters').data.map {|c| c['id']}
+    Kubernetes::ClusterService.list.map {|c| c['id']}
   }
   validate :token_must_not_be_blank
 
