@@ -69,6 +69,20 @@ FactoryGirl.define do
       end
     end
 
+    factory :kubernetes_groups_hash_record do
+      scope 'kubernetes'
+      id 'groups'
+      data do
+        [
+          {
+            id: 'acp:all:user:cw-privileged',
+            privileged: true,
+            description: 'Privileged cluster wide user access (in all clusters)'
+          }
+        ]
+      end
+    end
+
     factory :feature_flags_hash_record do
       scope 'general'
       id 'feature_flags'
