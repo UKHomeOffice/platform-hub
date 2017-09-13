@@ -2,6 +2,8 @@ require 'rails_helper'
 
 describe Kubernetes::TokenService, type: :service do
 
+  include_context 'time helpers'
+
   let(:identity_id) { 'some-identity-id' }
   let(:cluster) { 'development' }
   let(:token) { 'some-token' }
@@ -100,6 +102,93 @@ describe Kubernetes::TokenService, type: :service do
         )
 
         expect(ENCRYPTOR.decrypt(new_token.token)).to eq 'token-value-passed-in-arguments'
+      end
+    end
+  end
+
+  describe '.escalate_token' do
+    let(:privileged_group) { 'privileged-group' }
+    let(:expires_in_secs) { 180 }
+
+    context 'when token for given cluster does not exist' do
+      before do
+        allow(kubernetes_identity).to receive(:data) { { tokens: [] } }
+      end
+
+      it 'returns nil as privileged_token' do
+        tokens, privileged_token = subject.escalate_token(
+          kubernetes_identity.data, 
+          'some-cluster', 
+          privileged_group,
+          expires_in_secs
+        )
+
+        expect(tokens.size).to eq 0
+        expect(privileged_token).to be nil
+      end
+    end
+
+    context 'when token for given cluster exists' do
+      before do
+        allow(kubernetes_identity).to receive(:data) { { tokens: [kube_token] } }
+        move_time_to now
+      end
+
+      it 'adds privileged_group to existing token groups and updates privilege expiration time and returns a <tokens, privileged_token> tupple' do
+        tokens, privileged_token = subject.escalate_token(
+          kubernetes_identity.data, 
+          cluster, 
+          privileged_group,
+          expires_in_secs
+        )
+        expect(tokens.size).to eq 1
+        expect(privileged_token.identity_id).to eq kubernetes_identity.id
+        expect(privileged_token.cluster).to eq cluster
+        expect(ENCRYPTOR.decrypt(privileged_token.token)).to eq token
+        expect(privileged_token.uid).to_not be_empty
+
+        expected_groups = groups.nil? ? [ privileged_group ] : groups << privileged_group
+
+        expect(privileged_token.groups).to match_array expected_groups
+        expect(privileged_token.expire_privileged_at).to eq expires_in_secs.seconds.from_now
+      end
+
+      it 'limit expire_privileged_at to 6h max' do
+        tokens, privileged_token = subject.escalate_token(
+          kubernetes_identity.data, 
+          cluster, 
+          privileged_group,
+          30000
+        )
+        expect(tokens.size).to eq 1
+        expect(privileged_token.expire_privileged_at).to eq 21600.seconds.from_now
+      end
+
+      context 'with subsequent privileged_group update' do
+        it 'keeps unique list of groups per token and updates expire_privileged_at time' do
+          subject.escalate_token(
+            kubernetes_identity.data, 
+            cluster, 
+            privileged_group,
+            10
+          )
+          tokens, privileged_token = subject.escalate_token(
+            kubernetes_identity.data, 
+            cluster, 
+            privileged_group,
+            expires_in_secs
+          )
+          expect(tokens.size).to eq 1
+          expect(privileged_token.identity_id).to eq kubernetes_identity.id
+          expect(privileged_token.cluster).to eq cluster
+          expect(ENCRYPTOR.decrypt(privileged_token.token)).to eq token
+          expect(privileged_token.uid).to_not be_empty
+
+          expected_groups = groups.nil? ? [ privileged_group ] : groups << privileged_group
+
+          expect(privileged_token.groups).to match_array expected_groups
+          expect(privileged_token.expire_privileged_at).to eq expires_in_secs.seconds.from_now
+        end
       end
     end
   end

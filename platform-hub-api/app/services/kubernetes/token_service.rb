@@ -2,6 +2,9 @@ module Kubernetes
   module TokenService
     extend self
 
+    # Upper bound for privilege expiration set at 6h
+    PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS = 21600
+
     def tokens_from_identity_data(data)
       data.with_indifferent_access[:tokens].collect do |t|
         KubernetesToken.from_data(t)
@@ -26,6 +29,23 @@ module Kubernetes
         )
         tokens << new_token
         [tokens, new_token]
+      end
+    end
+
+    def escalate_token(data, cluster, privileged_group, expire_in_secs)
+      tokens = tokens_from_identity_data(data)
+      existing_token = tokens.find {|t| t.cluster == cluster}
+
+      if existing_token
+        if existing_token.groups.nil?
+          existing_token.groups = [ privileged_group ]
+        else
+          existing_token.groups = (existing_token.groups << privileged_group).uniq
+        end
+        existing_token.expire_privileged_at = [expire_in_secs, PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS].min.seconds.from_now
+        [tokens, existing_token]
+      else
+        [tokens, nil]
       end
     end
 
