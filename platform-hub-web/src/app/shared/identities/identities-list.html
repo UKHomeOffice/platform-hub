@@ -69,12 +69,12 @@
               </p>
 
               <ul ng-if="t.groups.length > 0 || t.expire_privileged_at">
-                <li>
+                <li ng-if="t.groups.length > 0">
                   <p>
                     Groups: {{t.groups.join(', ')}}
                   </p>
                 </li>
-                <li>
+                <li ng-if="t.expire_privileged_at">
                   <p
                     md-colors="{color: 'accent'}">
                     <strong>Escalated privilege ends at:</strong>
