@@ -49,11 +49,4 @@ class PrivilegedTokenExpirerJob < ApplicationJob
     end
   end
 
-  private
-
-  def privileged_groups
-    @privileged_groups ||= HashRecord.kubernetes.find_by!(id: 'groups').data.map do |g|
-      g["id"] if g["privileged"] == true
-    end
-  end
 end

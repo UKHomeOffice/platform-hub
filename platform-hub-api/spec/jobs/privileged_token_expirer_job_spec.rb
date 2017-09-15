@@ -49,11 +49,7 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
     end
 
     context 'for kubernetes identity token with privileged group' do
-      let(:groups) do
-        HashRecord.kubernetes.find_by!(id: 'groups').data.map do |g|
-          g["id"] if g["privileged"] == true
-        end
-      end
+      let(:groups) { Kubernetes::TokenGroupService.privileged_group_ids }
 
       context 'when privileged group expiration time lapsed' do
         let(:expire_privileged_at) { 1.minute.ago }

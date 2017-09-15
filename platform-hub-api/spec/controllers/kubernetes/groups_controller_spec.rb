@@ -20,15 +20,19 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
 
       it_behaves_like 'an admin' do
         let(:group_id) { 'some:group:id' }
-        let(:privileged) { true }
 
         before do
           create(:kubernetes_groups_hash_record, data: [
             {
               id: group_id,
-              privileged: privileged,
+              privileged: true,
               description: 'some description'
-            }
+            },
+            {
+              id: 'non-privileged-group',
+              privileged: false,
+              description: 'some description'
+            },
           ])
         end
 
@@ -36,10 +40,12 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
           get :privileged
           expect(response).to be_success
 
+          expect(json_response.size).to eq 1
+
           group = json_response.first
 
           expect(group['id']).to eq group_id
-          expect(group['privileged']).to eq privileged
+          expect(group['privileged']).to eq true
         end
 
       end
