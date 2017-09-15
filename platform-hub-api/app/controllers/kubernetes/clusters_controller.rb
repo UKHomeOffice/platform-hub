@@ -30,9 +30,7 @@ class Kubernetes::ClustersController < ApiJsonController
   private
 
   def load_kubernetes_clusters_hash_record
-    @kubernetes_clusters = HashRecord.kubernetes.find_or_create_by!(id: 'clusters') do |r|
-      r.data = []
-    end
+    @kubernetes_clusters = Kubernetes::ClusterService.clusters_config_hash_record
   end
 
   def cluster_params

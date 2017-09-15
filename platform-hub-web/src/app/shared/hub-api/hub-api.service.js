@@ -89,6 +89,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.syncKubernetesTokens = syncKubernetesTokens;
   service.claimKubernetesToken = claimKubernetesToken;
   service.revokeKubernetesToken = revokeKubernetesToken;
+  service.getPrivilegedGroupsForKubernetesTokens = buildSimpleFetcher('kubernetes/groups/privileged', 'kubernetes privileged groups');
+  service.escalatePrivilegeForKubernetesTokens = escalatePrivilegeForKubernetesTokens;
 
   service.getFeatureFlags = buildSimpleFetcher('feature_flags', 'feature flags');
   service.updateFeatureFlag = buildResourceUpdater('feature_flags');
@@ -739,6 +741,34 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Revocation error', response));
+        return $q.reject(response);
+      });
+  }
+
+  function escalatePrivilegeForKubernetesTokens(userId, cluster, group, expiresInSecs) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+    if (_.isNull(cluster) || _.isEmpty(cluster)) {
+      throw new Error('"cluster" argument not specified or empty');
+    }
+    if (_.isNull(group) || _.isEmpty(group)) {
+      throw new Error('"group" argument not specified or empty');
+    }
+    if (_.isNull(expiresInSecs) || expiresInSecs < 1) {
+      throw new Error('"expiresInSecs" argument not specified or invalid');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/kubernetes/tokens/${userId}/${cluster}/escalate`, {
+        privileged_group: group,
+        expires_in_secs: expiresInSecs
+      })
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to escalate privilege on Kube token', response));
         return $q.reject(response);
       });
   }

@@ -9,12 +9,11 @@ module Kubernetes
     end
 
     def lookup_static_tokens(token, kind = 'user')
-      clusters = HashRecord.kubernetes.find_by(id: 'clusters')
-      return [] if clusters.blank?
+      clusters = Kubernetes::ClusterService.list
 
       found = []
 
-      clusters.data.each do |cluster|
+      clusters.each do |cluster|
         static_user_tokens = HashRecord.kubernetes.find_by(id: "#{cluster['id'].to_s}-static-#{kind.to_s}-tokens")
         next if static_user_tokens.blank?
 

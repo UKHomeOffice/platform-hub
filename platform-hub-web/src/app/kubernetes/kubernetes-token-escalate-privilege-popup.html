@@ -1,0 +1,65 @@
+<md-dialog aria-label="Escalate privilege for a kubernetes token">
+  <md-toolbar class="md-toolbar-tools md-accent">
+    <h2>Temporarily escalate privilege for user '{{$ctrl.user.name}}' on cluster '{{$ctrl.cluster}}'</h2>
+    <span flex></span>
+    <md-button
+      class="close-button md-icon-button"
+      ng-click="$ctrl.cancel()"
+      aria-label="Close dialog">
+      <md-icon>clear</md-icon>
+    </md-button>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.processing"></loading-indicator>
+
+  <md-dialog-content class="md-dialog-content" layout="column" layout-padding>
+
+    <form name="$ctrl.form" ng-if="!$ctrl.loading && $ctrl.groups.length > 0">
+      <md-input-container class="md-block">
+        <label for="group">Escalation group to set:</label>
+        <md-select
+          name="group"
+          ng-model="$ctrl.data.group"
+          required
+          aria-label="The escalation group (a.k.a. role) to set for the time limited period">
+          <md-option
+            ng-repeat="g in $ctrl.groups"
+            ng-value="g.id">
+            {{g.id}}
+          </md-option>
+        </md-select>
+      </md-input-container>
+      <md-input-container class="md-block">
+        <label for="expiresInSecs">Time until expiry:</label>
+        <md-select
+          name="expiresInSecs"
+          ng-model="$ctrl.data.expiresInSecs"
+          required
+          aria-label="The amount of time before this escalation of privilege expires">
+          <md-option
+            ng-repeat="e in $ctrl.expiryOptions"
+            ng-value="e.value">
+            {{e.label}} ({{e.value}} seconds)
+          </md-option>
+        </md-select>
+      </md-input-container>
+    </form>
+
+  </md-dialog-content>
+
+  <md-dialog-actions>
+    <md-button
+      ng-click="$ctrl.cancel()"
+      aria-label="Cancel">
+      Cancel
+    </md-button>
+    <md-button
+      class="md-primary"
+      ng-click="$ctrl.escalate()"
+      ng-disabled="$ctrl.processing || !$ctrl.form || $ctrl.form.$invalid"
+      ng-class="{'md-raised': ($ctrl.form.$dirty && $ctrl.form.$valid) }"
+      aria-label="Perform escalation">
+      Escalate
+    </md-button>
+  </md-dialog-actions>
+</md-dialog>

@@ -62,12 +62,28 @@
         </p>
 
         <div ng-if="$ctrl.showKubeTokens">
-          <ul>
+          <ul class="md-body-1">
             <li ng-repeat="t in i.kubernetes_tokens">
-              {{t.cluster}}: <strong>{{t.token}}</strong>
-              <span ng-if="t.group.length > 0">
-                (Groups: {{t.groups.join(', ')}})
-              </span>
+              <p>
+                {{t.cluster}}: <strong>{{t.token}}</strong>
+              </p>
+
+              <ul ng-if="t.groups.length > 0 || t.expire_privileged_at">
+                <li>
+                  <p>
+                    Groups: {{t.groups.join(', ')}}
+                  </p>
+                </li>
+                <li>
+                  <p
+                    md-colors="{color: 'accent'}">
+                    <strong>Escalated privilege ends at:</strong>
+                    <br />
+                    {{t.expire_privileged_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+                    (<span am-time-ago="t.expire_privileged_at"></span>)
+                  </p>
+                </li>
+              </ul>
             </li>
           </ul>
         </div>

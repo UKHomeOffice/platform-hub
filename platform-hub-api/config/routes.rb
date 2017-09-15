@@ -92,6 +92,7 @@ Rails.application.routes.draw do
         put '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
         patch '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
         delete '/tokens/:user_id/:cluster', to: 'tokens#destroy'
+        post '/tokens/:user_id/:cluster/escalate', to: 'tokens#escalate'
 
         get '/robot_tokens/:cluster', to: 'robot_tokens#index'
         put '/robot_tokens/:cluster/:name', to: 'robot_tokens#create_or_update'
@@ -107,6 +108,8 @@ Rails.application.routes.draw do
         post '/sync', to: 'sync#sync'
         post '/claim', to: 'claim#claim'
         post '/revoke', to: 'revoke#revoke'
+
+        get '/groups/privileged', to: 'groups#privileged'
       end
     end
   end
