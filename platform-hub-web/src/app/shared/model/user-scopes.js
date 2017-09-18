@@ -13,17 +13,17 @@ export const UserScopes = function (Me, _) {
   return model;
 
   function isVisibleToCurrentUser(scope) {
-    if (_.isNull(scope) || _.isUndefined(scope)) {
+    if (_.isNull(scope) || _.isUndefined(scope) || _.isEmpty(scope)) {
       return true;
     }
 
-    switch (scope) {
+    switch (scope.toLowerCase()) {
       case 'managerial':
         return Boolean(Me.data.is_managerial);
       case 'technical':
         return Boolean(Me.data.is_technical);
       default:
-        return false;
+        return true;
     }
   }
 };
