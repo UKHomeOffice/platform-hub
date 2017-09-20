@@ -7,7 +7,7 @@ module Kubernetes
     def get cluster
       Kubernetes::StaticTokenService.get_static_tokens_hash_record(cluster, KIND).data.map do |t|
         KubernetesRobotToken.from_data cluster, t
-      end
+      end.sort_by!(&:name)
     end
 
     def create_or_update cluster, name, groups

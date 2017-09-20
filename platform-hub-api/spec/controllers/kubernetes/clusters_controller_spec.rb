@@ -41,6 +41,14 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
             ]
           end
 
+          let :expected_data do
+            [
+              data[1],
+              data[2],
+              data[0]
+            ]
+          end
+
           before do
             @kubernetes_clusters = create :hash_record, id: key, scope: 'kubernetes', data: data
           end
@@ -48,7 +56,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
           it 'returns the existing kubernetes clusters data' do
             get :index
             expect(response).to be_success
-            expect(json_response).to eq data
+            expect(json_response).to eq expected_data
           end
         end
 

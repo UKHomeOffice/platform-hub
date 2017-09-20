@@ -8,7 +8,7 @@ module Kubernetes
     def tokens_from_identity_data(data)
       data.with_indifferent_access[:tokens].collect do |t|
         KubernetesToken.from_data(t)
-      end
+      end.sort_by!(&:cluster)
     end
 
     def create_or_update_token(data, identity_id, cluster, groups, token = nil)
