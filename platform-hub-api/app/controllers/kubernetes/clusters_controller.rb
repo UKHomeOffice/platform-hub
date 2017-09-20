@@ -5,7 +5,12 @@ class Kubernetes::ClustersController < ApiJsonController
   # GET /kubernetes/clusters
   def index
     authorize! :read, :kubernetes_clusters
-    render json: @kubernetes_clusters.data.map {|c| c.with_indifferent_access.slice(:id, :description)}
+    clusters = @kubernetes_clusters.data.map do |c|
+      c.with_indifferent_access.slice(:id, :description)
+    end.sort_by! do |c|
+      c[:id]
+    end
+    render json: clusters
   end
 
   # PATCH/PUT /kubernetes/clusters/:id
