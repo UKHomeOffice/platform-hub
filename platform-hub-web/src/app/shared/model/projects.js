@@ -21,6 +21,12 @@ export const Projects = function ($window, $q, apiBackoffTimeMs, hubApiService, 
   model.setMembershipRole = hubApiService.projectSetMembershipRole;
   model.unsetMembershipRole = hubApiService.projectUnsetMembershipRole;
 
+  model.getServices = hubApiService.getProjectServices;
+  model.getService = hubApiService.getProjectService;
+  model.createService = hubApiService.createProjectService;
+  model.updateService = hubApiService.updateProjectService;
+  model.deleteService = hubApiService.deleteProjectService;
+
   return model;
 
   function refresh(force) {

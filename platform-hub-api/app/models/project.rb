@@ -27,4 +27,7 @@ class Project < ApplicationRecord
     through: :memberships,
     source: :user
 
+  has_many :services,
+    dependent: :delete_all
+
 end

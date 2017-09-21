@@ -18,6 +18,8 @@ describe('routes', () => {
     'featureFlag'
   ];
 
+  const abstractStates = {};
+
   let sandbox = null;
 
   let $q = null;
@@ -358,10 +360,18 @@ describe('routes', () => {
 
   function eachNavigableState(stubs, checks) {
     $state.get().forEach(state => {
-      if (!state.abstract) {
+      if (state.abstract) {
+        if (state.name) {
+          abstractStates[state.name] = state;
+        }
+      } else {
         stubs(state);
 
-        const params = generateParamsFor(state.url);
+        const urlSegments = [state.url].concat(findParentUrlSegmentsFor(state.name));
+        const params = urlSegments.reduce((acc, s) => {
+          Object.assign(acc, generateParamsFor(s));
+          return acc;
+        }, {});
         const url = $state.href(state.name, params);
         console.log(`Testing ${url}`);
         goTo(url);
@@ -382,13 +392,44 @@ describe('routes', () => {
       state.data.rolePermitted === 'admin';
   }
 
+  function findParentUrlSegmentsFor(stateName) {
+    // This makes the assumption that the `abstractStates` collection will
+    // already contain the necessary parent states for the `stateName` provided.
+
+    // The aim here is to take a state name and find any parent abstract states
+    // matching up the "tree" and return their URL patterns.
+    // Example: for the state name 'foo.bar.baz.abc', find any abstract states
+    // for the following and return their particular URL patterns:
+    // - 'foo'
+    // - 'foo.bar'
+    // - 'foo.bar.baz'
+
+    const segments = [];
+
+    const nameSplits = stateName.split('.');
+    if (nameSplits.length > 0) {
+      for (let i = 1; i < nameSplits.length; i++) {
+        const parentStateName = nameSplits.slice(0, i).join('.');
+        const parentState = abstractStates[parentStateName];
+        if (parentState) {
+          segments.push(parentState.url);
+        }
+      }
+    }
+
+    return segments;
+  }
+
   function generateParamsFor(stateUrlPattern) {
     const match = stateUrlPattern.match(PARAM_REGEX);
+
     if (match) {
       return match.reduce((acc, m) => {
         acc[m.replace(':', '')] = 'foo';
         return acc;
       }, {});
     }
+
+    return {};
   }
 });

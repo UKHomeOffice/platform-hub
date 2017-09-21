@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe ProjectManagersService, type: :service do
+describe ProjectMembershipsService, type: :service do
 
   let!(:project_1) { create :project }
   let!(:project_2) { create :project }
@@ -31,6 +31,32 @@ describe ProjectManagersService, type: :service do
     create :project_membership,
       project: project_3,
       user: user_3
+  end
+
+  describe '.is_user_a_member_of_project?' do
+
+    let :mappings do
+      {
+        [ project_1.id, user_1.id ] => true,
+        [ project_1.id, user_2.id ] => true,
+        [ project_1.id, user_3.id ] => false,
+        [ project_2.id, user_1.id ] => true,
+        [ project_2.id, user_2.id ] => true,
+        [ project_2.id, user_3.id ] => false,
+        [ project_3.id, user_1.id ] => false,
+        [ project_3.id, user_2.id ] => true,
+        [ project_3.id, user_3.id ] => true
+      }
+    end
+
+    it 'should only return true for actual project members' do
+      mappings.each do |((p_id, u_id), result)|
+        expect(
+          subject.is_user_a_member_of_project?(p_id, u_id)
+        ).to be result
+      end
+    end
+
   end
 
   describe '.is_user_a_manager_of_project?' do
