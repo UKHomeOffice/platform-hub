@@ -58,6 +58,8 @@ Rails.application.routes.draw do
         put '/memberships/:user_id/role/:role', to: 'projects#set_role', on: :member
         delete '/memberships/:user_id/role/:role', to: 'projects#unset_role', on: :member
       end
+
+      resources :services
     end
 
     resources :support_request_templates do

@@ -46,7 +46,9 @@ import {
 import {
   ProjectsForm,
   ProjectsDetail,
-  ProjectsList
+  ProjectsList,
+  ProjectServicesDetail,
+  ProjectServicesForm
 } from './projects/projects.module';
 import {TermsOfService} from './terms-of-service/terms-of-service.module';
 import {UsersList} from './users/users.module';
@@ -296,6 +298,44 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           rolePermitted: 'admin'
         }
       })
+      .state('projects.services', {
+        abstract: true,
+        url: '/:projectId/services',
+        template: '<ui-view></ui-view>'
+      })
+        .state('projects.services.detail', {
+          url: '/detail/:id',
+          component: ProjectServicesDetail,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.projects
+          }
+        })
+        .state('projects.services.new', {
+          url: '/new',
+          component: ProjectServicesForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.projects
+          }
+        })
+        .state('projects.services.edit', {
+          url: '/edit/:id',
+          component: ProjectServicesForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.projects
+          }
+        })
     .state('users', {
       url: '/users',
       component: UsersList,

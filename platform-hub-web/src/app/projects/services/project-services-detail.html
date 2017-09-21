@@ -1,0 +1,53 @@
+<div class="project-services-detail">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3 ng-if="$ctrl.service">
+        <span>Project Service: </span>
+        <span>{{$ctrl.service.name}}</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        ng-if="$ctrl.service"
+        aria-label="Edit this project service"
+        ui-sref="projects.services.edit({projectId: $ctrl.projectId, id: $ctrl.service.id})">
+        <md-icon>edit</md-icon>
+        Edit
+      </md-button>
+      <md-button
+        ng-if="$ctrl.service"
+        aria-label="Delete this project service"
+        ng-click="$ctrl.deleteService($event)">
+        <md-icon>delete</md-icon>
+        Delete
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.service">
+
+    <div class="md-body-2">
+      <a class="md-button" ui-sref="projects.detail({id: $ctrl.projectId})">
+        <md-icon>arrow_back</md-icon>
+        Back to project
+      </a>
+    </div>
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+      <md-content layout-padding>
+
+        <h3 class="md-title" layout="row">
+          {{$ctrl.service.name}}
+        </h3>
+
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-if="$ctrl.service.description"
+          ng-bind-html='$ctrl.service.description | simpleFormat'>
+        </p>
+
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

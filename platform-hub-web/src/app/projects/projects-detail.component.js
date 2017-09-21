@@ -15,12 +15,15 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
 
   ctrl.loading = true;
   ctrl.isAdmin = false;
+  ctrl.isProjectTeamMember = false;
   ctrl.isProjectManager = false;
   ctrl.project = null;
   ctrl.memberships = [];
   ctrl.searchSelectedUser = null;
   ctrl.searchText = '';
   ctrl.processing = false;
+  ctrl.services = [];
+  ctrl.loadingServices = false;
 
   ctrl.deleteProject = deleteProject;
   ctrl.searchUsers = searchUsers;
@@ -33,6 +36,9 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.userOnboardGitHub = userOnboardGitHub;
   ctrl.userOffboardGitHub = userOffboardGitHub;
   ctrl.offboardAndRemove = offboardAndRemove;
+  ctrl.shouldShowServicesTab = shouldShowServicesTab;
+  ctrl.loadServices = loadServices;
+  ctrl.shouldShowCreateServiceButton = shouldShowCreateServiceButton;
 
   init();
 
@@ -60,9 +66,13 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(memberships => {
         ctrl.memberships = memberships;
 
-        // Check to see if logged in user is a project team manager
+        // Check to see if logged in user is a team member of the project, and
+        // if they have manager privileges
         const currentUserId = Me.data.id;
         if (currentUserId) {
+          ctrl.isProjectTeamMember = _.some(memberships, m => {
+            return m.user.id === currentUserId;
+          });
           ctrl.isProjectManager = _.some(memberships, m => {
             return m.role === 'manager' && m.user.id === currentUserId;
           });
@@ -91,7 +101,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
 
     const confirm = $mdDialog.confirm()
       .title('Are you sure?')
-      .textContent('This will delete the project permanently from the hub.')
+      .textContent('This will delete the project (and all it\'s memberships and services) permanently from the hub.')
       .ariaLabel('Confirm deletion of project')
       .targetEvent(targetEvent)
       .ok('Do it')
@@ -319,5 +329,25 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
               });
           });
       });
+  }
+
+  function shouldShowServicesTab() {
+    return ctrl.isAdmin || ctrl.isProjectTeamMember;
+  }
+
+  function loadServices() {
+    ctrl.loadingServices = true;
+
+    Projects
+      .getServices(ctrl.project.id)
+      .then(services => {
+        angular.copy(services, ctrl.services);
+      }).finally(() => {
+        ctrl.loadingServices = false;
+      });
+  }
+
+  function shouldShowCreateServiceButton() {
+    return ctrl.isAdmin || ctrl.isProjectManager;
   }
 }
