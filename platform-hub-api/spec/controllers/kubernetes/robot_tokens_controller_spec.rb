@@ -9,6 +9,7 @@ RSpec.describe Kubernetes::RobotTokensController, type: :controller do
       'token' => ENCRYPTOR.encrypt('token1'),
       'user' => 'user1',
       'uid' => 'uid1',
+      'description' => 'desc1'
     }
   end
 
@@ -17,6 +18,7 @@ RSpec.describe Kubernetes::RobotTokensController, type: :controller do
       'token' => ENCRYPTOR.encrypt('token2'),
       'user' => 'user2',
       'uid' => 'uid2',
+      'description' => 'desc2'
     }
   end
 
@@ -69,14 +71,16 @@ RSpec.describe Kubernetes::RobotTokensController, type: :controller do
                 'token' => 'token1',
                 'uid' => 'uid1',
                 'groups' => nil,
-                'name' => 'user1'
+                'name' => 'user1',
+                'description' => 'desc1'
               },
               {
                 'cluster' => cluster,
                 'token' => 'token2',
                 'uid' => 'uid2',
                 'groups' => nil,
-                'name' => 'user2'
+                'name' => 'user2',
+                'description' => 'desc2'
               }
             ]
           end
@@ -119,15 +123,15 @@ RSpec.describe Kubernetes::RobotTokensController, type: :controller do
               .with(
                 context: anything,
                 action: 'update_kubernetes_robot_token',
-                data: { cluster: cluster, name: name  },
+                data: { cluster: cluster, name: name, user_id: nil  },
                 comment: "Kubernetes `#{cluster}` robot token '#{name}' created or updated"
               )
 
-            expect(Kubernetes::RobotTokenService.get(cluster).length).to eq 0
+            expect(Kubernetes::RobotTokenService.get_by_cluster(cluster).length).to eq 0
             put :create_or_update, params: { cluster: cluster, name: name }
             expect(response).to be_success
             expect(response).to have_http_status 204
-            expect(Kubernetes::RobotTokenService.get(cluster).length).to eq 1
+            expect(Kubernetes::RobotTokenService.get_by_cluster(cluster).length).to eq 1
           end
         end
 
@@ -143,17 +147,21 @@ RSpec.describe Kubernetes::RobotTokensController, type: :controller do
               .with(
                 context: anything,
                 action: 'update_kubernetes_robot_token',
-                data: { cluster: cluster, name: name  },
+                data: { cluster: cluster, name: name, user_id: 'user_id'  },
                 comment: "Kubernetes `#{cluster}` robot token '#{name}' created or updated"
               )
 
-            expect(Kubernetes::RobotTokenService.get(cluster).length).to eq 2
-            put :create_or_update, params: { cluster: cluster, name: name, groups: ['foo'] }
+            expect(Kubernetes::RobotTokenService.get_by_cluster(cluster).length).to eq 2
+            put :create_or_update, params: { cluster: cluster, name: name, groups: ['foo'], description: 'desc', user_id: 'user_id' }
             expect(response).to be_success
             expect(response).to have_http_status 204
-            tokens = Kubernetes::RobotTokenService.get(cluster)
+            tokens = Kubernetes::RobotTokenService.get_by_cluster(cluster)
             expect(tokens.length).to eq 2
-            expect(tokens.find { |t| t.name == name }.groups).to eq ['foo']
+            token = tokens.find { |t| t.name == name }
+            expect(token).not_to be nil
+            expect(token.groups).to eq ['foo']
+            expect(token.description).to eq 'desc'
+            expect(token.user_id).to eq 'user_id'
           end
         end
       end
@@ -200,7 +208,7 @@ RSpec.describe Kubernetes::RobotTokensController, type: :controller do
 
             expect(response).to be_success
             expect(response).to have_http_status 204
-            expect(Kubernetes::RobotTokenService.get(cluster).length).to eq 2
+            expect(Kubernetes::RobotTokenService.get_by_cluster(cluster).length).to eq 2
           end
         end
 
@@ -220,7 +228,7 @@ RSpec.describe Kubernetes::RobotTokensController, type: :controller do
 
             expect(response).to be_success
             expect(response).to have_http_status 204
-            expect(Kubernetes::RobotTokenService.get(cluster).length).to eq 1
+            expect(Kubernetes::RobotTokenService.get_by_cluster(cluster).length).to eq 1
           end
         end
 
@@ -241,7 +249,7 @@ RSpec.describe Kubernetes::RobotTokensController, type: :controller do
 
             expect(response).to be_success
             expect(response).to have_http_status 204
-            expect(Kubernetes::RobotTokenService.get(cluster).length).to eq 2
+            expect(Kubernetes::RobotTokenService.get_by_cluster(cluster).length).to eq 2
           end
         end
 

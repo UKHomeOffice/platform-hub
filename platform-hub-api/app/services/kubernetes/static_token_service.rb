@@ -10,46 +10,50 @@ module Kubernetes
     # ]
     # Note: All tokens are encrypted!
 
-    def create_or_update(cluster, kind, user_name, groups = [])
+    def create_or_update(cluster, kind, name, groups = [], description = nil, user_id = nil)
       static_tokens = get_static_tokens_hash_record(cluster, kind)
 
       static_tokens.with_lock do
         record = static_tokens.data.find do |t|
-          t['user'] == user_name.to_s
+          t['user'] == name.to_s
         end
 
         if record.nil?
           token = Kubernetes::TokenService.generate_secure_random
           record = {
             token: ENCRYPTOR.encrypt(token),
-            user: user_name,
+            user: name,
             uid: Kubernetes::TokenService.generate_secure_random,
-            groups: Kubernetes::TokenService.cleanup_groups(groups)
+            groups: Kubernetes::TokenService.cleanup_groups(groups),
+            description: description,
+            user_id: user_id
           }
 
           static_tokens.data << record
         else
           record['groups'] = groups.present? ?
             Kubernetes::TokenService.cleanup_groups(groups) : []
+          record['description'] = description
+          record['user_id'] = user_id
         end
 
         static_tokens.save!
 
-        "Created/updated #{kind} account for `#{user_name}` (token: #{ENCRYPTOR.decrypt(record.with_indifferent_access['token'])})"
+        "Created/updated #{kind} account for `#{name}` (token: #{ENCRYPTOR.decrypt(record.with_indifferent_access['token'])})"
       end
     end
 
-    def delete_by_user_name(cluster, kind, user_name)
+    def delete_by_name(cluster, kind, name)
       static_tokens = get_static_tokens_hash_record(cluster, kind)
 
       static_tokens.with_lock do
         static_tokens.data.reject! do |t|
-          t['user'] == user_name.to_s
+          t['user'] == name.to_s
         end
 
         static_tokens.save!
 
-        "Deleted #{kind} account for `#{user_name.to_s}`"
+        "Deleted #{kind} account for `#{name.to_s}`"
       end
     end
 
@@ -67,11 +71,11 @@ module Kubernetes
       end
     end
 
-    def describe(cluster, kind, user_name)
+    def describe(cluster, kind, name)
       static_tokens = get_static_tokens_hash_record(cluster, kind)
 
       record = static_tokens.data.find do |t|
-        t['user'] == user_name.to_s
+        t['user'] == name.to_s
       end
 
       if record.present?
@@ -122,6 +126,17 @@ module Kubernetes
     def get_static_tokens_hash_record(cluster, kind)
       HashRecord.kubernetes.find_or_create_by!(id: "#{cluster.to_s}-static-#{kind.to_s}-tokens") do |r|
         r.data = []
+      end
+    end
+
+    def get_by_user_id(user_id, kind)
+      return {} if user_id.blank? || kind.blank?
+
+      Kubernetes::ClusterService.list.each_with_object({}) do |c, acc|
+        cluster_id = c['id']
+        tokens = get_static_tokens_hash_record(cluster_id, kind)
+        found = tokens.data.find_all { |t| t['user_id'] == user_id }
+        acc[cluster_id] = found unless found.empty?
       end
     end
 

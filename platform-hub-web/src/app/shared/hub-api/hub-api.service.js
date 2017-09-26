@@ -662,7 +662,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function createOrUpdateKubernetesRobotToken(cluster, name, groups) {
+  function createOrUpdateKubernetesRobotToken(cluster, name, groups, description, user_id) {
     if (_.isNull(cluster) || _.isEmpty(cluster)) {
       throw new Error('"cluster" argument not specified or empty');
     }
@@ -673,7 +673,9 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .put(`${apiEndpoint}/kubernetes/robot_tokens/${cluster}/${name}`, {
-        groups: groups
+        groups: groups,
+        description: description,
+        user_id: user_id
       })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to create or update robot token '${name}' for cluster '${cluster}'`, response));

@@ -3,7 +3,7 @@ class Kubernetes::RobotTokensController < ApiJsonController
   # GET /kubernetes/robot_tokens/:cluster
   def index
     authorize! :read, :kubernetes_robot_tokens
-    tokens = Kubernetes::RobotTokenService.get params[:cluster]
+    tokens = Kubernetes::RobotTokenService.get_by_cluster params[:cluster]
     render json: tokens
   end
 
@@ -15,13 +15,15 @@ class Kubernetes::RobotTokensController < ApiJsonController
     cluster = params[:cluster]
     name = params[:name]
     groups = params[:groups] || []
+    description = params[:description]
+    user_id = params[:user_id]
 
-    Kubernetes::RobotTokenService.create_or_update cluster, name, groups
+    Kubernetes::RobotTokenService.create_or_update cluster, name, groups, description, user_id
 
     AuditService.log(
       context: audit_context,
       action: 'update_kubernetes_robot_token',
-      data: { cluster: cluster, name: name },
+      data: { cluster: cluster, name: name, user_id: user_id },
       comment: "Kubernetes `#{cluster}` robot token '#{name}' created or updated"
     )
 
