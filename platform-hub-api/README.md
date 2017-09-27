@@ -178,14 +178,15 @@ bin/rails console
 
 Kubernetes::StaticTokenService.create_or_update(<cluster-id>, :robot, <robot-name>)
 
-# Or with optional groups
+# Or with optional groups and description
 
-Kubernetes::StaticTokenService.create_or_update(<cluster-id>, :robot, <robot-name>, '<groups>')
+Kubernetes::StaticTokenService.create_or_update(<cluster-id>, :robot, <robot-name>, <groups>, <description>)
 ```
 where
 - `<cluster-id>` is the id of cluster for which we want to create a robot account eg. 'development'
 - `<robot-name>` is a name of the robot. This can be any meaningful string which identifies the robot.
 - `<groups>` is a semicolon separated list of group names for the robot eg. `group1;group2`.
+- `<description>` is a string describing this token.
 
 #### Delete robot account
 
@@ -195,7 +196,7 @@ _**NOTE: this can now be done directly in the Hub UI. The instructions below hav
 bin/rails console
 
 # By robot name
-Kubernetes::StaticTokenService.delete_by_user_name(<cluster-id>, :robot, <robot-name>)
+Kubernetes::StaticTokenService.delete_by_name(<cluster-id>, :robot, <robot-name>)
 
 # By robot token
 Kubernetes::StaticTokenService.delete_by_token(<cluster-id>, :robot, <token>)

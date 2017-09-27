@@ -4,7 +4,7 @@ describe Kubernetes::RobotTokenService, type: :service do
 
   let(:cluster) { 'foo' }
 
-  describe '.get' do
+  describe '.get_by_cluster' do
 
     before do
       expect(Kubernetes::StaticTokenService).to receive(:get_static_tokens_hash_record)
@@ -22,7 +22,7 @@ describe Kubernetes::RobotTokenService, type: :service do
       it 'should return an empty list' do
         expect(KubernetesRobotToken).to receive(:from_data).never
 
-        expect(Kubernetes::RobotTokenService.get(cluster)).to be_empty
+        expect(Kubernetes::RobotTokenService.get_by_cluster(cluster)).to be_empty
       end
     end
 
@@ -56,7 +56,7 @@ describe Kubernetes::RobotTokenService, type: :service do
         expect(KubernetesRobotToken).to receive(:from_data).with(cluster, token1).and_call_original
         expect(KubernetesRobotToken).to receive(:from_data).with(cluster, token2).and_call_original
 
-        tokens = Kubernetes::RobotTokenService.get(cluster)
+        tokens = Kubernetes::RobotTokenService.get_by_cluster(cluster)
         expect(tokens.length).to eq 2
         expect(tokens.map(&:name)).to eq ['user1', 'user2']
         expect(tokens.map(&:decrypted_token)).to eq ['token1', 'token2']
@@ -68,15 +68,15 @@ describe Kubernetes::RobotTokenService, type: :service do
   describe '.create_or_update' do
     it 'should call the Kubernetes::StaticTokenService appropriately' do
       expect(Kubernetes::StaticTokenService).to receive(:create_or_update)
-        .with(cluster, :robot, 'foo', [])
+        .with(cluster, :robot, 'foo', [], 'desc', 'user_id')
 
-      Kubernetes::RobotTokenService.create_or_update(cluster, 'foo', [])
+      Kubernetes::RobotTokenService.create_or_update(cluster, 'foo', [], 'desc', 'user_id')
     end
   end
 
   describe '.delete' do
     it 'should call the Kubernetes::StaticTokenService appropriately' do
-      expect(Kubernetes::StaticTokenService).to receive(:delete_by_user_name)
+      expect(Kubernetes::StaticTokenService).to receive(:delete_by_name)
         .with(cluster, :robot, 'foo')
 
       Kubernetes::RobotTokenService.delete(cluster, 'foo')

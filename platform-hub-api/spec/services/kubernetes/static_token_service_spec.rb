@@ -60,10 +60,10 @@ describe Kubernetes::StaticTokenService, type: :service do
     end
   end
 
-  describe '.delete_by_user_name' do
+  describe '.delete_by_name' do
     it 'removes static account from the list by user name' do
       expect {
-        subject.delete_by_user_name(cluster, kind, user)
+        subject.delete_by_name(cluster, kind, user)
       }.to change { @static_tokens.reload.data.size }.by(-1)
 
       expect(@static_tokens.data.size).to eq 1

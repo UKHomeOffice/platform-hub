@@ -86,6 +86,42 @@
               placeholder="Comma separated list of groups.">
           </md-input-container>
 
+          <md-input-container class="md-block">
+            <label for="description">Description (optional):</label>
+            <textarea
+              name="description"
+              ng-model="$ctrl.tokenData.description"
+              rows="2"
+              aria-label="Set a description for this robot token"
+              md-select-on-focus>
+            </textarea>
+          </md-input-container>
+
+          <md-autocomplete
+            md-input-name="user"
+            md-no-cache="true"
+            md-selected-item="$ctrl.user"
+            md-search-text="$ctrl.searchText"
+            md-items="user in $ctrl.searchUsers($ctrl.searchText)"
+            md-item-text="user.name + ' (' + user.email + ')'"
+            md-min-length="1"
+            ng-model-options="{ debounce: 500 }"
+            placeholder="Search for a user…"
+            md-require-match
+            md-floating-label="Associate this token with a user (so they can see it):"
+            flex>
+            <md-item-template>
+              <span md-highlight-text="$ctrl.searchText" md-highlight-flags="^i">
+                {{user.name}}
+                ({{user.email}})
+              </span>
+              <small class="badge" ng-if="!user.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
+            </md-item-template>
+            <md-not-found>
+              No users matching "{{$ctrl.searchText}}" were found.
+            </md-not-found>
+          </md-autocomplete>
+
           <div>
             <md-button
               type="submit"

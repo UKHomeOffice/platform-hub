@@ -20,7 +20,10 @@ function KubernetesRobotTokensFormController($state, hubApiService, KubernetesCl
   ctrl.saving = false;
   ctrl.isNew = true;
   ctrl.tokenData = null;
+  ctrl.searchText = '';
+  ctrl.user = null;
 
+  ctrl.searchUsers = searchUsers;
   ctrl.createOrUpdate = createOrUpdate;
 
   init();
@@ -49,15 +52,20 @@ function KubernetesRobotTokensFormController($state, hubApiService, KubernetesCl
         .getKubernetesRobotTokens(cluster)
         .then(tokens => {
           ctrl.tokenData = _.find(tokens, ['name', name]);
+          ctrl.user = ctrl.tokenData.user;
         });
     }
+  }
+
+  function searchUsers(query) {
+    return hubApiService.searchUsers(query, true);
   }
 
   function createOrUpdate() {
     ctrl.saving = true;
 
     hubApiService
-      .createOrUpdateKubernetesRobotToken(ctrl.tokenData.cluster, ctrl.tokenData.name, ctrl.tokenData.groups)
+      .createOrUpdateKubernetesRobotToken(ctrl.tokenData.cluster, ctrl.tokenData.name, ctrl.tokenData.groups, ctrl.tokenData.description, ctrl.user && ctrl.user.id)
       .then(() => {
         logger.success('Token successfully created or updated');
         $state.go('kubernetes.robot-tokens.list', {cluster: ctrl.tokenData.cluster});

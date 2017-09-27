@@ -56,6 +56,13 @@
       </md-card-title>
 
       <md-card-content>
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-if="t.description"
+          ng-bind-html='t.description | simpleFormat'
+          layout-padding>
+        </p>
         <p class="md-body-1">
           <strong>Token:</strong> {{t.token}}
         </p>
@@ -64,6 +71,10 @@
         </p>
         <p class="md-body-1" ng-if="t.groups && t.groups.length > 0">
           <strong>Groups:</strong> {{t.groups.join(', ')}}
+        </p>
+        <p class="md-body-1" ng-if="t.user">
+          <strong>Associated with user:</strong>
+          {{t.user.name}} ({{t.user.email}})
         </p>
       </md-card-content>
 
