@@ -22,6 +22,6 @@ class ProjectSerializer < BaseSerializer
 
   # Note: `scope` here is actually `current_user` (passed in from controller)
   def is_admin_or_project_manager?
-    is_admin? || ProjectManagersService.is_user_a_manager_of_specified_project?(object.id, scope.id)
+    is_admin? || ProjectManagersService.is_user_a_manager_of_project?(object.id, scope.id)
   end
 end

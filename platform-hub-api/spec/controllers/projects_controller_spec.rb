@@ -89,7 +89,7 @@ RSpec.describe ProjectsController, type: :controller do
           end
         end
 
-        context 'not an admin but is project team manager' do
+        context 'not an admin but is project manager' do
           before do
             create :project_membership_as_manager, project: @project, user: current_user
           end
@@ -381,7 +381,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is project team manager' do
+      context 'not an admin but is project manager of same project' do
         before do
           create :project_membership_as_manager, project: @project, user: current_user
         end
@@ -399,6 +399,18 @@ RSpec.describe ProjectsController, type: :controller do
           expect(audit.auditable.id).to eq @project.id
           expect(audit.associated.id).to eq @user.id
           expect(audit.user.id).to eq current_user_id
+        end
+      end
+
+      context 'not an admin but is project manager of a different project' do
+        before do
+          another_project = create :project
+          create :project_membership_as_manager, project: another_project, user: current_user
+        end
+
+        it 'should not be able to add the user to the project team - returning 403 Forbidden' do
+          put :add_membership, params: { id: @project.id, user_id: @user.id }
+          expect(response).to have_http_status(403)
         end
       end
 
@@ -444,7 +456,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is project team manager of same team' do
+      context 'not an admin but is project manager of same project' do
         before do
           create :project_membership_as_manager, project: @project, user: current_user
         end
@@ -464,13 +476,13 @@ RSpec.describe ProjectsController, type: :controller do
         end
       end
 
-      context 'not an admin but is project team manager but of a different team' do
+      context 'not an admin but is project manager of a different project' do
         before do
           another_project = create :project
           create :project_membership_as_manager, project: another_project, user: current_user
         end
 
-        it 'should not be able to add the user to the project team - returning 403 Forbidden' do
+        it 'should not be able to remove the user from the project team - returning 403 Forbidden' do
           put :remove_membership, params: { id: @project.id, user_id: @user.id }
           expect(response).to have_http_status(403)
         end
