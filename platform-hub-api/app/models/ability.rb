@@ -3,33 +3,34 @@ class Ability
 
   def initialize(user)
 
+    # IMPORTANT: to understand the caveats when using blocks to specify
+    # abilities, see: https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities-with-Blocks
+
+    # This will take precedence over everything below!
     can :manage, :all if user.admin?
 
 
-    project_manager_of_specified_project_checker = -> (project) do
-      ProjectManagersService.is_user_a_manager_of_specified_project? project.id, user.id
+    # Projects
+
+    can :add_membership, Project do |project|
+      manage_project_membership project, user
+    end
+    can :remove_membership, Project do |project|
+      manage_project_membership project, user
     end
 
-    can :add_membership, Project, &project_manager_of_specified_project_checker
-    can :remove_membership, Project, &project_manager_of_specified_project_checker
 
+    # Users
 
-    project_manager_of_common_project_checker = -> (target_user) do
-      # Find common projects between the two
-      target_user_projects = target_user.project_ids
-      user_projects = user.project_ids
-      common_projects = target_user_projects & user_projects
-
-      # Check to see if the user taking the action is a project manager of _any_
-      # common project they are both in
-      common_projects.any? do |p_id|
-        ProjectManagersService.is_user_a_manager_of_specified_project? p_id, user.id
-      end
+    can :onboard_github, User do |target_user|
+      onboard_or_offboard_github user, target_user
+    end
+    can :offboard_github, User do |target_user|
+      onboard_or_offboard_github user, target_user
     end
 
-    can :onboard_github, User, &project_manager_of_common_project_checker
-    can :offboard_github, User, &project_manager_of_common_project_checker
 
+    # Announcements
 
     can :global, Announcement
     can :show, Announcement
@@ -37,10 +38,27 @@ class Ability
 
     can do |action, subject_class, subject|
       if action == :search && subject_class == User
-        user.admin? || ProjectManagersService.is_user_a_manager_of_any_project?(user.id)
+        ProjectManagersService.is_user_a_manager_of_any_project?(user.id)
       end
     end
 
+  end
+
+  private
+
+  def manage_project_membership project, user
+    ProjectManagersService.is_user_a_manager_of_project?(
+      project.id,
+      user.id
+    )
+  end
+
+  def onboard_or_offboard_github user, target_user
+    (user == target_user) ||
+    ProjectManagersService.is_user_a_manager_of_a_common_project?(
+      user,
+      target_user
+    )
   end
 
 end

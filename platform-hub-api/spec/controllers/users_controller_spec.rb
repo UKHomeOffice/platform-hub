@@ -162,7 +162,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context 'not an admin but is a project team manager of some project' do
+      context 'not an admin but is a project manager of some project' do
         before do
           project = create :project
           create :project_membership_as_manager, project: project, user: current_user
@@ -280,7 +280,7 @@ RSpec.describe UsersController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          get :onboard_github, params: { id: @user.id }
+          post :onboard_github, params: { id: @user.id }
         end
       end
 
@@ -290,7 +290,7 @@ RSpec.describe UsersController, type: :controller do
           it 'should return a 400 Bad Request with an appropriate error message' do
             expect(Agents::GitHubAgentService).to receive(:new).with(any_args).and_return(git_hub_agent_service)
             expect(git_hub_agent_service).to receive(:onboard_user).with(@user).and_raise(Agents::GitHubAgentService::Errors::IdentityMissing)
-            get :onboard_github, params: { id: @user.id }
+            post :onboard_github, params: { id: @user.id }
             expect(response).to have_http_status(400)
             expect(json_response['error']['message']).to eq 'User does not have a GitHub identity connected yet'
             expect(Audit.count).to be 0
@@ -301,7 +301,7 @@ RSpec.describe UsersController, type: :controller do
           it 'should onboard the user and return a success response with no content' do
             expect(Agents::GitHubAgentService).to receive(:new).with(any_args).and_return(git_hub_agent_service)
             expect(git_hub_agent_service).to receive(:onboard_user).with(@user).and_return(true)
-            get :onboard_github, params: { id: @user.id }
+            post :onboard_github, params: { id: @user.id }
             expect(response).to have_http_status(204)
             expect(Audit.count).to eq 1
             audit = Audit.first
@@ -313,7 +313,7 @@ RSpec.describe UsersController, type: :controller do
 
       end
 
-      context 'not an admin but is project team manager of same team' do
+      context 'not an admin but is project manager of same project' do
         before do
           project = create :project
           create :project_membership, project: project, user: @user
@@ -323,7 +323,7 @@ RSpec.describe UsersController, type: :controller do
         it 'should onboard the user and return a success response with no content' do
           expect(Agents::GitHubAgentService).to receive(:new).with(any_args).and_return(git_hub_agent_service)
           expect(git_hub_agent_service).to receive(:onboard_user).with(@user).and_return(true)
-          get :onboard_github, params: { id: @user.id }
+          post :onboard_github, params: { id: @user.id }
           expect(response).to have_http_status(204)
           expect(Audit.count).to eq 1
           audit = Audit.first
@@ -333,7 +333,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context 'not an admin but is project team manager but of a different team' do
+      context 'not an admin but is project manager but of a different and not common project' do
         before do
           project1 = create :project
           project2 = create :project
@@ -343,7 +343,7 @@ RSpec.describe UsersController, type: :controller do
         end
 
         it 'should not be able to onboard the user on GitHub - returning 403 Forbidden' do
-          get :onboard_github, params: { id: @user.id }
+          post :onboard_github, params: { id: @user.id }
           expect(response).to have_http_status(403)
           expect(Audit.count).to be 0
         end
@@ -353,10 +353,6 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe 'POST #offboard_github' do
-    # We expect the code path for `offboard_github` to be pretty much the same
-    # as `onboard_github`, so rather than duplicating all the tests, we can
-    # test just the auth bits and then rely on the specs for `onboard_github`
-    # to give us confidence for the rest.
 
     before do
       @user = create :user
@@ -370,13 +366,66 @@ RSpec.describe UsersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
+      let :git_hub_agent_service do
+        instance_double('Agents::GitHubAgentService')
+      end
+
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          get :offboard_github, params: { id: @user.id }
+          post :offboard_github, params: { id: @user.id }
         end
       end
 
-      context 'not an admin but is project team manager but of a different team' do
+      it_behaves_like 'an admin' do
+
+        context 'when user does not have a GitHub identity connected' do
+          it 'should return a 400 Bad Request with an appropriate error message' do
+            expect(Agents::GitHubAgentService).to receive(:new).with(any_args).and_return(git_hub_agent_service)
+            expect(git_hub_agent_service).to receive(:offboard_user).with(@user).and_raise(Agents::GitHubAgentService::Errors::IdentityMissing)
+            post :offboard_github, params: { id: @user.id }
+            expect(response).to have_http_status(400)
+            expect(json_response['error']['message']).to eq 'User does not have a GitHub identity connected yet'
+            expect(Audit.count).to be 0
+          end
+        end
+
+        context 'when user has a GitHub identity connected' do
+          it 'should offboard the user and return a success response with no content' do
+            expect(Agents::GitHubAgentService).to receive(:new).with(any_args).and_return(git_hub_agent_service)
+            expect(git_hub_agent_service).to receive(:offboard_user).with(@user).and_return(true)
+            post :offboard_github, params: { id: @user.id }
+            expect(response).to have_http_status(204)
+            expect(Audit.count).to eq 1
+            audit = Audit.first
+            expect(audit.action).to eq 'offboard_github'
+            expect(audit.auditable).to eq @user
+            expect(audit.user.id).to eq current_user_id
+          end
+        end
+
+      end
+
+      context 'not an admin but is project manager of same project' do
+        before do
+          project = create :project
+          create :project_membership, project: project, user: @user
+          create :project_membership_as_manager, project: project, user: current_user
+        end
+
+        it 'should offboard the user and return a success response with no content' do
+          expect(Agents::GitHubAgentService).to receive(:new).with(any_args).and_return(git_hub_agent_service)
+          expect(git_hub_agent_service).to receive(:offboard_user).with(@user).and_return(true)
+          post :offboard_github, params: { id: @user.id }
+          expect(response).to have_http_status(204)
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'offboard_github'
+          expect(audit.auditable).to eq @user
+          expect(audit.user.id).to eq current_user_id
+        end
+      end
+
+      context 'not an admin but is project manager but of a different and not common project' do
         before do
           project1 = create :project
           project2 = create :project
@@ -386,7 +435,7 @@ RSpec.describe UsersController, type: :controller do
         end
 
         it 'should not be able to offboard the user on GitHub - returning 403 Forbidden' do
-          get :offboard_github, params: { id: @user.id }
+          post :offboard_github, params: { id: @user.id }
           expect(response).to have_http_status(403)
           expect(Audit.count).to be 0
         end
