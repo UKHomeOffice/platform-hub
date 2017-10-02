@@ -11,7 +11,6 @@ export const KubernetesClusters = function ($window, hubApiService, apiBackoffTi
 
   model.refresh = refresh;
   model.get = get;
-  model.createOrUpdate = createOrUpdate;
 
   return model;
 
@@ -33,18 +32,10 @@ export const KubernetesClusters = function ($window, hubApiService, apiBackoffTi
     return fetcherPromise;
   }
 
-  function get(id) {
+  function get(name) {
     return refresh()
       .then(clusters => {
-        return _.find(clusters, ['id', id]);
-      });
-  }
-
-  function createOrUpdate(id, data) {
-    return hubApiService
-      .createOrUpdateKubernetesCluster(id, data)
-      .then(() => {
-        return refresh(true);
+        return _.find(clusters, ['name', name]);
       });
   }
 };

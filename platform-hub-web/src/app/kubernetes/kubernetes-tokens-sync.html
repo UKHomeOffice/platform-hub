@@ -24,8 +24,8 @@
               >
               <md-option
                 ng-repeat="c in $ctrl.KubernetesClusters.all"
-                value="{{c.id}}">
-                {{c.id}} ({{c.description}})
+                value="{{c.name}}">
+                {{c.name}} ({{c.description}})
               </md-option>
             </md-select>
             <div ng-messages="$ctrl.kubernetesTokenUploadForm.cluster.$error">

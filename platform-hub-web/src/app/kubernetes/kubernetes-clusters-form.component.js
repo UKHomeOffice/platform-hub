@@ -6,12 +6,12 @@ export const KubernetesClustersFormComponent = {
   controller: KubernetesClustersFormController
 };
 
-function KubernetesClustersFormController($state, KubernetesClusters, logger) {
+function KubernetesClustersFormController($state, hubApiService, KubernetesClusters, logger) {
   'ngInject';
 
   const ctrl = this;
 
-  const id = ctrl.transition && ctrl.transition.params().id;
+  const name = ctrl.transition && ctrl.transition.params().name;
 
   ctrl.loading = true;
   ctrl.saving = false;
@@ -23,7 +23,7 @@ function KubernetesClustersFormController($state, KubernetesClusters, logger) {
   init();
 
   function init() {
-    ctrl.isNew = !id;
+    ctrl.isNew = !name;
 
     if (ctrl.isNew) {
       ctrl.cluster = {};
@@ -38,7 +38,7 @@ function KubernetesClustersFormController($state, KubernetesClusters, logger) {
     ctrl.cluster = {};
 
     KubernetesClusters
-      .get(id)
+      .get(name)
       .then(cluster => {
         // Make sure to store a copy as we may be mutating this!
         angular.copy(cluster, ctrl.cluster);
@@ -56,14 +56,26 @@ function KubernetesClustersFormController($state, KubernetesClusters, logger) {
 
     ctrl.saving = true;
 
-    KubernetesClusters
-      .createOrUpdate(ctrl.cluster.id, ctrl.cluster)
-      .then(() => {
-        logger.success('Cluster created or updated successfully');
-        $state.go('kubernetes.clusters.list');
-      })
-      .finally(() => {
-        ctrl.saving = false;
-      });
+    if (ctrl.isNew) {
+      hubApiService
+        .createKubernetesCluster(ctrl.cluster)
+        .then(() => {
+          logger.success('New cluster created');
+          $state.go('kubernetes.clusters.list');
+        })
+        .finally(() => {
+          ctrl.saving = false;
+        });
+    } else {
+      hubApiService
+        .updateKubernetesCluster(ctrl.cluster.name, ctrl.cluster)
+        .then(() => {
+          logger.success('Cluster updated');
+          $state.go('kubernetes.clusters.list');
+        })
+        .finally(() => {
+          ctrl.saving = false;
+        });
+    }
   }
 }

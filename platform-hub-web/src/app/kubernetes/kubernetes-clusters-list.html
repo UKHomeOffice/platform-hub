@@ -18,10 +18,10 @@
 
   <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.KubernetesClusters.all.length > 0">
 
-    <md-card ng-repeat="c in $ctrl.KubernetesClusters.all track by c.id">
+    <md-card ng-repeat="c in $ctrl.KubernetesClusters.all track by c.name">
       <md-card-title>
         <span class="md-headline">
-          {{c.id}}
+          {{c.name}}
         </span>
       </md-card-title>
       <md-card-content>
@@ -33,7 +33,7 @@
         <md-button
           class="md-primary"
           aria-label="Edit cluster config"
-          ui-sref="kubernetes.clusters.edit({id: c.id})">
+          ui-sref="kubernetes.clusters.edit({name: c.name})">
           Edit
         </md-button>
       </md-card-actions>
