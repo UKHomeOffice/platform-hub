@@ -71,11 +71,15 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
   function fetchKubernetesTokens() {
     ctrl.tokens = [];
 
-    const identity = _.find(ctrl.user.identities, ['provider', 'kubernetes']);
+    return hubApiService
+      .getUserIdentities(ctrl.user.id)
+      .then(identities => {
+        const identity = _.find(identities, ['provider', 'kubernetes']);
 
-    if (identity) {
-      ctrl.tokens = identity.kubernetes_tokens;
-    }
+        if (identity) {
+          ctrl.tokens = identity.kubernetes_tokens;
+        }
+      });
   }
 
   function escalatePrivilege(user, cluster, targetEvent) {

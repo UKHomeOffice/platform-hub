@@ -23,6 +23,7 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
   ctrl.searchText = '';
   ctrl.user = null;
 
+  ctrl.loadTokenData = loadTokenData;
   ctrl.searchUsers = searchUsers;
   ctrl.createOrUpdate = createOrUpdate;
 
@@ -55,25 +56,25 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
       .getUser(userId)
       .then(user => {
         ctrl.user = user;
-
-        if (cluster) {
-          fetchClusterToken();
-        }
+        return loadTokenData();
       });
   }
 
-  function fetchClusterToken() {
-    const identity = _.find(ctrl.user.identities, ['provider', 'kubernetes']);
+  function loadTokenData() {
+    if (ctrl.user) {
+      return hubApiService
+        .getUserIdentities(ctrl.user.id)
+        .then(identities => {
+          const identity = _.find(identities, ['provider', 'kubernetes']);
 
-    if (identity) {
-      ctrl.tokenData = _.find(identity.kubernetes_tokens, t => {
-        return t.cluster === cluster;
-      });
-
-      ctrl.assignedKubernetesClusters = _.map(identity.kubernetes_tokens, 'cluster');
-    } else {
-      ctrl.tokenData = {};
-      ctrl.assignedKubernetesClusters = [];
+          if (identity) {
+            ctrl.tokenData = _.find(identity.kubernetes_tokens, ['cluster', cluster]);
+            ctrl.assignedKubernetesClusters = _.map(identity.kubernetes_tokens, 'cluster');
+          } else {
+            ctrl.tokenData = {};
+            ctrl.assignedKubernetesClusters = [];
+          }
+        });
     }
   }
 

@@ -37,6 +37,8 @@ Rails.application.routes.draw do
     resources :users, only: [ :index, :show ] do
       get '/search/:q', to: 'users#search', on: :collection
 
+      get :identities, on: :member
+
       post :make_admin, on: :member
       post :revoke_admin, on: :member
 

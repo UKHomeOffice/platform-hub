@@ -95,7 +95,6 @@ RSpec.describe UsersController, type: :controller do
               'role' => nil,
               'last_seen_at' => now_json_value,
               'enabled_identities' => [],
-              'identities' => [],
               'flags' => Hash[UserFlags.flag_names.map {|f| [f, false]}],
               'is_active' => true,
               'is_managerial' => true,
@@ -182,6 +181,66 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
+  describe 'GET #identities' do
+    let(:identity) { build :identity }
+
+    before do
+      @user = create :user, identities: [ identity ]
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :identities, params: { id: @user.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      def expect_identities target_user, identity
+        get :identities, params: { id: target_user }
+        expect(response).to be_success
+        expect(json_response.length).to eq 1
+        expect(json_response).to eq([
+          {
+            'provider' => identity.provider,
+            'external_id' => identity.external_id,
+            'external_username' => identity.external_username,
+            'external_name' => identity.external_name,
+            'external_email' => identity.external_email,
+            'created_at' => identity.created_at.iso8601,
+            'updated_at' => identity.updated_at.iso8601
+          }
+        ])
+      end
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :identities, params: { id: @user.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+        it 'should return the user\'s list of identities' do
+          expect_identities @user, identity
+        end
+      end
+
+      context 'not an admin and a different user' do
+        it 'should not be able to load identities - returning 403 Forbidden' do
+          get :identities, params: { id: @user.id }
+          expect(response).to have_http_status(403)
+        end
+      end
+
+      context 'not an admin but same user' do
+        it 'should be able to load your own identities' do
+          expect_identities current_user, current_user.identities.first
+        end
+      end
+
+    end
+  end
+
   describe 'POST #make_admin' do
     before do
       @user = create :user
@@ -197,7 +256,7 @@ RSpec.describe UsersController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          get :make_admin, params: { id: @user.id }
+          post :make_admin, params: { id: @user.id }
         end
       end
 
@@ -206,7 +265,7 @@ RSpec.describe UsersController, type: :controller do
         it 'should make the specified user an admin' do
           expect(@user.admin?).to be false
           expect(Audit.count).to eq 0
-          get :make_admin, params: { id: @user.id }
+          post :make_admin, params: { id: @user.id }
           expect(response).to be_success
           expect(@user.reload.admin?).to be true
           expect(Audit.count).to eq 1
@@ -236,7 +295,7 @@ RSpec.describe UsersController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          get :revoke_admin, params: { id: @user.id }
+          post :revoke_admin, params: { id: @user.id }
         end
       end
 
@@ -245,7 +304,7 @@ RSpec.describe UsersController, type: :controller do
         it 'should revoke the admin role for the specified user' do
           expect(@user.admin?).to be true
           expect(Audit.count).to eq 0
-          get :revoke_admin, params: { id: @user.id }
+          post :revoke_admin, params: { id: @user.id }
           expect(response).to be_success
           expect(@user.reload.admin?).to be false
           expect(Audit.count).to eq 1
