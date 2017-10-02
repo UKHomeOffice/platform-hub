@@ -9,18 +9,16 @@ module Kubernetes
     end
 
     def lookup_static_tokens(token, kind = 'user')
-      clusters = Kubernetes::ClusterService.list
-
       found = []
 
-      clusters.each do |cluster|
-        static_user_tokens = HashRecord.kubernetes.find_by(id: "#{cluster['id'].to_s}-static-#{kind.to_s}-tokens")
+      KubernetesCluster.names.each do |cluster_name|
+        static_user_tokens = HashRecord.kubernetes.find_by(id: "#{cluster_name}-static-#{kind.to_s}-tokens")
         next if static_user_tokens.blank?
 
         existing_token = static_user_tokens.data.find {|t| ENCRYPTOR.decrypt(t['token']) == token }
         if existing_token
           found << Hashie::Mash.new(
-            cluster: cluster['id'],
+            cluster: cluster_name,
             data: {
               token: existing_token['token'],
               uid: existing_token['uid'],

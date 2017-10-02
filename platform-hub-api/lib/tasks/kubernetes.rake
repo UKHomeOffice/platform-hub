@@ -27,21 +27,21 @@ namespace :kubernetes do
   namespace :cluster do
 
     desc "Add kubernetes cluster to list of managed clusters"
-    task :create_or_update, [:id, :description, :s3_region, :s3_bucket_name, :s3_access_key_id, :s3_secret_access_key, :object_key] => [:environment] do |t, args|
+    task :create, [:name, :description, :s3_region, :s3_bucket_name, :s3_access_key_id, :s3_secret_access_key, :s3_object_key] => [:environment] do |t, args|
 
-      unless [args.id, args.description, args.s3_region, args.s3_bucket_name, args.s3_access_key_id, args.s3_secret_access_key, args.object_key].all?
+      unless [args.name, args.description, args.s3_region, args.s3_bucket_name, args.s3_access_key_id, args.s3_secret_access_key, args.s3_object_key].all?
         raise "ERROR: Missing arguments!"
       end
 
-      puts Kubernetes::ClusterService.create_or_update(args)
+      puts KubernetesCluster.create(args)
     end
 
     desc "Delete kubernetes cluster from list of managed clusters"
-    task :delete, [:id] => [:environment] do |t, args|
+    task :delete, [:name] => [:environment] do |t, args|
 
-      raise "ERROR: Missing argument!" if args.id.blank?
+      raise "ERROR: Missing argument!" if args.name.blank?
 
-      puts Kubernetes::ClusterService.delete(args.id)
+      puts KubernetesCluster.friendly.destroy(args.name)
     end
 
   end

@@ -13,10 +13,9 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
   end
 
   describe '.perform' do
-    let!(:kubernetes_clusters) { create :kubernetes_clusters_hash_record }
     let!(:kubernetes_groups) { create :kubernetes_groups_hash_record }
 
-    let(:cluster) { 'development' }
+    let(:cluster_name) { 'development' }
 
     before do
       FeatureFlagService.create_or_update(:kubernetes_tokens, true)
@@ -26,7 +25,7 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
       @kubernetes_identity = create(:kubernetes_identity, user: user, data: { tokens: [] })
       user_kube_token = {
         identity_id: @kubernetes_identity.id,
-        cluster: cluster,
+        cluster: cluster_name,
         token: ENCRYPTOR.encrypt('some-random-token'),
         uid: 'some-random-uid',
         groups: groups,
@@ -58,8 +57,8 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
           expect(AuditService).to receive(:log).with(
             action: 'deescalate_kubernetes_token',
             auditable: @kubernetes_identity,
-            data: { cluster: cluster },
-            comment: "Privileged kubernetes token expired for `#{@kubernetes_identity.user.email}` in `#{cluster}` via background job."
+            data: { cluster: cluster_name },
+            comment: "Privileged kubernetes token expired for `#{@kubernetes_identity.user.email}` in `#{cluster_name}` via background job."
           )
 
           PrivilegedTokenExpirerJob.new.perform
