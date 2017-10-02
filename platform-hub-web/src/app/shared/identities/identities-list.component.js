@@ -17,6 +17,7 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
   ctrl.FeatureFlags = FeatureFlags;
   ctrl.featureFlagKeys = featureFlagKeys;
 
+  ctrl.currentUserId = null;
   ctrl.userIdentities = {};
 
   ctrl.connect = connect;
@@ -28,9 +29,40 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
   function init() {
     ctrl.busy = true;
 
-    Me
-      .refresh()
-      .then(processMeData)
+    if (Me.data.id) {
+      ctrl.currentUserId = Me.data.id;
+      refresh();
+    } else {
+      Me
+        .refresh()
+        .then(meData => {
+          ctrl.currentUserId = meData.id;
+          return refresh();
+        });
+    }
+  }
+
+  function refresh() {
+    ctrl.busy = true;
+
+    Identities
+      .getUserIdentities(ctrl.currentUserId)
+      .then(identities => {
+        if (_.isNull(identities) || _.isEmpty(identities)) {
+          ctrl.userIdentities = [];
+        } else {
+          const owned = _.keyBy(identities, 'provider');
+
+          ctrl.userIdentities = Identities.supported.map(entry => {
+            const match = _.clone(owned[entry.provider] || {});
+            return _.extend(
+              _.clone(entry),
+              match,
+              {connected: !_.isEmpty(match)}
+            );
+          });
+        }
+      })
       .finally(() => {
         ctrl.busy = false;
       });
@@ -41,7 +73,7 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
 
     Me
       .connectIdentity(provider)
-      .then(processMeData)
+      .then(refresh)
       .finally(() => {
         ctrl.busy = false;
       });
@@ -63,27 +95,10 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
 
         Me
           .deleteIdentity(provider)
-          .then(processMeData)
+          .then(refresh)
           .finally(() => {
             ctrl.busy = false;
           });
       });
-  }
-
-  function processMeData(meData) {
-    if (_.isNull(meData) || _.isEmpty(meData)) {
-      ctrl.userIdentities = [];
-    } else {
-      const owned = _.keyBy(meData.identities, 'provider');
-
-      ctrl.userIdentities = Identities.supported.map(entry => {
-        const match = _.clone(owned[entry.provider] || {});
-        return _.extend(
-          _.clone(entry),
-          match,
-          {connected: !_.isEmpty(match)}
-        );
-      });
-    }
   }
 }

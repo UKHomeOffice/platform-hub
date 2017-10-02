@@ -22,6 +22,10 @@ class Ability
 
     # Users
 
+    can :identities, User do |target_user|
+      target_user == user
+    end
+
     can :onboard_github, User do |target_user|
       onboard_or_offboard_github user, target_user
     end

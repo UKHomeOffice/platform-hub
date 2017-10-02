@@ -15,6 +15,10 @@ RSpec.describe UsersController, type: :routing do
       expect(:get => '/users/search/foo').to route_to('users#search', :q => 'foo')
     end
 
+    it 'routes to #identities' do
+      expect(:get => '/users/1/identities').to route_to('users#identities', :id => '1')
+    end
+
     it 'routes to #make_admin' do
       expect(:post => '/users/1/make_admin').to route_to('users#make_admin', :id => '1')
     end

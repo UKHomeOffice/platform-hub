@@ -5,6 +5,7 @@ class UsersController < ApiJsonController
 
   before_action :find_user, only: [
     :show,
+    :identities,
     :make_admin,
     :revoke_admin,
     :activate,
@@ -31,6 +32,11 @@ class UsersController < ApiJsonController
   def search
     scope = params[:include_deactivated] == 'true' ? User : User.active
     render json: scope.search(params[:q])
+  end
+
+  # GET /users/:id/identities
+  def identities
+    render json: @user.identities
   end
 
   # POST /users/:id/make_admin
@@ -86,5 +92,5 @@ class UsersController < ApiJsonController
   def find_user
     @user = User.find params[:id]
   end
-  
+
 end

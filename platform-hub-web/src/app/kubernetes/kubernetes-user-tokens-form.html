@@ -20,6 +20,7 @@
             md-input-name="user"
             md-no-cache="true"
             md-selected-item="$ctrl.user"
+            md-selected-item-change="$ctrl.loadTokenData()"
             md-search-text="$ctrl.searchText"
             md-items="user in $ctrl.searchUsers($ctrl.searchText)"
             md-item-text="user.name + ' (' + user.email + ')'"

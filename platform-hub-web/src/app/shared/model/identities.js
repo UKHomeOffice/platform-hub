@@ -1,4 +1,4 @@
-export const Identities = function (AppSettings) {
+export const Identities = function (AppSettings, hubApiService) {
   'ngInject';
 
   const model = {};
@@ -21,9 +21,14 @@ export const Identities = function (AppSettings) {
     }
   ];
 
+  model.getUserIdentities = getUserIdentities;
   model.getOther = getOther;
 
   return model;
+
+  function getUserIdentities(userId) {
+    return hubApiService.getUserIdentities(userId);
+  }
 
   function getOther() {
     return AppSettings.getOtherManagedServices();

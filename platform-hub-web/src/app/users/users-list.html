@@ -32,30 +32,9 @@
         <p>
           <span md-colors="{color: 'blue-grey-700'}">Last seen at:</span> {{u.last_seen_at | date:'medium'}}
         </p>
-
-        <div>
-          <span md-colors="{color: 'blue-grey-700'}">Identities:</span>
-
-          <md-list>
-             <md-list-item ng-repeat="i in u.identities track by i.provider">
-               <div class="md-list-item-text">
-                 <strong>{{i.provider}}</strong> -
-                 <span>
-                   <span md-colors="{color: 'blue-grey-700'}">ID:</span> {{i.external_id}}
-                 </span>
-                 <span ng-if="i.external_username">
-                   <span md-colors="{color: 'blue-grey-700'}">| username:</span> {{i.external_username}}
-                 </span>
-                 <span ng-if="i.external_name">
-                   <span md-colors="{color: 'blue-grey-700'}">| name:</span> {{i.external_name}}
-                 </span>
-                 <span>
-                   <span md-colors="{color: 'blue-grey-700'}">| connected at:</span> {{i.created_at | date:'medium'}}
-                 </span>
-               </div>
-             </md-list-item>
-          </md-list>
-        </div>
+        <p>
+          <span md-colors="{color: 'blue-grey-700'}">Connected identities:</span> {{u.enabled_identities.join(', ')}}
+        </p>
       </md-card-content>
 
       <md-card-actions layout="row" layout-align="start center">

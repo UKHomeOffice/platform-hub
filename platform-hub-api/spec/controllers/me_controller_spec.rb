@@ -22,17 +22,6 @@ RSpec.describe MeController, type: :controller do
           'role' => nil,
           'last_seen_at' => now_json_value,
           'enabled_identities' => ['keycloak'],
-          'identities' => [
-            {
-              'provider' => 'keycloak',
-              'external_id' => test_auth_payload.sub,
-              'external_username' => test_auth_payload.preferred_username,
-              'external_name' => test_auth_payload.name,
-              'external_email' => test_auth_payload.email,
-              'created_at' => now_json_value,
-              'updated_at' => now_json_value
-            }
-          ],
           'flags' => Hash[UserFlags.flag_names.map {|f| [f, false]}],
           'is_active' => true,
           'is_managerial' => true,

@@ -16,6 +16,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getUsers = buildCollectionFetcher('users');
   service.getUser = buildResourceFetcher('users');
   service.searchUsers = searchUsers;
+  service.getUserIdentities = buildSubCollectionFetcher('users', 'identities');
   service.makeAdmin = makeAdmin;
   service.revokeAdmin = revokeAdmin;
   service.activateUser = activateUser;
@@ -26,7 +27,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.createProject = buildResourceCreator('projects');
   service.updateProject = buildResourceUpdater('projects');
   service.deleteProject = buildResourceDeletor('projects');
-  service.getProjectMemberships = getProjectMemberships;
+  service.getProjectMemberships = buildSubCollectionFetcher('projects', 'memberships');
   service.addProjectMembership = addProjectMembership;
   service.removeProjectMembership = removeProjectMembership;
   service.projectSetRole = projectSetRole;
@@ -258,22 +259,6 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function getProjectMemberships(projectId) {
-    if (_.isNull(projectId) || _.isEmpty(projectId)) {
-      throw new Error('"projectId" argument not specified or empty');
-    }
-
-    return $http
-      .get(`${apiEndpoint}/projects/${projectId}/memberships`)
-      .then(response => {
-        return response.data;
-      })
-      .catch(response => {
-        logger.error(buildErrorMessageFromResponse('Failed to fetch memberships for project', response));
-        return $q.reject(response);
-      });
-  }
-
   function addProjectMembership(projectId, userId) {
     if (_.isNull(projectId) || _.isEmpty(projectId)) {
       throw new Error('"projectId" argument not specified or empty');
@@ -497,6 +482,24 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         })
         .catch(response => {
           logger.error(buildErrorMessageFromResponse('Failed to fetch items', response));
+          return $q.reject(response);
+        });
+    };
+  }
+
+  function buildSubCollectionFetcher(resource, name) {
+    return function (id) {
+      if (_.isNull(id) || _.isEmpty(id)) {
+        throw new Error('"id" argument not specified or empty');
+      }
+
+      return $http
+        .get(`${apiEndpoint}/${resource}/${id}/${name}`)
+        .then(response => {
+          return response.data;
+        })
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse(`Failed to fetch ${name}`, response));
           return $q.reject(response);
         });
     };
