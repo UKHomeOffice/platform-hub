@@ -1,52 +1,67 @@
 class Kubernetes::ClustersController < ApiJsonController
 
-  before_action :load_kubernetes_clusters_hash_record
+  before_action :find_cluster, only: [ :show, :update ]
+
+  skip_authorization_check only: [ :index, :show ]
+  authorize_resource class: KubernetesCluster, :except => [:index, :show]
 
   # GET /kubernetes/clusters
   def index
-    authorize! :read, :kubernetes_clusters
-    clusters = @kubernetes_clusters.data.map do |c|
-      c.with_indifferent_access.slice(:id, :description)
-    end.sort_by! do |c|
-      c[:id]
+    clusters = KubernetesCluster.order(:name)
+    render json: clusters, each_serializer: KubernetesClusterSerializer
+  end
+
+  # GET /kubernetes/clusters/:id
+  def show
+    render json: @cluster
+  end
+
+  # POST /kubernetes/clusters
+  def create
+    cluster = KubernetesCluster.new(cluster_params)
+
+    if cluster.save
+      AuditService.log(
+        context: audit_context,
+        action: 'create',
+        auditable: cluster
+      )
+      render json: cluster, status: :created
+    else
+      render_model_errors cluster.errors
     end
-    render json: clusters
   end
 
   # PATCH/PUT /kubernetes/clusters/:id
-  def create_or_update
-    authorize! :manage, :kubernetes_clusters
+  def update
+    if @cluster.update(cluster_params)
+      AuditService.log(
+        context: audit_context,
+        action: 'update',
+        auditable: @cluster
+      )
 
-    data = cluster_params.to_h
-    data[:id] = params[:id]  # ID in URL takes precedence
-
-    Kubernetes::ClusterService.create_or_update data
-
-    AuditService.log(
-      context: audit_context,
-      action: 'update_kubernetes_cluster',
-      data: { id: params[:id] },
-      comment: "Kubernetes cluster '#{params[:id]}' created or updated by #{current_user.email}"
-    )
-
-    head :no_content
+      render json: @cluster
+    else
+      render_model_errors @cluster.errors
+    end
   end
 
   private
 
-  def load_kubernetes_clusters_hash_record
-    @kubernetes_clusters = Kubernetes::ClusterService.clusters_config_hash_record
+  def find_cluster
+    @cluster = KubernetesCluster.friendly.find params[:id]
   end
 
   def cluster_params
     params.require(:cluster).permit(
-      :id,
+      :name,
       :description,
       :s3_region,
       :s3_bucket_name,
       :s3_access_key_id,
       :s3_secret_access_key,
-      :object_key
+      :s3_object_key
     )
   end
 

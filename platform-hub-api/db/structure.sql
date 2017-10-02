@@ -237,6 +237,24 @@ CREATE TABLE identities (
 
 
 --
+-- Name: kubernetes_clusters; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE kubernetes_clusters (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    name character varying NOT NULL,
+    description text NOT NULL,
+    s3_region character varying NOT NULL,
+    s3_bucket_name character varying NOT NULL,
+    s3_access_key_id character varying NOT NULL,
+    s3_secret_access_key character varying NOT NULL,
+    s3_object_key character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: platform_themes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -246,7 +264,7 @@ CREATE TABLE platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying,
+    colour character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -461,6 +479,14 @@ ALTER TABLE ONLY identities
 
 
 --
+-- Name: kubernetes_clusters kubernetes_clusters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kubernetes_clusters
+    ADD CONSTRAINT kubernetes_clusters_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: platform_themes platform_themes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -658,6 +684,13 @@ CREATE INDEX index_identities_on_user_id ON identities USING btree (user_id);
 
 
 --
+-- Name: index_kubernetes_clusters_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_kubernetes_clusters_on_name ON kubernetes_clusters USING btree (name);
+
+
+--
 -- Name: index_platform_themes_on_slug; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -806,6 +839,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170712132824'),
 ('20170717165305'),
 ('20170721125027'),
-('20170727103721');
+('20170727103721'),
+('20171001181648');
 
 

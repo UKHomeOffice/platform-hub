@@ -6,20 +6,20 @@ module Kubernetes
       class TokensFileBlank < StandardError; end
     end
 
-    def sync_tokens(opts = {})
-      raise 'Missing `cluster` in options.' if opts[:cluster].blank?
+    def sync_tokens(cluster_name, opts = {})
+      raise 'Please specify cluster name.' if cluster_name.blank?
 
       begin
-        body = Kubernetes::TokenFileService.generate(opts[:cluster])
+        cluster = KubernetesCluster.friendly.find cluster_name
+
+        body = Kubernetes::TokenFileService.generate(cluster_name)
         raise Errors::TokensFileBlank, 'Tokens file empty!' if body.blank?
 
-        config = get_s3_config(opts[:cluster])
-
-        s3_bucket(config).put_object(
-          key: opts[:object_key] || config[:object_key],
+        s3_bucket(cluster).put_object(
+          key: opts.fetch(:s3_object_key, cluster.s3_object_key),
           body: body,
-          server_side_encryption: opts[:sse] || 'aws:kms',
-          acl: opts[:acl] || 'private',
+          server_side_encryption: opts.fetch(:sse, 'aws:kms'),
+          acl: opts.fetch(:acl, 'private'),
         )
       rescue => e
         Rails.logger.error("Kubernetes Tokens sync to S3 failed! #{e.message}")
@@ -29,26 +29,13 @@ module Kubernetes
 
     private
 
-    def s3_bucket(config)
-      client = Aws::S3::Client.new(config[:credentials])
-      Aws::S3::Resource.new(client: client).bucket(config[:bucket_name])
-    end
-
-    def get_s3_config(cluster)
-      cluster = Kubernetes::ClusterService.get cluster
-      config = cluster.dig 'config', 's3_bucket'
-
-      raise 'Cluster S3 configuration not found!' if config.blank?
-
-      {
-        :bucket_name => config['bucket_name'],
-        :object_key => config['object_key'],
-        :credentials => {
-          region: config['region'],
-          access_key_id: ENCRYPTOR.decrypt(config['access_key_id']),
-          secret_access_key: ENCRYPTOR.decrypt(config['secret_access_key']),
-        }
-      }
+    def s3_bucket(cluster)
+      client = Aws::S3::Client.new({
+          region: cluster.s3_region,
+          access_key_id: cluster.decrypted_s3_access_key_id,
+          secret_access_key: cluster.decrypted_s3_secret_access_key,
+        })
+      Aws::S3::Resource.new(client: client).bucket(cluster.s3_bucket_name)
     end
 
   end

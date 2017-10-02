@@ -86,21 +86,8 @@ describe Kubernetes::TokenClaimService, type: :service do
       end
 
       before do
-        # configure managed kubernetes clusters
-        create(:kubernetes_clusters_hash_record,
-          data: [
-            {
-              id: cluster,
-              description: "#{cluster} cluster",
-              # don't care about other cluster configuration in test
-            },
-            {
-              id: existing_cluster,
-              description: "#{existing_cluster} cluster",
-              # don't care about other cluster configuration in test
-            }
-          ]
-        )
+        create(:kubernetes_cluster, name: cluster)
+        create(:kubernetes_cluster, name: existing_cluster)
 
         # create kubernetes identity with 1 existing kubernetes token
         @kubernetes_identity = create(:kubernetes_identity)

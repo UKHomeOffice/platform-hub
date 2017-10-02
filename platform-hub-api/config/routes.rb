@@ -99,9 +99,7 @@ Rails.application.routes.draw do
         patch '/robot_tokens/:cluster/:name', to: 'robot_tokens#create_or_update'
         delete '/robot_tokens/:cluster/:name', to: 'robot_tokens#destroy'
 
-        get '/clusters', to: 'clusters#index'
-        put '/clusters/:id', to: 'clusters#create_or_update'
-        patch '/clusters/:id', to: 'clusters#create_or_update'
+        resources :clusters, except: :destroy
 
         get '/changeset/:cluster', to: 'changeset#index'
 

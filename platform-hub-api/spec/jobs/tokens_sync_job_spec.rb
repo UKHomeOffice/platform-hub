@@ -17,19 +17,17 @@ RSpec.describe TokensSyncJob, type: :job do
     context 'with kubernetes_tokens feature flag enabled' do
       before do
         FeatureFlagService.create_or_update(:kubernetes_tokens, true)
+        create(:kubernetes_cluster)
       end
 
-      let!(:clusters) { create :kubernetes_clusters_hash_record }
-      let(:cluster_ids) { clusters.data.map{|c| c['id']} }
-
       before do
-        cluster_ids.each do |id|
-          expect(Kubernetes::TokenSyncService).to receive(:sync_tokens).with(cluster: id)
+        KubernetesCluster.names.each do |cluster_name|
+          expect(Kubernetes::TokenSyncService).to receive(:sync_tokens).with(cluster_name)
 
           expect(AuditService).to receive(:log).with(
             action: 'sync_kubernetes_tokens',
-            data: { background_job: true, cluster: id },
-            comment: "Kubernetes tokens synced to `#{id}` cluster via background job."
+            data: { background_job: true, cluster: cluster_name },
+            comment: "Kubernetes tokens synced to `#{cluster_name}` cluster via background job."
           )
         end
       end
@@ -41,7 +39,7 @@ RSpec.describe TokensSyncJob, type: :job do
 
     context 'with kubernetes_tokens feature flag disabled' do
       it 'should not do anything' do
-        expect(Kubernetes::ClusterService).to receive(:list).never
+        expect(KubernetesCluster).to receive(:names).never
         expect(Kubernetes::TokenSyncService).to receive(:sync_tokens).never
         expect(AuditService).to receive(:log).never
       end
