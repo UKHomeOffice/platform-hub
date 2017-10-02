@@ -52,10 +52,10 @@
               placeholder="Select the cluster"
               ng-disabled="!$ctrl.isNew && $ctrl.tokenData.cluster">
               <md-option
-                ng-repeat="c in $ctrl.KubernetesClusters.all track by c.id"
-                ng-if="!$ctrl.isNew || ($ctrl.isNew && !$ctrl.assignedKubernetesClusters.includes(c.id))"
-                value="{{c.id}}">
-                {{c.id}} ({{c.description}})
+                ng-repeat="c in $ctrl.KubernetesClusters.all track by c.name"
+                ng-if="!$ctrl.isNew || ($ctrl.isNew && !$ctrl.assignedKubernetesClusters.includes(c.name))"
+                value="{{c.name}}">
+                {{c.name}} ({{c.description}})
               </md-option>
             </md-select>
             <div ng-messages="$ctrl.kubernetesTokenForm.cluster.$error">
