@@ -17,9 +17,9 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.projects.length > 0">
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.Projects.all.length > 0">
 
-    <md-card ng-repeat="p in $ctrl.projects track by p.id">
+    <md-card ng-repeat="p in $ctrl.Projects.all track by p.id">
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">

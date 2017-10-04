@@ -6,7 +6,7 @@ export const ProjectsDetailComponent = {
   controller: ProjectsDetailController
 };
 
-function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, Me, logger, _) {
+function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, Me, Projects, logger, _) {
   'ngInject';
 
   const ctrl = this;
@@ -49,14 +49,14 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
     ctrl.searchSelectedUser = null;
     ctrl.searchText = '';
 
-    const projectFetch = hubApiService
-      .getProject(id)
+    const projectFetch = Projects
+      .get(id)
       .then(project => {
         ctrl.project = project;
       });
 
-    const membershipsFetch = hubApiService
-      .getProjectMemberships(id)
+    const membershipsFetch = Projects
+      .getMemberships(id)
       .then(memberships => {
         ctrl.memberships = memberships;
 
@@ -102,8 +102,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(() => {
         ctrl.loading = true;
 
-        hubApiService
-          .deleteProject(ctrl.project.id)
+        Projects
+          .delete(ctrl.project.id)
           .then(() => {
             logger.success('Project deleted');
             $state.go('projects.list');
@@ -131,8 +131,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       return;
     }
 
-    hubApiService
-      .addProjectMembership(ctrl.project.id, ctrl.searchSelectedUser.id)
+    Projects
+      .addMembership(ctrl.project.id, ctrl.searchSelectedUser.id)
       .then(() => {
         logger.success('Team member added to project');
         loadProject();
@@ -157,8 +157,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(() => {
         ctrl.loading = true;
 
-        hubApiService
-          .removeProjectMembership(ctrl.project.id, membership.user.id)
+        Projects
+          .removeMembership(ctrl.project.id, membership.user.id)
           .then(() => {
             logger.success('Team member removed from project');
             loadProject();
@@ -184,8 +184,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(() => {
         ctrl.loading = true;
 
-        hubApiService
-          .projectSetRole(ctrl.project.id, membership.user.id, 'manager')
+        Projects
+          .setMembershipRole(ctrl.project.id, membership.user.id, 'manager')
           .then(() => {
             logger.success('Team member promoted to manager!');
             loadProject();
@@ -211,8 +211,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(() => {
         ctrl.loading = true;
 
-        hubApiService
-          .projectUnsetRole(ctrl.project.id, membership.user.id, 'manager')
+        Projects
+          .unsetMembershipRole(ctrl.project.id, membership.user.id, 'manager')
           .then(() => {
             logger.success('Team member demoted from manager role!');
             loadProject();
@@ -303,8 +303,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(() => {
         ctrl.loading = true;
 
-        hubApiService
-          .removeProjectMembership(ctrl.project.id, membership.user.id)
+        Projects
+          .removeMembership(ctrl.project.id, membership.user.id)
           .then(() => {
             ctrl.processing = true;
 

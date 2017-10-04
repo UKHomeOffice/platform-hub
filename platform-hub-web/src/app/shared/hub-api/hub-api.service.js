@@ -30,8 +30,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getProjectMemberships = buildSubCollectionFetcher('projects', 'memberships');
   service.addProjectMembership = addProjectMembership;
   service.removeProjectMembership = removeProjectMembership;
-  service.projectSetRole = projectSetRole;
-  service.projectUnsetRole = projectUnsetRole;
+  service.projectSetMembershipRole = projectSetMembershipRole;
+  service.projectUnsetMembershipRole = projectUnsetMembershipRole;
 
   service.userOnboardGitHub = userOnboardGitHub;
   service.userOffboardGitHub = userOffboardGitHub;
@@ -296,7 +296,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function projectSetRole(projectId, userId, role) {
+  function projectSetMembershipRole(projectId, userId, role) {
     if (_.isNull(projectId) || _.isEmpty(projectId)) {
       throw new Error('"projectId" argument not specified or empty');
     }
@@ -318,7 +318,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function projectUnsetRole(projectId, userId, role) {
+  function projectUnsetMembershipRole(projectId, userId, role) {
     if (_.isNull(projectId) || _.isEmpty(projectId)) {
       throw new Error('"projectId" argument not specified or empty');
     }
