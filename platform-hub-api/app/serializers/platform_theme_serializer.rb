@@ -1,6 +1,8 @@
 class PlatformThemeSerializer < BaseSerializer
+
+  include WithFriendlyIdAttribute
+
   attributes(
-    :id,
     :title,
     :description,
     :image_url,
@@ -10,11 +12,8 @@ class PlatformThemeSerializer < BaseSerializer
     :updated_at
   )
 
-  def id
-    object.friendly_id
-  end
-
   def resources
     object.resources || []
   end
+
 end

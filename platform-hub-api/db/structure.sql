@@ -255,6 +255,23 @@ CREATE TABLE kubernetes_clusters (
 
 
 --
+-- Name: kubernetes_groups; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE kubernetes_groups (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    name character varying NOT NULL,
+    kind character varying NOT NULL,
+    target character varying NOT NULL,
+    description text NOT NULL,
+    is_privileged boolean DEFAULT false,
+    restricted_to_clusters character varying[],
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: platform_themes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -501,6 +518,14 @@ ALTER TABLE ONLY kubernetes_clusters
 
 
 --
+-- Name: kubernetes_groups kubernetes_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kubernetes_groups
+    ADD CONSTRAINT kubernetes_groups_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: platform_themes platform_themes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -713,6 +738,41 @@ CREATE UNIQUE INDEX index_kubernetes_clusters_on_name ON kubernetes_clusters USI
 
 
 --
+-- Name: index_kubernetes_groups_on_is_privileged; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_groups_on_is_privileged ON kubernetes_groups USING btree (is_privileged);
+
+
+--
+-- Name: index_kubernetes_groups_on_kind; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_groups_on_kind ON kubernetes_groups USING btree (kind);
+
+
+--
+-- Name: index_kubernetes_groups_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_kubernetes_groups_on_name ON kubernetes_groups USING btree (name);
+
+
+--
+-- Name: index_kubernetes_groups_on_restricted_to_clusters; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_groups_on_restricted_to_clusters ON kubernetes_groups USING gin (restricted_to_clusters);
+
+
+--
+-- Name: index_kubernetes_groups_on_target; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_groups_on_target ON kubernetes_groups USING btree (target);
+
+
+--
 -- Name: index_platform_themes_on_slug; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -870,6 +930,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170721125027'),
 ('20170727103721'),
 ('20170920154859'),
-('20171001181648');
+('20171001181648'),
+('20171005115420');
 
 

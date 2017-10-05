@@ -111,7 +111,9 @@ Rails.application.routes.draw do
         post '/claim', to: 'claim#claim'
         post '/revoke', to: 'revoke#revoke'
 
-        get '/groups/privileged', to: 'groups#privileged'
+        resources :groups do
+          get :privileged, on: :collection
+        end
       end
     end
   end
