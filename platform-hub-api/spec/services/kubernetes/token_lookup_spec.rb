@@ -46,7 +46,9 @@ describe Kubernetes::TokenLookup, type: :service do
     let(:user_prod_groups) { ['user-prod-group'] }
 
     before do
-      create(:kubernetes_clusters_hash_record)
+      create(:kubernetes_cluster, name: dev_cluster)
+      create(:kubernetes_cluster, name: prod_cluster)
+
       create(:kubernetes_static_tokens_hash_record,
         id: "#{dev_cluster.to_s}-static-#{kind.to_s}-tokens",
         data: [
@@ -68,8 +70,8 @@ describe Kubernetes::TokenLookup, type: :service do
         expect(res).to be_kind_of(Array)
         expect(res.size).to eq 2
 
-        dev = res.first
-        prod = res.second
+        dev = res.find {|r| r['cluster'] == dev_cluster}
+        prod = res.find {|r| r['cluster'] == prod_cluster}
 
         expect(dev.kind).to eq kind
         expect(dev.user).to be_nil

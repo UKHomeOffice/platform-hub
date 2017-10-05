@@ -12,12 +12,20 @@ RSpec.describe Kubernetes::ClustersController, type: :routing do
         expect(:get => '/kubernetes/clusters').to route_to('kubernetes/clusters#index')
       end
 
-      it 'routes to #create_or_update via PATCH' do
-        expect(:patch => '/kubernetes/clusters/foo').to route_to('kubernetes/clusters#create_or_update', :id => 'foo')
+      it 'routes to #show' do
+        expect(:get => '/kubernetes/clusters/foo').to route_to('kubernetes/clusters#show', :id => 'foo')
       end
 
-      it 'routes to #create_or_update via PUT' do
-        expect(:put => '/kubernetes/clusters/foo').to route_to('kubernetes/clusters#create_or_update', :id => 'foo')
+      it 'routes to #create via POST' do
+        expect(:post => '/kubernetes/clusters').to route_to('kubernetes/clusters#create')
+      end
+
+      it 'routes to #update via PATCH' do
+        expect(:patch => '/kubernetes/clusters/foo').to route_to('kubernetes/clusters#update', :id => 'foo')
+      end
+
+      it 'routes to #update via PUT' do
+        expect(:put => '/kubernetes/clusters/foo').to route_to('kubernetes/clusters#update', :id => 'foo')
       end
     end
 
@@ -26,11 +34,19 @@ RSpec.describe Kubernetes::ClustersController, type: :routing do
         expect(:get => '/kubernetes/clusters').to_not be_routable
       end
 
-      it 'route to #create_or_update is not routable via PATCH' do
+      it 'route to #show is not routable' do
+        expect(:get => '/kubernetes/clusters/foo').to_not be_routable
+      end
+
+      it 'route to #create is not routable' do
+        expect(:post => '/kubernetes/clusters').to_not be_routable
+      end
+
+      it 'route to #update is not routable via PATCH' do
         expect(:patch => '/kubernetes/clusters/foo').to_not be_routable
       end
 
-      it 'route to #create_or_update is not routable via PUT' do
+      it 'route to #update is not routable via PUT' do
         expect(:put => '/kubernetes/clusters/foo').to_not be_routable
       end
     end

@@ -146,7 +146,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           }
         })
         .state('kubernetes.clusters.edit', {
-          url: '/edit/:id',
+          url: '/edit/:name',
           component: KubernetesClustersForm,
           resolve: {
             transition: '$transition$'

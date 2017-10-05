@@ -3,7 +3,7 @@
     <div class="md-toolbar-tools">
       <h3>
         <span ng-if="$ctrl.isNew">New Kubernetes Cluster Config</span>
-        <span ng-if="!$ctrl.isNew && !$ctrl.loading">Edit "{{$ctrl.cluster.id}}" Cluster Config</span>
+        <span ng-if="!$ctrl.isNew && !$ctrl.loading">Edit "{{$ctrl.cluster.name}}" Cluster Config</span>
       </h3>
     </div>
   </md-toolbar>
@@ -19,14 +19,14 @@
         <form name="$ctrl.clusterForm" role="form" ng-submit="$ctrl.createOrUpdate()">
 
           <md-input-container class="md-block">
-            <label for="id">ID:</label>
+            <label for="name">Name:</label>
             <input
-              name="id"
-              ng-model="$ctrl.cluster.id"
+              name="name"
+              ng-model="$ctrl.cluster.name"
               placeholder="e.g.: dev-1"
               ng-disabled="!$ctrl.isNew"
               required>
-            <div ng-messages="$ctrl.clusterForm.id.$error">
+            <div ng-messages="$ctrl.clusterForm.name.$error">
               <div ng-message="required">This is required.</div>
             </div>
           </md-input-container>
@@ -101,13 +101,13 @@
             </md-input-container>
 
             <md-input-container class="md-block">
-              <label for="object_key">Object key:</label>
+              <label for="s3_object_key">Object key:</label>
               <input
-                name="object_key"
-                ng-model="$ctrl.cluster.object_key"
-                placeholder="/path/to/tokens-file.csv"
+                name="s3_object_key"
+                ng-model="$ctrl.cluster.s3_object_key"
+                placeholder="path/to/tokens-file.csv"
                 required>
-              <div ng-messages="$ctrl.clusterForm.object_key.$error">
+              <div ng-messages="$ctrl.clusterForm.s3_object_key.$error">
                 <div ng-message="required">This is required.</div>
               </div>
             </md-input-container>

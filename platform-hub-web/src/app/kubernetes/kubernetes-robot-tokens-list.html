@@ -26,9 +26,9 @@
         ng-model="$ctrl.cluster"
         ng-change="$ctrl.handleClusterChange()">
         <md-option
-          ng-repeat="c in $ctrl.KubernetesClusters.all track by c.id"
-          ng-value="c.id">
-          {{c.id}} ({{c.description}})
+          ng-repeat="c in $ctrl.KubernetesClusters.all track by c.name"
+          ng-value="c.name">
+          {{c.name}} ({{c.description}})
         </md-option>
       </md-select>
     </div>

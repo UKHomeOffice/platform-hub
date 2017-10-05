@@ -114,37 +114,6 @@ To set up local email delivery, ensure you have the following env variables set 
 
 ### Kubernetes Tokens Management
 
-#### Managed clusters configuration
-
-_**NOTE: most of this can now be done directly in the Hub UI. The instructions below have been kept for posterity.**_
-
-Create a configuration for each individual cluster you want to manage tokens for.
-In order to do that run the following from the console:
-
-```ruby
-bin/rails console
-
-Kubernetes::ClusterService.create_or_update(
-  id: 'development',
-  description: 'Development cluster',
-  s3_region: 'eu-west-1',
-  s3_bucket_name: '<tokens-file-s3-bucket-name>',
-  s3_access_key_id: '<tokens-file-s3-bucket-access-key-id>',
-  s3_secret_access_key: '<tokens-file-s3-bucker-secret-access-key>',
-  object_key: '</path/to/tokens-file.csv>'
-)
-```
-
-You can delete cluster configuration with the following:
-
-```ruby
-bin/rails console
-
-Kubernetes::ClusterService.delete(<cluster-id>)
-```
-where:
-- `<cluster-id>` is the id of the cluster configuration you want to remove from the hub.
-
 #### Import "static" tokens
 
 In order to import initial list of tokens for given cluster into the platform hub run the command below in the console:

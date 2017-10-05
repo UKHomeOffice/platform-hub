@@ -132,11 +132,11 @@ module Kubernetes
     def get_by_user_id(user_id, kind)
       return {} if user_id.blank? || kind.blank?
 
-      Kubernetes::ClusterService.list.each_with_object({}) do |c, acc|
-        cluster_id = c['id']
-        tokens = get_static_tokens_hash_record(cluster_id, kind)
+      KubernetesCluster.all.each_with_object({}) do |c, acc|
+        cluster_name = c.name
+        tokens = get_static_tokens_hash_record(cluster_name, kind)
         found = tokens.data.find_all { |t| t['user_id'] == user_id }
-        acc[cluster_id] = found unless found.empty?
+        acc[cluster_name] = found unless found.empty?
       end
     end
 
