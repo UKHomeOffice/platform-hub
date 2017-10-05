@@ -10,8 +10,8 @@ class PrivilegedTokenExpirerJob < ApplicationJob
   def perform
     return unless FeatureFlagService.is_enabled?(:kubernetes_tokens)
 
-    privileged_group_ids = Kubernetes::TokenGroupService.privileged_group_ids
-    
+    privileged_group_names = KubernetesGroup.privileged_names
+
     Identity.kubernetes.find_each(batch_size: IDENTITY_BATCH_SIZE) do |i|
       should_update = false
       deescalated_token_group_clusters = []
@@ -20,7 +20,7 @@ class PrivilegedTokenExpirerJob < ApplicationJob
         next if token.expire_privileged_at.nil? || DateTime.parse(token.expire_privileged_at).future?
 
         # Remove ALL privileged groups from user token groups and reset expiration timestamp
-        token.groups = token.groups - privileged_group_ids
+        token.groups = token.groups - privileged_group_names
         token.expire_privileged_at = nil
 
         deescalated_token_group_clusters << token.cluster

@@ -13,8 +13,6 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
   end
 
   describe '.perform' do
-    let!(:kubernetes_groups) { create :kubernetes_groups_hash_record }
-
     let(:cluster_name) { 'development' }
 
     before do
@@ -28,15 +26,15 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
         cluster: cluster_name,
         token: ENCRYPTOR.encrypt('some-random-token'),
         uid: 'some-random-uid',
-        groups: groups,
+        groups: token_groups,
         expire_privileged_at: expire_privileged_at
       }
       @kubernetes_identity.data["tokens"] << user_kube_token
       @kubernetes_identity.save!
     end
 
-    context 'for kubernetes identity token with non privileged group' do
-      let(:groups) { [ 'not-privileged-group'] }
+    context 'for kubernetes identity token with non privileged group and no expire_privileged_at set' do
+      let(:token_groups) { [ 'not-privileged-group'] }
       let(:expire_privileged_at) { nil }
 
       it 'does not update kubernetes identity' do
@@ -47,8 +45,12 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
       end
     end
 
-    context 'for kubernetes identity token with privileged group' do
-      let(:groups) { Kubernetes::TokenGroupService.privileged_group_ids }
+    context 'for kubernetes identity token with privileged group and expire_privileged_at set' do
+      let!(:not_privileged_group) { create :kubernetes_group, is_privileged: false }
+      let!(:privileged_group) { create :kubernetes_group, is_privileged: true }
+      let!(:default_privileged_group) { create :kubernetes_group }
+
+      let(:token_groups) { [ privileged_group.name, not_privileged_group.name ] }
 
       context 'when privileged group expiration time lapsed' do
         let(:expire_privileged_at) { 1.minute.ago }
@@ -64,7 +66,7 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
           PrivilegedTokenExpirerJob.new.perform
 
           kube_token = @kubernetes_identity.reload.data["tokens"].first
-          expect(kube_token['groups']).to be_empty
+          expect(kube_token['groups']).to eq [not_privileged_group.name]
           expect(kube_token['expire_privileged_at']).to be_nil
         end
       end

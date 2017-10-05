@@ -1,6 +1,8 @@
 class ProjectSerializer < BaseSerializer
+
+  include WithFriendlyIdAttribute
+
   attributes(
-    :id,
     :shortname,
     :name,
     :description,
@@ -16,12 +18,9 @@ class ProjectSerializer < BaseSerializer
     object.memberships.count
   end
 
-  def id
-    object.friendly_id
-  end
-
   # Note: `scope` here is actually `current_user` (passed in from controller)
   def is_admin_or_project_manager?
     is_admin? || ProjectMembershipsService.is_user_a_manager_of_project?(object.id, scope.id)
   end
+
 end

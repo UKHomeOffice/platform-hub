@@ -28,6 +28,9 @@ import {IdentitiesManager} from './identities/identities.module';
 import {
   KubernetesClustersForm,
   KubernetesClustersList,
+  KubernetesGroupsDetail,
+  KubernetesGroupsForm,
+  KubernetesGroupsList,
   KubernetesRobotTokensForm,
   KubernetesRobotTokensList,
   KubernetesTokensSync,
@@ -150,6 +153,53 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         .state('kubernetes.clusters.edit', {
           url: '/edit/:name',
           component: KubernetesClustersForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+      .state('kubernetes.groups', {
+        abstract: true,
+        url: '/groups',
+        template: '<ui-view></ui-view>'
+      })
+        .state('kubernetes.groups.list', {
+          url: '/list',
+          component: KubernetesGroupsList,
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('kubernetes.groups.detail', {
+          url: '/detail/:id',
+          component: KubernetesGroupsDetail,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.projects,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('kubernetes.groups.new', {
+          url: '/new',
+          component: KubernetesGroupsForm,
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('kubernetes.groups.edit', {
+          url: '/edit/:id',
+          component: KubernetesGroupsForm,
           resolve: {
             transition: '$transition$'
           },
