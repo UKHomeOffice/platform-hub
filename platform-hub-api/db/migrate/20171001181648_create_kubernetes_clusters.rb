@@ -27,6 +27,7 @@ class CreateKubernetesClusters < ActiveRecord::Migration[5.0]
     puts 'Migrating existing kubernetes cluster HashRecord entries to the new kubernetes_clusters table'
     HashRecord.transaction do
       clusters = HashRecord.kubernetes.find_by(id: 'clusters')
+      return if clusters.nil?
       clusters.data.each do |c|
         KubernetesCluster.create!(
           name: c['id'],
