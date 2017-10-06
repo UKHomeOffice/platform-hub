@@ -30,8 +30,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getProjectMemberships = buildSubCollectionFetcher('projects', 'memberships');
   service.addProjectMembership = addProjectMembership;
   service.removeProjectMembership = removeProjectMembership;
-  service.projectSetRole = projectSetRole;
-  service.projectUnsetRole = projectUnsetRole;
+  service.projectSetMembershipRole = projectSetMembershipRole;
+  service.projectUnsetMembershipRole = projectUnsetMembershipRole;
+  service.getProjectServices = buildSubCollectionFetcher('projects', 'services');
+  service.getProjectService = buildSubResourceFetcher('projects', 'services');
+  service.createProjectService = buildSubResourceCreator('projects', 'services');
+  service.updateProjectService = buildSubResourceUpdater('projects', 'services');
+  service.deleteProjectService = buildSubResourceDeletor('projects', 'services');
 
   service.userOnboardGitHub = userOnboardGitHub;
   service.userOffboardGitHub = userOffboardGitHub;
@@ -296,7 +301,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function projectSetRole(projectId, userId, role) {
+  function projectSetMembershipRole(projectId, userId, role) {
     if (_.isNull(projectId) || _.isEmpty(projectId)) {
       throw new Error('"projectId" argument not specified or empty');
     }
@@ -318,7 +323,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function projectUnsetRole(projectId, userId, role) {
+  function projectUnsetMembershipRole(projectId, userId, role) {
     if (_.isNull(projectId) || _.isEmpty(projectId)) {
       throw new Error('"projectId" argument not specified or empty');
     }
@@ -489,14 +494,14 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     };
   }
 
-  function buildSubCollectionFetcher(resource, name) {
+  function buildSubCollectionFetcher(parent, name) {
     return function (id) {
       if (_.isNull(id) || _.isEmpty(id)) {
         throw new Error('"id" argument not specified or empty');
       }
 
       return $http
-        .get(`${apiEndpoint}/${resource}/${id}/${name}`)
+        .get(`${apiEndpoint}/${parent}/${id}/${name}`)
         .then(response => {
           return response.data;
         })
@@ -525,6 +530,27 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     };
   }
 
+  function buildSubResourceFetcher(parent, resource) {
+    return function (parentId, id) {
+      if (_.isNull(parentId) || _.isEmpty(parentId)) {
+        throw new Error('"parentId" argument not specified or empty');
+      }
+      if (_.isNull(id) || _.isEmpty(id)) {
+        throw new Error('"id" argument not specified or empty');
+      }
+
+      return $http
+        .get(`${apiEndpoint}/${parent}/${parentId}/${resource}/${id}`)
+        .then(response => {
+          return response.data;
+        })
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse('Failed to fetch item', response));
+          return $q.reject(response);
+        });
+    };
+  }
+
   function buildResourceCreator(resource) {
     return function (data) {
       if (_.isNull(data) || _.isEmpty(data)) {
@@ -533,6 +559,27 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
       return $http
         .post(`${apiEndpoint}/${resource}`, data)
+        .then(response => {
+          return response.data;
+        })
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse('Failed to create item', response));
+          return $q.reject(response);
+        });
+    };
+  }
+
+  function buildSubResourceCreator(parent, resource) {
+    return function (parentId, data) {
+      if (_.isNull(parentId) || _.isEmpty(parentId)) {
+        throw new Error('"parentId" argument not specified or empty');
+      }
+      if (_.isNull(data) || _.isEmpty(data)) {
+        throw new Error('"data" argument not specified or empty');
+      }
+
+      return $http
+        .post(`${apiEndpoint}/${parent}/${parentId}/${resource}`, data)
         .then(response => {
           return response.data;
         })
@@ -564,6 +611,30 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     };
   }
 
+  function buildSubResourceUpdater(parent, resource) {
+    return function (parentId, id, data) {
+      if (_.isNull(parentId) || _.isEmpty(parentId)) {
+        throw new Error('"parentId" argument not specified or empty');
+      }
+      if (_.isNull(id) || _.isEmpty(id)) {
+        throw new Error('"id" argument not specified or empty');
+      }
+      if (_.isNull(data) || _.isEmpty(data)) {
+        throw new Error('"data" argument not specified or empty');
+      }
+
+      return $http
+        .put(`${apiEndpoint}/${parent}/${parentId}/${resource}/${id}`, data)
+        .then(response => {
+          return response.data;
+        })
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse('Failed to update item', response));
+          return $q.reject(response);
+        });
+    };
+  }
+
   function buildResourceDeletor(resource) {
     return function (id) {
       if (_.isNull(id) || _.isEmpty(id)) {
@@ -571,11 +642,29 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       }
 
       return $http
-      .delete(`${apiEndpoint}/${resource}/${id}`)
-      .catch(response => {
-        logger.error(buildErrorMessageFromResponse('Failed to delete item', response));
-        return $q.reject(response);
-      });
+        .delete(`${apiEndpoint}/${resource}/${id}`)
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse('Failed to delete item', response));
+          return $q.reject(response);
+        });
+    };
+  }
+
+  function buildSubResourceDeletor(parent, resource) {
+    return function (parentId, id) {
+      if (_.isNull(parentId) || _.isEmpty(parentId)) {
+        throw new Error('"parentId" argument not specified or empty');
+      }
+      if (_.isNull(id) || _.isEmpty(id)) {
+        throw new Error('"id" argument not specified or empty');
+      }
+
+      return $http
+        .delete(`${apiEndpoint}/${parent}/${parentId}/${resource}/${id}`)
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse('Failed to delete item', response));
+          return $q.reject(response);
+        });
     };
   }
 

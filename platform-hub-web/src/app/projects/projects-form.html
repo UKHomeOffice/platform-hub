@@ -69,7 +69,18 @@
               <span ng-if="$ctrl.isNew">Create</span>
               <span ng-if="!$ctrl.isNew">Update</span>
             </md-button>
-            <md-button ui-sref="projects.list" ng-disabled="$ctrl.saving">Cancel</md-button>
+            <md-button
+              ng-if="$ctrl.isNew"
+              ui-sref="projects.list"
+              ng-disabled="$ctrl.saving">
+              Cancel
+            </md-button>
+            <md-button
+              ng-if="!$ctrl.isNew"
+              ui-sref="projects.detail({id: $ctrl.project.id})"
+              ng-disabled="$ctrl.saving">
+              Cancel
+            </md-button>
           </div>
         </form>
       </md-content>

@@ -1,0 +1,80 @@
+<div class="project-services-form">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span ng-if="$ctrl.isNew">New Project Service</span>
+        <span ng-if="!$ctrl.isNew">Edit Project Service</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div class="md-body-2">
+      <a class="md-button" ui-sref="projects.detail({id: $ctrl.projectId})">
+        <md-icon>arrow_back</md-icon>
+        Back to project
+      </a>
+    </div>
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2" layout-padding>
+      <md-content>
+        <form name="$ctrl.serviceForm" role="form" ng-submit="$ctrl.createOrUpdate()">
+
+          <md-input-container class="md-block">
+            <label for="name">Name:</label>
+            <input
+              name="name"
+              ng-model="$ctrl.service.name"
+              required>
+            <div ng-messages="$ctrl.serviceForm.name.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <md-input-container class="md-block">
+            <label for="description">Description:</label>
+            <textarea
+              name="description"
+              ng-model="$ctrl.service.description"
+              required
+              rows="3"
+              md-select-on-focus>
+            </textarea>
+            <div ng-messages="$ctrl.serviceForm.description.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="$ctrl.saving || $ctrl.serviceForm.$invalid"
+              ng-class="{'md-raised': ($ctrl.serviceForm.$dirty && $ctrl.serviceForm.$valid) }"
+              aria-label="Save project service">
+              <span ng-if="$ctrl.isNew">Create</span>
+              <span ng-if="!$ctrl.isNew">Update</span>
+            </md-button>
+            <md-button
+              ng-if="$ctrl.isNew"
+              ui-sref="projects.detail({id: $ctrl.projectId})"
+              ng-disabled="$ctrl.saving">
+              Cancel
+            </md-button>
+            <md-button
+              ng-if="!$ctrl.isNew"
+              ui-sref="projects.services.detail({projectId: $ctrl.projectId, id: $ctrl.service.id})"
+              ng-disabled="$ctrl.saving">
+              Cancel
+            </md-button>
+          </div>
+
+        </form>
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

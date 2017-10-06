@@ -264,7 +264,7 @@ CREATE TABLE platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying NOT NULL,
+    colour character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -339,6 +339,20 @@ ALTER SEQUENCE read_marks_id_seq OWNED BY read_marks.id;
 
 CREATE TABLE schema_migrations (
     version character varying NOT NULL
+);
+
+
+--
+-- Name: services; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE services (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    name character varying NOT NULL,
+    description text NOT NULL,
+    project_id uuid NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -516,6 +530,14 @@ ALTER TABLE ONLY read_marks
 
 ALTER TABLE ONLY schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: services services_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY services
+    ADD CONSTRAINT services_pkey PRIMARY KEY (id);
 
 
 --
@@ -754,6 +776,13 @@ CREATE INDEX index_read_marks_on_reader_type_and_reader_id ON read_marks USING b
 
 
 --
+-- Name: index_services_on_project_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_services_on_project_id ON services USING btree (project_id);
+
+
+--
 -- Name: index_support_request_templates_on_git_hub_repo; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -840,6 +869,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170717165305'),
 ('20170721125027'),
 ('20170727103721'),
+('20170920154859'),
 ('20171001181648');
 
 
