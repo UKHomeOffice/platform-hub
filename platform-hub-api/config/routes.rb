@@ -75,7 +75,7 @@ Rails.application.routes.draw do
 
     resources :contact_lists,
       except: [ :create ],
-      constraints: { id: ContactList::ID_REGEX }
+      constraints: { id: ContactList::ID_REGEX_FOR_ROUTES }
 
     resources :announcement_templates do
       get :form_field_types, on: :collection

@@ -1,6 +1,6 @@
 class KubernetesCluster < ApplicationRecord
 
-  NAME_REGEX = /\A[\w-]+\z/
+  NAME_REGEX = /\A[a-zA-Z][\w-]*\z/
 
   include FriendlyId
   include Audited
@@ -47,5 +47,5 @@ class KubernetesCluster < ApplicationRecord
   def downcase_name
     self.name.downcase!
   end
-  
+
 end
