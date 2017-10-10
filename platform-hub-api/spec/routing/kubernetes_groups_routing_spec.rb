@@ -37,6 +37,10 @@ RSpec.describe Kubernetes::GroupsController, type: :routing do
         expect(:get => '/kubernetes/groups/privileged').to route_to('kubernetes/groups#privileged')
       end
 
+      it 'routes to #allocate' do
+        expect(:post => '/kubernetes/groups/1/allocate').to route_to('kubernetes/groups#allocate', :id => '1')
+      end
+
     end
 
     context 'with kubernetes_tokens feature flag disabled' do
@@ -71,6 +75,10 @@ RSpec.describe Kubernetes::GroupsController, type: :routing do
 
       it 'route to #privileged is not routable' do
         expect(:get => '/kubernetes/groups/privileged').to_not be_routable
+      end
+
+      it 'route to #allocate is not routable' do
+        expect(:post => '/kubernetes/groups/1/allocate').to_not be_routable
       end
 
     end

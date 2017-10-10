@@ -2,11 +2,14 @@ class Project < ApplicationRecord
 
   include FriendlyId
   include Audited
+  include AllocationReceivable
 
   audited descriptor_field: :shortname
   has_associated_audits
 
   friendly_id :shortname, :use => :slugged
+
+  allocation_receivable
 
   def should_generate_new_friendly_id?
     shortname_changed? || super

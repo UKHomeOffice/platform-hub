@@ -1,8 +1,11 @@
 class Service < ApplicationRecord
 
   include Audited
+  include AllocationReceivable
 
   audited descriptor_field: :name, associated_field: :project
+
+  allocation_receivable
 
   validates :name,
     presence: true

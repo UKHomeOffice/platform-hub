@@ -63,6 +63,21 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: allocations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE allocations (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    allocatable_type character varying NOT NULL,
+    allocatable_id uuid NOT NULL,
+    allocation_receivable_type character varying NOT NULL,
+    allocation_receivable_id uuid NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: announcement_templates; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -446,6 +461,14 @@ ALTER TABLE ONLY read_marks ALTER COLUMN id SET DEFAULT nextval('read_marks_id_s
 
 
 --
+-- Name: allocations allocations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY allocations
+    ADD CONSTRAINT allocations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: announcement_templates announcement_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -602,6 +625,20 @@ ALTER TABLE ONLY users
 --
 
 CREATE INDEX delayed_jobs_priority ON delayed_jobs USING btree (priority, run_at);
+
+
+--
+-- Name: index_allocations_on_al_rec_type_and_al_rec_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_allocations_on_al_rec_type_and_al_rec_id ON allocations USING btree (allocation_receivable_type, allocation_receivable_id);
+
+
+--
+-- Name: index_allocations_on_al_type_and_al_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_allocations_on_al_type_and_al_id ON allocations USING btree (allocatable_type, allocatable_id);
 
 
 --
@@ -931,6 +968,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170727103721'),
 ('20170920154859'),
 ('20171001181648'),
-('20171005115420');
+('20171005115420'),
+('20171010111440');
 
 

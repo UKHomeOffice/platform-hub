@@ -92,6 +92,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.createKubernetesGroup = buildResourceCreator('kubernetes/groups');
   service.updateKubernetesGroup = buildResourceUpdater('kubernetes/groups');
   service.deleteKubernetesGroup = buildResourceDeletor('kubernetes/groups');
+  service.allocateKubernetesGroup = allocateKubernetesGroup;
   service.getKubernetesTokens = getKubernetesTokens;
   service.deleteKubernetesToken = deleteKubernetesToken;
   service.createOrUpdateKubernetesToken = createOrUpdateKubernetesToken;
@@ -680,6 +681,28 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       msg += `: ${errorDetails}`;
     }
     return msg;
+  }
+
+  function allocateKubernetesGroup(groupId, projectId, serviceId) {
+    if (_.isNull(groupId) || _.isEmpty(groupId)) {
+      throw new Error('"groupId" argument not specified or empty');
+    }
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/kubernetes/groups/${groupId}/allocate`, {
+        project_id: projectId,
+        service_id: serviceId
+      })
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse(`Failed to allocate Kubernetes RBAC group to a project or service`, response));
+        return $q.reject(response);
+      });
   }
 
   function getKubernetesTokens(userId) {

@@ -113,6 +113,7 @@ Rails.application.routes.draw do
 
         resources :groups do
           get :privileged, on: :collection
+          post :allocate, on: :member
         end
       end
     end
