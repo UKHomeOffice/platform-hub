@@ -1,6 +1,6 @@
 class Kubernetes::GroupsController < ApiJsonController
 
-  before_action :find_group, only: [ :show, :update, :destroy ]
+  before_action :find_group, only: [ :show, :update, :destroy, :allocate ]
 
   skip_authorization_check only: [ :index, :show ]
   authorize_resource class: KubernetesGroup, :except => [ :index, :show ]
@@ -69,6 +69,42 @@ class Kubernetes::GroupsController < ApiJsonController
   def privileged
     groups = KubernetesGroup.privileged.order(:name)
     render json: groups
+  end
+
+  # POST /kubernetes/groups/:id/allocate
+  def allocate
+    project = Project.friendly.find(params.require(:project_id))
+
+    service_id = params[:service_id]
+    service = nil
+    if service_id
+      service = project.services.find(service_id)
+    end
+
+    # If no service is specified, allocate to the project
+    receivable = service || project
+
+    allocation = Allocation.new(
+      allocatable: @group,
+      allocation_receivable: receivable
+    )
+
+    if allocation.save
+      AuditService.log(
+        context: audit_context,
+        action: 'create',
+        auditable: allocation,
+        data: {
+          allocatable_type: @group.class.name,
+          allocatable_id: @group.id,
+          allocatable_descriptor: @group.name
+        }
+      )
+
+      head :no_content
+    else
+      render_model_errors allocation.errors
+    end
   end
 
   private
