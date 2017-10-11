@@ -1,0 +1,82 @@
+<div class="kubernetes-groups-list">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>All Kubernetes RBAC Groups</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        aria-label="Add new Kubernetes RBAC Group"
+        ui-sref="kubernetes.groups.new">
+        <md-icon>add_box</md-icon>
+        New
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.KubernetesGroups.all.length > 0">
+
+    <md-card ng-repeat="g in $ctrl.KubernetesGroups.all track by g.id">
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            {{g.name}}
+
+            <small
+              class="badge float-right"
+              md-colors="{background: 'green'}">
+              {{g.target}}
+            </small>
+
+            <small
+              class="badge float-right"
+              md-colors="{background: 'blue'}">
+              {{g.kind}}
+            </small>
+
+            <small
+              ng-if="g.is_privileged"
+              class="badge float-right"
+              md-colors="{background: 'accent'}">
+              Privileged
+            </small>
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content>
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-if="g.description"
+          ng-bind-html='g.description | simpleFormat'
+          layout-padding>
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Restricted to particular clusters:
+          </span>
+          <span ng-if="g.restricted_to_clusters.length > 0">
+            {{g.restricted_to_clusters.join}}
+          </span>
+          <span class="none-text" ng-if="!g.restricted_to_clusters.length">
+            --
+          </span>
+        </p>
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          class="md-primary"
+          aria-label="View details of this RBAC group"
+          ui-sref="kubernetes.groups.detail({id: g.id})">
+          Details
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+</div>

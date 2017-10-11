@@ -1,6 +1,8 @@
 class SupportRequestTemplateSerializer < BaseSerializer
+
+  include WithFriendlyIdAttribute
+
   attributes(
-    :id,
     :shortname,
     :git_hub_repo,
     :title,
@@ -13,7 +15,4 @@ class SupportRequestTemplateSerializer < BaseSerializer
   attributes :form_spec
   attributes :git_hub_issue_spec
 
-  def id
-    object.friendly_id
-  end
 end

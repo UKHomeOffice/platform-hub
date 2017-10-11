@@ -133,6 +133,12 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       featureFlag: featureFlagKeys.kubernetesTokens
     },
     {
+      title: 'Kubernetes RBAC Groups',
+      state: 'kubernetes.groups.list',
+      icon: icons.kubernetesGroups,
+      featureFlag: featureFlagKeys.kubernetesTokens
+    },
+    {
       title: 'Kubernetes User Tokens',
       state: 'kubernetes.user-tokens.list',
       icon: icons.kubernetesTokens,

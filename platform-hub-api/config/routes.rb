@@ -75,7 +75,7 @@ Rails.application.routes.draw do
 
     resources :contact_lists,
       except: [ :create ],
-      constraints: { id: ContactList::ID_REGEX }
+      constraints: { id: ContactList::ID_REGEX_FOR_ROUTES }
 
     resources :announcement_templates do
       get :form_field_types, on: :collection
@@ -111,7 +111,9 @@ Rails.application.routes.draw do
         post '/claim', to: 'claim#claim'
         post '/revoke', to: 'revoke#revoke'
 
-        get '/groups/privileged', to: 'groups#privileged'
+        resources :groups do
+          get :privileged, on: :collection
+        end
       end
     end
   end
