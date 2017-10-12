@@ -82,12 +82,12 @@
         <md-button
           class="md-primary"
           aria-label="View and edit details for this token"
-          ui-sref="kubernetes.robot-tokens.edit({cluster: t.cluster, name: t.name})">
+          ui-sref="kubernetes.robot-tokens.edit({cluster: t.cluster.name, tokenId: t.id})">
           View and edit
         </md-button>
         <md-button
           class="md-primary"
-          ng-click="$ctrl.deleteToken(t.cluster, t.name, $event)"
+          ng-click="$ctrl.deleteToken(t.id, $event)"
           aria-label="Remove kubernetes robot token">
           Delete
         </md-button>

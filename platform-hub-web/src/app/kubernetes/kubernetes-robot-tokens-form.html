@@ -18,7 +18,7 @@
 
           <md-input-container class="md-block">
             <label for="cluster">Cluster:</label>
-            <md-select ng-model="$ctrl.tokenData.cluster"
+            <md-select ng-model="$ctrl.tokenData.cluster.name"
               name="cluster"
               required
               placeholder="Select the cluster"
@@ -37,13 +37,14 @@
           <br />
 
           <md-input-container class="md-block">
-            <label for="name">Name:</label>
+            <label for="name">Name (Only letters, numbers, underscores, dashes, dots and @. Must start with letter.):</label>
             <input
               name="name"
               ng-model="$ctrl.tokenData.name"
               ng-disabled="!$ctrl.isNew"
               required
-              placeholder="Name of this robot token"
+              placeholder="Name of this robot token."
+              ng-pattern="/^[a-zA-Z][\@\.\w-]*$/"
               autofocus>
             <div ng-messages="$ctrl.kubernetesTokenForm.name.$error">
               <div ng-message="required">This is required.</div>
@@ -87,10 +88,11 @@
           </md-input-container>
 
           <md-input-container class="md-block">
-            <label for="description">Description (optional):</label>
+            <label for="description">Description:</label>
             <textarea
               name="description"
               ng-model="$ctrl.tokenData.description"
+              required
               rows="2"
               aria-label="Set a description for this robot token"
               md-select-on-focus>
@@ -109,6 +111,7 @@
             placeholder="Search for a user…"
             md-require-match
             md-floating-label="Associate this token with a user (so they can see it):"
+            required
             flex>
             <md-item-template>
               <span md-highlight-text="$ctrl.searchText" md-highlight-flags="^i">
@@ -132,7 +135,7 @@
               <span ng-if="$ctrl.isNew">Create</span>
               <span ng-if="!$ctrl.isNew">Update</span>
             </md-button>
-            <md-button ui-sref="kubernetes.robot-tokens.list({cluster: $ctrl.tokenData.cluster})" ng-disabled="$ctrl.saving">Cancel</md-button>
+            <md-button ui-sref="kubernetes.robot-tokens.list({cluster: $ctrl.tokenData.cluster.name})" ng-disabled="$ctrl.saving">Cancel</md-button>
            </div>
         </form>
       </md-content>
