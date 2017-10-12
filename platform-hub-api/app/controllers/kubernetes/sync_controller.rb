@@ -2,7 +2,7 @@ class Kubernetes::SyncController < ApiJsonController
 
   # POST /kubernetes/sync
   def sync
-    authorize! :manage, :identity
+    authorize! :manage, KubernetesToken
 
     begin
       Kubernetes::TokenSyncService.sync_tokens(params[:cluster])

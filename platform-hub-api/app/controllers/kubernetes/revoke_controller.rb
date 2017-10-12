@@ -10,8 +10,12 @@ class Kubernetes::RevokeController < ApiJsonController
 
     AuditService.log(
       context: audit_context,
-      action: 'revoke',
-      comment: "User '#{current_user.email}' revoked #{@token.kind} token (cluster: #{@token.cluster.name}, name: #{@token.name})"
+      action: 'destroy',
+      auditable: @token,
+      data: {
+        cluster: @token.cluster.name
+      },
+      comment: "User '#{current_user.email}' revoked `#{@token.cluster.name}` token for `#{@token.user.email}`."
     )
 
     head :no_content
@@ -21,7 +25,7 @@ class Kubernetes::RevokeController < ApiJsonController
 
   def find_token
     @token = KubernetesToken.all.find {|t| t.decrypted_token == params[:token]}
-    render_error 'Resource not found', :not_found if @token.nil?
+    raise ActiveRecord::RecordNotFound if @token.nil?
   end
 
 end

@@ -1,7 +1,7 @@
 FactoryGirl.define do
 
   factory :kubernetes_cluster do
-    name { 'dev' }
+    name { "dev_#{SecureRandom.uuid}" }
     description { 'Dev cluster' }
 
     s3_region { 'eu-west-2' }

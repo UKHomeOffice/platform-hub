@@ -10,7 +10,7 @@ RSpec.describe Kubernetes::RevokeController, type: :controller do
 
     it_behaves_like 'unauthenticated not allowed' do
       before do
-        post :revoke, params: { token: @token.token }
+        post :revoke, params: { token: @token.decrypted_token }
       end
     end
 
@@ -18,7 +18,7 @@ RSpec.describe Kubernetes::RevokeController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          post :revoke, params: { token: @token.token }
+          post :revoke, params: { token: @token.decrypted_token }
         end
       end
 
@@ -28,11 +28,15 @@ RSpec.describe Kubernetes::RevokeController, type: :controller do
           it 'should remove token' do
             expect(AuditService).to receive(:log).with(
               context: anything,
-              action: 'revoke',
-              comment: "User '#{current_user.email}' revoked #{@token.kind} token (cluster: #{@token.cluster.name}, name: #{@token.name})"
+              action: 'destroy',
+              auditable: @token,
+              data: {
+                cluster: @token.cluster.name
+              },
+              comment: "User '#{current_user.email}' revoked `#{@token.cluster.name}` token for `#{@token.user.email}`."
             )
 
-            post :revoke, params: { token: @token.token }
+            post :revoke, params: { token: @token.decrypted_token }
             expect(response).to have_http_status(:no_content)
           end
         end
