@@ -287,6 +287,27 @@ CREATE TABLE kubernetes_groups (
 
 
 --
+-- Name: kubernetes_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE kubernetes_tokens (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    tokenable_type character varying NOT NULL,
+    tokenable_id uuid NOT NULL,
+    cluster_id uuid NOT NULL,
+    kind character varying NOT NULL,
+    token character varying NOT NULL,
+    name character varying NOT NULL,
+    uid character varying NOT NULL,
+    groups character varying[] DEFAULT '{}'::character varying[],
+    description text,
+    expire_privileged_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: platform_themes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -296,7 +317,7 @@ CREATE TABLE platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying,
+    colour character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -546,6 +567,14 @@ ALTER TABLE ONLY kubernetes_clusters
 
 ALTER TABLE ONLY kubernetes_groups
     ADD CONSTRAINT kubernetes_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kubernetes_tokens kubernetes_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kubernetes_tokens
+    ADD CONSTRAINT kubernetes_tokens_pkey PRIMARY KEY (id);
 
 
 --
@@ -810,6 +839,41 @@ CREATE INDEX index_kubernetes_groups_on_target ON kubernetes_groups USING btree 
 
 
 --
+-- Name: index_kubernetes_tokens_on_cluster_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_tokens_on_cluster_id ON kubernetes_tokens USING btree (cluster_id);
+
+
+--
+-- Name: index_kubernetes_tokens_on_kind; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_tokens_on_kind ON kubernetes_tokens USING btree (kind);
+
+
+--
+-- Name: index_kubernetes_tokens_on_token; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_kubernetes_tokens_on_token ON kubernetes_tokens USING btree (token);
+
+
+--
+-- Name: index_kubernetes_tokens_on_tokenable_type_and_tokenable_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_tokens_on_tokenable_type_and_tokenable_id ON kubernetes_tokens USING btree (tokenable_type, tokenable_id);
+
+
+--
+-- Name: index_kubernetes_tokens_on_uid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_kubernetes_tokens_on_uid ON kubernetes_tokens USING btree (uid);
+
+
+--
 -- Name: index_platform_themes_on_slug; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -970,5 +1034,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171001181648'),
 ('20171005115420'),
 ('20171010111440');
+('20171003130836'),
+('20171005115420');
 
 

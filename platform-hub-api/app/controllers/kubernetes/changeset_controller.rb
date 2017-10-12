@@ -1,17 +1,17 @@
 class Kubernetes::ChangesetController < ApiJsonController
 
-  before_action :load_changeset
+  before_action :load_audits
+
+  authorize_resource class: Audit
 
   # GET /kubernetes/changeset/:cluster
   def index
-    authorize! :read, :changeset
-    render json: @changeset, each_serializer: AuditSerializer
+    render json: @audits
   end
 
   private
 
-  def load_changeset
-    since = Kubernetes::ChangesetService.last_sync(params[:cluster])
-    @changeset = Kubernetes::ChangesetService.get_events(params[:cluster], since)
+  def load_audits
+    @audits = Kubernetes::ChangesetService.get_events(params[:cluster])
   end
 end

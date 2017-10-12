@@ -19,6 +19,8 @@ class User < ApplicationRecord
     presence: true,
     uniqueness: { case_sensitive: false }
 
+  has_many :robot_tokens, -> { where kind: 'robot' }, as: :tokenable, class_name: KubernetesToken
+
   has_many :identities,
     dependent: :delete_all
 
@@ -42,6 +44,10 @@ class User < ApplicationRecord
 
   def main_identity
     identity :keycloak
+  end
+
+  def kubernetes_identity
+    identity :kubernetes
   end
 
   def identity provider

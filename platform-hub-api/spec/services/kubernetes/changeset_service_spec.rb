@@ -1,64 +1,108 @@
 require 'rails_helper'
 
 describe Kubernetes::ChangesetService, type: :service do
+  include_context 'time helpers'
 
-  describe '.get_events' do
-    let(:criteria) { double(:criteria) }
-    let(:cluster) { 'development' }
-    let(:last_sync_date) { 2.days.ago }
-    let(:changeset) { [ double ] }
-
-    it 'builds criteria fetching kubernetes tokens related audit events since which occured since given time' do
-      expect(subject).to receive(:audit_entities)
-        .with(Kubernetes::ChangesetService::CHANGSET_ACTIONS, cluster) { criteria }
-      expect(criteria).to receive(:where).with("created_at > ?", last_sync_date) { changeset }
-
-      subject.get_events(cluster, last_sync_date)
-    end
+  before do
+    @cluster = build :kubernetes_cluster
+    @auditable = build :user_kubernetes_token, cluster: @cluster
   end
 
-  describe '.last_sync' do
-    let(:criteria) { double(:criteria) }
-    let(:cluster) { 'development' }
+  describe '.get_events' do
 
-    context 'never synced' do
-      before do
-        expect(subject).to receive(:audit_entities).with(:sync_kubernetes_tokens, cluster) { criteria }
-        expect(criteria).to receive(:first) { nil }
-      end
+    before do
+      # last sync event
+      create(:sync_kubernetes_tokens_audit, created_at: 1.day.ago, data: { cluster: @cluster.name })
 
-      it 'defaults to 1 year ago' do
-        expect(subject.last_sync(cluster)).to eq 1.year.ago.utc.to_s(:db)
-      end
+      # kubernetes token related audit events
+      create(:create_kubernetes_token_audit, created_at: 5.hours.ago, auditable: @auditable, data: { cluster: @cluster.name })
+      create(:update_kubernetes_token_audit, created_at: 4.hours.ago, auditable: @auditable, data: { cluster: @cluster.name })
+      create(:escalate_kubernetes_token_audit, created_at: 3.hours.ago, auditable: @auditable, data: { cluster: @cluster.name })
+      create(:deescalate_kubernetes_token_audit, created_at: 2.hours.ago, auditable: @auditable, data: { cluster: @cluster.name })
+      create(:destroy_kubernetes_token_audit, created_at: 1.hours.ago, auditable: @auditable, data: { cluster: @cluster.name })
     end
 
-    context 'synced before' do
-      let(:last_sync_date) { 2.days.ago }
+    it 'returns audit entries related to kubernetes tokens created since last sync event in descending order' do
+      res = subject.get_events(@cluster.name)
 
-      before do
-        expect(subject).to receive(:audit_entities).with(:sync_kubernetes_tokens, cluster) { criteria }
-        expect(criteria).to receive(:first) { criteria }
-        expect(criteria).to receive(:try).with(:created_at) { last_sync_date }
-      end
+      expect(res.count).to eq 5
 
-      it 'returns time of last S3 sync for given cluster' do
-        expect(subject.last_sync(cluster)).to eq last_sync_date
-      end
+      expect(res.first.action).to eq 'destroy'
+      expect(res.first.created_at.to_s(:db)).to eq 1.hours.ago.to_s(:db)
+
+      expect(res.second.action).to eq 'deescalate'
+      expect(res.second.created_at.to_s(:db)).to eq 2.hours.ago.to_s(:db)
+
+      expect(res.third.action).to eq 'escalate'
+      expect(res.third.created_at.to_s(:db)).to eq 3.hours.ago.to_s(:db)
+
+      expect(res.fourth.action).to eq 'update'
+      expect(res.fourth.created_at.to_s(:db)).to eq 4.hours.ago.to_s(:db)
+
+      expect(res.fifth.action).to eq 'create'
+      expect(res.fifth.created_at.to_s(:db)).to eq 5.hours.ago.to_s(:db)
     end
   end
 
   describe 'private methods' do
-    describe '.audit_entities' do
-      let(:criteria) { double(:criteria) }
-      let(:actions) { [:sync_kubernetes_tokens] }
-      let(:cluster) { 'development' }
 
-      it 'builds criteria fetching audit events for given cluster and event type' do
-        expect(Audit).to receive(:by_action).with(actions) { criteria }
-        expect(criteria).to receive(:where).with("data->>'cluster' = ?", cluster) { criteria }
-        expect(criteria).to receive(:order).with(id: :desc) 
-        
-        subject.send(:audit_entities, actions, cluster)
+    describe '.last_sync' do
+      context 'never synced' do
+        it 'defaults to 1 year ago' do
+          expect(subject.send(:last_sync, @cluster.name)).to eq 1.year.ago.utc.to_s(:db)
+        end
+      end
+
+      context 'synced before' do
+        before do
+          create(:sync_kubernetes_tokens_audit, created_at: 2.days.ago, data: { cluster: @cluster.name })
+        end
+
+        it 'returns time of last S3 sync for given cluster' do
+          expect(subject.send(:last_sync, @cluster.name).to_s(:db)).to eq 2.days.ago.to_s(:db)
+        end
+      end
+    end
+
+    describe '.audit_entities_by_cluster' do
+      let(:actions) { [ :create ] }
+
+      before do
+        create(:create_kubernetes_token_audit, created_at: 5.hours.ago, data: { cluster: @cluster.name })
+        create(:create_kubernetes_token_audit, created_at: 10.hours.ago, data: { cluster: @cluster.name })
+        create(:update_kubernetes_token_audit, created_at: 4.hours.ago, data: { cluster: @cluster.name })
+      end
+
+      it 'returns audit events for given cluster and actions in descending order' do
+        res = subject.send(:audit_entities_by_cluster, @cluster.name, actions)
+
+        expect(res.count).to eq 2
+
+        expect(res.first.action).to eq 'create'
+        expect(res.first.created_at.to_s(:db)).to eq 10.hours.ago.to_s(:db)
+
+        expect(res.second.action).to eq 'create'
+        expect(res.second.created_at.to_s(:db)).to eq 5.hours.ago.to_s(:db)
+      end
+    end
+
+    describe '.audit_entities_by_cluster_and_auditable_type' do
+      let(:auditable_type) { @auditable.class.name }
+      let(:actions) { [ :update ] }
+
+      before do
+        create(:create_kubernetes_token_audit, created_at: 5.hours.ago, auditable: @auditable, data: { cluster: @cluster.name })
+        create(:create_kubernetes_token_audit, created_at: 10.hours.ago, auditable: @auditable, data: { cluster: @cluster.name })
+        create(:update_kubernetes_token_audit, created_at: 4.hours.ago, auditable: @auditable, data: { cluster: @cluster.name })
+      end
+
+      it 'returns audit events for given cluster, auditable object type and actions' do        
+        res = subject.send(:audit_entities_by_cluster_and_auditable_type, @cluster.name, auditable_type, actions)
+
+        expect(res.count).to eq 1
+
+        expect(res.first.action).to eq 'update'
+        expect(res.first.created_at.to_s(:db)).to eq 4.hours.ago.to_s(:db)
       end
     end
   end
