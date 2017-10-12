@@ -69,7 +69,7 @@
             <ul class="md-body-1">
               <li ng-repeat="t in i.kubernetes_tokens">
                 <p>
-                  {{t.cluster}}: <strong>{{t.token}}</strong>
+                  {{t.cluster.name}}: <strong>{{t.token}}</strong>
                 </p>
 
                 <ul ng-if="t.groups.length > 0 || t.expire_privileged_at">
@@ -97,7 +97,7 @@
             <ul class="md-body-1">
               <li ng-repeat="t in i.kubernetes_robot_tokens">
                 <p>
-                  {{t.cluster}}: <strong>{{t.token}}</strong>
+                  {{t.cluster.name}}: <strong>{{t.token}}</strong>
                 </p>
 
                 <ul ng-if="t.description || t.groups.length > 0">

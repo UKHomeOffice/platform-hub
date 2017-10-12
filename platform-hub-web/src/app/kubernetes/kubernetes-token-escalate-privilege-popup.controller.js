@@ -1,4 +1,4 @@
-export const KubernetesTokenEscalatePrivilegePopupController = function ($mdDialog, user, cluster, hubApiService, logger, _) {
+export const KubernetesTokenEscalatePrivilegePopupController = function ($mdDialog, tokenId, hubApiService, logger, _) {
   'ngInject';
 
   const ctrl = this;
@@ -13,8 +13,7 @@ export const KubernetesTokenEscalatePrivilegePopupController = function ($mdDial
   ctrl.loading = true;
   ctrl.processing = false;
   ctrl.groups = [];
-  ctrl.user = user;
-  ctrl.cluster = cluster;
+  ctrl.tokenId = tokenId;
   ctrl.data = {};
 
   ctrl.cancel = $mdDialog.cancel;
@@ -45,8 +44,7 @@ export const KubernetesTokenEscalatePrivilegePopupController = function ($mdDial
 
     hubApiService
       .escalatePrivilegeForKubernetesTokens(
-        ctrl.user.id,
-        ctrl.cluster,
+        ctrl.tokenId,
         ctrl.data.group,
         ctrl.data.expiresInSecs
       )

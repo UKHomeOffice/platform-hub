@@ -97,11 +97,11 @@
 
     <md-card
       ng-if="!$ctrl.loading && $ctrl.tokens.length > 0"
-      ng-repeat="t in $ctrl.tokens track by t.cluster">
+      ng-repeat="t in $ctrl.tokens track by t.cluster.name">
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">
-            {{t.cluster}} cluster
+            {{t.cluster.name}} cluster
           </span>
         </md-card-title-text>
       </md-card-title>
@@ -131,20 +131,20 @@
           ng-if="$ctrl.user.is_active"
           class="md-primary"
           aria-label="View and edit details for this token"
-          ui-sref="kubernetes.user-tokens.edit({userId: $ctrl.user.id, cluster: t.cluster})">
+          ui-sref="kubernetes.user-tokens.edit({userId: $ctrl.user.id, tokenId: t.id})">
           View and edit
         </md-button>
         <md-button
           ng-if="$ctrl.user.is_active"
           aria-label="Escalate privilege for this particular token. Opens up a popup where you can choose details for the escalation."
-          ng-click="$ctrl.escalatePrivilege($ctrl.user, t.cluster, $event)">
+          ng-click="$ctrl.escalatePrivilege(t.id, $event)">
           Escalate privilege
           <md-tooltip md-direction="bottom">
             Grant a short lived escalation of privilege for this token. Opens a popup where you can configure and apply this escalation.
           </md-tooltip>
         </md-button>
         <md-button
-          ng-click="$ctrl.deleteToken($ctrl.user.id, t.cluster, $event)"
+          ng-click="$ctrl.deleteToken(t.id, $event)"
           aria-label="Remove kubernetes token">
           Delete
         </md-button>

@@ -12,7 +12,7 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
   const ctrl = this;
 
   const userId = ctrl.transition && ctrl.transition.params().userId;
-  const cluster = ctrl.transition && ctrl.transition.params().cluster;
+  const tokenId = ctrl.transition && ctrl.transition.params().tokenId;
 
   ctrl.KubernetesClusters = KubernetesClusters;
   ctrl.loading = true;
@@ -30,13 +30,13 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
   init();
 
   function init() {
-    ctrl.isNew = !cluster;
+    ctrl.isNew = !tokenId;
     ctrl.loading = true;
 
     // Kubernetes clusters are defined as follows:
     // [
-    //   {id: 'cluster1', description: 'Cluster 1'},
-    //   {id: 'cluster2', description: 'Cluster 2'},
+    //   {name: 'cluster1', description: 'Cluster 1'},
+    //   {name: 'cluster2', description: 'Cluster 2'},
     //   ...
     // ];
     KubernetesClusters
@@ -68,8 +68,8 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
           const identity = _.find(identities, ['provider', 'kubernetes']);
 
           if (identity) {
-            ctrl.tokenData = _.find(identity.kubernetes_tokens, ['cluster', cluster]);
-            ctrl.assignedKubernetesClusters = _.map(identity.kubernetes_tokens, 'cluster');
+            ctrl.tokenData = _.find(identity.kubernetes_tokens, ['id', tokenId]);
+            ctrl.assignedKubernetesClusters = _.map(identity.kubernetes_tokens, 'cluster.name');
           } else {
             ctrl.tokenData = {};
             ctrl.assignedKubernetesClusters = [];
@@ -83,20 +83,33 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
   }
 
   function createOrUpdate() {
+    if (ctrl.kubernetesTokenForm.$invalid) {
+      logger.error('Check the form for issues before saving');
+      return;
+    }
+
     ctrl.saving = true;
 
-    hubApiService
-      .createOrUpdateKubernetesToken(ctrl.user, ctrl.tokenData)
-      .then(t => {
-        if (ctrl.isNew) {
-          logger.success('New kubernetes token created for ' + t.cluster);
-        } else {
-          logger.success(t.cluster + ' kubernetes token updated');
-        }
-        $state.go('kubernetes.user-tokens.list', {userId: ctrl.user.id});
-      })
-      .finally(() => {
-        ctrl.saving = false;
-      });
+    if (ctrl.isNew) {
+      hubApiService
+        .createKubernetesToken(ctrl.user, ctrl.tokenData)
+        .then(() => {
+          logger.success('New kubernetes token created');
+          $state.go('kubernetes.user-tokens.list', {userId: ctrl.user.id});
+        })
+        .finally(() => {
+          ctrl.saving = false;
+        });
+    } else {
+      hubApiService
+        .updateKubernetesToken(tokenId, ctrl.tokenData)
+        .then(() => {
+          logger.success('Kubernetes token updated');
+          $state.go('kubernetes.user-tokens.list', {userId: ctrl.user.id});
+        })
+        .finally(() => {
+          ctrl.saving = false;
+        });
+    }
   }
 }

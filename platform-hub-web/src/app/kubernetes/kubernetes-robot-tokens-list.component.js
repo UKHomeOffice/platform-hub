@@ -59,11 +59,11 @@ function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, hubAp
     });
   }
 
-  function deleteToken(cluster, name, targetEvent) {
+  function deleteToken(tokenId, targetEvent) {
     const confirm = $mdDialog.confirm()
       .title(`Are you sure?`)
-      .textContent(`This will delete the robot token '${name}' for cluster '${cluster}'`)
-      .ariaLabel('Confirm token deletion')
+      .textContent(`This will delete selected robot token.`)
+      .ariaLabel('Confirm token removal')
       .targetEvent(targetEvent)
       .ok('Do it')
       .cancel('Cancel');
@@ -72,7 +72,7 @@ function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, hubAp
       .show(confirm)
       .then(() => {
         hubApiService
-          .deleteKubernetesRobotToken(cluster, name)
+          .deleteKubernetesToken(tokenId)
           .then(fetchTokens);
       });
   }
