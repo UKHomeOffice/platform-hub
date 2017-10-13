@@ -24,6 +24,8 @@ export const KubernetesGroups = function ($window, hubApiService, apiBackoffTime
   model.create = hubApiService.createKubernetesGroup;
   model.update = hubApiService.updateKubernetesGroup;
   model.delete = hubApiService.deleteKubernetesGroup;
+  model.allocateToProject = allocateToProject;
+  model.allocateToService = allocateToService;
 
   return model;
 
@@ -43,5 +45,13 @@ export const KubernetesGroups = function ($window, hubApiService, apiBackoffTime
         });
     }
     return fetcherPromise;
+  }
+
+  function allocateToProject(groupId, projectId) {
+    return hubApiService.allocateKubernetesGroup(groupId, projectId);
+  }
+
+  function allocateToService(groupId, projectId, serviceId) {
+    return hubApiService.allocateKubernetesGroup(groupId, projectId, serviceId);
   }
 };

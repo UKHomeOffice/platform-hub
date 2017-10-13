@@ -4,10 +4,13 @@ class KubernetesGroup < ApplicationRecord
 
   include Audited
   include FriendlyId
+  include Allocatable
 
   audited descriptor_field: :name
 
   friendly_id :name
+
+  allocatable
 
   validates :name,
     presence: true,
@@ -24,11 +27,13 @@ class KubernetesGroup < ApplicationRecord
     clusterwide: 'clusterwide',
     namespace: 'namespace'
   }
+  validates :kind, presence: true
 
   enum target: {
     user: 'user',
     robot: 'robot'
   }
+  validates :target, presence: true
 
   scope :privileged, -> { where(is_privileged: true) }
   scope :not_privileged, -> { where.not(is_privileged: true) }

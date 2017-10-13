@@ -1,0 +1,81 @@
+<md-dialog aria-label="Choose a project service">
+  <md-toolbar class="md-toolbar-tools md-accent">
+    <h2 ng-if="$ctrl.serviceIsOptional">
+      Choose a project or a service from a project
+    </h2>
+    <h2 ng-if="!$ctrl.serviceIsOptional">
+      Choose a service from a project
+    </h2>
+    <span flex></span>
+    <md-button
+      class="close-button md-icon-button"
+      ng-click="$ctrl.cancel()"
+      aria-label="Close dialog">
+      <md-icon>clear</md-icon>
+    </md-button>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-dialog-content class="md-dialog-content" layout="column" layout-padding>
+
+    <form name="$ctrl.form">
+      <md-input-container class="md-block">
+        <label for="project">Project:</label>
+        <md-select
+          name="project"
+          ng-model="$ctrl.selectedProject"
+          ng-disabled="!$ctrl.Projects.all.length"
+          ng-change="$ctrl.handleProjectChanged()"
+          required>
+          <md-option
+            ng-repeat="p in $ctrl.Projects.all"
+            ng-value="p">
+            {{p.shortname}}
+            ({{p.name}})
+          </md-option>
+        </md-select>
+      </md-input-container>
+
+      <md-input-container class="md-block">
+        <label for="service">Service:</label>
+        <md-select
+          name="service"
+          ng-model="$ctrl.selectedService"
+          ng-disabled="!$ctrl.services.length"
+          ng-required="!$ctrl.serviceIsOptional">
+          <md-option
+            ng-repeat="s in $ctrl.services"
+            ng-value="s">
+            {{s.name}}
+            ({{s.description}})
+          </md-option>
+        </md-select>
+      </md-input-container>
+    </form>
+
+  </md-dialog-content>
+
+  <md-dialog-actions>
+    <md-button
+      ng-click="$ctrl.cancel()"
+      aria-label="Cancel">
+      Cancel
+    </md-button>
+    <md-button
+      ng-if="$ctrl.serviceIsOptional"
+      class="md-primary md-raised"
+      ng-click="$ctrl.chooseProject()"
+      ng-disabled="$ctrl.loading || !$ctrl.selectedProject"
+      aria-label="Choose the selected project">
+      Choose project
+    </md-button>
+    <md-button
+      class="md-primary md-raised"
+      ng-click="$ctrl.chooseService()"
+      ng-disabled="$ctrl.loading || !$ctrl.selectedService"
+      aria-label="Choose the selected service">
+      Choose service
+    </md-button>
+  </md-dialog-actions>
+</md-dialog>

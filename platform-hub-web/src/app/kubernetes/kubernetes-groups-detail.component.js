@@ -6,7 +6,7 @@ export const KubernetesGroupsDetailComponent = {
   controller: KubernetesGroupsDetailController
 };
 
-function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, logger) {
+function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, projectServiceSelectorPopupService, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -17,6 +17,7 @@ function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, l
   ctrl.group = null;
 
   ctrl.deleteGroup = deleteGroup;
+  ctrl.allocate = allocate;
 
   init();
 
@@ -61,6 +62,28 @@ function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, l
           .finally(() => {
             ctrl.loading = false;
           });
+      });
+  }
+
+  function allocate(targetEvent) {
+    projectServiceSelectorPopupService
+      .open(true, targetEvent)
+      .then(result => {
+        if (result.service) {
+          return KubernetesGroups.allocateToService(
+            ctrl.group.id,
+            result.project.id,
+            result.service.id
+          );
+        }
+
+        return KubernetesGroups.allocateToProject(
+          ctrl.group.id,
+          result.project.id
+        );
+      })
+      .then(() => {
+        logger.success('Successfully allocated this Kubernetes RBAC group');
       });
   }
 }

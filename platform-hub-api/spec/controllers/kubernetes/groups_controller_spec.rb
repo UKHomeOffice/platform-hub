@@ -299,4 +299,90 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
     end
   end
 
+  describe 'POST #allocate' do
+    before do
+      @group = create :kubernetes_group
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        post :allocate, params: { id: @group.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          post :allocate, params: { id: @group.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        context 'for a non-existent project' do
+          it 'should return a 404' do
+            post :allocate, params: { id: @group.id, project_id: 'unknown', service_id: 'unknown' }
+            expect(response).to have_http_status(404)
+          end
+        end
+
+        context 'for a non-existent project service' do
+          let!(:project) { create :project }
+
+          it 'should return a 404' do
+            post :allocate, params: { id: @group.id, project_id: project.friendly_id, service_id: 'unknown' }
+            expect(response).to have_http_status(404)
+          end
+        end
+
+        context 'for a project and project service that exists' do
+          let!(:project) { create :project }
+          let!(:service) { create :service, project: project }
+
+          def expect_allocate params, receivable
+            expect(Allocation.count).to be 0
+            expect(Audit.count).to eq 0
+            post :allocate, params: params
+            expect(response).to be_success
+            expect(Allocation.count).to be 1
+            expect(Audit.count).to eq 1
+            allocation = Allocation.first
+            expect(allocation.allocatable).to eq @group
+            expect(allocation.allocation_receivable).to eq receivable
+            audit = Audit.first
+            expect(audit.action).to eq 'create'
+            expect(audit.auditable).to eq allocation
+            expect(audit.associated).to eq receivable
+            expect(audit.data).to eq({
+              'allocatable_type' => @group.class.name,
+              'allocatable_id' => @group.id,
+              'allocatable_descriptor' => @group.name
+            })
+            expect(audit.user.id).to eq current_user_id
+          end
+
+          context 'when only a project_id is specified' do
+            it 'allocates the group to the project' do
+              expect_allocate(
+                { id: @group.id, project_id: project.friendly_id },
+                project
+              )
+            end
+          end
+
+          context 'when both project_id and service_id are specified' do
+            it 'allocates the group to the project service' do
+              expect_allocate(
+                { id: @group.id, project_id: project.friendly_id, service_id: service.id },
+                service
+              )
+            end
+          end
+        end
+
+      end
+    end
+  end
+
 end
