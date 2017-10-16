@@ -4,7 +4,9 @@ module Allocatable
   class_methods do
 
     def allocatable
-      has_many :allocations, as: :allocatable
+      has_many :allocations,
+        as: :allocatable,
+        dependent: :delete_all
     end
 
   end
