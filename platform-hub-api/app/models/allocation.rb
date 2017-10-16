@@ -12,4 +12,17 @@ class Allocation < ApplicationRecord
   validates :allocation_receivable_type, presence: true
   validates :allocation_receivable_id, presence: true
 
+  validate :ensure_uniqueness
+
+  private
+
+  def ensure_uniqueness
+    if Allocation.where(
+      allocatable: self.allocatable,
+      allocation_receivable: self.allocation_receivable
+    ).exists?
+      self.errors[:base] << 'Allocation already exists'
+    end
+  end
+
 end
