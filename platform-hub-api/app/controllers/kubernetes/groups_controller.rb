@@ -2,8 +2,7 @@ class Kubernetes::GroupsController < ApiJsonController
 
   before_action :find_group, only: [ :show, :update, :destroy, :allocate ]
 
-  skip_authorization_check only: [ :index, :show ]
-  authorize_resource class: KubernetesGroup, :except => [ :index, :show ]
+  authorize_resource class: KubernetesGroup
 
   # GET /kubernetes/groups
   def index
