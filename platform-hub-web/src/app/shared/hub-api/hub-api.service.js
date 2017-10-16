@@ -94,6 +94,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.updateKubernetesGroup = buildResourceUpdater('kubernetes/groups');
   service.deleteKubernetesGroup = buildResourceDeletor('kubernetes/groups');
   service.allocateKubernetesGroup = allocateKubernetesGroup;
+  service.getKubernetesGroupAllocations = buildSubCollectionFetcher('kubernetes/groups', 'allocations');
 
   service.getKubernetesTokens = getKubernetesTokens;
   service.deleteKubernetesToken = deleteKubernetesToken;
@@ -112,6 +113,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
   service.getFeatureFlags = buildSimpleFetcher('feature_flags', 'feature flags');
   service.updateFeatureFlag = buildResourceUpdater('feature_flags');
+
+  service.deleteAllocation = buildResourceDeletor('allocations');
 
   return service;
 
@@ -570,6 +573,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       return $http
         .post(`${apiEndpoint}/${resource}`, data)
         .then(response => {
+          // handle 4xx errors which are not handled by $http
+          if (response.status.toString().match(/4../)) {
+            return $q.reject(response);
+          }
           return response.data;
         })
         .catch(response => {
@@ -591,6 +598,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       return $http
         .post(`${apiEndpoint}/${parent}/${parentId}/${resource}`, data)
         .then(response => {
+          // handle 4xx errors which are not handled by $http
+          if (response.status.toString().match(/4../)) {
+            return $q.reject(response);
+          }
           return response.data;
         })
         .catch(response => {
@@ -701,6 +712,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         service_id: serviceId
       })
       .then(response => {
+        // handle 4xx errors which are not handled by $http
+        if (response.status.toString().match(/4../)) {
+          return $q.reject(response);
+        }
         return response.data;
       })
       .catch(response => {

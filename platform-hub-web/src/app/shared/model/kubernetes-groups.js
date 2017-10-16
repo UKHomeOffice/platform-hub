@@ -26,6 +26,7 @@ export const KubernetesGroups = function ($window, hubApiService, apiBackoffTime
   model.delete = hubApiService.deleteKubernetesGroup;
   model.allocateToProject = allocateToProject;
   model.allocateToService = allocateToService;
+  model.getAllocations = hubApiService.getKubernetesGroupAllocations;
 
   return model;
 

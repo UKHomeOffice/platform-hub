@@ -6,7 +6,7 @@ export const KubernetesGroupsDetailComponent = {
   controller: KubernetesGroupsDetailController
 };
 
-function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, projectServiceSelectorPopupService, logger) {
+function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, projectServiceSelectorPopupService, hubApiService, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -15,9 +15,13 @@ function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, p
 
   ctrl.loading = true;
   ctrl.group = null;
+  ctrl.allocations = [];
+  ctrl.loadingAllocations = false;
 
   ctrl.deleteGroup = deleteGroup;
   ctrl.allocate = allocate;
+  ctrl.loadAllocations = loadAllocations;
+  ctrl.deleteAllocation = deleteAllocation;
 
   init();
 
@@ -84,6 +88,46 @@ function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, p
       })
       .then(() => {
         logger.success('Successfully allocated this Kubernetes RBAC group');
+        loadAllocations();
+      });
+  }
+
+  function loadAllocations() {
+    ctrl.loadingAllocations = true;
+
+    return KubernetesGroups
+      .getAllocations(ctrl.group.id)
+      .then(allocations => {
+        angular.copy(allocations, ctrl.allocations);
+      })
+      .finally(() => {
+        ctrl.loadingAllocations = false;
+      });
+  }
+
+  function deleteAllocation(allocation, targetEvent) {
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent('This will delete the allocation selected')
+      .ariaLabel('Confirm deletion of allocation of RBAC group')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(() => {
+        ctrl.loadingAllocations = true;
+
+        return hubApiService
+          .deleteAllocation(allocation.id)
+          .then(() => {
+            logger.success('Allocation deleted');
+            return loadAllocations();
+          })
+          .finally(() => {
+            ctrl.loadingAllocations = false;
+          });
       });
   }
 }

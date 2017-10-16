@@ -114,21 +114,21 @@ RSpec.describe ServicesController, type: :controller do
       def expect_service
         get :show, params: { project_id: project.friendly_id, id: @service.id }
         expect(response).to be_success
-        expect(json_response).to eq({
+        expect(json_response).to include(
           'id' => @service.id,
           'name' => @service.name,
           'description' => @service.description
-        })
+        )
       end
 
       def expect_other_service
         get :show, params: { project_id: other_project.friendly_id, id: @other_service.id }
         expect(response).to be_success
-        expect(json_response).to eq({
+        expect(json_response).to include(
           'id' => @other_service.id,
           'name' => @other_service.name,
           'description' => @other_service.description
-        })
+        )
       end
 
       context 'for a non-existent service' do
@@ -218,11 +218,11 @@ RSpec.describe ServicesController, type: :controller do
         expect(Service.count).to eq 1
         service = Service.first
         expect(service.project).to eq project
-        expect(json_response).to eq({
+        expect(json_response).to include(
           'id' => service.id,
           'name' => service.name,
           'description' => service.description
-        })
+        )
         expect(Audit.count).to be 1
         audit = Audit.first
         expect(audit.action).to eq 'create'
@@ -348,11 +348,11 @@ RSpec.describe ServicesController, type: :controller do
         expect(updated_service.project).to eq project
         expect(updated_service.name).to eq put_data[:service][:name]
         expect(updated_service.description).to eq service.description
-        expect(json_response).to eq({
+        expect(json_response).to include(
           'id' => service.id,
           'name' => put_data[:service][:name],
           'description' => service.description
-        })
+        )
         expect(Audit.count).to be 1
         audit = Audit.first
         expect(audit.action).to eq 'update'

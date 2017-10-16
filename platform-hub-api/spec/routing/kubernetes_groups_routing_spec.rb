@@ -41,6 +41,10 @@ RSpec.describe Kubernetes::GroupsController, type: :routing do
         expect(:post => '/kubernetes/groups/1/allocate').to route_to('kubernetes/groups#allocate', :id => '1')
       end
 
+      it 'routes to #allocations' do
+        expect(:get => '/kubernetes/groups/1/allocations').to route_to('kubernetes/groups#allocations', :id => '1')
+      end
+
     end
 
     context 'with kubernetes_tokens feature flag disabled' do
@@ -79,6 +83,10 @@ RSpec.describe Kubernetes::GroupsController, type: :routing do
 
       it 'route to #allocate is not routable' do
         expect(:post => '/kubernetes/groups/1/allocate').to_not be_routable
+      end
+
+      it 'route to #allocations is not routable' do
+        expect(:get => '/kubernetes/groups/1/allocations').to_not be_routable
       end
 
     end
