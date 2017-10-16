@@ -13,33 +13,43 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      context 'when no kubernetes groups exist' do
-        it 'returns an empty list' do
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
           get :index
-          expect(response).to be_success
-          expect(json_response).to be_empty
         end
       end
 
-      context 'when kubernetes groups already exist' do
-        before do
-          @groups = create_list :kubernetes_group, 3
+      it_behaves_like 'an admin' do
+
+        context 'when no kubernetes groups exist' do
+          it 'returns an empty list' do
+            get :index
+            expect(response).to be_success
+            expect(json_response).to be_empty
+          end
         end
 
-        let :total_groups do
-          @groups.length
+        context 'when kubernetes groups exist' do
+          before do
+            @groups = create_list :kubernetes_group, 3
+          end
+
+          let :total_groups do
+            @groups.length
+          end
+
+          let :all_group_ids do
+            @groups.map(&:friendly_id)
+          end
+
+          it 'returns the existing kubernetes groups ordered by name descending' do
+            get :index
+            expect(response).to be_success
+            expect(json_response.length).to eq total_groups
+            expect(pluck_from_json_response('id')).to match_array all_group_ids
+          end
         end
 
-        let :all_group_ids do
-          @groups.map(&:friendly_id)
-        end
-
-        it 'returns the existing kubernetes groups ordered by name descending' do
-          get :index
-          expect(response).to be_success
-          expect(json_response.length).to eq total_groups
-          expect(pluck_from_json_response('id')).to match_array all_group_ids
-        end
       end
 
     end
@@ -58,27 +68,37 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      context 'for a non-existent group' do
-        it 'should return a 404' do
-          get :show, params: { id: 'unknown' }
-          expect(response).to have_http_status(404)
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :show, params: { id: @group.friendly_id }
         end
       end
 
-      context 'for a group that exists' do
-        it 'should return the specified group resource' do
-          get :show, params: { id: @group.friendly_id }
-          expect(response).to be_success
-          expect(json_response).to eq({
-            'id' => @group.friendly_id,
-            'name' => @group.name,
-            'kind' => @group.kind,
-            'target' => @group.target,
-            'description' => @group.description,
-            'is_privileged' => @group.is_privileged,
-            'restricted_to_clusters' => @group.restricted_to_clusters
-          })
+      it_behaves_like 'an admin' do
+
+        context 'for a non-existent group' do
+          it 'should return a 404' do
+            get :show, params: { id: 'unknown' }
+            expect(response).to have_http_status(404)
+          end
         end
+
+        context 'for a group that exists' do
+          it 'should return the specified group resource' do
+            get :show, params: { id: @group.friendly_id }
+            expect(response).to be_success
+            expect(json_response).to eq({
+              'id' => @group.friendly_id,
+              'name' => @group.name,
+              'kind' => @group.kind,
+              'target' => @group.target,
+              'description' => @group.description,
+              'is_privileged' => @group.is_privileged,
+              'restricted_to_clusters' => @group.restricted_to_clusters
+            })
+          end
+        end
+
       end
 
     end
