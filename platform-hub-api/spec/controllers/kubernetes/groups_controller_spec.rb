@@ -405,4 +405,67 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
     end
   end
 
+  describe 'GET #allocations' do
+    before do
+      @group = create :kubernetes_group
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :allocations, params: { id: @group.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :allocations, params: { id: @group.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        context 'when no allocations exist' do
+          it 'returns an empty list' do
+            get :allocations, params: { id: @group.id }
+            expect(response).to be_success
+            expect(json_response).to be_empty
+          end
+        end
+
+        context 'when allocations exist' do
+          let!(:service_1) { create :service }
+          let!(:service_2) { create :service }
+          let!(:other_group) { create :kubernetes_group }
+
+          before do
+            @allocations = [
+              create(:allocation, allocatable: @group, allocation_receivable: service_1),
+              create(:allocation, allocatable: @group, allocation_receivable: service_2)
+            ]
+            create :allocation, allocatable: other_group, allocation_receivable: service_1
+          end
+
+          let :total_allocations do
+            @allocations.length
+          end
+
+          let :all_allocation_ids do
+            @allocations.map(&:id)
+          end
+
+          it 'returns the existing kubernetes allocations ordered by name descending' do
+            get :allocations, params: { id: @group.id }
+            expect(response).to be_success
+            expect(json_response.length).to eq total_allocations
+            expect(pluck_from_json_response('id')).to match_array all_allocation_ids
+          end
+        end
+
+      end
+
+    end
+  end
+
 end

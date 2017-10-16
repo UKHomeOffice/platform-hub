@@ -106,10 +106,15 @@ Rails.application.routes.draw do
 
         resources :groups do
           get :privileged, on: :collection
+
           post :allocate, on: :member
+          get :allocations, on: :member
         end
       end
     end
+
+    resources :allocations, only: [ :destroy ]
+
   end
 
 end

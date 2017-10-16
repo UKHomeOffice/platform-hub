@@ -14,6 +14,9 @@ class Allocation < ApplicationRecord
 
   validate :ensure_uniqueness
 
+  scope :by_allocatable, -> (a) { where(allocatable: a) }
+  scope :by_allocation_receivable, -> (ar) { where(allocation_receivable: ar) }
+
   private
 
   def ensure_uniqueness
