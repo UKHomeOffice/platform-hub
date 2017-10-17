@@ -21,14 +21,14 @@ module AuthenticationHelpers
     def test_auth_payload
       @test_auth_payload ||= Hashie::Mash.new({
         jti: '8db593b2-b40f-4e85-9fad-91932dd55430',
-        exp: (DateTime.now + 1.week).strftime('%s'),
+        exp: 1.week.from_now.to_i,
         nbf: 0,
-        iat: (DateTime.now - 1.hour).strftime('%s'),
+        iat: 1.hour.ago.to_i,
         iss: 'https://sso.example.org',
         aud: 'platform-hub',
         sub: current_user_id,
         typ: 'Bearer',
-        auth_time: (DateTime.now - 1.hour).strftime('%s'),
+        auth_time: 1.hour.ago.to_i,
         session_state: 'c340f212-09e2-41a2-a4bd-602b8103fb68',
         acr: '1',
         client_session: 'd19ef6bc-5532-4d4b-908f-2efbe75e43e1',
