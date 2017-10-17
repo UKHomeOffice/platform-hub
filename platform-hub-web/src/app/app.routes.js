@@ -245,7 +245,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           }
         })
         .state('kubernetes.user-tokens.edit', {
-          url: '/edit/:userId/:cluster',
+          url: '/edit/:userId/:tokenId',
           component: KubernetesUserTokensForm,
           resolve: {
             transition: '$transition$'
@@ -292,7 +292,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           }
         })
         .state('kubernetes.robot-tokens.edit', {
-          url: '/edit/:cluster/:name',
+          url: '/edit/:cluster/:tokenId',
           component: KubernetesRobotTokensForm,
           resolve: {
             transition: '$transition$'

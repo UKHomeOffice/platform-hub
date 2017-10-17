@@ -1,15 +1,28 @@
 FactoryGirl.define do
   factory :kubernetes_token do
-    identity { build(:kubernetes_identity) }
-    cluster { 'development' }
+
+    association :cluster, factory: :kubernetes_cluster
     token { SecureRandom.uuid }
     uid { SecureRandom.uuid }
     groups { ['group1', 'group2'] }
+    expire_privileged_at { nil }
 
-    initialize_with { new(identity: identity, cluster: cluster, token: token, uid: uid, groups: groups) }
+    factory :user_kubernetes_token do
+      kind { 'user' }
+      association :tokenable, factory: :kubernetes_identity
+      name { "user_#{SecureRandom.uuid}@example.com" }
 
-    factory :privileged_kubernetes_token do
-      expire_privileged_at { 1.hour.from_now }
+      factory :privileged_kubernetes_token do
+        groups { ['privileged'] }
+        expire_privileged_at { 3600.seconds.from_now }
+      end
+    end
+
+    factory :robot_kubernetes_token do
+      kind { 'robot' }
+      association :tokenable, factory: :user
+      name { "some_robot" }
+      description { "Awesome Robot" }
     end
   end
 end

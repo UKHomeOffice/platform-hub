@@ -4,29 +4,14 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
   include_context 'time helpers'
 
   let(:cluster_name) { 'development' }
-  let(:groups) { ['group1', 'group2'] }
-  let(:token) { 'some-token' }
-  let(:uid) { 'some-uid' }
 
   before do
-    create(:kubernetes_cluster, name: cluster_name)
-
+    @cluster = create(:kubernetes_cluster, name: cluster_name)
     @user = create(:user)
-
-    @kubernetes_identity = create(:kubernetes_identity, user: @user, data: { tokens: [] })
-    user_kube_token = {
-      identity_id: @kubernetes_identity.id,
-      cluster: cluster_name,
-      token: ENCRYPTOR.encrypt(token),
-      uid: uid,
-      groups: groups
-    }
-    @kubernetes_identity.data["tokens"] << user_kube_token
-    @kubernetes_identity.save!
+    @kube_identity = create(:kubernetes_identity, user: @user)
   end
 
   describe 'GET #index' do
-
     it_behaves_like 'unauthenticated not allowed' do
       before do
         get :index, params: { user_id: @user.id }
@@ -42,26 +27,59 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
       end
 
       it_behaves_like 'an admin' do
-        it 'should return a list of all user tokens' do
-          get :index, params: { user_id: @user.id }
-          expect(response).to be_success
-          expect(json_response.length).to eq 1
-          expect(json_response.first['cluster']).to eq cluster_name
-          expect(json_response.first['token']).to eq token
-          expect(json_response.first['uid']).to eq uid
-          expect(json_response.first['groups']).to match_array groups
+
+        context 'for user tokens' do
+          before do
+            @token = create :user_kubernetes_token
+          end
+
+          it 'should return a list of all user tokens' do
+            get :index, params: { kind: 'user', user_id: @token.user.id }
+            expect(response).to be_success
+            expect(json_response.length).to eq 1
+            expect(json_response.first['cluster']['name']).to eq @token.cluster.name
+            expect(json_response.first['token']).to eq @token.decrypted_token
+            expect(json_response.first['uid']).to eq @token.uid
+            expect(json_response.first['name']).to eq @token.name
+            expect(json_response.first['groups']).to match_array @token.groups
+            expect(json_response.first['description']).to eq nil
+            expect(json_response.first['kind']).to eq 'user'
+            expect(json_response.first['user']['id']).to eq @token.user.id
+          end
         end
+
+        context 'for robot tokens' do
+          before do
+            @token = create :robot_kubernetes_token
+          end
+
+          it 'should return a list of all robot tokens' do
+            get :index, params: { kind: 'robot', cluster_name: @token.cluster.name }
+            expect(response).to be_success
+            expect(json_response.length).to eq 1
+            expect(json_response.first['cluster']['name']).to eq @token.cluster.name
+            expect(json_response.first['token']).to eq @token.decrypted_token
+            expect(json_response.first['uid']).to eq @token.uid
+            expect(json_response.first['name']).to eq @token.name
+            expect(json_response.first['groups']).to match_array @token.groups
+            expect(json_response.first['description']).to eq @token.description
+            expect(json_response.first['kind']).to eq 'robot'
+            expect(json_response.first['user']['id']).to eq @token.user.id
+          end
+        end
+
       end
-
     end
-
   end
 
-  describe 'PATCH/PUT #create_or_update' do
+  describe 'GET #show' do
+    before do
+      @token = create :user_kubernetes_token
+    end
 
-    it_behaves_like 'unauthenticated not allowed' do
+    it_behaves_like 'unauthenticated not allowed'  do
       before do
-        put :create_or_update, params: { user_id: @user.id, cluster: cluster_name }
+        get :show, params: { id: @token.id }
       end
     end
 
@@ -69,45 +87,315 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          put :create_or_update, params: { user_id: @user.id, cluster: cluster_name }
+          get :show, params: { id: @token.id }
         end
       end
 
       it_behaves_like 'an admin' do
-        let(:new_groups) { ['new-group'] }
 
-        it 'should create or update token and return it' do
-          expect(AuditService).to receive(:log).with(
-            context: anything,
-            action: 'update_kubernetes_identity',
-            auditable: @kubernetes_identity,
-            data: { cluster: cluster_name },
-            comment: "Kubernetes `#{cluster_name}` token created or updated for user '#{@kubernetes_identity.user.email}' - Assigned groups: #{new_groups}"
-          )
+        context 'for a non-existent token' do
+          it 'should return a 404' do
+            get :show, params: { id: 'unknown' }
+            expect(response).to have_http_status(404)
+          end
+        end
 
-          put :create_or_update, params: {
-            user_id: @user.id,
-            cluster: cluster_name,
-            token: { groups: new_groups }
-          }
+        context 'for a user token that exists' do
+          it 'should return the specified token resource' do
+            get :show, params: { id: @token.id }
+            expect(response).to be_success
+            expect(json_response).to eq({
+              'id' => @token.id,
+              'kind' => 'user', 
+              'token' => @token.decrypted_token, 
+              'name' => @token.name,
+              'uid' => @token.uid, 
+              'groups' => @token.groups,
+              'cluster' => {
+                'name' => @token.cluster.name, 
+                'description' => @token.cluster.description
+              },
+              'user' => {
+                'id' => @token.user.id,
+                'name' => @token.user.name,
+                'email' => @token.user.email
+              }
+            })
+          end
+        end
 
-          expect(response).to be_success
-          expect(json_response['cluster']).to eq cluster_name
-          expect(json_response['token']).to eq token
-          expect(json_response['uid']).to eq uid
-          expect(json_response['groups']).to match_array new_groups
+        context 'for a robot token that exists' do
+          before do
+            @token = create :robot_kubernetes_token
+          end
+
+          it 'should return the specified token resource' do
+            get :show, params: { id: @token.id }
+            expect(response).to be_success
+            expect(json_response).to eq({
+              'id' => @token.id,
+              'kind' => 'robot', 
+              'token' => @token.decrypted_token, 
+              'name' => @token.name,
+              'uid' => @token.uid, 
+              'groups' => @token.groups,
+              'cluster' => {
+                'name' => @token.cluster.name, 
+                'description' => @token.cluster.description
+              },
+              'user' => {
+                'id' => @token.user.id,
+                'name' => @token.user.name,
+                'email' => @token.user.email
+              },
+              'description' => @token.description
+            })
+          end
+        end
+
+        context 'for escalated token with expiration date set' do
+          before do
+            @token = create :privileged_kubernetes_token
+          end
+
+          it 'should present expire_privileged_at' do
+            get :show, params: { id: @token.id }
+            expect(response).to be_success
+            expect(
+              DateTime.parse(json_response['expire_privileged_at']).to_s(:db)
+            ).to eq @token.expire_privileged_at.to_s(:db)
+          end
+        end
+
+      end
+    end
+  end
+
+  describe 'POST #create' do
+    before do
+      @cluster = create(:kubernetes_cluster)
+      @user = create(:user)
+    end
+
+    let(:kind) { 'user' }
+    let(:name) { nil }
+    let(:description) { nil }
+
+    let :post_data do
+      {
+        token: {
+          kind: kind,
+          user_id: @user.id,
+          cluster_name: @cluster.name,
+          groups: "group1,group2,group3",
+          name: name,
+          description: description
+        }
+      }
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :create, params: post_data
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          post :create, params: post_data
         end
       end
 
+      it_behaves_like 'an admin' do
+
+        context 'for user' do
+
+          it 'creates a new kubernetes token as expected' do
+            expect(KubernetesToken.count).to eq 0
+            expect(Audit.count).to eq 0
+            post :create, params: post_data
+            expect(response).to be_success
+            expect(KubernetesToken.count).to eq 1
+            token = KubernetesToken.first
+            new_token_external_id = token.id
+            new_token_internal_id = token.id
+            expect(json_response['kind']).to eq 'user'
+            expect(json_response['token'].length).to eq 36
+            expect(json_response['uid'].length).to eq 36
+            expect(json_response['name']).to eq @user.email
+            expect(json_response['groups']).to match_array ['group1','group2','group3']
+            expect(json_response['cluster']['name']).to eq @cluster.name
+            expect(Audit.count).to eq 1
+            audit = Audit.first
+            expect(audit.action).to eq 'create'
+            expect(audit.auditable.id).to eq new_token_internal_id
+            expect(audit.user.id).to eq current_user_id
+            expect(audit.data['cluster']).to eq @cluster.name
+          end
+
+        end
+
+        context 'for robot' do
+          let(:kind) { 'robot' }
+          let(:name) { 'some_robot_name' }
+          let(:description) { 'Robot to do things' }
+
+          it 'creates a new kubernetes token as expected' do
+            expect(KubernetesToken.count).to eq 0
+            expect(Audit.count).to eq 0
+            post :create, params: post_data
+            expect(response).to be_success
+            expect(KubernetesToken.count).to eq 1
+            token = KubernetesToken.first
+            new_token_external_id = token.id
+            new_token_internal_id = token.id
+            expect(json_response['kind']).to eq 'robot'
+            expect(json_response['token'].length).to eq 36
+            expect(json_response['uid'].length).to eq 36
+            expect(json_response['name']).to eq name
+            expect(json_response['groups']).to match_array ['group1','group2','group3']
+            expect(json_response['cluster']['name']).to eq @cluster.name
+            expect(json_response['description']).to eq description
+            expect(Audit.count).to eq 1
+            audit = Audit.first
+            expect(audit.action).to eq 'create'
+            expect(audit.auditable.id).to eq new_token_internal_id
+            expect(audit.user.id).to eq current_user_id
+            expect(audit.data['cluster']).to eq @cluster.name
+          end
+
+        end
+      end
+    end
+  end
+
+  describe 'PUT #update' do
+
+    before do
+      @token = create :user_kubernetes_token
     end
 
+    let(:user_id) { @token.user.id }
+    let(:kind) { 'user' }
+    let(:name) { nil }
+    let(:description) { nil }
+
+    let :put_data do
+      {
+        id: @token.id,
+        token: {
+          kind: kind,
+          user_id: user_id,
+          cluster_name: @token.cluster.name,
+          groups: "one,two,three",
+          name: name,
+          description: description
+        }
+      }
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        put :update, params: put_data
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          put :update, params: put_data
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        context 'for user token' do
+          
+          it 'updates the specified token groups only' do
+            expect(KubernetesToken.user.count).to eq 1
+            old = KubernetesToken.user.first
+            expect(old.groups).to eq @token.groups
+            expect(Audit.count).to eq 0
+
+            expect(AuditService).to receive(:log).with(
+              context: anything,
+              action: 'update',
+              auditable: @token,
+              data: {
+                cluster: @token.cluster.name
+              }
+            ).and_call_original
+
+            put :update, params: put_data
+            expect(response).to be_success
+            expect(KubernetesToken.user.count).to eq 1
+            updated = KubernetesToken.user.first
+            expect(updated.kind).to eq 'user'
+            expect(updated.name).to eq @token.name
+            expect(updated.cluster).to eq @token.cluster
+            expect(updated.groups).to match_array put_data[:token][:groups].split(",")
+            expect(Audit.count).to eq 1
+          end
+
+        end
+
+        context 'for robot token' do
+          before do
+            @token = create :robot_kubernetes_token
+            @new_user = create :user
+          end
+
+          let(:kind) { 'robot' }
+          let(:user_id) { @new_user.id }
+          let(:description) { 'old_description' }
+
+          it 'updates the specified token description, groups and associated user only' do
+            expect(KubernetesToken.robot.count).to eq 1
+            old = KubernetesToken.robot.first
+            expect(old.description).to eq @token.description
+            expect(old.groups).to eq @token.groups
+            expect(Audit.count).to eq 0
+
+            expect(AuditService).to receive(:log).with(
+              context: anything,
+              action: 'update',
+              auditable: @token,
+              data: {
+                cluster: @token.cluster.name
+              }
+            ).and_call_original
+
+            put :update, params: put_data
+            expect(response).to be_success
+            expect(KubernetesToken.robot.count).to eq 1
+            updated = KubernetesToken.robot.first
+            expect(updated.kind).to eq 'robot'
+            expect(updated.cluster).to eq @token.cluster
+            expect(updated.name).to eq @token.name
+            expect(updated.user).to eq @new_user
+            expect(updated.description).to eq put_data[:token][:description]
+            expect(updated.groups).to match_array put_data[:token][:groups].split(",")
+            expect(Audit.count).to eq 1
+          end
+
+        end
+
+      end
+
+    end
   end
 
   describe 'DELETE #destroy' do
+    before do
+      @token = create :user_kubernetes_token
+    end
 
-    it_behaves_like 'unauthenticated not allowed' do
+    it_behaves_like 'unauthenticated not allowed'  do
       before do
-        delete :destroy, params: { user_id: @user.id, cluster: cluster_name }
+        delete :destroy, params: { id: @token.id }
       end
     end
 
@@ -115,42 +403,56 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          delete :destroy, params: { user_id: @user.id, cluster: cluster_name }
+          delete :destroy, params: { id: @token.id }
         end
       end
 
       it_behaves_like 'an admin' do
-        it 'should delete token' do
+
+        it 'should delete the specified token' do
+          expect(KubernetesToken.exists?(@token.id)).to be true
+          expect(Audit.count).to eq 0
+
           expect(AuditService).to receive(:log).with(
             context: anything,
-            action: 'update_kubernetes_identity',
-            auditable: @kubernetes_identity,
-            data: { cluster: cluster_name },
-            comment: "Kubernetes `#{cluster_name}` token removed for user '#{@kubernetes_identity.user.email}'"
-          )
+            action: 'destroy',
+            auditable: @token,
+            data: { 
+              cluster: @token.cluster.name
+            },
+            comment: "User '#{current_user.email}' deleted #{@token.kind} token (cluster: #{@token.cluster.name}, name: #{@token.name})"
+          ).and_call_original
 
-          delete :destroy, params: { user_id: @user.id, cluster: cluster_name }
-
-          expect(response).to have_http_status(:no_content)
+          delete :destroy, params: { id: @token.id }
+          expect(response).to be_success
+          expect(KubernetesToken.exists?(@token.id)).to be false
+          expect(Audit.count).to eq 1
         end
+
       end
 
     end
-
   end
 
-  describe 'POST #escalate' do
+  describe 'PATCH #escalate' do
     let(:privileged_group) { 'privileged-group' }
     let(:expires_in_secs) { 180 }
 
+    before do
+      @token = create :user_kubernetes_token
+    end
+
+    let(:escalate_params) do
+      { 
+        id: @token.id, 
+        privileged_group: privileged_group, 
+        expires_in_secs: expires_in_secs 
+      }
+    end
+
     it_behaves_like 'unauthenticated not allowed' do
       before do
-        post :escalate, params: { 
-          user_id: @user.id, 
-          cluster: cluster_name, 
-          privileged_group: privileged_group, 
-          expires_in_secs: expires_in_secs 
-        }
+        patch :escalate, params: escalate_params
       end
     end
 
@@ -158,12 +460,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          post :escalate, params: { 
-            user_id: @user.id, 
-            cluster: cluster_name, 
-            privileged_group: privileged_group, 
-            expires_in_secs: expires_in_secs 
-          }
+          patch :escalate, params: escalate_params
         end
       end
 
@@ -171,33 +468,40 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
         it 'should escalate token and return it' do
           move_time_to now
 
-          expected_groups = groups << privileged_group
-
           expect(AuditService).to receive(:log).with(
             context: anything,
-            action: 'escalate_kubernetes_token',
-            auditable: @kubernetes_identity,
+            action: 'escalate',
+            auditable: @token,
             data: { 
-              cluster: cluster_name,
-              privileged_group: privileged_group, 
-              expire_privileged_at: expires_in_secs.seconds.from_now
-            },
-            comment: "Kubernetes `#{cluster_name}` token escalated for user '#{@kubernetes_identity.user.email}' - Assigned groups: #{expected_groups}"
-          )
+              cluster: @token.cluster.name,
+              privileged_group: privileged_group
+            }
+          ).and_call_original
 
-          post :escalate, params: { 
-            user_id: @user.id, 
-            cluster: cluster_name, 
-            privileged_group: privileged_group, 
-            expires_in_secs: expires_in_secs 
-          }
+          patch :escalate, params: escalate_params
 
           expect(response).to be_success
-          expect(json_response['cluster']).to eq cluster_name
-          expect(json_response['token']).to eq token
-          expect(json_response['uid']).to eq uid
-          expect(json_response['groups']).to match_array expected_groups
-          expect(Time.parse(json_response['expire_privileged_at']).to_s(:db)).to eq expires_in_secs.seconds.from_now.to_s(:db)
+          expect(json_response['cluster']['name']).to eq @token.cluster.name
+          expect(json_response['token']).to eq @token.decrypted_token
+          expect(json_response['uid']).to eq @token.uid
+          expect(json_response['groups']).to match_array @token.groups << privileged_group
+          expect(DateTime.parse(json_response['expire_privileged_at']).to_s(:db)).to eq expires_in_secs.seconds.from_now.to_s(:db)
+          expect(Audit.count).to eq 1
+        end
+
+        context 'with privileged expiration greater than 6h' do
+          let(:expires_in_secs) { 7 * 3600 } #7h
+
+          it 'limits expiration time to maximum 6h from now' do
+            move_time_to now
+
+            patch :escalate, params: escalate_params
+
+            expect(response).to be_success
+            expect(
+              DateTime.parse(json_response['expire_privileged_at']).to_s(:db)
+            ).to eq KubernetesToken::PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS.seconds.from_now.to_s(:db)
+          end
         end
       end
 
@@ -205,38 +509,49 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
   end
 
-  describe 'before actions' do
+  describe 'PATCH #deescalate' do
+    before do
+      privileged_group = create :privileged_kubernetes_group
+      @token = create :privileged_kubernetes_token, 
+                groups: KubernetesGroup.privileged_names
+    end
 
-    describe '#find_identity' do
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        patch :deescalate, params: { id: @token.id }
+      end
+    end
 
-      it_behaves_like 'authenticated' do
-        it_behaves_like 'an admin' do
-          before do
-            expect(controller).to receive(:find_identity).and_call_original
-          end
+    it_behaves_like 'authenticated' do
 
-          context 'when kubernetes identity exists' do
-            it 'returns it' do
-              expect(@user.identities).to receive(:create!).never
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          patch :deescalate, params: { id: @token.id }
+        end
+      end
 
-              get :index, params: { user_id: @user.id }
-            end
-          end
+      it_behaves_like 'an admin' do
+        it 'should deescalate token and return it' do
+          move_time_to now
 
-          context 'when kubernetes identity does not exist yet' do
-            before do
-              @user.identities = []
-            end
+          expect(AuditService).to receive(:log).with(
+            context: anything,
+            action: 'deescalate',
+            auditable: @token,
+            data: {
+              cluster: @token.cluster.name
+            }
+          ).and_call_original
 
-            it 'creates a new one and returns it' do
-              get :index, params: { user_id: @user.id }
+          patch :deescalate, params: { id: @token.id }
 
-              expect(@user.identities.count).to eq 1
-              kube_identity = @user.identity(:kubernetes)
-              expect(kube_identity.provider).to eq "kubernetes"
-              expect(kube_identity.external_id).to eq @user.email
-            end
-          end
+          expect(response).to be_success
+          expect(json_response['cluster']['name']).to eq @token.cluster.name
+          expect(json_response['token']).to eq @token.decrypted_token
+          expect(json_response['uid']).to eq @token.uid
+          expect(json_response['groups']).to be_blank
+          expect(json_response['expire_privileged_at']).to eq nil
+          expect(Audit.count).to eq 1
         end
       end
 

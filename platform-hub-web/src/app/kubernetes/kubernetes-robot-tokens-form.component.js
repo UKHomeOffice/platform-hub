@@ -12,7 +12,7 @@ function KubernetesRobotTokensFormController($state, hubApiService, KubernetesCl
   const ctrl = this;
 
   const cluster = ctrl.transition && ctrl.transition.params().cluster;
-  const name = ctrl.transition && ctrl.transition.params().name;
+  const tokenId = ctrl.transition && ctrl.transition.params().tokenId;
 
   ctrl.KubernetesClusters = KubernetesClusters;
 
@@ -40,18 +40,20 @@ function KubernetesRobotTokensFormController($state, hubApiService, KubernetesCl
   }
 
   function setupToken() {
-    ctrl.isNew = !name;
+    ctrl.isNew = !tokenId;
     ctrl.tokenData = null;
 
     if (ctrl.isNew) {
       ctrl.tokenData = {
-        cluster
+        cluster: {
+          name: cluster
+        }
       };
     } else {
       return hubApiService
         .getKubernetesRobotTokens(cluster)
         .then(tokens => {
-          ctrl.tokenData = _.find(tokens, ['name', name]);
+          ctrl.tokenData = _.find(tokens, ['id', tokenId]);
           ctrl.user = ctrl.tokenData.user;
         });
     }
@@ -62,16 +64,33 @@ function KubernetesRobotTokensFormController($state, hubApiService, KubernetesCl
   }
 
   function createOrUpdate() {
+    if (ctrl.kubernetesTokenForm.$invalid) {
+      logger.error('Check the form for issues before saving');
+      return;
+    }
+
     ctrl.saving = true;
 
-    hubApiService
-      .createOrUpdateKubernetesRobotToken(ctrl.tokenData.cluster, ctrl.tokenData.name, ctrl.tokenData.groups, ctrl.tokenData.description, ctrl.user && ctrl.user.id)
-      .then(() => {
-        logger.success('Token successfully created or updated');
-        $state.go('kubernetes.robot-tokens.list', {cluster: ctrl.tokenData.cluster});
-      })
-      .finally(() => {
-        ctrl.saving = false;
-      });
+    if (ctrl.isNew) {
+      hubApiService
+        .createKubernetesRobotToken(ctrl.user, ctrl.tokenData)
+        .then(() => {
+          logger.success('New kubernetes robot token created');
+          $state.go('kubernetes.robot-tokens.list', {cluster: ctrl.tokenData.cluster.name});
+        })
+        .finally(() => {
+          ctrl.saving = false;
+        });
+    } else {
+      hubApiService
+        .updateKubernetesRobotToken(tokenId, ctrl.user, ctrl.tokenData)
+        .then(() => {
+          logger.success('Kubernetes robot token updated');
+          $state.go('kubernetes.robot-tokens.list', {cluster: ctrl.tokenData.cluster.name});
+        })
+        .finally(() => {
+          ctrl.saving = false;
+        });
+    }
   }
 }

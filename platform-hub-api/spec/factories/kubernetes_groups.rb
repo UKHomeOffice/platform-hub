@@ -7,5 +7,10 @@ FactoryGirl.define do
     kind { 'namespace' }
     target { 'user' }
     description { 'This is a kube group' }
+    is_privileged { false }
+
+    factory :privileged_kubernetes_group do
+      is_privileged { true }
+    end
   end
 end

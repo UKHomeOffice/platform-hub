@@ -1,18 +1,149 @@
-class KubernetesToken < KubernetesTokenBase
-  attr_accessor :identity_id, :expire_privileged_at
+class KubernetesToken < ApplicationRecord
+  TOKEN_LENGTH = 36
+  UID_LENGTH = 36
+  PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS = 21600 # max privilege period is 6h
 
-  validates_presence_of :identity_id
+  NAME_REGEX = /\A[a-zA-Z][\@\.\w-]*\z/
 
-  belongs_to :identity
+  include Audited
+  audited descriptor_field: :name, associated_field: :tokenable
 
-  def self.from_data(attributes)
-    attributes = attributes.with_indifferent_access
-    params = attributes
-      .extract!(:identity_id, :cluster, :uid, :groups, :expire_privileged_at)
-      .merge!(token: ENCRYPTOR.decrypt(attributes[:token]))
-      .with_indifferent_access
+  attr_readonly :token, :name, :uid, :kind, :cluster_id
 
-    new(params)
+  before_save :downcase_name
+
+  belongs_to :tokenable, -> { readonly }, polymorphic: true
+  belongs_to :cluster, -> { readonly }, class_name: KubernetesCluster
+
+  scope :privileged, -> { where.not(expire_privileged_at: nil) }
+  scope :by_tokenable, ->(tokenable) { where(tokenable: tokenable) }
+  scope :by_cluster, ->(c) { where(cluster_id: c.id) }
+  scope :by_name, ->(n) { where(name: n.downcase) }
+
+  enum kind: {
+    user: 'user',
+    robot: 'robot',
+  }
+
+  validates :uid, presence: true, length: { is: UID_LENGTH }, uniqueness: true
+  validates :kind, :cluster, presence: true
+  validates :name,
+    presence: true,
+    format: {
+      with: NAME_REGEX,
+      message: "must start with letter and can only contain letters, numbers, underscores, dashes, dots and @"
+    }
+  validates :description, presence: true, if: :robot?
+
+  validate :tokenable_set
+  validate :token_must_not_be_blank
+  validate :token_must_be_of_expected_length
+  validate :one_user_token_per_cluster
+  validate :robot_name_unique_for_given_cluster
+
+  def token=(val)
+    self['token'] = ENCRYPTOR.encrypt(val)
+  end
+
+  def groups=(groups)
+    self['groups'] = 
+      if groups.is_a? String
+        groups.split(',').map(&:strip).reject(&:blank?).uniq
+      elsif groups.is_a? Array
+        groups.uniq
+      end
+  end
+
+  def decrypted_token
+    ENCRYPTOR.decrypt(token)
+  end
+
+  def user
+    if robot?
+      tokenable
+    elsif user? # via identity
+      tokenable.user
+    end
+  end
+
+  def privileged?
+    expire_privileged_at.present?
+  end
+
+  def escalate(privileged_group, expire_in_secs = 600)
+    update_attributes(
+      expire_privileged_at: [ expire_in_secs, PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS ].min.seconds.from_now,
+      groups: groups << privileged_group
+    )
+  end
+
+  def deescalate
+    update_attributes(
+      expire_privileged_at: nil, 
+      groups: groups - KubernetesGroup.privileged_names
+    )
+  end
+
+  protected
+
+  def tokenable_set
+    if robot?
+      errors.add(:tokenable_type, "must be `User` for robot token") if tokenable_type != 'User'
+    elsif user?
+      errors.add(:tokenable_type, "must be `Identity` for user token") if tokenable_type != 'Identity'
+    end
+    errors.add(:tokenable_id, "must be set for token") if tokenable_id.blank?
+  end
+
+  def token_must_not_be_blank
+    if decrypted_token.blank?
+      errors.add(:token, "can't be blank")
+    end
+  end
+
+  def token_must_be_of_expected_length
+    if decrypted_token.present? && decrypted_token.length != TOKEN_LENGTH
+      errors.add(:token, "is the wrong length (should be #{TOKEN_LENGTH} characters)")
+    end
+  end
+
+  def one_user_token_per_cluster
+    # For user token we only allow one per cluster
+    return unless user?
+    if new_record? && user_token_for_cluster_exists?(cluster)
+      errors.add(:user, "can have only one user token per cluster")
+    end
+  end
+
+  def robot_name_unique_for_given_cluster
+    # For robot token we allow multiple per cluster unique by name
+    return unless robot?
+    if new_record? && robot_token_for_cluster_and_name_exists?(cluster, name)
+      errors.add(:name, "must be unique for each robot token within a cluster")
+    end
+  end
+
+  def downcase_name
+    self.name.downcase!
+  end
+
+  def readonly?
+    read_only_attrs = self.class.readonly_attributes.to_a
+    if persisted? && read_only_attrs.any? {|f| send(:"#{f}_changed?")}
+      raise ActiveRecord::ReadOnlyRecord, "#{read_only_attrs.join(', ')} can't be modified"
+    end
+  end
+
+  private
+
+  def user_token_for_cluster_exists?(cluster)
+    return unless tokenable.present? && cluster.present?
+    KubernetesToken.user.by_tokenable(tokenable).by_cluster(cluster).exists?
+  end
+
+  def robot_token_for_cluster_and_name_exists?(cluster, name)
+    return unless cluster.present? && name.present?
+    KubernetesToken.robot.by_cluster(cluster).by_name(name).exists?
   end
 
 end

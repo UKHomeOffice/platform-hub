@@ -82,18 +82,17 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
       });
   }
 
-  function escalatePrivilege(user, cluster, targetEvent) {
+  function escalatePrivilege(tokenId, targetEvent) {
     kubernetesTokenEscalatePrivilegePopupService.open(
-      user,
-      cluster,
+      tokenId,
       targetEvent
     ).then(filterKubernetesTokensByUser);
   }
 
-  function deleteToken(userId, cluster, targetEvent) {
+  function deleteToken(tokenId, targetEvent) {
     const confirm = $mdDialog.confirm()
       .title(`Are you sure?`)
-      .textContent(`This will delete the "${cluster}" token.`)
+      .textContent(`This will delete selected token.`)
       .ariaLabel('Confirm token removal')
       .targetEvent(targetEvent)
       .ok('Do it')
@@ -103,9 +102,9 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
       .show(confirm)
       .then(() => {
         hubApiService
-          .deleteKubernetesToken(userId, cluster)
+          .deleteKubernetesToken(tokenId)
           .then(() => {
-            loadUserAndTokens(userId);
+            loadUserAndTokens(ctrl.user.id);
           });
       });
   }

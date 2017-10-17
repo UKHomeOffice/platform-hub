@@ -91,24 +91,17 @@ Rails.application.routes.draw do
 
     constraints lambda { |request| FeatureFlagService.is_enabled?(:kubernetes_tokens) } do
       namespace :kubernetes do
-        # Tokens management
-        get '/tokens/:user_id', to: 'tokens#index'
-        put '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
-        patch '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
-        delete '/tokens/:user_id/:cluster', to: 'tokens#destroy'
-        post '/tokens/:user_id/:cluster/escalate', to: 'tokens#escalate'
 
-        get '/robot_tokens/:cluster', to: 'robot_tokens#index'
-        put '/robot_tokens/:cluster/:name', to: 'robot_tokens#create_or_update'
-        patch '/robot_tokens/:cluster/:name', to: 'robot_tokens#create_or_update'
-        delete '/robot_tokens/:cluster/:name', to: 'robot_tokens#destroy'
+        resources :tokens do
+          patch '/escalate', to: 'tokens#escalate', on: :member
+          patch '/deescalate', to: 'tokens#deescalate', on: :member
+        end
 
         resources :clusters, except: :destroy
 
         get '/changeset/:cluster', to: 'changeset#index'
 
         post '/sync', to: 'sync#sync'
-        post '/claim', to: 'claim#claim'
         post '/revoke', to: 'revoke#revoke'
 
         resources :groups do
