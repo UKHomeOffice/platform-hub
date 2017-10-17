@@ -25,63 +25,118 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.group">
+  <md-content>
+    <md-tabs
+      ng-if="!$ctrl.loading && $ctrl.group"
+      md-dynamic-height
+      md-border-bottom>
 
-    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
-      <md-content layout-padding>
+      <md-tab id="overview-tab">
+        <md-tab-label>Overview</md-tab-label>
+        <md-tab-body>
+          <div layout-padding>
+            <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+              <md-content layout-padding>
 
-        <h3 class="md-title">
-          {{$ctrl.group.name}}
+                <h3 class="md-title">
+                  {{$ctrl.group.name}}
 
-          <span
-            class="badge float-right"
-            md-colors="{background: 'green'}">
-            {{$ctrl.group.target}}
-          </span>
+                  <span
+                    class="badge float-right"
+                    md-colors="{background: 'green'}">
+                    {{$ctrl.group.target}}
+                  </span>
 
-          <span
-            class="badge float-right"
-            md-colors="{background: 'blue'}">
-            {{$ctrl.group.kind}}
-          </span>
+                  <span
+                    class="badge float-right"
+                    md-colors="{background: 'blue'}">
+                    {{$ctrl.group.kind}}
+                  </span>
 
-          <span
-            ng-if="$ctrl.group.is_privileged"
-            class="badge float-right"
-            md-colors="{background: 'accent'}">
-            Privileged
-          </span>
-        </h3>
+                  <span
+                    ng-if="$ctrl.group.is_privileged"
+                    class="badge float-right"
+                    md-colors="{background: 'accent'}">
+                    Privileged
+                  </span>
+                </h3>
 
-        <p
-          class="md-body-1"
-          md-colors="{background: 'blue-grey-50'}"
-          ng-if="$ctrl.group.description"
-          ng-bind-html='$ctrl.group.description | simpleFormat'>
-        </p>
+                <p
+                  class="md-body-1"
+                  md-colors="{background: 'blue-grey-50'}"
+                  ng-if="$ctrl.group.description"
+                  ng-bind-html='$ctrl.group.description | simpleFormat'>
+                </p>
 
-        <p class="md-body-1">
-          <span md-colors="{color: 'blue-grey-700'}">
-            Restricted to particular clusters:
-          </span>
-          <span ng-if="$ctrl.group.restricted_to_clusters.length > 0">
-            {{$ctrl.group.restricted_to_clusters.join(', ')}}
-          </span>
-          <span class="none-text" ng-if="!$ctrl.group.restricted_to_clusters.length">
-            --
-          </span>
-        </p>
+                <p class="md-body-1">
+                  <span md-colors="{color: 'blue-grey-700'}">
+                    Restricted to particular clusters:
+                  </span>
+                  <span ng-if="$ctrl.group.restricted_to_clusters.length > 0">
+                    {{$ctrl.group.restricted_to_clusters.join(', ')}}
+                  </span>
+                  <span class="none-text" ng-if="!$ctrl.group.restricted_to_clusters.length">
+                    --
+                  </span>
+                </p>
 
-        <div layout="row" layout-align="center center">
-          <md-button
-            class="md-primary md-raised"
-            ng-click="$ctrl.allocate($event)">
-            Allocate this to a project or a project's service
-          </md-button>
-        </div>
+              </md-content>
+            </div>
+          </div>
+        </md-tab-body>
+      </md-tab>
 
-      </md-content>
-    </div>
+      <md-tab id="allocations-tab" md-on-select="$ctrl.loadAllocations()">
+        <md-tab-label>Allocations</md-tab-label>
+        <md-tab-body>
+          <loading-indicator loading="$ctrl.loadingAllocations"></loading-indicator>
 
+          <div layout="row" layout-align="center center">
+            <md-button
+              class="md-primary md-raised"
+              ng-click="$ctrl.allocate($event)">
+              Allocate this to a project or a project's service
+            </md-button>
+          </div>
+
+          <div ng-if="$ctrl.allocations.length == 0" layout-padding>
+            <p class="md-body-1 none-text text-center">
+              This group has not been allocated to anything yet
+            </p>
+          </div>
+
+          <md-card
+            ng-repeat="a in $ctrl.allocations track by a.id"
+            ng-init="ar_type = a.allocation_receivable.type; ar = a.allocation_receivable[ar_type]">
+            <md-card-title>
+              <span class="md-headline" ng-switch="ar_type">
+                <span ng-switch-when="project">
+                  Project: {{ar.name}} ({{ar.shortname}})
+                </span>
+                <span ng-switch-when="service">
+                  Service: {{ar.name}}
+                  <br />
+                  <span class="md-subhead">
+                    Project: {{ar.project.name}} ({{ar.project.shortname}})
+                  </span>
+                </span>
+                <span ng-switch-default>
+                  <span>{{ar_type}}: </span>
+                  <span>{{ar.name || ar.shortname || ar.title}}</span>
+                </span>
+              </span>
+            </md-card-title>
+            <md-card-actions layout="row" layout-align="start center">
+              <md-button
+                class="md-primary"
+                aria-label="Delete this allocation"
+                ng-click="$ctrl.deleteAllocation(a, $event)">
+                Delete
+              </md-button>
+            </md-card-actions>
+          </md-card>
+        </md-tab-body>
+      </md-tab>
+    </md-tabs>
   </md-content>
 </div>

@@ -1,9 +1,8 @@
 class Kubernetes::GroupsController < ApiJsonController
 
-  before_action :find_group, only: [ :show, :update, :destroy, :allocate ]
+  before_action :find_group, only: [ :show, :update, :destroy, :allocate, :allocations ]
 
-  skip_authorization_check only: [ :index, :show ]
-  authorize_resource class: KubernetesGroup, :except => [ :index, :show ]
+  authorize_resource class: KubernetesGroup
 
   # GET /kubernetes/groups
   def index
@@ -48,7 +47,7 @@ class Kubernetes::GroupsController < ApiJsonController
     end
   end
 
-  # DELETE /kubernetes/groups
+  # DELETE /kubernetes/groups/:id
   def destroy
     id = @group.id
     name = @group.name
@@ -105,6 +104,12 @@ class Kubernetes::GroupsController < ApiJsonController
     else
       render_model_errors allocation.errors
     end
+  end
+
+  # GET /kubernetes/groups/:id/allocations
+  def allocations
+    allocations = Allocation.by_allocatable @group
+    render json: allocations
   end
 
   private
