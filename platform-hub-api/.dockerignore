@@ -1,13 +1,13 @@
 # ----- FROM .gitignore -----
 
 # Ignore bundler config.
-/.bundle
+.bundle
 
 # Ignore all logfiles and tempfiles.
-/log/*
-/tmp/*
-!/log/.keep
-!/tmp/.keep
+log/*
+tmp/*
+!log/.keep
+!tmp/.keep
 
 # Ignore Byebug command history file.
 .byebug_history
