@@ -18,6 +18,7 @@ export const Projects = function ($window, $q, apiBackoffTimeMs, hubApiService, 
   model.getMemberships = hubApiService.getProjectMemberships;
   model.addMembership = hubApiService.addProjectMembership;
   model.removeMembership = hubApiService.removeProjectMembership;
+  model.membershipRoleCheck = hubApiService.projectMembershipRoleCheck;
   model.setMembershipRole = hubApiService.projectSetMembershipRole;
   model.unsetMembershipRole = hubApiService.projectUnsetMembershipRole;
 

@@ -43,8 +43,16 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   init();
 
   function init() {
-    loadProject();
-    loadAdminStatus();
+    loadAdminStatus()
+      .then(loadProject);
+  }
+
+  function loadAdminStatus() {
+    return roleCheckerService
+      .hasHubRole('admin')
+      .then(hasRole => {
+        ctrl.isAdmin = hasRole;
+      });
   }
 
   function loadProject() {
@@ -66,31 +74,25 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(memberships => {
         ctrl.memberships = memberships;
 
-        // Check to see if logged in user is a team member of the project, and
-        // if they have manager privileges
+        // We expect at this point that the Me resource has definitely been fetched!
         const currentUserId = Me.data.id;
         if (currentUserId) {
           ctrl.isProjectTeamMember = _.some(memberships, m => {
             return m.user.id === currentUserId;
           });
-          ctrl.isProjectManager = _.some(memberships, m => {
-            return m.role === 'manager' && m.user.id === currentUserId;
-          });
         }
       });
 
-    $q
-      .all([projectFetch, membershipsFetch])
+    const managerCheck = Projects
+      .membershipRoleCheck(id, 'manager')
+      .then(data => {
+        ctrl.isProjectManager = data.result;
+      });
+
+    return $q
+      .all([projectFetch, membershipsFetch, managerCheck])
       .finally(() => {
         ctrl.loading = false;
-      });
-  }
-
-  function loadAdminStatus() {
-    roleCheckerService
-      .hasHubRole('admin')
-      .then(hasRole => {
-        ctrl.isAdmin = hasRole;
       });
   }
 

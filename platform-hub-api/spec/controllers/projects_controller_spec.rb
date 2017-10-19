@@ -491,6 +491,93 @@ RSpec.describe ProjectsController, type: :controller do
     end
   end
 
+  describe 'GET #role_check' do
+    let :role do
+      'manager'
+    end
+
+    before do
+      @project = create :project
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :role_check, params: { id: @project.friendly_id, role: role }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      def expect_result result
+        get :role_check, params: { id: @project.friendly_id, role: role }
+        expect(response).to be_success
+        expect(json_response['result']).to eq result
+      end
+
+      context 'not an admin' do
+
+        context 'and not a member of the project' do
+          it 'should return a false result' do
+            expect_result false
+          end
+        end
+
+        context 'is a member of the project but not a manager' do
+          before do
+            create :project_membership, project: @project, user: current_user
+          end
+
+          it 'should return a false result' do
+            expect_result false
+          end
+        end
+
+        context 'is a manager for the project' do
+          before do
+            create :project_membership_as_manager, project: @project, user: current_user
+          end
+
+          it 'should return a true result' do
+            expect_result true
+          end
+        end
+
+        context 'is manager of a different project' do
+          before do
+            another_project = create :project
+            create :project_membership_as_manager, project: another_project, user: current_user
+          end
+
+          it 'should return a false result' do
+            expect_result false
+          end
+        end
+
+      end
+
+      it_behaves_like 'an admin' do
+
+        context 'but not a member or manager for the project' do
+          it 'should return a false result' do
+            expect_result false
+          end
+        end
+
+        context 'is a manager for the project' do
+          before do
+            create :project_membership_as_manager, project: @project, user: current_user
+          end
+
+          it 'should return a true result' do
+            expect_result true
+          end
+        end
+
+      end
+
+    end
+  end
+
   describe 'PUT #set_role' do
     let :role do
       'manager'

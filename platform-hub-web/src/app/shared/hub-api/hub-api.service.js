@@ -30,6 +30,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getProjectMemberships = buildSubCollectionFetcher('projects', 'memberships');
   service.addProjectMembership = addProjectMembership;
   service.removeProjectMembership = removeProjectMembership;
+  service.projectMembershipRoleCheck = projectMembershipRoleCheck;
   service.projectSetMembershipRole = projectSetMembershipRole;
   service.projectUnsetMembershipRole = projectUnsetMembershipRole;
   service.getProjectServices = buildSubCollectionFetcher('projects', 'services');
@@ -310,6 +311,25 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .delete(`${apiEndpoint}/projects/${projectId}/memberships/${userId}`)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to remove team member from project', response));
+        return $q.reject(response);
+      });
+  }
+
+  function projectMembershipRoleCheck(projectId, role) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(role) || _.isEmpty(role)) {
+      throw new Error('"role" argument not specified or empty');
+    }
+
+    return $http
+      .get(`${apiEndpoint}/projects/${projectId}/memberships/role_check/${role}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to check if user if a manager for the specific project', response));
         return $q.reject(response);
       });
   }

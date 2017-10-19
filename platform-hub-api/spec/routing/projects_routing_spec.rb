@@ -45,6 +45,10 @@ RSpec.describe ProjectsController, type: :routing do
         expect(:delete => '/projects/1/memberships/25').to route_to('projects#remove_membership', :id => '1', :user_id => '25')
       end
 
+      it 'routes to #role_check' do
+        expect(:get => '/projects/1/memberships/role_check/manager').to route_to('projects#role_check', :id => '1', :role => 'manager')
+      end
+
       it 'routes to #set_role' do
         expect(:put => '/projects/1/memberships/25/role/manager').to route_to('projects#set_role', :id => '1', :user_id => '25', :role => 'manager')
       end
@@ -99,6 +103,10 @@ RSpec.describe ProjectsController, type: :routing do
 
       it 'route to #remove_membership is not routable' do
         expect(:delete => '/projects/1/memberships/25').to_not be_routable
+      end
+
+      it 'route to #role_check is not routable' do
+        expect(:get => '/projects/1/memberships/role_check/manager').to_not be_routable
       end
 
       it 'route to #set_role is not routable' do
