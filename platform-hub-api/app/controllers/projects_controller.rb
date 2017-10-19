@@ -1,10 +1,10 @@
 class ProjectsController < ApiJsonController
 
-  before_action :find_project, only: [ :show, :update, :destroy, :memberships, :add_membership, :remove_membership, :set_role, :unset_role ]
+  before_action :find_project, only: [ :show, :update, :destroy, :memberships, :add_membership, :remove_membership, :set_role, :unset_role, :role_check ]
   before_action :find_user, only: [ :add_membership, :remove_membership, :set_role, :unset_role ]
 
-  skip_authorization_check only: [ :index, :show, :memberships ]
-  authorize_resource except: [ :index, :show, :memberships ]
+  skip_authorization_check only: [ :index, :show, :memberships, :role_check ]
+  authorize_resource except: [ :index, :show, :memberships, :role_check ]
 
   # GET /projects
   def index
@@ -110,6 +110,17 @@ class ProjectsController < ApiJsonController
     )
 
     head :no_content
+  end
+
+  # GET /projects/:id/memberships/role_check/:role
+  def role_check
+    case params[:role]
+    when 'manager'
+      is_manager = ProjectMembershipsService.is_user_a_manager_of_project?(@project.id, current_user.id)
+      render json: { result: is_manager }
+    else
+      not_found_error
+    end
   end
 
   # PUT /projects/:id/memberships/:user_id/role/:role
