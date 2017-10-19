@@ -701,4 +701,138 @@ RSpec.describe ProjectsController, type: :controller do
     end
   end
 
+  describe 'GET #kubernetes_groups' do
+    before do
+      @project = create :project
+      @other_project = create :project
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :kubernetes_groups, params: { id: @project.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      def expect_groups project, target, groups
+        params = { id: project.id }
+        params[:target] = target if target
+        get :kubernetes_groups, params: params
+        expect(response).to be_success
+        expect(pluck_from_json_response('name')).to match_array groups.map(&:name)
+      end
+
+      it_behaves_like 'an admin' do
+
+        context 'no target specified' do
+          it 'can fetch groups for the project as expected' do
+            expect_groups @project, nil, []
+          end
+
+          it 'can fetch groups for the other project as expected' do
+            expect_groups @other_project, nil, []
+          end
+        end
+
+        context 'target=user' do
+          it 'can fetch groups for the project as expected' do
+            expect_groups @project, 'user', []
+          end
+
+          it 'can fetch groups for the other project as expected' do
+            expect_groups @other_project, 'user', []
+          end
+        end
+
+        context 'target=robot' do
+          it 'can fetch groups for the project as expected' do
+            expect_groups @project, 'robot', []
+          end
+
+          it 'can fetch groups for the other project as expected' do
+            expect_groups @other_project, 'robot', []
+          end
+        end
+
+        it 'should return a 400 error for an invalid target' do
+          get :kubernetes_groups, params: { id: @project.id, target: 'invalid' }
+          expect(response).to have_http_status(400)
+        end
+
+      end
+
+      # NOTE: we don't need to repeat the target filtering specs anymore
+
+      context 'not an admin but is manager of the project' do
+
+        before do
+          create :project_membership_as_manager, project: @project, user: current_user
+        end
+
+        it 'can fetch groups for the project as expected' do
+          expect_groups @project, nil, []
+        end
+
+        it 'cannot fetch groups for the other project - returning 403 Forbidden' do
+          get :kubernetes_groups, params: { id: @other_project.id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+      context 'not an admin but is a member of the project' do
+
+        before do
+          create :project_membership, project: @project, user: current_user
+        end
+
+        it 'can fetch groups for the project as expected' do
+          expect_groups @project, nil, []
+        end
+
+        it 'cannot fetch groups for the other project - returning 403 Forbidden' do
+          get :kubernetes_groups, params: { id: @other_project.id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+      context 'not an admin but is manager of the other project' do
+
+        before do
+          create :project_membership_as_manager, project: @other_project, user: current_user
+        end
+
+        it 'cannot fetch groups for the project - returning 403 Forbidden' do
+          get :kubernetes_groups, params: { id: @project.id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'can fetch groups for the other project as expected' do
+          expect_groups @other_project, nil, []
+        end
+
+      end
+
+      context 'not an admin but is a member of other project' do
+
+        before do
+          create :project_membership, project: @other_project, user: current_user
+        end
+
+        it 'cannot fetch groups for the project - returning 403 Forbidden' do
+          get :kubernetes_groups, params: { id: @project.id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'can fetch groups for the other project as expected' do
+          expect_groups @other_project, nil, []
+        end
+
+      end
+
+    end
+  end
+
 end

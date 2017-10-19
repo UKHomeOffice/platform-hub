@@ -33,6 +33,30 @@ RSpec.describe ServicesController, type: :routing do
         expect(:delete => '/projects/foo/services/1').to route_to('services#destroy', :project_id => 'foo', :id => '1')
       end
 
+      it 'routes to #kubernetes_groups' do
+        expect(:get => '/projects/foo/services/1/kubernetes_groups').to route_to('services#kubernetes_groups', :project_id => 'foo', :id => '1')
+      end
+
+      it 'routes to #kubernetes_robot_tokens' do
+        expect(:get => '/projects/foo/services/1/kubernetes_robot_tokens').to route_to('services#kubernetes_robot_tokens', :project_id => 'foo', :id => '1')
+      end
+
+      it 'routes to #show_kubernetes_robot_token' do
+        expect(:get => '/projects/foo/services/1/kubernetes_robot_tokens/123').to route_to('services#show_kubernetes_robot_token', :project_id => 'foo', :id => '1', :token_id => '123')
+      end
+
+      it 'routes to #create_kubernetes_robot_token' do
+        expect(:post => '/projects/foo/services/1/kubernetes_robot_tokens').to route_to('services#create_kubernetes_robot_token', :project_id => 'foo', :id => '1')
+      end
+
+      it 'routes to #update_kubernetes_robot_token' do
+        expect(:patch => '/projects/foo/services/1/kubernetes_robot_tokens/123').to route_to('services#update_kubernetes_robot_token', :project_id => 'foo', :id => '1', :token_id => '123')
+      end
+
+      it 'routes to #destroy_kubernetes_robot_token' do
+        expect(:delete => '/projects/foo/services/1/kubernetes_robot_tokens/123').to route_to('services#destroy_kubernetes_robot_token', :project_id => 'foo', :id => '1', :token_id => '123')
+      end
+
     end
 
     context 'with projects/foo feature flag disabled' do
@@ -63,6 +87,30 @@ RSpec.describe ServicesController, type: :routing do
 
       it 'route to #destroy is not routable' do
         expect(:delete => '/projects/foo/services/1').to_not be_routable
+      end
+
+      it 'route to #kubernetes_groups is not routable' do
+        expect(:get => '/projects/foo/services/1/kubernetes_groups').to_not be_routable
+      end
+
+      it 'route to #kubernetes_robot_tokens is not routable' do
+        expect(:get => '/projects/foo/services/1/kubernetes_robot_tokens').to_not be_routable
+      end
+
+      it 'route to #show_kubernetes_robot_token is not routable' do
+        expect(:get => '/projects/foo/services/1/kubernetes_robot_tokens/123').to_not be_routable
+      end
+
+      it 'route to #create_kubernetes_robot_token is not routable' do
+        expect(:post => '/projects/foo/services/1/kubernetes_robot_tokens').to_not be_routable
+      end
+
+      it 'route to #update_kubernetes_robot_token is not routable' do
+        expect(:patch => '/projects/foo/services/1/kubernetes_robot_tokens/123').to_not be_routable
+      end
+
+      it 'route to #destroy_kubernetes_robot_token is not routable' do
+        expect(:delete => '/projects/foo/services/1/kubernetes_robot_tokens/123').to_not be_routable
       end
 
     end

@@ -46,7 +46,7 @@ class KubernetesToken < ApplicationRecord
   end
 
   def groups=(groups)
-    self['groups'] = 
+    self['groups'] =
       if groups.is_a? String
         groups.split(',').map(&:strip).reject(&:blank?).uniq
       elsif groups.is_a? Array
@@ -58,11 +58,12 @@ class KubernetesToken < ApplicationRecord
     ENCRYPTOR.decrypt(token)
   end
 
-  def user
-    if robot?
-      tokenable
-    elsif user? # via identity
-      tokenable.user
+  def owner
+    if self.user?
+      case self.tokenable
+      when Identity
+        self.tokenable.user
+      end
     end
   end
 
@@ -79,7 +80,7 @@ class KubernetesToken < ApplicationRecord
 
   def deescalate
     update_attributes(
-      expire_privileged_at: nil, 
+      expire_privileged_at: nil,
       groups: groups - KubernetesGroup.privileged_names
     )
   end
@@ -88,7 +89,7 @@ class KubernetesToken < ApplicationRecord
 
   def tokenable_set
     if robot?
-      errors.add(:tokenable_type, "must be `User` for robot token") if tokenable_type != 'User'
+      errors.add(:tokenable_type, "must be `Service` for robot token") if tokenable_type != 'Service'
     elsif user?
       errors.add(:tokenable_type, "must be `Identity` for user token") if tokenable_type != 'Identity'
     end
@@ -109,7 +110,7 @@ class KubernetesToken < ApplicationRecord
 
   def one_user_token_per_cluster
     # For user token we only allow one per cluster
-    return unless user?
+    return unless owner
     if new_record? && user_token_for_cluster_exists?(cluster)
       errors.add(:user, "can have only one user token per cluster")
     end
@@ -128,9 +129,11 @@ class KubernetesToken < ApplicationRecord
   end
 
   def readonly?
-    read_only_attrs = self.class.readonly_attributes.to_a
-    if persisted? && read_only_attrs.any? {|f| send(:"#{f}_changed?")}
-      raise ActiveRecord::ReadOnlyRecord, "#{read_only_attrs.join(', ')} can't be modified"
+    if persisted?
+      read_only_attrs = self.class.readonly_attributes.to_a
+      if read_only_attrs.any? {|f| send(:"#{f}_changed?")}
+        raise ActiveRecord::ReadOnlyRecord, "#{read_only_attrs.join(', ')} can't be modified"
+      end
     end
   end
 

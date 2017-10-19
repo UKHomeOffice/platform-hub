@@ -65,7 +65,7 @@
           <br />
 
           <div ng-if="i.kubernetes_tokens.length > 0">
-            <h5>User tokens</h5>
+            <h5>Tokens</h5>
             <ul class="md-body-1">
               <li ng-repeat="t in i.kubernetes_tokens">
                 <p>
@@ -85,30 +85,6 @@
                       <br />
                       {{t.expire_privileged_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
                       (<span am-time-ago="t.expire_privileged_at"></span>)
-                    </p>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-
-          <div ng-if="i.kubernetes_robot_tokens.length > 0">
-            <h5>Robot tokens</h5>
-            <ul class="md-body-1">
-              <li ng-repeat="t in i.kubernetes_robot_tokens">
-                <p>
-                  {{t.cluster.name}}: <strong>{{t.token}}</strong>
-                </p>
-
-                <ul ng-if="t.description || t.groups.length > 0">
-                  <li ng-if="t.description">
-                    <p>
-                      <em>{{t.description}}</em>
-                    </p>
-                  </li>
-                  <li ng-if="t.groups.length > 0">
-                    <p>
-                      Groups: {{t.groups.join(', ')}}
                     </p>
                   </li>
                 </ul>

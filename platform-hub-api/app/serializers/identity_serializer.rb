@@ -14,10 +14,4 @@ class IdentitySerializer < BaseSerializer
       object.tokens, each_serializer: KubernetesTokenSerializer
     )
   end
-
-  attribute :kubernetes_robot_tokens, if: -> { object.kubernetes? && FeatureFlagService.is_enabled?(:kubernetes_tokens) } do
-    ActiveModel::Serializer::CollectionSerializer.new(
-      object.user.robot_tokens, each_serializer: KubernetesTokenSerializer
-    )
-  end
 end

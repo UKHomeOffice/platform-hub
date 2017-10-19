@@ -11,7 +11,7 @@ RSpec.describe KubernetesToken, type: :model do
   end
 
   describe '#new' do
-    it 'encrypts plain token upon creation of a new object' do  
+    it 'encrypts plain token upon creation of a new object' do
       expect(@t.token).to match(/--[\p{Alnum}]{40}/)
       expect(@t.token).to_not eq token
       expect(@t.decrypted_token).to eq token
@@ -87,7 +87,7 @@ RSpec.describe KubernetesToken, type: :model do
     it { is_expected.to allow_value('foo_1').for(:name) }
     it { is_expected.to allow_value('foo.1').for(:name) }
     it { is_expected.to allow_value('foo@example.org').for(:name) }
-    
+
     it { is_expected.not_to allow_value('foo bar').for(:name) }
     it { is_expected.not_to allow_value('foo 1').for(:name) }
     it { is_expected.not_to allow_value('1 foo').for(:name) }
@@ -178,7 +178,7 @@ RSpec.describe KubernetesToken, type: :model do
 
   describe '#deescalate' do
     before do
-      @privileged_group = create :privileged_kubernetes_group
+      @privileged_group = create :kubernetes_group, :privileged
       @t.escalate @privileged_group.name, 2000
     end
 
@@ -200,11 +200,11 @@ RSpec.describe KubernetesToken, type: :model do
     end
   end
 
-  describe '#user' do
+  describe '#owner' do
     context 'for user kubernetes token' do
       it 'returns user via kubernetes identity' do
         expect(@t.tokenable_type).to eq 'Identity'
-        expect(@t.user).to eq @t.tokenable.user
+        expect(@t.owner).to eq @t.tokenable.user
       end
     end
 
@@ -213,9 +213,8 @@ RSpec.describe KubernetesToken, type: :model do
         @t = build :robot_kubernetes_token, token: token
       end
 
-      it 'returns user associated with robot token directly' do
-        expect(@t.tokenable_type).to eq 'User'
-        expect(@t.user).to eq @t.tokenable
+      it 'doesn\'t have an owner' do
+        expect(@t.owner).to be_nil
       end
     end
   end
@@ -251,7 +250,7 @@ RSpec.describe KubernetesToken, type: :model do
 
     describe '#kind' do
       it 'does not allow to update kind' do
-        expect { @t.update_attributes(kind: 'robot', tokenable: build(:user), description: 'blah') }.to raise_error(
+        expect { @t.update_attributes(kind: 'robot', tokenable: build(:service), description: 'blah') }.to raise_error(
           ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id can't be modified"
         )
       end
@@ -274,7 +273,7 @@ RSpec.describe KubernetesToken, type: :model do
       context 'for robot token' do
         it 'raises error on tokenable_type other than User' do
           expect { create :robot_kubernetes_token, tokenable_type: 'Identity' }.to raise_error(
-            ActiveRecord::RecordInvalid, "Validation failed: Tokenable type must be `User` for robot token"
+            ActiveRecord::RecordInvalid, "Validation failed: Tokenable type must be `Service` for robot token"
           )
           expect(KubernetesToken.user.count).to eq 0
         end
@@ -291,7 +290,7 @@ RSpec.describe KubernetesToken, type: :model do
           )
           expect(KubernetesToken.user.count).to eq 0
         end
-      end    
+      end
 
       it 'raises error on blank tokenable_id' do
         t = build :user_kubernetes_token, tokenable: nil
@@ -312,7 +311,7 @@ RSpec.describe KubernetesToken, type: :model do
     describe '#token_must_be_of_expected_length' do
       it 'raises error on token value shorter than given TOKEN_LENGTH' do
         expect { create :user_kubernetes_token, token: 'blah' }.to raise_error(
-          ActiveRecord::RecordInvalid, 
+          ActiveRecord::RecordInvalid,
           "Validation failed: Token is the wrong length (should be #{KubernetesToken::TOKEN_LENGTH} characters)"
         )
         expect(KubernetesToken.user.count).to eq 0
@@ -327,7 +326,7 @@ RSpec.describe KubernetesToken, type: :model do
       it 'raises error on more than one token per user per cluster' do
         expect(KubernetesToken.user.count).to eq 1
         expect { create :user_kubernetes_token, cluster: @t.cluster, tokenable: @t.tokenable }.to raise_error(
-          ActiveRecord::RecordInvalid, 
+          ActiveRecord::RecordInvalid,
           "Validation failed: User can have only one user token per cluster"
         )
         expect(KubernetesToken.user.count).to eq 1
@@ -341,7 +340,7 @@ RSpec.describe KubernetesToken, type: :model do
 
       it 'raises error on duplicate robot name for a given cluster' do
         expect { create :robot_kubernetes_token, cluster: @robot_token.cluster, name: @robot_token.name }.to raise_error(
-          ActiveRecord::RecordInvalid, 
+          ActiveRecord::RecordInvalid,
           "Validation failed: Name must be unique for each robot token within a cluster"
         )
         expect(KubernetesToken.robot.count).to eq 1
@@ -358,7 +357,7 @@ RSpec.describe KubernetesToken, type: :model do
     describe '#robot_description_present' do
       it 'raises error on missing robot token description' do
         expect { create :robot_kubernetes_token, description: '' }.to raise_error(
-          ActiveRecord::RecordInvalid, 
+          ActiveRecord::RecordInvalid,
           "Validation failed: Description can't be blank"
         )
       end

@@ -23,7 +23,7 @@
     </div>
   </md-toolbar>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.service">
+  <md-content>
 
     <div class="md-body-2">
       <a class="md-button" ui-sref="projects.detail({id: $ctrl.projectId})">
@@ -32,22 +32,108 @@
       </a>
     </div>
 
-    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
-      <md-content layout-padding>
+    <md-tabs
+      ng-if="!$ctrl.loading && $ctrl.service"
+      md-dynamic-height
+      md-border-bottom>
 
-        <h3 class="md-title" layout="row">
-          {{$ctrl.service.name}}
-        </h3>
+      <md-tab id="overview-tab">
+        <md-tab-label>Overview</md-tab-label>
+        <md-tab-body>
+          <div layout-padding>
+            <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+              <md-content layout-padding>
 
-        <p
-          class="md-body-1"
-          md-colors="{background: 'blue-grey-50'}"
-          ng-if="$ctrl.service.description"
-          ng-bind-html='$ctrl.service.description | simpleFormat'>
-        </p>
+                <h3 class="md-title" layout="row">
+                  {{$ctrl.service.name}}
+                </h3>
 
-      </md-content>
-    </div>
+                <p
+                  class="md-body-1"
+                  md-colors="{background: 'blue-grey-50'}"
+                  ng-if="$ctrl.service.description"
+                  ng-bind-html='$ctrl.service.description | simpleFormat'>
+                </p>
+
+              </md-content>
+            </div>
+          </div>
+        </md-tab-body>
+      </md-tab>
+
+      <md-tab id="kube-robot-tokens-tab" md-on-select="$ctrl.loadKubernetesRobotTokens()">
+        <md-tab-label>Kube Robot Tokens</md-tab-label>
+        <md-tab-body>
+          <loading-indicator loading="$ctrl.processingKubernetesRobotTokens"></loading-indicator>
+
+          <div
+            ng-if="$ctrl.shouldShowCreateKubernetesRobotTokenButton()"
+            layout="row"
+            layout-align="center center">
+            <md-button
+              class="md-primary md-raised"
+              aria-label="Create a new kubernetes robot token for this service"
+              ui-sref="kubernetes.robot-tokens.new({fromProject: $ctrl.projectId, fromService: $ctrl.service.id})">
+              Create a new kube robot token
+            </md-button>
+          </div>
+
+          <!-- TODO: may need to DRY this up! Can we? -->
+          <md-card
+            ng-if="$ctrl.kubernetesRobotTokens.length > 0"
+            ng-repeat="t in $ctrl.kubernetesRobotTokens track by t.name">
+            <md-card-title>
+              <md-card-title-text>
+                <span class="md-headline">
+                  {{t.name}}
+                </span>
+              </md-card-title-text>
+            </md-card-title>
+
+            <md-card-content>
+              <p
+                class="md-body-1"
+                md-colors="{background: 'blue-grey-50'}"
+                ng-if="t.description"
+                ng-bind-html='t.description | simpleFormat'
+                layout-padding>
+              </p>
+              <p class="md-body-1">
+                <strong>Cluster:</strong> {{t.cluster.name}}
+              </p>
+              <p class="md-body-1">
+                <strong>Token:</strong> {{t.token}}
+              </p>
+              <p class="md-body-1">
+                <strong>UID:</strong> {{t.uid}}
+              </p>
+              <p class="md-body-1" ng-if="t.groups && t.groups.length > 0">
+                <strong>Groups:</strong> {{t.groups.join(', ')}}
+              </p>
+            </md-card-content>
+
+            <md-card-actions layout="row" layout-align="start center">
+              <md-button
+                class="md-primary"
+                aria-label="View and edit details for this token"
+                ui-sref="kubernetes.robot-tokens.edit({cluster: t.cluster.name, tokenId: t.id, fromProject: $ctrl.projectId, fromService: $ctrl.service.id})">
+                View and edit
+              </md-button>
+              <md-button
+                class="md-primary"
+                ng-click="$ctrl.deleteKubernetesRobotToken(t.id, $event)"
+                ng-disabled="$ctrl.processingKubernetesRobotTokens"
+                aria-label="Delete kubernetes robot token">
+                Delete
+              </md-button>
+            </md-card-actions>
+          </md-card>
+        </md-tab-body>
+      </md-tab>
+
+    </md-tabs>
 
   </md-content>
+
+  <br /><br />
 </div>

@@ -64,6 +64,9 @@
           layout-padding>
         </p>
         <p class="md-body-1">
+          <strong>Cluster:</strong> {{t.cluster.name}}
+        </p>
+        <p class="md-body-1">
           <strong>Token:</strong> {{t.token}}
         </p>
         <p class="md-body-1">
@@ -71,10 +74,6 @@
         </p>
         <p class="md-body-1" ng-if="t.groups && t.groups.length > 0">
           <strong>Groups:</strong> {{t.groups.join(', ')}}
-        </p>
-        <p class="md-body-1" ng-if="t.user">
-          <strong>Associated with user:</strong>
-          {{t.user.name}} ({{t.user.email}})
         </p>
       </md-card-content>
 
@@ -88,7 +87,7 @@
         <md-button
           class="md-primary"
           ng-click="$ctrl.deleteToken(t.id, $event)"
-          aria-label="Remove kubernetes robot token">
+          aria-label="Delete kubernetes robot token">
           Delete
         </md-button>
       </md-card-actions>

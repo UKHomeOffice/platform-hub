@@ -34,4 +34,8 @@ module ApiJsonErrorHandler
     render_error err.message, :unprocessable_entity
   end
 
+  def bad_request_error message
+    render_error message, :bad_request
+  end
+
 end

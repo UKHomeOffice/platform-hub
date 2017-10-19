@@ -1,9 +1,29 @@
 class ServicesController < ApiJsonController
 
-  before_action :find_project
-  before_action :find_service, only: [ :show, :update, :destroy ]
+  include KubernetesGroupsSubCollection
+  include KubernetesTokensManagement
 
-  # GET /projects/foo/services
+  before_action :find_project
+
+  before_action :find_service, only: [
+    :show,
+    :update,
+    :destroy,
+    :kubernetes_groups,
+    :kubernetes_robot_tokens,
+    :show_kubernetes_robot_token,
+    :create_kubernetes_robot_token,
+    :update_kubernetes_robot_token,
+    :destroy_kubernetes_robot_token
+  ]
+
+  before_action :find_robot_token, only: [
+    :show_kubernetes_robot_token,
+    :update_kubernetes_robot_token,
+    :destroy_kubernetes_robot_token
+  ]
+
+  # GET /projects/:project_id/services
   def index
     authorize! :read_services_in_project, @project
 
@@ -11,14 +31,14 @@ class ServicesController < ApiJsonController
     render json: services
   end
 
-  # GET /projects/foo/services/1
+  # GET /projects/:project_id/services/:id
   def show
     authorize! :read_services_in_project, @project
 
     render json: @service
   end
 
-  # POST /projects/foo/services
+  # POST /projects/:project_id/services
   def create
     authorize! :administer_services_in_project, @project
 
@@ -37,7 +57,7 @@ class ServicesController < ApiJsonController
     end
   end
 
-  # PATCH/PUT /projects/foo/services/1
+  # PATCH/PUT /projects/:project_id/services/:id
   def update
     authorize! :administer_services_in_project, @project
 
@@ -54,7 +74,7 @@ class ServicesController < ApiJsonController
     end
   end
 
-  # DELETE /projects/foo/services/1
+  # DELETE /projects/:project_id/services/:id
   def destroy
     authorize! :administer_services_in_project, @project
 
@@ -66,11 +86,57 @@ class ServicesController < ApiJsonController
     AuditService.log(
       context: audit_context,
       action: 'destroy',
+      auditable: @service,
       associated: @project,
       comment: "User '#{current_user.email}' deleted service: '#{name}' (ID: #{id}) in project '#{@project.shortname}'"
     )
 
     head :no_content
+  end
+
+  # GET /projects/:project_id/services/:id/kubernetes_groups
+  def kubernetes_groups
+    authorize! :read_resources_in_services_in_project, @project
+
+    kubernetes_groups_sub_collection @service, params[:target]
+  end
+
+  # GET /projects/:project_id/services/:id/kubernetes_robot_tokens
+  def kubernetes_robot_tokens
+    authorize! :read_resources_in_services_in_project, @project
+
+    render json: @service.kubernetes_robot_tokens.order(:name)
+  end
+
+  # GET /projects/:project_id/services/:id/kubernetes_robot_tokens/:token_id
+  def show_kubernetes_robot_token
+    authorize! :read_resources_in_services_in_project, @project
+
+    render json: @token
+  end
+
+  # POST /projects/:project_id/services/:id/kubernetes_robot_tokens
+  def create_kubernetes_robot_token
+    authorize! :administer_resources_in_services_in_project, @project
+
+    token_params = params.require(:robot_token)
+    token_params[:service_id] = @service.id
+    create_kubernetes_token 'robot', token_params
+  end
+
+  # PATCH /projects/:project_id/services/:id/kubernetes_robot_tokens/:token_id
+  def update_kubernetes_robot_token
+    authorize! :administer_resources_in_services_in_project, @project
+
+    token_params = params.require(:robot_token)
+    update_kubernetes_token 'robot', @token, token_params
+  end
+
+  # DELETE /projects/:project_id/services/:id/kubernetes_robot_tokens/:token_id
+  def destroy_kubernetes_robot_token
+    authorize! :administer_resources_in_services_in_project, @project
+
+    destroy_kubernetes_token @token
   end
 
   private
@@ -81,6 +147,10 @@ class ServicesController < ApiJsonController
 
   def find_service
     @service = @project.services.find params[:id]
+  end
+
+  def find_robot_token
+    @token = @service.kubernetes_robot_tokens.find params[:token_id]
   end
 
   # Only allow a trusted parameter "white list" through.

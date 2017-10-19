@@ -33,4 +33,9 @@ class Project < ApplicationRecord
   has_many :services,
     dependent: :delete_all
 
+  has_many :kubernetes_groups,
+    through: :allocations,
+    source: :allocatable,
+    source_type: 'KubernetesGroup'
+
 end

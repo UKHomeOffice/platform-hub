@@ -92,7 +92,7 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
 
     if (ctrl.isNew) {
       hubApiService
-        .createKubernetesToken(ctrl.user, ctrl.tokenData)
+        .createKubernetesToken(ctrl.user.id, ctrl.tokenData)
         .then(() => {
           logger.success('New kubernetes token created');
           $state.go('kubernetes.user-tokens.list', {userId: ctrl.user.id});

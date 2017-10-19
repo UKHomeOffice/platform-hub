@@ -22,11 +22,19 @@ export const Projects = function ($window, $q, apiBackoffTimeMs, hubApiService, 
   model.setMembershipRole = hubApiService.projectSetMembershipRole;
   model.unsetMembershipRole = hubApiService.projectUnsetMembershipRole;
 
+  model.getKubernetesGroups = hubApiService.getProjectKubernetesGroups;
+
   model.getServices = hubApiService.getProjectServices;
   model.getService = hubApiService.getProjectService;
   model.createService = hubApiService.createProjectService;
   model.updateService = hubApiService.updateProjectService;
   model.deleteService = hubApiService.deleteProjectService;
+  model.getServiceKubernetesGroups = hubApiService.getProjectServiceKubernetesGroups;
+  model.getServiceKubernetesRobotTokens = hubApiService.getProjectServiceKubernetesRobotTokens;
+  model.getServiceKubernetesRobotToken = hubApiService.getProjectServiceKubernetesRobotToken;
+  model.createServiceKubernetesRobotToken = hubApiService.createProjectServiceKubernetesRobotToken;
+  model.updateServiceKubernetesRobotToken = hubApiService.updateProjectServiceKubernetesRobotToken;
+  model.deleteServiceKubernetesRobotToken = hubApiService.deleteProjectServiceKubernetesRobotToken;
 
   return model;
 

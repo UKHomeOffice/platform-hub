@@ -33,7 +33,7 @@ RSpec.describe Kubernetes::RevokeController, type: :controller do
               data: {
                 cluster: @token.cluster.name
               },
-              comment: "User '#{current_user.email}' revoked `#{@token.cluster.name}` token for `#{@token.user.email}`."
+              comment: "User '#{current_user.email}' revoked `#{@token.cluster.name}` token (name: '#{@token.name}')"
             )
 
             post :revoke, params: { token: @token.decrypted_token }
