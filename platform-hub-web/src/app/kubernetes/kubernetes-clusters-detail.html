@@ -1,0 +1,74 @@
+<div class="kubernetes-clusters-detail">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3 ng-if="$ctrl.cluster">
+        <span>Kubernetes Cluster: </span>
+        <span>{{$ctrl.cluster.name}}</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        ng-if="$ctrl.cluster"
+        aria-label="Edit this cluster"
+        ui-sref="kubernetes.clusters.edit({id: $ctrl.cluster.id})">
+        <md-icon>edit</md-icon>
+        Edit
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content>
+    <md-tabs
+      ng-if="!$ctrl.loading && $ctrl.cluster"
+      md-dynamic-height
+      md-border-bottom>
+
+      <md-tab id="overview-tab">
+        <md-tab-label>Overview</md-tab-label>
+        <md-tab-body>
+          <div layout-padding>
+            <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+              <md-content layout-padding>
+
+                <h3 class="md-title">
+                  {{$ctrl.cluster.name}}
+                </h3>
+
+                <p
+                  class="md-body-1"
+                  md-colors="{background: 'blue-grey-50'}"
+                  ng-if="$ctrl.cluster.description"
+                  ng-bind-html='$ctrl.cluster.description | simpleFormat'>
+                </p>
+
+              </md-content>
+            </div>
+          </div>
+        </md-tab-body>
+      </md-tab>
+
+      <md-tab id="allocations-tab" md-on-select="$ctrl.loadAllocations()">
+        <md-tab-label>Allocations</md-tab-label>
+        <md-tab-body>
+          <loading-indicator loading="$ctrl.loadingAllocations"></loading-indicator>
+
+          <div layout="row" layout-align="center center">
+            <md-button
+              class="md-primary md-raised"
+              ng-click="$ctrl.allocate($event)">
+              Allocate this cluster to a project
+            </md-button>
+          </div>
+
+          <allocations-listing
+            busy="$ctrl.loadingAllocations"
+            items="$ctrl.allocations"
+            allocatable-noun="cluster"
+            after-delete="$ctrl.loadAllocations()">
+          </allocations-listing>
+        </md-tab-body>
+      </md-tab>
+    </md-tabs>
+  </md-content>
+</div>

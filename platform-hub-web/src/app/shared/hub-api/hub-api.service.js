@@ -33,6 +33,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.projectMembershipRoleCheck = projectMembershipRoleCheck;
   service.projectSetMembershipRole = projectSetMembershipRole;
   service.projectUnsetMembershipRole = projectUnsetMembershipRole;
+  service.getProjectKubernetesClusters = buildSubCollectionFetcher('projects', 'kubernetes_clusters');
   service.getProjectKubernetesGroups = getProjectKubernetesGroups;
   service.getProjectServices = buildSubCollectionFetcher('projects', 'services');
   service.getProjectService = buildSubResourceFetcher('projects', 'services');
@@ -95,6 +96,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getKubernetesCluster = buildResourceFetcher('kubernetes/clusters');
   service.createKubernetesCluster = buildResourceCreator('kubernetes/clusters');
   service.updateKubernetesCluster = buildResourceUpdater('kubernetes/clusters');
+  service.allocateKubernetesCluster = allocateKubernetesCluster;
+  service.getKubernetesClusterAllocations = buildSubCollectionFetcher('kubernetes/clusters', 'allocations');
 
   service.getKubernetesGroups = buildCollectionFetcher('kubernetes/groups');
   service.getKubernetesGroup = buildResourceFetcher('kubernetes/groups');
@@ -866,6 +869,26 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       return $q.reject(response);
     }
     return response;
+  }
+
+  function allocateKubernetesCluster(clusterId, projectId) {
+    if (_.isNull(clusterId) || _.isEmpty(clusterId)) {
+      throw new Error('"clusterId" argument not specified or empty');
+    }
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/kubernetes/clusters/${clusterId}/allocate`, {
+        project_id: projectId
+      })
+      .then(handle4xxError)
+      .then(response => response.data)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse(`Failed to allocate Kubernetes cluster to a project`, response));
+        return $q.reject(response);
+      });
   }
 
   function allocateKubernetesGroup(groupId, projectId, serviceId) {

@@ -9,12 +9,11 @@ function KubernetesGroupsListController(KubernetesGroups) {
   const ctrl = this;
 
   ctrl.KubernetesGroups = KubernetesGroups;
+  ctrl.loading = true;
 
   init();
 
   function init() {
-    ctrl.loading = true;
-
     KubernetesGroups
       .refresh()
       .finally(() => {

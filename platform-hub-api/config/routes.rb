@@ -60,6 +60,7 @@ Rails.application.routes.draw do
         delete '/memberships/:user_id/role/:role', to: 'projects#unset_role', on: :member
       end
 
+      get :kubernetes_clusters, on: :member
       get :kubernetes_groups, on: :member
 
       resources :services do
@@ -107,7 +108,10 @@ Rails.application.routes.draw do
           patch '/deescalate', to: 'tokens#deescalate', on: :member
         end
 
-        resources :clusters, except: :destroy
+        resources :clusters, except: :destroy do
+          post :allocate, on: :member
+          get :allocations, on: :member
+        end
 
         get '/changeset/:cluster', to: 'changeset#index'
 

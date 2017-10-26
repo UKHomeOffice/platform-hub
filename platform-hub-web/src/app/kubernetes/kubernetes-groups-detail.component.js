@@ -6,7 +6,7 @@ export const KubernetesGroupsDetailComponent = {
   controller: KubernetesGroupsDetailController
 };
 
-function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, projectServiceSelectorPopupService, hubApiService, logger) {
+function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, projectServiceSelectorPopupService, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -21,7 +21,6 @@ function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, p
   ctrl.deleteGroup = deleteGroup;
   ctrl.allocate = allocate;
   ctrl.loadAllocations = loadAllocations;
-  ctrl.deleteAllocation = deleteAllocation;
 
   init();
 
@@ -70,8 +69,8 @@ function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, p
   }
 
   function allocate(targetEvent) {
-    projectServiceSelectorPopupService
-      .open(true, targetEvent)
+    return projectServiceSelectorPopupService
+      .openForProjectOrService(targetEvent)
       .then(result => {
         if (result.service) {
           return KubernetesGroups.allocateToService(
@@ -102,32 +101,6 @@ function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, p
       })
       .finally(() => {
         ctrl.loadingAllocations = false;
-      });
-  }
-
-  function deleteAllocation(allocation, targetEvent) {
-    const confirm = $mdDialog.confirm()
-      .title('Are you sure?')
-      .textContent('This will delete the allocation selected')
-      .ariaLabel('Confirm deletion of allocation of RBAC group')
-      .targetEvent(targetEvent)
-      .ok('Do it')
-      .cancel('Cancel');
-
-    $mdDialog
-      .show(confirm)
-      .then(() => {
-        ctrl.loadingAllocations = true;
-
-        return hubApiService
-          .deleteAllocation(allocation.id)
-          .then(() => {
-            logger.success('Allocation deleted');
-            return loadAllocations();
-          })
-          .finally(() => {
-            ctrl.loadingAllocations = false;
-          });
       });
   }
 }

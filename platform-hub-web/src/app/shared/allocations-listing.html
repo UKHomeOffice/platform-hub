@@ -1,0 +1,36 @@
+<div ng-if="$ctrl.items.length == 0" layout-padding>
+  <p class="md-body-1 none-text text-center">
+    This {{$ctrl.allocatableNoun}} has not been allocated to anything yet
+  </p>
+</div>
+
+<md-card
+  ng-repeat="a in $ctrl.items track by a.id"
+  ng-init="ar_type = a.allocation_receivable.type; ar = a.allocation_receivable[ar_type]">
+  <md-card-title>
+    <span class="md-headline" ng-switch="ar_type">
+      <span ng-switch-when="project">
+        Project: {{ar.name}} ({{ar.shortname}})
+      </span>
+      <span ng-switch-when="service">
+        Service: {{ar.name}}
+        <br />
+        <span class="md-subhead">
+          Project: {{ar.project.name}} ({{ar.project.shortname}})
+        </span>
+      </span>
+      <span ng-switch-default>
+        <span>{{ar_type}}: </span>
+        <span>{{ar.name || ar.shortname || ar.title}}</span>
+      </span>
+    </span>
+  </md-card-title>
+  <md-card-actions layout="row" layout-align="start center">
+    <md-button
+      class="md-primary"
+      aria-label="Delete this allocation"
+      ng-click="$ctrl.deleteAllocation(a, $event)">
+      Delete
+    </md-button>
+  </md-card-actions>
+</md-card>

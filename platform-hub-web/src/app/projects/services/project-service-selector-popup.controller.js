@@ -1,10 +1,10 @@
-export const ProjectServiceSelectorPopupController = function ($mdDialog, Projects, serviceIsOptional) {
+export const ProjectServiceSelectorPopupController = function ($mdDialog, Projects, mode) {
   'ngInject';
 
   const ctrl = this;
 
   ctrl.Projects = Projects;
-  ctrl.serviceIsOptional = serviceIsOptional;
+  ctrl.mode = mode;
 
   ctrl.loading = true;
   ctrl.selectedProject = null;
@@ -27,6 +27,10 @@ export const ProjectServiceSelectorPopupController = function ($mdDialog, Projec
   }
 
   function handleProjectChanged() {
+    if (ctrl.mode === 'project-only') {
+      return;
+    }
+
     ctrl.loading = true;
     ctrl.services = [];
     ctrl.selectedService = null;

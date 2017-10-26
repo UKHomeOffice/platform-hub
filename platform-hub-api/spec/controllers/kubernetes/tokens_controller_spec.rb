@@ -124,6 +124,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
               'uid' => @token.uid,
               'groups' => @token.groups,
               'cluster' => {
+                'id' => @token.cluster.friendly_id,
                 'name' => @token.cluster.name,
                 'description' => @token.cluster.description
               }
@@ -147,6 +148,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
               'uid' => @token.uid,
               'groups' => @token.groups,
               'cluster' => {
+                'id' => @token.cluster.friendly_id,
                 'name' => @token.cluster.name,
                 'description' => @token.cluster.description
               },

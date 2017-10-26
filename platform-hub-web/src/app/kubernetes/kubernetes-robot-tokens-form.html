@@ -29,7 +29,7 @@
               <input
                 name="service"
                 ng-value="$ctrl.service.name"
-                ng-class="{'pointer': $ctrl.isAdmin}"
+                ng-class="{'pointer': $ctrl.isAdmin && !$ctrl.fromService}"
                 disabled="true"
                 required>
               <div ng-messages="$ctrl.kubernetesTokenForm.service.$error">
@@ -63,6 +63,16 @@
             </md-button>
           </div>
 
+          <p
+            ng-if="!$ctrl.processing && $ctrl.service && $ctrl.allowedClusters.length == 0"
+            class="md-body-2"
+            md-colors="{background: 'accent-50'}"
+            layout-padding>
+            No Kubernetes clusters have been allocated yet to this project.
+            <br />
+            Please contact the {{$ctrl.AppSettings.getPlatformName()}} team to allocate a cluster to use in the project.
+          </p>
+
           <md-input-container class="md-block">
             <label for="cluster">Cluster:</label>
             <md-select
@@ -71,9 +81,9 @@
               ng-change="$ctrl.handleClusterChange()"
               required
               placeholder="Select the cluster"
-              ng-disabled="!$ctrl.service || (!$ctrl.isNew && $ctrl.token.cluster)">
+              ng-disabled="!$ctrl.service || (!$ctrl.isNew && $ctrl.token.cluster) || $ctrl.allowedClusters.length == 0">
               <md-option
-                ng-repeat="c in $ctrl.KubernetesClusters.all track by c.name"
+                ng-repeat="c in $ctrl.allowedClusters track by c.name"
                 ng-value="c.name">
                 {{c.name}} ({{c.description}})
               </md-option>

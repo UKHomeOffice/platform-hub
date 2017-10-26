@@ -701,6 +701,131 @@ RSpec.describe ProjectsController, type: :controller do
     end
   end
 
+  describe 'GET #kubernetes_clusters' do
+    before do
+      @project = create :project
+      @other_project = create :project
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :kubernetes_clusters, params: { id: @project.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      before do
+        @project_cluster_1 = create :kubernetes_cluster, allocate_to: @project
+        @other_project_cluster = create :kubernetes_cluster, allocate_to: @other_project
+        @project_cluster_2 = create :kubernetes_cluster, allocate_to: @project
+
+        # Unallocated clusters
+        create_list :kubernetes_cluster, 2
+      end
+
+      let :project_clusters do
+        [
+          @project_cluster_1,
+          @project_cluster_2
+        ].sort_by(&:name)
+      end
+
+      let :other_project_clusters do
+        [
+          @other_project_cluster
+        ].sort_by(&:name)
+      end
+
+      def expect_clusters project, clusters
+        get :kubernetes_clusters, params: { id: project.id }
+        expect(response).to be_success
+        expect(pluck_from_json_response('name')).to match_array clusters.map(&:name)
+      end
+
+      it_behaves_like 'an admin' do
+
+        it 'can fetch clusters for the project as expected' do
+          expect_clusters @project, project_clusters
+        end
+
+        it 'can fetch clusters for the other project as expected' do
+          expect_clusters @other_project, other_project_clusters
+        end
+
+      end
+
+      context 'not an admin but is manager of the project' do
+
+        before do
+          create :project_membership_as_manager, project: @project, user: current_user
+        end
+
+        it 'can fetch clusters for the project as expected' do
+          expect_clusters @project, project_clusters
+        end
+
+        it 'cannot fetch clusters for the other project - returning 403 Forbidden' do
+          get :kubernetes_clusters, params: { id: @other_project.id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+      context 'not an admin but is a member of the project' do
+
+        before do
+          create :project_membership, project: @project, user: current_user
+        end
+
+        it 'can fetch clusters for the project as expected' do
+          expect_clusters @project, project_clusters
+        end
+
+        it 'cannot fetch clusters for the other project - returning 403 Forbidden' do
+          get :kubernetes_clusters, params: { id: @other_project.id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+      context 'not an admin but is manager of the other project' do
+
+        before do
+          create :project_membership_as_manager, project: @other_project, user: current_user
+        end
+
+        it 'cannot fetch clusters for the project - returning 403 Forbidden' do
+          get :kubernetes_clusters, params: { id: @project.id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'can fetch clusters for the other project as expected' do
+          expect_clusters @other_project, other_project_clusters
+        end
+
+      end
+
+      context 'not an admin but is a member of other project' do
+
+        before do
+          create :project_membership, project: @other_project, user: current_user
+        end
+
+        it 'cannot fetch clusters for the project - returning 403 Forbidden' do
+          get :kubernetes_clusters, params: { id: @project.id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'can fetch clusters for the other project as expected' do
+          expect_clusters @other_project, other_project_clusters
+        end
+
+      end
+
+    end
+  end
+
   describe 'GET #kubernetes_groups' do
     before do
       @project = create :project

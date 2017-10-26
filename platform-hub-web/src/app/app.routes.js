@@ -26,6 +26,7 @@ import {
 } from './home/home.module';
 import {IdentitiesManager} from './identities/identities.module';
 import {
+  KubernetesClustersDetail,
   KubernetesClustersForm,
   KubernetesClustersList,
   KubernetesGroupsDetail,
@@ -141,6 +142,18 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             rolePermitted: 'admin'
           }
         })
+        .state('kubernetes.clusters.detail', {
+          url: '/detail/:id',
+          component: KubernetesClustersDetail,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.projects,
+            rolePermitted: 'admin'
+          }
+        })
         .state('kubernetes.clusters.new', {
           url: '/new',
           component: KubernetesClustersForm,
@@ -151,7 +164,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           }
         })
         .state('kubernetes.clusters.edit', {
-          url: '/edit/:name',
+          url: '/edit/:id',
           component: KubernetesClustersForm,
           resolve: {
             transition: '$transition$'

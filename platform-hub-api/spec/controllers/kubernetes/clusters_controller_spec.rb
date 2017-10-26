@@ -12,32 +12,42 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      context 'when no kubernetes clusters exist' do
+      it_behaves_like 'not an admin so forbidden'  do
         before do
-          expect(KubernetesCluster).to receive(:order) { [] }
-        end
-
-        it 'returns an empty list' do
           get :index
-          expect(response).to be_success
-          expect(json_response).to eq([])
         end
       end
 
-      context 'when kubernetes clusters already exist' do
-        before do
-          create(:kubernetes_cluster, name: :foo, description: 'Foo')
-          create(:kubernetes_cluster, name: :bar, description: 'Bar')
-          create(:kubernetes_cluster, name: :baz, description: 'Baz')
+      it_behaves_like 'an admin' do
+
+        context 'when no kubernetes clusters exist' do
+          before do
+            expect(KubernetesCluster).to receive(:order) { [] }
+          end
+
+          it 'returns an empty list' do
+            get :index
+            expect(response).to be_success
+            expect(json_response).to eq([])
+          end
         end
 
-        it 'returns the existing kubernetes clusters ordered by name descending' do
-          get :index
-          expect(response).to be_success
-          expect(json_response[0]['name']).to eq 'bar'
-          expect(json_response[1]['name']).to eq 'baz'
-          expect(json_response[2]['name']).to eq 'foo'
+        context 'when kubernetes clusters already exist' do
+          before do
+            create(:kubernetes_cluster, name: :foo, description: 'Foo')
+            create(:kubernetes_cluster, name: :bar, description: 'Bar')
+            create(:kubernetes_cluster, name: :baz, description: 'Baz')
+          end
+
+          it 'returns the existing kubernetes clusters ordered by name descending' do
+            get :index
+            expect(response).to be_success
+            expect(json_response[0]['name']).to eq 'bar'
+            expect(json_response[1]['name']).to eq 'baz'
+            expect(json_response[2]['name']).to eq 'foo'
+          end
         end
+
       end
 
     end
@@ -56,22 +66,33 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      context 'for a non-existent cluster' do
-        it 'should return a 404' do
-          get :show, params: { id: 'unknown' }
-          expect(response).to have_http_status(404)
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :show, params: { id: @cluster.friendly_id }
         end
       end
 
-      context 'for a cluster that exists' do
-        it 'should return the specified cluster resource' do
-          get :show, params: { id: @cluster.friendly_id }
-          expect(response).to be_success
-          expect(json_response).to eq({
-            'name' => @cluster.name,
-            'description' => @cluster.description,
-          })
+      it_behaves_like 'an admin' do
+
+        context 'for a non-existent cluster' do
+          it 'should return a 404' do
+            get :show, params: { id: 'unknown' }
+            expect(response).to have_http_status(404)
+          end
         end
+
+        context 'for a cluster that exists' do
+          it 'should return the specified cluster resource' do
+            get :show, params: { id: @cluster.friendly_id }
+            expect(response).to be_success
+            expect(json_response).to eq({
+              'id' => @cluster.friendly_id,
+              'name' => @cluster.name,
+              'description' => @cluster.description,
+            })
+          end
+        end
+
       end
 
     end
@@ -118,6 +139,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
           new_cluster_external_id = cluster.friendly_id
           new_cluster_internal_id = cluster.id
           expect(json_response).to eq({
+            'id' => new_cluster_external_id,
             'name' => post_data[:cluster][:name],
             'description' => post_data[:cluster][:description],
           });
@@ -201,6 +223,127 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
           expect(audit.action).to eq 'update'
           expect(audit.auditable.id).to eq @cluster.id
           expect(audit.user.id).to eq current_user_id
+        end
+
+      end
+
+    end
+  end
+
+  describe 'POST #allocate' do
+    before do
+      @cluster = create :kubernetes_cluster
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        post :allocate, params: { id: @cluster.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          post :allocate, params: { id: @cluster.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        context 'for a non-existent project' do
+          it 'should return a 404' do
+            post :allocate, params: { id: @cluster.id, project_id: 'unknown' }
+            expect(response).to have_http_status(404)
+          end
+        end
+
+        context 'for a project that exists' do
+          let!(:project) { create :project }
+
+          it 'allocates the cluster to the project' do
+            expect(Allocation.count).to be 0
+            expect(Audit.count).to eq 0
+            post :allocate, params: { id: @cluster.id, project_id: project.friendly_id }
+            expect(response).to be_success
+            expect(Allocation.count).to be 1
+            expect(Audit.count).to eq 1
+            allocation = Allocation.first
+            expect(allocation.allocatable).to eq @cluster
+            expect(allocation.allocation_receivable).to eq project
+            audit = Audit.first
+            expect(audit.action).to eq 'create'
+            expect(audit.auditable).to eq allocation
+            expect(audit.associated).to eq project
+            expect(audit.data).to eq({
+              'allocatable_type' => @cluster.class.name,
+              'allocatable_id' => @cluster.id,
+              'allocatable_descriptor' => @cluster.name
+            })
+            expect(audit.user.id).to eq current_user_id
+          end
+        end
+
+      end
+    end
+  end
+
+  describe 'GET #allocations' do
+    before do
+      @cluster = create :kubernetes_cluster
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :allocations, params: { id: @cluster.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not an admin so forbidden'  do
+        before do
+          get :allocations, params: { id: @cluster.id }
+        end
+      end
+
+      it_behaves_like 'an admin' do
+
+        context 'when no allocations exist' do
+          it 'returns an empty list' do
+            get :allocations, params: { id: @cluster.id }
+            expect(response).to be_success
+            expect(json_response).to be_empty
+          end
+        end
+
+        context 'when allocations exist' do
+          let!(:project_1) { create :project }
+          let!(:project_2) { create :project }
+          let!(:other_cluster) { create :kubernetes_cluster }
+
+          before do
+            @allocations = [
+              create(:allocation, allocatable: @cluster, allocation_receivable: project_1),
+              create(:allocation, allocatable: @cluster, allocation_receivable: project_2)
+            ]
+            create :allocation, allocatable: other_cluster, allocation_receivable: project_1
+          end
+
+          let :total_allocations do
+            @allocations.length
+          end
+
+          let :all_allocation_ids do
+            @allocations.map(&:id)
+          end
+
+          it 'returns the existing kubernetes allocations ordered by name descending' do
+            get :allocations, params: { id: @cluster.id }
+            expect(response).to be_success
+            expect(json_response.length).to eq total_allocations
+            expect(pluck_from_json_response('id')).to match_array all_allocation_ids
+          end
         end
 
       end

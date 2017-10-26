@@ -1,9 +1,8 @@
 class Kubernetes::ClustersController < ApiJsonController
 
-  before_action :find_cluster, only: [ :show, :update ]
+  before_action :find_cluster, only: [ :show, :update, :allocate, :allocations ]
 
-  skip_authorization_check only: [ :index, :show ]
-  authorize_resource class: KubernetesCluster, :except => [:index, :show]
+  authorize_resource class: KubernetesCluster
 
   # GET /kubernetes/clusters
   def index
@@ -45,6 +44,39 @@ class Kubernetes::ClustersController < ApiJsonController
     else
       render_model_errors @cluster.errors
     end
+  end
+
+  # POST /kubernetes/clusters/:id/allocate
+  def allocate
+    project = Project.friendly.find(params.require(:project_id))
+
+    allocation = Allocation.new(
+      allocatable: @cluster,
+      allocation_receivable: project
+    )
+
+    if allocation.save
+      AuditService.log(
+        context: audit_context,
+        action: 'create',
+        auditable: allocation,
+        data: {
+          allocatable_type: @cluster.class.name,
+          allocatable_id: @cluster.id,
+          allocatable_descriptor: @cluster.name
+        }
+      )
+
+      head :no_content
+    else
+      render_model_errors allocation.errors
+    end
+  end
+
+  # GET /kubernetes/clusters/:id/allocations
+  def allocations
+    allocations = Allocation.by_allocatable @cluster
+    render json: allocations
   end
 
   private

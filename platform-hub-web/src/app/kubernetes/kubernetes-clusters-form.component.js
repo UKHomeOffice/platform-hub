@@ -6,12 +6,12 @@ export const KubernetesClustersFormComponent = {
   controller: KubernetesClustersFormController
 };
 
-function KubernetesClustersFormController($state, hubApiService, KubernetesClusters, logger) {
+function KubernetesClustersFormController($state, KubernetesClusters, logger) {
   'ngInject';
 
   const ctrl = this;
 
-  const name = ctrl.transition && ctrl.transition.params().name;
+  const id = ctrl.transition && ctrl.transition.params().id;
 
   ctrl.loading = true;
   ctrl.saving = false;
@@ -23,7 +23,7 @@ function KubernetesClustersFormController($state, hubApiService, KubernetesClust
   init();
 
   function init() {
-    ctrl.isNew = !name;
+    ctrl.isNew = !id;
 
     if (ctrl.isNew) {
       ctrl.cluster = {};
@@ -38,7 +38,7 @@ function KubernetesClustersFormController($state, hubApiService, KubernetesClust
     ctrl.cluster = {};
 
     KubernetesClusters
-      .get(name)
+      .get(id)
       .then(cluster => {
         // Make sure to store a copy as we may be mutating this!
         angular.copy(cluster, ctrl.cluster);
@@ -57,8 +57,8 @@ function KubernetesClustersFormController($state, hubApiService, KubernetesClust
     ctrl.saving = true;
 
     if (ctrl.isNew) {
-      hubApiService
-        .createKubernetesCluster(ctrl.cluster)
+      KubernetesClusters
+        .create(ctrl.cluster)
         .then(() => {
           logger.success('New cluster created');
           $state.go('kubernetes.clusters.list');
@@ -67,8 +67,8 @@ function KubernetesClustersFormController($state, hubApiService, KubernetesClust
           ctrl.saving = false;
         });
     } else {
-      hubApiService
-        .updateKubernetesCluster(ctrl.cluster.name, ctrl.cluster)
+      KubernetesClusters
+        .update(ctrl.cluster.id, ctrl.cluster)
         .then(() => {
           logger.success('Cluster updated');
           $state.go('kubernetes.clusters.list');
