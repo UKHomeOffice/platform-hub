@@ -16,4 +16,14 @@ class Service < ApplicationRecord
   belongs_to :project
   validates :project_id, presence: true
 
+  has_many :kubernetes_groups,
+    through: :allocations,
+    source: :allocatable,
+    source_type: 'KubernetesGroup'
+
+  has_many :kubernetes_robot_tokens,
+    -> { where kind: 'robot' },
+    as: :tokenable,
+    class_name: KubernetesToken
+
 end

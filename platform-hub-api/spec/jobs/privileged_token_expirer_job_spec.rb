@@ -32,7 +32,7 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
 
     context 'for privileged kubernetes token' do
       let!(:not_privileged_group) { create :kubernetes_group }
-      let!(:privileged_group) { create :privileged_kubernetes_group }
+      let!(:privileged_group) { create :kubernetes_group, :privileged }
       let(:groups) { [ privileged_group.name, not_privileged_group.name ] }
 
       context 'when privileged group expiration time lapsed' do

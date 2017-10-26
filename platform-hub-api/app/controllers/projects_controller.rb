@@ -1,10 +1,41 @@
 class ProjectsController < ApiJsonController
 
-  before_action :find_project, only: [ :show, :update, :destroy, :memberships, :add_membership, :remove_membership, :set_role, :unset_role, :role_check ]
-  before_action :find_user, only: [ :add_membership, :remove_membership, :set_role, :unset_role ]
+  include KubernetesGroupsSubCollection
 
-  skip_authorization_check only: [ :index, :show, :memberships, :role_check ]
-  authorize_resource except: [ :index, :show, :memberships, :role_check ]
+  before_action :find_project, only: [
+    :show,
+    :update,
+    :destroy,
+    :memberships,
+    :add_membership,
+    :remove_membership,
+    :set_role,
+    :unset_role,
+    :role_check,
+    :kubernetes_groups
+  ]
+
+  before_action :find_user, only: [
+    :add_membership,
+    :remove_membership,
+    :set_role,
+    :unset_role
+  ]
+
+  skip_authorization_check only: [
+    :index,
+    :show,
+    :memberships,
+    :role_check
+  ]
+
+  authorize_resource except: [
+    :index,
+    :show,
+    :memberships,
+    :role_check,
+    :kubernetes_groups  # Will be checked separately
+  ]
 
   # GET /projects
   def index
@@ -132,6 +163,13 @@ class ProjectsController < ApiJsonController
   # DELETE /projects/:id/memberships/:user_id/role/:role
   def unset_role
     handle_role_change role: nil
+  end
+
+  # GET /projects/:id/kubernetes_groups
+  def kubernetes_groups
+    authorize! :read_resources_in_project, @project
+
+    kubernetes_groups_sub_collection @project, params[:target]
   end
 
   private

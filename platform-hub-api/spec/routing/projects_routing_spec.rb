@@ -61,6 +61,10 @@ RSpec.describe ProjectsController, type: :routing do
         expect(:put => '/projects/1/memberships/25/role/unknown_role').not_to be_routable
       end
 
+      it 'routes to #kubernetes_groups' do
+        expect(:get => '/projects/1/kubernetes_groups').to route_to('projects#kubernetes_groups', :id => '1')
+      end
+
     end
 
     context 'with projects feature flag disabled' do
@@ -115,6 +119,10 @@ RSpec.describe ProjectsController, type: :routing do
 
       it 'route to #unset_role is not routable' do
         expect(:delete => '/projects/1/memberships/25/role/manager').to_not be_routable
+      end
+
+      it 'route to #kubernetes_groups is not routable' do
+        expect(:get => '/projects/1/kubernetes_groups').to_not be_routable
       end
 
     end

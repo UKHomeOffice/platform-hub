@@ -9,6 +9,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
     @cluster = create(:kubernetes_cluster, name: cluster_name)
     @user = create(:user)
     @kube_identity = create(:kubernetes_identity, user: @user)
+    @service = create(:service)
   end
 
   describe 'GET #index' do
@@ -30,11 +31,11 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
         context 'for user tokens' do
           before do
-            @token = create :user_kubernetes_token
+            @token = create :user_kubernetes_token, tokenable: @kube_identity
           end
 
           it 'should return a list of all user tokens' do
-            get :index, params: { kind: 'user', user_id: @token.user.id }
+            get :index, params: { kind: 'user', user_id: @user.id }
             expect(response).to be_success
             expect(json_response.length).to eq 1
             expect(json_response.first['cluster']['name']).to eq @token.cluster.name
@@ -44,7 +45,6 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             expect(json_response.first['groups']).to match_array @token.groups
             expect(json_response.first['description']).to eq nil
             expect(json_response.first['kind']).to eq 'user'
-            expect(json_response.first['user']['id']).to eq @token.user.id
           end
         end
 
@@ -64,7 +64,19 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             expect(json_response.first['groups']).to match_array @token.groups
             expect(json_response.first['description']).to eq @token.description
             expect(json_response.first['kind']).to eq 'robot'
-            expect(json_response.first['user']['id']).to eq @token.user.id
+          end
+        end
+
+        context 'when user does not yet have a kubernetes identity' do
+          before do
+            @user = create :user
+          end
+
+          it 'should still return no tokens' do
+            expect(@user.kubernetes_identity).to eq nil
+            get :index, params: { kind: 'user', user_id: @user.id }
+            expect(response).to be_success
+            expect(json_response).to eq []
           end
         end
 
@@ -106,19 +118,14 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             expect(response).to be_success
             expect(json_response).to eq({
               'id' => @token.id,
-              'kind' => 'user', 
-              'token' => @token.decrypted_token, 
+              'kind' => 'user',
+              'token' => @token.decrypted_token,
               'name' => @token.name,
-              'uid' => @token.uid, 
+              'uid' => @token.uid,
               'groups' => @token.groups,
               'cluster' => {
-                'name' => @token.cluster.name, 
+                'name' => @token.cluster.name,
                 'description' => @token.cluster.description
-              },
-              'user' => {
-                'id' => @token.user.id,
-                'name' => @token.user.name,
-                'email' => @token.user.email
               }
             })
           end
@@ -134,21 +141,26 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             expect(response).to be_success
             expect(json_response).to eq({
               'id' => @token.id,
-              'kind' => 'robot', 
-              'token' => @token.decrypted_token, 
+              'kind' => 'robot',
+              'token' => @token.decrypted_token,
               'name' => @token.name,
-              'uid' => @token.uid, 
+              'uid' => @token.uid,
               'groups' => @token.groups,
               'cluster' => {
-                'name' => @token.cluster.name, 
+                'name' => @token.cluster.name,
                 'description' => @token.cluster.description
               },
-              'user' => {
-                'id' => @token.user.id,
-                'name' => @token.user.name,
-                'email' => @token.user.email
-              },
-              'description' => @token.description
+              'description' => @token.description,
+              'service' => {
+                'id' => @token.tokenable.id,
+                'name' => @token.tokenable.name,
+                'description' => @token.tokenable.description,
+                'project'=> {
+                  'id' => @token.tokenable.project.friendly_id,
+                  'shortname' => @token.tokenable.project.shortname,
+                  'name' => @token.tokenable.project.name
+                }
+              }
             })
           end
         end
@@ -181,22 +193,19 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
     let(:name) { nil }
     let(:description) { nil }
 
-    let :post_data do
+    let :token_data do
       {
-        token: {
-          kind: kind,
-          user_id: @user.id,
-          cluster_name: @cluster.name,
-          groups: "group1,group2,group3",
-          name: name,
-          description: description
-        }
+        kind: kind,
+        cluster_name: @cluster.name,
+        groups: 'group1,group2,group3',
+        name: name,
+        description: description
       }
     end
 
     it_behaves_like 'unauthenticated not allowed'  do
       before do
-        post :create, params: post_data
+        post :create, params: { token: token_data }
       end
     end
 
@@ -204,7 +213,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
       it_behaves_like 'not an admin so forbidden'  do
         before do
-          post :create, params: post_data
+          post :create, params: { token: token_data }
         end
       end
 
@@ -215,11 +224,11 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
           it 'creates a new kubernetes token as expected' do
             expect(KubernetesToken.count).to eq 0
             expect(Audit.count).to eq 0
-            post :create, params: post_data
+            post :create, params: { token: token_data.merge(user_id: @user.id) }
             expect(response).to be_success
             expect(KubernetesToken.count).to eq 1
             token = KubernetesToken.first
-            new_token_external_id = token.id
+            expect(token.tokenable).to eq @user.kubernetes_identity
             new_token_internal_id = token.id
             expect(json_response['kind']).to eq 'user'
             expect(json_response['token'].length).to eq 36
@@ -245,11 +254,11 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
           it 'creates a new kubernetes token as expected' do
             expect(KubernetesToken.count).to eq 0
             expect(Audit.count).to eq 0
-            post :create, params: post_data
+            post :create, params: { token: token_data.merge(service_id: @service.id) }
             expect(response).to be_success
             expect(KubernetesToken.count).to eq 1
             token = KubernetesToken.first
-            new_token_external_id = token.id
+            expect(token.tokenable).to eq @service
             new_token_internal_id = token.id
             expect(json_response['kind']).to eq 'robot'
             expect(json_response['token'].length).to eq 36
@@ -277,7 +286,6 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
       @token = create :user_kubernetes_token
     end
 
-    let(:user_id) { @token.user.id }
     let(:kind) { 'user' }
     let(:name) { nil }
     let(:description) { nil }
@@ -287,7 +295,6 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
         id: @token.id,
         token: {
           kind: kind,
-          user_id: user_id,
           cluster_name: @token.cluster.name,
           groups: "one,two,three",
           name: name,
@@ -313,7 +320,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
       it_behaves_like 'an admin' do
 
         context 'for user token' do
-          
+
           it 'updates the specified token groups only' do
             expect(KubernetesToken.user.count).to eq 1
             old = KubernetesToken.user.first
@@ -345,11 +352,9 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
         context 'for robot token' do
           before do
             @token = create :robot_kubernetes_token
-            @new_user = create :user
           end
 
           let(:kind) { 'robot' }
-          let(:user_id) { @new_user.id }
           let(:description) { 'old_description' }
 
           it 'updates the specified token description, groups and associated user only' do
@@ -375,7 +380,6 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             expect(updated.kind).to eq 'robot'
             expect(updated.cluster).to eq @token.cluster
             expect(updated.name).to eq @token.name
-            expect(updated.user).to eq @new_user
             expect(updated.description).to eq put_data[:token][:description]
             expect(updated.groups).to match_array put_data[:token][:groups].split(",")
             expect(Audit.count).to eq 1
@@ -417,7 +421,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             context: anything,
             action: 'destroy',
             auditable: @token,
-            data: { 
+            data: {
               cluster: @token.cluster.name
             },
             comment: "User '#{current_user.email}' deleted #{@token.kind} token (cluster: #{@token.cluster.name}, name: #{@token.name})"
@@ -443,10 +447,10 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
     end
 
     let(:escalate_params) do
-      { 
-        id: @token.id, 
-        privileged_group: privileged_group, 
-        expires_in_secs: expires_in_secs 
+      {
+        id: @token.id,
+        privileged_group: privileged_group,
+        expires_in_secs: expires_in_secs
       }
     end
 
@@ -472,7 +476,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             context: anything,
             action: 'escalate',
             auditable: @token,
-            data: { 
+            data: {
               cluster: @token.cluster.name,
               privileged_group: privileged_group
             }
@@ -511,9 +515,9 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
   describe 'PATCH #deescalate' do
     before do
-      privileged_group = create :privileged_kubernetes_group
-      @token = create :privileged_kubernetes_token, 
-                groups: KubernetesGroup.privileged_names
+      privileged_group = create :kubernetes_group, :privileged
+      @token = create :privileged_kubernetes_token,
+                groups: [privileged_group.name]
     end
 
     it_behaves_like 'unauthenticated not allowed' do

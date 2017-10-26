@@ -33,11 +33,18 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.projectMembershipRoleCheck = projectMembershipRoleCheck;
   service.projectSetMembershipRole = projectSetMembershipRole;
   service.projectUnsetMembershipRole = projectUnsetMembershipRole;
+  service.getProjectKubernetesGroups = getProjectKubernetesGroups;
   service.getProjectServices = buildSubCollectionFetcher('projects', 'services');
   service.getProjectService = buildSubResourceFetcher('projects', 'services');
   service.createProjectService = buildSubResourceCreator('projects', 'services');
   service.updateProjectService = buildSubResourceUpdater('projects', 'services');
   service.deleteProjectService = buildSubResourceDeletor('projects', 'services');
+  service.getProjectServiceKubernetesGroups = getProjectServiceKubernetesGroups;
+  service.getProjectServiceKubernetesRobotTokens = buildSubSubCollectionFetcher('projects', 'services', 'kubernetes_robot_tokens');
+  service.getProjectServiceKubernetesRobotToken = buildSubSubResourceFetcher('projects', 'services', 'kubernetes_robot_tokens');
+  service.createProjectServiceKubernetesRobotToken = createProjectServiceKubernetesRobotToken;
+  service.updateProjectServiceKubernetesRobotToken = updateProjectServiceKubernetesRobotToken;
+  service.deleteProjectServiceKubernetesRobotToken = deleteProjectServiceKubernetesRobotToken;
 
   service.userOnboardGitHub = userOnboardGitHub;
   service.userOffboardGitHub = userOffboardGitHub;
@@ -103,6 +110,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.updateKubernetesToken = updateKubernetesToken;
 
   service.getKubernetesRobotTokens = getKubernetesRobotTokens;
+  service.getKubernetesRobotToken = buildResourceFetcher('kubernetes/tokens');
   service.createKubernetesRobotToken = createKubernetesRobotToken;
   service.updateKubernetesRobotToken = updateKubernetesRobotToken;
 
@@ -155,6 +163,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/me/complete_hub_onboarding`, data)
+      .then(handle4xxError)
       .then(response => {
         return response.data;
       })
@@ -167,6 +176,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   function completeServicesOnboarding() {
     return $http
       .post(`${apiEndpoint}/me/complete_services_onboarding`)
+      .then(handle4xxError)
       .then(response => {
         return response.data;
       })
@@ -191,6 +201,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   function globalAnnouncementsMarkAllRead() {
     return $http
       .post(`${apiEndpoint}/me/global_announcements/mark_all_read`)
+      .then(handle4xxError)
       .then(response => {
         return response.data;
       })
@@ -236,6 +247,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/revoke_admin`)
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to revoke admin status', response));
         return $q.reject(response);
@@ -268,11 +280,9 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/deactivate`)
+      .then(handle4xxError)
       .then(response => {
-        // handle 4xx errors which are not picked up by `catch`.
-        if (response.data.error && response.status.toString().match(/4../)) {
-          return $q.reject(response);
-        }
+        return response.data;
       })
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to deactivate user', response));
@@ -378,6 +388,133 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
+  function getProjectKubernetesGroups(projectId, target) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+
+    return $http
+      .get(`${apiEndpoint}/projects/${projectId}/kubernetes_groups`, {
+        params: {
+          target
+        }
+      })
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to fetch kubernetes groups for project', response));
+        return $q.reject(response);
+      });
+  }
+
+  function getProjectServiceKubernetesGroups(projectId, serviceId, target) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(serviceId) || _.isEmpty(serviceId)) {
+      throw new Error('"serviceId" argument not specified or empty');
+    }
+
+    return $http
+      .get(`${apiEndpoint}/projects/${projectId}/services/${serviceId}/kubernetes_groups`, {
+        params: {
+          target
+        }
+      })
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to fetch kubernetes groups for service', response));
+        return $q.reject(response);
+      });
+  }
+
+  function createProjectServiceKubernetesRobotToken(projectId, serviceId, data) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(serviceId) || _.isEmpty(serviceId)) {
+      throw new Error('"serviceId" argument not specified or empty');
+    }
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/projects/${projectId}/services/${serviceId}/kubernetes_robot_tokens`, {
+        robot_token: {
+          service_id: serviceId,
+          cluster_name: data.cluster.name,
+          groups: data.groups,
+          name: data.name,
+          description: data.description
+        }
+      })
+      .then(handle4xxError)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to create new token for project service', response));
+        return $q.reject(response);
+      });
+  }
+
+  function updateProjectServiceKubernetesRobotToken(projectId, serviceId, tokenId, data) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(serviceId) || _.isEmpty(serviceId)) {
+      throw new Error('"serviceId" argument not specified or empty');
+    }
+    if (_.isNull(tokenId) || _.isEmpty(tokenId)) {
+      throw new Error('"tokenId" argument not specified or empty');
+    }
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .patch(`${apiEndpoint}/projects/${projectId}/services/${serviceId}/kubernetes_robot_tokens/${tokenId}`, {
+        robot_token: {
+          groups: data.groups,
+          description: data.description
+        }
+      })
+      .then(handle4xxError)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to update token for project service', response));
+        return $q.reject(response);
+      });
+  }
+
+  function deleteProjectServiceKubernetesRobotToken(projectId, serviceId, tokenId) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(serviceId) || _.isEmpty(serviceId)) {
+      throw new Error('"serviceId" argument not specified or empty');
+    }
+    if (_.isNull(tokenId) || _.isEmpty(tokenId)) {
+      throw new Error('"tokenId" argument not specified or empty');
+    }
+
+    return $http
+      .delete(`${apiEndpoint}/projects/${projectId}/services/${serviceId}/kubernetes_robot_tokens/${tokenId}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to delete token', response));
+        return $q.reject(response);
+      });
+  }
+
   function userOnboardGitHub(userId) {
     if (_.isNull(userId) || _.isEmpty(userId)) {
       throw new Error('"userId" argument not specified or empty');
@@ -385,8 +522,9 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/onboard_github`)
+      .then(handle4xxError)
       .catch(response => {
-        logger.error(buildErrorMessageFromResponse('Failed to onboard user to GitHub ', response));
+        logger.error(buildErrorMessageFromResponse('Failed to onboard user to GitHub', response));
         return $q.reject(response);
       });
   }
@@ -398,6 +536,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/offboard_github`)
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to offboard user from GitHub', response));
         return $q.reject(response);
@@ -410,6 +549,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         template_id: templateId,
         data: data
       })
+      .then(handle4xxError)
       .then(response => {
         return response.data;
       })
@@ -426,6 +566,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/announcements/${announcementId}/mark_sticky`)
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to mark announcement as sticky', response));
         return $q.reject(response);
@@ -439,6 +580,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/announcements/${announcementId}/unmark_sticky`)
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to unmark announcement as sticky', response));
         return $q.reject(response);
@@ -452,6 +594,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/announcements/${announcementId}/resend`)
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to mark announcement for resending', response));
         return $q.reject(response);
@@ -472,6 +615,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         templates: templates,
         data: data
       })
+      .then(handle4xxError)
       .then(response => {
         return response.data;
       })
@@ -528,18 +672,63 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   }
 
   function buildSubCollectionFetcher(parent, name) {
-    return function (id) {
-      if (_.isNull(id) || _.isEmpty(id)) {
-        throw new Error('"id" argument not specified or empty');
+    return function (parentId) {
+      if (_.isNull(parentId) || _.isEmpty(parentId)) {
+        throw new Error('"parentId" argument not specified or empty');
       }
 
       return $http
-        .get(`${apiEndpoint}/${parent}/${id}/${name}`)
+        .get(`${apiEndpoint}/${parent}/${parentId}/${name}`)
         .then(response => {
           return response.data;
         })
         .catch(response => {
-          logger.error(buildErrorMessageFromResponse(`Failed to fetch ${name}`, response));
+          logger.error(buildErrorMessageFromResponse(`Failed to fetch items`, response));
+          return $q.reject(response);
+        });
+    };
+  }
+
+  function buildSubSubCollectionFetcher(parent, sub, subSub) {
+    return function (parentId, subId) {
+      if (_.isNull(parentId) || _.isEmpty(parentId)) {
+        throw new Error('"parentId" argument not specified or empty');
+      }
+      if (_.isNull(subId) || _.isEmpty(subId)) {
+        throw new Error('"subId" argument not specified or empty');
+      }
+
+      return $http
+        .get(`${apiEndpoint}/${parent}/${parentId}/${sub}/${subId}/${subSub}`)
+        .then(response => {
+          return response.data;
+        })
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse(`Failed to fetch items`, response));
+          return $q.reject(response);
+        });
+    };
+  }
+
+  function buildSubSubResourceFetcher(parent, sub, subSub) {
+    return function (parentId, subId, subSubId) {
+      if (_.isNull(parentId) || _.isEmpty(parentId)) {
+        throw new Error('"parentId" argument not specified or empty');
+      }
+      if (_.isNull(subId) || _.isEmpty(subId)) {
+        throw new Error('"subId" argument not specified or empty');
+      }
+      if (_.isNull(subSubId) || _.isEmpty(subSubId)) {
+        throw new Error('"subSubId" argument not specified or empty');
+      }
+
+      return $http
+        .get(`${apiEndpoint}/${parent}/${parentId}/${sub}/${subId}/${subSub}/${subSubId}`)
+        .then(response => {
+          return response.data;
+        })
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse(`Failed to fetch item`, response));
           return $q.reject(response);
         });
     };
@@ -592,11 +781,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
       return $http
         .post(`${apiEndpoint}/${resource}`, data)
+        .then(handle4xxError)
         .then(response => {
-          // handle 4xx errors which are not handled by $http
-          if (response.status.toString().match(/4../)) {
-            return $q.reject(response);
-          }
           return response.data;
         })
         .catch(response => {
@@ -617,11 +803,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
       return $http
         .post(`${apiEndpoint}/${parent}/${parentId}/${resource}`, data)
+        .then(handle4xxError)
         .then(response => {
-          // handle 4xx errors which are not handled by $http
-          if (response.status.toString().match(/4../)) {
-            return $q.reject(response);
-          }
           return response.data;
         })
         .catch(response => {
@@ -718,6 +901,14 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     return msg;
   }
 
+  function handle4xxError(response) {
+    // handle 4xx errors which are not handled by $http.post
+    if (response.status.toString().match(/4../)) {
+      return $q.reject(response);
+    }
+    return response;
+  }
+
   function allocateKubernetesGroup(groupId, projectId, serviceId) {
     if (_.isNull(groupId) || _.isEmpty(groupId)) {
       throw new Error('"groupId" argument not specified or empty');
@@ -784,9 +975,9 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function createKubernetesToken(user, data) {
-    if (_.isNull(user) || _.isEmpty(user)) {
-      throw new Error('"user" argument not specified or empty');
+  function createKubernetesToken(userId, data) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
     }
     if (_.isNull(data) || _.isEmpty(data)) {
       throw new Error('"data" argument not specified or empty');
@@ -795,7 +986,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     return $http
       .post(`${apiEndpoint}/kubernetes/tokens`, {
         kind: 'user',
-        user_id: user.id,
+        user_id: userId,
         cluster_name: data.cluster.name,
         groups: data.groups
       })
@@ -806,7 +997,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         }
       })
       .catch(response => {
-        logger.error(buildErrorMessageFromResponse(`Failed to create a "${data.cluster}" kubernetes token for ${user.name}`, response));
+        logger.error(buildErrorMessageFromResponse(`Failed to create kubernetes token`, response));
         return $q.reject(response);
       });
   }
@@ -857,9 +1048,9 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function createKubernetesRobotToken(user, data) {
-    if (_.isNull(user) || _.isEmpty(user)) {
-      throw new Error('"user" argument not specified or empty');
+  function createKubernetesRobotToken(serviceId, data) {
+    if (_.isNull(serviceId) || _.isEmpty(serviceId)) {
+      throw new Error('"serviceId" argument not specified or empty');
     }
     if (_.isNull(data) || _.isEmpty(data)) {
       throw new Error('"data" argument not specified or empty');
@@ -868,7 +1059,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     return $http
       .post(`${apiEndpoint}/kubernetes/tokens`, {
         kind: 'robot',
-        user_id: user.id,
+        service_id: serviceId,
         cluster_name: data.cluster.name,
         groups: data.groups,
         name: data.name,
@@ -881,17 +1072,14 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         }
       })
       .catch(response => {
-        logger.error(buildErrorMessageFromResponse(`Failed to create a "${data.name}" kubernetes robot token`, response));
+        logger.error(buildErrorMessageFromResponse(`Failed to create a kubernetes robot token`, response));
         return $q.reject(response);
       });
   }
 
-  function updateKubernetesRobotToken(tokenId, user, data) {
+  function updateKubernetesRobotToken(tokenId, data) {
     if (_.isNull(tokenId) || _.isEmpty(tokenId)) {
       throw new Error('"tokenId" argument not specified or empty');
-    }
-    if (_.isNull(user) || _.isEmpty(user)) {
-      throw new Error('"user" argument not specified or empty');
     }
     if (_.isNull(data) || _.isEmpty(data)) {
       throw new Error('"data" argument not specified or empty');
@@ -900,7 +1088,6 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
     return $http
       .patch(`${apiEndpoint}/kubernetes/tokens/${tokenId}`, {
         kind: 'robot',
-        user_id: user.id,
         groups: data.groups,
         description: data.description
       })

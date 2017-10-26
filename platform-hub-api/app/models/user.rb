@@ -19,8 +19,6 @@ class User < ApplicationRecord
     presence: true,
     uniqueness: { case_sensitive: false }
 
-  has_many :robot_tokens, -> { where kind: 'robot' }, as: :tokenable, class_name: KubernetesToken
-
   has_many :identities,
     dependent: :delete_all
 

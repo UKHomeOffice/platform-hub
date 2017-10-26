@@ -20,9 +20,11 @@ FactoryGirl.define do
 
     factory :robot_kubernetes_token do
       kind { 'robot' }
-      association :tokenable, factory: :user
-      name { "some_robot" }
-      description { "Awesome Robot" }
+      association :tokenable, factory: :service
+      sequence :name do |n|
+        "mr_robot_#{n}"
+      end
+      description { "Mr Robot" }
     end
   end
 end

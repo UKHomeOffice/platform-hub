@@ -60,7 +60,16 @@ Rails.application.routes.draw do
         delete '/memberships/:user_id/role/:role', to: 'projects#unset_role', on: :member
       end
 
-      resources :services
+      get :kubernetes_groups, on: :member
+
+      resources :services do
+        get :kubernetes_groups, on: :member
+        get :kubernetes_robot_tokens, on: :member
+        get '/kubernetes_robot_tokens/:token_id', to: 'services#show_kubernetes_robot_token', on: :member
+        post :kubernetes_robot_tokens, to: 'services#create_kubernetes_robot_token', on: :member
+        patch '/kubernetes_robot_tokens/:token_id', to: 'services#update_kubernetes_robot_token', on: :member
+        delete '/kubernetes_robot_tokens/:token_id', to: 'services#destroy_kubernetes_robot_token', on: :member
+      end
     end
 
     resources :support_request_templates do

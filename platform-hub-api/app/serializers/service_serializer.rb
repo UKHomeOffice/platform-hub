@@ -3,7 +3,7 @@ class ServiceSerializer < ActiveModel::Serializer
 
   attribute :project do
     {
-      id: object.project.id,
+      id: object.project.friendly_id,
       shortname: object.project.shortname,
       name: object.project.name
     }

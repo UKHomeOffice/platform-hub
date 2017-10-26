@@ -277,30 +277,34 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           }
         })
         .state('kubernetes.robot-tokens.new', {
-          url: '/new/:cluster',
+          url: '/new/:cluster?fromProject&fromService',
           component: KubernetesRobotTokensForm,
           resolve: {
             transition: '$transition$'
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
-            rolePermitted: 'admin'
+            featureFlag: featureFlagKeys.kubernetesTokens
           },
           params: {
-            cluster: ''
+            cluster: '',
+            fromProject: null,
+            fromService: null
           }
         })
         .state('kubernetes.robot-tokens.edit', {
-          url: '/edit/:cluster/:tokenId',
+          url: '/edit/:cluster/:tokenId?fromProject&fromService',
           component: KubernetesRobotTokensForm,
           resolve: {
             transition: '$transition$'
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
-            rolePermitted: 'admin'
+            featureFlag: featureFlagKeys.kubernetesTokens
+          },
+          params: {
+            fromProject: null,
+            fromService: null
           }
         })
     .state('projects', {

@@ -19,7 +19,7 @@ class PrivilegedTokenExpirerJob < ApplicationJob
           auditable: t
         )
       else
-        Rails.logger.error "Privileged token expiration for user #{t.user.email} failed - exception: #{t.errors.full_messages}"
+        Rails.logger.error "Privileged token expiration for token failed - ID: #{t.id}, name: #{t.name} - errors: #{t.errors.full_messages}"
       end
     end
   end

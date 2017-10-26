@@ -15,7 +15,7 @@ class Kubernetes::RevokeController < ApiJsonController
       data: {
         cluster: @token.cluster.name
       },
-      comment: "User '#{current_user.email}' revoked `#{@token.cluster.name}` token for `#{@token.user.email}`."
+      comment: "User '#{current_user.email}' revoked `#{@token.cluster.name}` token (name: '#{@token.name}')"
     )
 
     head :no_content

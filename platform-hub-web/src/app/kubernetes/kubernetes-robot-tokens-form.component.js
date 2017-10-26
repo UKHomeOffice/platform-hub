@@ -6,24 +6,33 @@ export const KubernetesRobotTokensFormComponent = {
   controller: KubernetesRobotTokensFormController
 };
 
-function KubernetesRobotTokensFormController($state, hubApiService, KubernetesClusters, logger, _) {
+function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerService, projectServiceSelectorPopupService, KubernetesClusters, KubernetesTokens, Projects, logger, _) {
   'ngInject';
 
   const ctrl = this;
 
   const cluster = ctrl.transition && ctrl.transition.params().cluster;
   const tokenId = ctrl.transition && ctrl.transition.params().tokenId;
+  const fromProject = ctrl.transition && ctrl.transition.params().fromProject;
+  const fromService = ctrl.transition && ctrl.transition.params().fromService;
 
   ctrl.KubernetesClusters = KubernetesClusters;
 
+  ctrl.fromProject = fromProject;
+  ctrl.fromService = fromService;
   ctrl.loading = true;
+  ctrl.processing = false;
   ctrl.saving = false;
   ctrl.isNew = true;
-  ctrl.tokenData = null;
-  ctrl.searchText = '';
-  ctrl.user = null;
+  ctrl.isAdmin = false;
+  ctrl.token = null;
+  ctrl.service = null;
+  ctrl.possibleGroups = [];
+  ctrl.allowedGroups = [];
 
-  ctrl.searchUsers = searchUsers;
+  ctrl.canChangeService = canChangeService;
+  ctrl.choose = choose;
+  ctrl.handleClusterChange = handleClusterChange;
   ctrl.createOrUpdate = createOrUpdate;
 
   init();
@@ -31,36 +40,191 @@ function KubernetesRobotTokensFormController($state, hubApiService, KubernetesCl
   function init() {
     ctrl.loading = true;
 
-    KubernetesClusters
-      .refresh()
-      .then(setupToken)
+    ctrl.isNew = !tokenId;
+    ctrl.token = null;
+
+    if (
+      (!fromProject && fromService) ||
+      (fromProject && !fromService)
+    ) {
+      bootOut();
+      return;
+    }
+
+    topLevelAuthorisationChecks()
+      .then(passed => {
+        if (!passed) {
+          bootOut();
+          return;
+        }
+
+        const clustersFetch = KubernetesClusters.refresh();
+
+        const tokenSetup = setupTokenVerifyAndFetchService();
+
+        return $q.all([clustersFetch, tokenSetup]);
+      })
       .finally(() => {
         ctrl.loading = false;
       });
   }
 
-  function setupToken() {
-    ctrl.isNew = !tokenId;
-    ctrl.tokenData = null;
+  function topLevelAuthorisationChecks() {
+    return loadAdminStatus()
+      .then(() => {
+        // If not an admin, then `fromProject` and `fromService` params must be
+        // provided, and verified for project manager status.
 
+        if (!ctrl.isAdmin) {
+          if (!fromProject || !fromService) {
+            return false;
+          }
+
+          return Projects
+            .membershipRoleCheck(fromProject, 'manager')
+            .then(data => {
+              return data.result;
+            });
+        }
+
+        return true;
+      });
+  }
+
+  function loadAdminStatus() {
+    return roleCheckerService
+    .hasHubRole('admin')
+    .then(hasRole => {
+      ctrl.isAdmin = hasRole;
+    });
+  }
+
+  function bootOut() {
+    logger.error('You are not allowed to access this page!');
+    $state.go('home');
+  }
+
+  function setupTokenVerifyAndFetchService() {
     if (ctrl.isNew) {
-      ctrl.tokenData = {
+      ctrl.token = {
         cluster: {
           name: cluster
-        }
+        },
+        groups: []
       };
+
+      if (fromService) {
+        return fetchService(fromProject, fromService).catch(bootOut);
+      }
+
+      return $q.when();
+    }
+
+    // We have an existing token, people! Look sharp!
+
+    let fetch = null;
+    if (fromService) {
+      fetch = Projects.getServiceKubernetesRobotToken(fromProject, fromService, tokenId);
     } else {
-      return hubApiService
-        .getKubernetesRobotTokens(cluster)
-        .then(tokens => {
-          ctrl.tokenData = _.find(tokens, ['id', tokenId]);
-          ctrl.user = ctrl.tokenData.user;
+      fetch = KubernetesTokens.getRobotToken(tokenId);
+    }
+
+    return fetch
+      .then(token => {
+        ctrl.token = token;
+
+        if (fromService && ctrl.token.service.id !== fromService) {
+          bootOut();
+        }
+
+        return fetchService(ctrl.token.service.project.id, ctrl.token.service.id).catch(bootOut);
+      });
+  }
+
+  function fetchService(projectId, serviceId) {
+    return Projects
+      .getService(projectId, serviceId)
+      .then(service => {
+        ctrl.service = service;
+        return fetchGroups();
+      });
+  }
+
+  function canChangeService() {
+    return ctrl.isNew && ctrl.isAdmin && !ctrl.fromService;
+  }
+
+  function choose(targetEvent) {
+    if (!canChangeService()) {
+      return;
+    }
+
+    return projectServiceSelectorPopupService
+      .open(false, targetEvent)
+      .then(result => {
+        ctrl.service = result.service;
+
+        // Reset the token's groups as they may not be applicable to this
+        // service anymore.
+        if (ctrl.token) {
+          ctrl.token.groups = [];
+        }
+
+        return fetchGroups();
+      });
+  }
+
+  function handleClusterChange() {
+    ctrl.processing = true;
+
+    // Reset the token's groups as they may not be applicable to the cluster anymore.
+    ctrl.token.groups = [];
+
+    // See: https://github.com/angular/material/issues/10747
+    $mdSelect
+      .hide()
+      .then(filterGroups)
+      .finally(() => {
+        ctrl.processing = false;
+      });
+  }
+
+  function fetchGroups() {
+    ctrl.possibleGroups = [];
+    ctrl.allowedGroups = [];
+
+    if (ctrl.service) {
+      ctrl.processing = true;
+
+      const projectGroupsFetch = Projects.getKubernetesGroups(ctrl.service.project.id, 'robot');
+
+      const serviceGroupsFetch = Projects.getServiceKubernetesGroups(ctrl.service.project.id, ctrl.service.id, 'robot');
+
+      return $q
+        .all([projectGroupsFetch, serviceGroupsFetch])
+        .then(data => {
+          ctrl.possibleGroups = _.concat(...data);
+        })
+        .then(filterGroups)
+        .finally(() => {
+          ctrl.processing = false;
         });
     }
   }
 
-  function searchUsers(query) {
-    return hubApiService.searchUsers(query, true);
+  function filterGroups() {
+    ctrl.allowedGroups = [];
+
+    if (ctrl.token && ctrl.token.cluster) {
+      ctrl.allowedGroups = _.filter(ctrl.possibleGroups, g => {
+        return !g.is_privileged &&
+          (
+            !g.restricted_to_clusters ||
+            _.isEmpty(g.restricted_to_clusters) ||
+            g.restricted_to_clusters.includes(ctrl.token.cluster.name)
+          );
+      });
+    }
   }
 
   function createOrUpdate() {
@@ -71,26 +235,42 @@ function KubernetesRobotTokensFormController($state, hubApiService, KubernetesCl
 
     ctrl.saving = true;
 
+    let promise = null;
+
     if (ctrl.isNew) {
-      hubApiService
-        .createKubernetesRobotToken(ctrl.user, ctrl.tokenData)
+      if (fromService) {
+        promise = Projects.createServiceKubernetesRobotToken(fromProject, ctrl.service.id, ctrl.token);
+      } else {
+        promise = KubernetesTokens.createRobotToken(ctrl.service.id, ctrl.token);
+      }
+
+      promise = promise
         .then(() => {
           logger.success('New kubernetes robot token created');
-          $state.go('kubernetes.robot-tokens.list', {cluster: ctrl.tokenData.cluster.name});
-        })
-        .finally(() => {
-          ctrl.saving = false;
         });
     } else {
-      hubApiService
-        .updateKubernetesRobotToken(tokenId, ctrl.user, ctrl.tokenData)
+      if (fromService) {
+        promise = Projects.updateServiceKubernetesRobotToken(fromProject, ctrl.service.id, ctrl.token.id, ctrl.token);
+      } else {
+        promise = KubernetesTokens.updateRobotToken(tokenId, ctrl.token);
+      }
+
+      promise = promise
         .then(() => {
           logger.success('Kubernetes robot token updated');
-          $state.go('kubernetes.robot-tokens.list', {cluster: ctrl.tokenData.cluster.name});
-        })
-        .finally(() => {
-          ctrl.saving = false;
         });
     }
+
+    return promise
+      .then(() => {
+        if (fromService) {
+          $state.go('projects.services.detail', {projectId: fromProject, id: fromService});
+        } else {
+          $state.go('kubernetes.robot-tokens.list', {cluster: ctrl.token.cluster.name});
+        }
+      })
+      .finally(() => {
+        ctrl.saving = false;
+      });
   }
 }
