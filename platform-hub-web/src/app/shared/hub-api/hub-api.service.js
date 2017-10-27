@@ -261,12 +261,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/activate`)
-      .then(response => {
-        // handle 4xx errors which are not picked up by `catch`.
-        if (response.data.error && response.status.toString().match(/4../)) {
-          return $q.reject(response);
-        }
-      })
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to activate user', response));
         return $q.reject(response);
@@ -922,11 +917,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         project_id: projectId,
         service_id: serviceId
       })
+      .then(handle4xxError)
       .then(response => {
-        // handle 4xx errors which are not handled by $http
-        if (response.status.toString().match(/4../)) {
-          return $q.reject(response);
-        }
         return response.data;
       })
       .catch(response => {
@@ -963,12 +955,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .delete(`${apiEndpoint}/kubernetes/tokens/${tokenId}`)
-      .then(response => {
-        // handle 4xx errors which are not picked up by `catch`.
-        if (response.data.error && response.status.toString().match(/4../)) {
-          return $q.reject(response);
-        }
-      })
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to delete kubernetes token', response));
         return $q.reject(response);
@@ -990,12 +977,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         cluster_name: data.cluster.name,
         groups: data.groups
       })
-      .then(response => {
-        // handle 4xx errors which are not picked up by `catch`.
-        if (response.data.error && response.status.toString().match(/4../)) {
-          return $q.reject(response);
-        }
-      })
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to create kubernetes token`, response));
         return $q.reject(response);
@@ -1015,12 +997,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         kind: 'user',
         groups: data.groups
       })
-      .then(response => {
-        // handle 4xx errors which are not picked up by `catch`.
-        if (response.data.error && response.status.toString().match(/4../)) {
-          return $q.reject(response);
-        }
-      })
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to update a "${data.cluster}" kubernetes token`, response));
         return $q.reject(response);
@@ -1065,12 +1042,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         name: data.name,
         description: data.description
       })
-      .then(response => {
-        // handle 4xx errors which are not picked up by `catch`.
-        if (response.data.error && response.status.toString().match(/4../)) {
-          return $q.reject(response);
-        }
-      })
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to create a kubernetes robot token`, response));
         return $q.reject(response);
@@ -1091,12 +1063,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         groups: data.groups,
         description: data.description
       })
-      .then(response => {
-        // handle 4xx errors which are not picked up by `catch`.
-        if (response.data.error && response.status.toString().match(/4../)) {
-          return $q.reject(response);
-        }
-      })
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to update a "${data.name}" kubernetes robot token`, response));
         return $q.reject(response);
@@ -1142,12 +1109,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/kubernetes/revoke`, data)
-      .then(response => {
-        // handle 4xx errors which are not picked up by `catch`.
-        if (response.data.error && response.status.toString().match(/4../)) {
-          return $q.reject(response);
-        }
-      })
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Revocation error', response));
         return $q.reject(response);
@@ -1170,12 +1132,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         privileged_group: group,
         expires_in_secs: expiresInSecs
       })
-      .then(response => {
-        // handle 4xx errors which are not picked up by `catch`.
-        if (response.data.error && response.status.toString().match(/4../)) {
-          return $q.reject(response);
-        }
-      })
+      .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to escalate privilege on Kube token', response));
         return $q.reject(response);
