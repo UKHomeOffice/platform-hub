@@ -9,7 +9,6 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
     @cluster = create(:kubernetes_cluster, name: cluster_name)
     @user = create(:user)
     @kube_identity = create(:kubernetes_identity, user: @user)
-    @service = create(:service)
   end
 
   describe 'GET #index' do
@@ -186,6 +185,9 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
   end
 
   describe 'POST #create' do
+    let(:user_group_1) { create :kubernetes_group, :not_privileged, :for_user }
+    let(:user_group_2) { create :kubernetes_group, :not_privileged, :for_user }
+
     before do
       @cluster = create(:kubernetes_cluster)
       @user = create(:user)
@@ -199,7 +201,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
       {
         kind: kind,
         cluster_name: @cluster.name,
-        groups: 'group1,group2,group3',
+        groups: [ user_group_1.name, user_group_2.name ],
         name: name,
         description: description
       }
@@ -236,7 +238,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             expect(json_response['token'].length).to eq 36
             expect(json_response['uid'].length).to eq 36
             expect(json_response['name']).to eq @user.email
-            expect(json_response['groups']).to match_array ['group1','group2','group3']
+            expect(json_response['groups']).to match_array [ user_group_1.name, user_group_2.name ]
             expect(json_response['cluster']['name']).to eq @cluster.name
             expect(Audit.count).to eq 1
             audit = Audit.first
@@ -252,29 +254,33 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
           let(:kind) { 'robot' }
           let(:name) { 'some_robot_name' }
           let(:description) { 'Robot to do things' }
+          let!(:service) { create :service }
+          let!(:cluster) { create :kubernetes_cluster, allocate_to: service }
+          let!(:robot_group_1) { create :kubernetes_group, :not_privileged, :for_robot, allocate_to: service }
+          let!(:robot_group_2) { create :kubernetes_group, :not_privileged, :for_robot, allocate_to: service }
 
           it 'creates a new kubernetes token as expected' do
             expect(KubernetesToken.count).to eq 0
             expect(Audit.count).to eq 0
-            post :create, params: { token: token_data.merge(service_id: @service.id) }
+            post :create, params: { token: token_data.merge(cluster_name: cluster.name, service_id: service.id, groups: [ robot_group_1.name, robot_group_2.name ]) }
             expect(response).to be_success
             expect(KubernetesToken.count).to eq 1
             token = KubernetesToken.first
-            expect(token.tokenable).to eq @service
+            expect(token.tokenable).to eq service
             new_token_internal_id = token.id
             expect(json_response['kind']).to eq 'robot'
             expect(json_response['token'].length).to eq 36
             expect(json_response['uid'].length).to eq 36
             expect(json_response['name']).to eq name
-            expect(json_response['groups']).to match_array ['group1','group2','group3']
-            expect(json_response['cluster']['name']).to eq @cluster.name
+            expect(json_response['groups']).to match_array [ robot_group_1.name, robot_group_2.name ]
+            expect(json_response['cluster']['name']).to eq cluster.name
             expect(json_response['description']).to eq description
             expect(Audit.count).to eq 1
             audit = Audit.first
             expect(audit.action).to eq 'create'
             expect(audit.auditable.id).to eq new_token_internal_id
             expect(audit.user.id).to eq current_user_id
-            expect(audit.data['cluster']).to eq @cluster.name
+            expect(audit.data['cluster']).to eq cluster.name
           end
 
         end
@@ -283,6 +289,8 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
   end
 
   describe 'PUT #update' do
+    let(:user_group_1) { create :kubernetes_group, :not_privileged, :for_user }
+    let(:user_group_2) { create :kubernetes_group, :not_privileged, :for_user }
 
     before do
       @token = create :user_kubernetes_token
@@ -298,7 +306,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
         token: {
           kind: kind,
           cluster_name: @token.cluster.name,
-          groups: "one,two,three",
+          groups: "#{user_group_1.name},#{user_group_2.name}",
           name: name,
           description: description
         }
@@ -358,6 +366,8 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
           let(:kind) { 'robot' }
           let(:description) { 'old_description' }
+          let!(:robot_group_1) { create :kubernetes_group, :not_privileged, :for_robot, allocate_to: @token.tokenable }
+          let!(:robot_group_2) { create :kubernetes_group, :not_privileged, :for_robot, allocate_to: @token.tokenable }
 
           it 'updates the specified token description, groups and associated user only' do
             expect(KubernetesToken.robot.count).to eq 1
@@ -375,7 +385,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
               }
             ).and_call_original
 
-            put :update, params: put_data
+            put :update, params: { id: @token.id, token: put_data[:token].merge({ groups: [ robot_group_1.name, robot_group_2.name ] }) }
             expect(response).to be_success
             expect(KubernetesToken.robot.count).to eq 1
             updated = KubernetesToken.robot.first
@@ -383,7 +393,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             expect(updated.cluster).to eq @token.cluster
             expect(updated.name).to eq @token.name
             expect(updated.description).to eq put_data[:token][:description]
-            expect(updated.groups).to match_array put_data[:token][:groups].split(",")
+            expect(updated.groups).to match_array [ robot_group_1.name, robot_group_2.name ]
             expect(Audit.count).to eq 1
           end
 
@@ -441,7 +451,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
   end
 
   describe 'PATCH #escalate' do
-    let(:privileged_group) { 'privileged-group' }
+    let(:privileged_group) { create :kubernetes_group, :privileged, :for_user }
     let(:expires_in_secs) { 180 }
 
     before do
@@ -451,7 +461,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
     let(:escalate_params) do
       {
         id: @token.id,
-        privileged_group: privileged_group,
+        privileged_group: privileged_group.name,
         expires_in_secs: expires_in_secs
       }
     end
@@ -480,7 +490,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             auditable: @token,
             data: {
               cluster: @token.cluster.name,
-              privileged_group: privileged_group
+              privileged_group: privileged_group.name
             }
           ).and_call_original
 
@@ -490,7 +500,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
           expect(json_response['cluster']['name']).to eq @token.cluster.name
           expect(json_response['token']).to eq @token.decrypted_token
           expect(json_response['uid']).to eq @token.uid
-          expect(json_response['groups']).to match_array @token.groups << privileged_group
+          expect(json_response['groups']).to match_array @token.groups << privileged_group.name
           expect(DateTime.parse(json_response['expire_privileged_at']).to_s(:db)).to eq expires_in_secs.seconds.from_now.to_s(:db)
           expect(Audit.count).to eq 1
         end

@@ -17,8 +17,10 @@ FactoryGirl.define do
     end
 
     after(:create) do |cluster, evaluator|
-      if evaluator.allocate_to
-        create :allocation, allocatable: cluster, allocation_receivable: evaluator.allocate_to
+      unless evaluator.allocate_to.blank?
+        Array(evaluator.allocate_to).each do |ar|
+          create :allocation, allocatable: cluster, allocation_receivable: ar
+        end
       end
     end
   end
