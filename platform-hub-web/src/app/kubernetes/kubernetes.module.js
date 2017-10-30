@@ -1,5 +1,6 @@
 import angular from 'angular';
 
+import {KubernetesClustersDetailComponent} from './kubernetes-clusters-detail.component';
 import {KubernetesClustersFormComponent} from './kubernetes-clusters-form.component';
 import {KubernetesClustersListComponent} from './kubernetes-clusters-list.component';
 import {KubernetesGroupsDetailComponent} from './kubernetes-groups-detail.component';
@@ -14,6 +15,7 @@ import {KubernetesUserTokensFormComponent} from './kubernetes-user-tokens-form.c
 import {KubernetesUserTokensListComponent} from './kubernetes-user-tokens-list.component';
 
 // Main section component names
+export const KubernetesClustersDetail = 'kubernetesClustersDetail';
 export const KubernetesClustersForm = 'kubernetesClustersForm';
 export const KubernetesClustersList = 'kubernetesClustersList';
 export const KubernetesGroupsDetail = 'kubernetesGroupsDetail';
@@ -27,6 +29,7 @@ export const KubernetesUserTokensList = 'kubernetesUserTokensList';
 
 export const KubernetesModule = angular
   .module('app.kubernetes', [])
+  .component(KubernetesClustersDetail, KubernetesClustersDetailComponent)
   .component(KubernetesClustersForm, KubernetesClustersFormComponent)
   .component(KubernetesClustersList, KubernetesClustersListComponent)
   .component(KubernetesGroupsDetail, KubernetesGroupsDetailComponent)

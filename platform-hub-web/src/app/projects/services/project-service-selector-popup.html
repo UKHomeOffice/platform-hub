@@ -1,10 +1,13 @@
 <md-dialog aria-label="Choose a project service">
   <md-toolbar class="md-toolbar-tools md-accent">
-    <h2 ng-if="$ctrl.serviceIsOptional">
-      Choose a project or a service from a project
+    <h2 ng-if="$ctrl.mode == 'project-only'">
+      Choose a project
     </h2>
-    <h2 ng-if="!$ctrl.serviceIsOptional">
+    <h2 ng-if="$ctrl.mode == 'service-only'">
       Choose a service from a project
+    </h2>
+    <h2 ng-if="$ctrl.mode == 'project-or-service'">
+      Choose a project or a service from a project
     </h2>
     <span flex></span>
     <md-button
@@ -37,13 +40,13 @@
         </md-select>
       </md-input-container>
 
-      <md-input-container class="md-block">
+      <md-input-container class="md-block" ng-if="$ctrl.mode != 'project-only'">
         <label for="service">Service:</label>
         <md-select
           name="service"
           ng-model="$ctrl.selectedService"
           ng-disabled="!$ctrl.services.length"
-          ng-required="!$ctrl.serviceIsOptional">
+          ng-required="$ctrl.mode == 'service-only'">
           <md-option
             ng-repeat="s in $ctrl.services"
             ng-value="s">
@@ -63,8 +66,8 @@
       Cancel
     </md-button>
     <md-button
-      ng-if="$ctrl.serviceIsOptional"
       class="md-primary md-raised"
+      ng-if="$ctrl.mode == 'project-only' || $ctrl.mode == 'project-or-service'"
       ng-click="$ctrl.chooseProject()"
       ng-disabled="$ctrl.loading || !$ctrl.selectedProject"
       aria-label="Choose the selected project">
@@ -72,6 +75,7 @@
     </md-button>
     <md-button
       class="md-primary md-raised"
+      ng-if="$ctrl.mode != 'project-only'"
       ng-click="$ctrl.chooseService()"
       ng-disabled="$ctrl.loading || !$ctrl.selectedService"
       aria-label="Choose the selected service">

@@ -897,6 +897,7 @@ RSpec.describe ServicesController, type: :controller do
           'uid' => token.uid,
           'groups' => token.groups,
           'cluster' => {
+            'id' => token.cluster.friendly_id,
             'name' => token.cluster.name,
             'description' => token.cluster.description
           },
@@ -1202,6 +1203,7 @@ RSpec.describe ServicesController, type: :controller do
           'uid' => token.uid,
           'groups' => patch_data[:robot_token][:groups],
           'cluster' => {
+            'id' => token.cluster.friendly_id,
             'name' => token.cluster.name,
             'description' => token.cluster.description
           },

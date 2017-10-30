@@ -22,6 +22,7 @@ export const Projects = function ($window, $q, apiBackoffTimeMs, hubApiService, 
   model.setMembershipRole = hubApiService.projectSetMembershipRole;
   model.unsetMembershipRole = hubApiService.projectUnsetMembershipRole;
 
+  model.getKubernetesClusters = hubApiService.getProjectKubernetesClusters;
   model.getKubernetesGroups = hubApiService.getProjectKubernetesGroups;
 
   model.getServices = hubApiService.getProjectServices;

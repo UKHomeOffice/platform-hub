@@ -30,7 +30,6 @@ describe('kubernetes robot tokens form', () => {
   let $state = null;
   let roleCheckerService = null;
   let Projects = null;
-  let KubernetesClusters = null;
 
   beforeEach(() => {
     const moduleName = `${KubernetesModule}.KubernetesRobotTokensFormComponent.spec`;
@@ -38,7 +37,7 @@ describe('kubernetes robot tokens form', () => {
     angular.mock.module(moduleName);
   });
 
-  beforeEach(angular.mock.inject((_$compile_, _$rootScope_, _$q_, _$httpBackend_, _$state_, _roleCheckerService_, _Projects_, _KubernetesClusters_) => {
+  beforeEach(angular.mock.inject((_$compile_, _$rootScope_, _$q_, _$httpBackend_, _$state_, _roleCheckerService_, _Projects_) => {
     sandbox = sinon.sandbox.create();
 
     $compile = _$compile_;
@@ -48,7 +47,6 @@ describe('kubernetes robot tokens form', () => {
     $state = _$state_;
     roleCheckerService = _roleCheckerService_;
     Projects = _Projects_;
-    KubernetesClusters = _KubernetesClusters_;
 
     $httpBackend
       .whenGET(/.+/)
@@ -99,7 +97,6 @@ describe('kubernetes robot tokens form', () => {
 
   beforeEach(() => {
     sandbox.spy($state, 'go');
-    sandbox.spy(KubernetesClusters, 'refresh');
   });
 
   describe('for an admin user', () => {
@@ -118,7 +115,6 @@ describe('kubernetes robot tokens form', () => {
 
         it('should boot the user out', () => {
           $state.go.should.have.been.calledWith('home');
-          KubernetesClusters.refresh.should.have.callCount(0);
         });
       });
 
@@ -129,7 +125,6 @@ describe('kubernetes robot tokens form', () => {
 
         it('should load the form as expected', () => {
           $state.go.should.have.callCount(0);
-          KubernetesClusters.refresh.should.have.callCount(1);
           expect(element).toContainElement('div.kubernetes-robot-tokens-form');
         });
       });
@@ -146,7 +141,6 @@ describe('kubernetes robot tokens form', () => {
 
         it('should load the form as expected', () => {
           $state.go.should.have.callCount(0);
-          KubernetesClusters.refresh.should.have.callCount(1);
           expect(element).toContainElement('div.kubernetes-robot-tokens-form');
         });
       });
@@ -165,7 +159,6 @@ describe('kubernetes robot tokens form', () => {
 
         it('should load the form as expected', () => {
           $state.go.should.have.callCount(0);
-          KubernetesClusters.refresh.should.have.callCount(1);
           expect(element).toContainElement('div.kubernetes-robot-tokens-form');
         });
       });
@@ -182,7 +175,6 @@ describe('kubernetes robot tokens form', () => {
 
         it('should load the form as expected', () => {
           $state.go.should.have.callCount(0);
-          KubernetesClusters.refresh.should.have.callCount(1);
           expect(element).toContainElement('div.kubernetes-robot-tokens-form');
         });
       });
@@ -205,7 +197,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            KubernetesClusters.refresh.should.have.callCount(0);
           });
         });
 
@@ -222,7 +213,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should load the form as expected', () => {
             $state.go.should.have.callCount(0);
-            KubernetesClusters.refresh.should.have.callCount(1);
             expect(element).toContainElement('div.kubernetes-robot-tokens-form');
           });
         });
@@ -239,7 +229,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            KubernetesClusters.refresh.should.have.callCount(0);
           });
         });
       });
@@ -259,7 +248,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            KubernetesClusters.refresh.should.have.callCount(0);
           });
         });
 
@@ -276,7 +264,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should load the form as expected', () => {
             $state.go.should.have.callCount(0);
-            KubernetesClusters.refresh.should.have.callCount(1);
             expect(element).toContainElement('div.kubernetes-robot-tokens-form');
           });
         });
@@ -293,7 +280,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            KubernetesClusters.refresh.should.have.callCount(0);
           });
         });
       });
@@ -315,7 +301,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            KubernetesClusters.refresh.should.have.callCount(0);
           });
         });
 
@@ -329,7 +314,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            KubernetesClusters.refresh.should.have.callCount(0);
           });
         });
 
@@ -343,7 +327,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            KubernetesClusters.refresh.should.have.callCount(0);
           });
         });
       });
@@ -361,7 +344,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            KubernetesClusters.refresh.should.have.callCount(0);
           });
         });
 
@@ -375,7 +357,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            KubernetesClusters.refresh.should.have.callCount(0);
           });
         });
 
@@ -389,7 +370,6 @@ describe('kubernetes robot tokens form', () => {
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            KubernetesClusters.refresh.should.have.callCount(0);
           });
         });
       });

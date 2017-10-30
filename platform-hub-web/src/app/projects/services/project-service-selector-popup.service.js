@@ -3,11 +3,21 @@ export const projectServiceSelectorPopupService = function ($document, $mdDialog
 
   const service = {};
 
-  service.open = open;
+  service.openForProjectOnly = function targetEvent() {
+    return _open('project-only', targetEvent);
+  };
+
+  service.openForServiceOnly = function (targetEvent) {
+    return _open('service-only', targetEvent);
+  };
+
+  service.openForProjectOrService = function (targetEvent) {
+    return _open('project-or-service', targetEvent);
+  };
 
   return service;
 
-  function open(serviceIsOptional, targetEvent) {
+  function _open(mode, targetEvent) {
     return $mdDialog.show({
       template: require('./project-service-selector-popup.html'),
       controller: 'ProjectServiceSelectorPopupController',
@@ -18,7 +28,7 @@ export const projectServiceSelectorPopupService = function ($document, $mdDialog
       clickOutsideToClose: false,
       escapeToClose: false,
       locals: {
-        serviceIsOptional
+        mode
       }
     });
   }

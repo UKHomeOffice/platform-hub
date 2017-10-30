@@ -12,6 +12,7 @@ class ProjectsController < ApiJsonController
     :set_role,
     :unset_role,
     :role_check,
+    :kubernetes_clusters,
     :kubernetes_groups
   ]
 
@@ -34,6 +35,7 @@ class ProjectsController < ApiJsonController
     :show,
     :memberships,
     :role_check,
+    :kubernetes_clusters,  # Will be checked separately
     :kubernetes_groups  # Will be checked separately
   ]
 
@@ -163,6 +165,13 @@ class ProjectsController < ApiJsonController
   # DELETE /projects/:id/memberships/:user_id/role/:role
   def unset_role
     handle_role_change role: nil
+  end
+
+  # GET /projects/:id/kubernetes_clusters
+  def kubernetes_clusters
+    authorize! :read_resources_in_project, @project
+
+    render json: @project.kubernetes_clusters.order(:name)
   end
 
   # GET /projects/:id/kubernetes_groups
