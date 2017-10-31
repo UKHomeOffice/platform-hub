@@ -40,6 +40,9 @@ class KubernetesToken < ApplicationRecord
   validate :token_must_be_of_expected_length
   validate :one_user_token_per_cluster
   validate :robot_name_unique_for_given_cluster
+  validate :group_names_exist
+  validate :allowed_clusters_only
+  validate :allowed_groups_only
 
   def token=(val)
     self['token'] = ENCRYPTOR.encrypt(val)
@@ -121,6 +124,54 @@ class KubernetesToken < ApplicationRecord
     return unless robot?
     if new_record? && robot_token_for_cluster_and_name_exists?(cluster, name)
       errors.add(:name, "must be unique for each robot token within a cluster")
+    end
+  end
+
+  def group_names_exist
+    Array(self.groups).each do |g|
+      unless KubernetesGroup.exists? name: g
+        errors.add(:groups, "contain an invalid group - '#{g}' does not exist")
+      end
+    end
+  end
+
+  def allowed_clusters_only
+    return unless tokenable.present? && cluster.present?
+
+    if robot?
+      unless Allocation.exists?(
+        allocatable: cluster,
+        allocation_receivable: tokenable
+      )
+        errors.add(:cluster_id, "is not allowed for this token")
+      end
+    end
+  end
+
+  def allowed_groups_only
+    return unless tokenable.present? && cluster.present?
+
+    # We assume at this point that any group names set actually do exist in the
+    # db (i.e. we expect a previous validation to take care of this)
+    if robot? && groups.present?
+      groups.each do |name|
+        g = KubernetesGroup.where(name: name).first
+
+        allowed = g.robot? &&
+          !g.is_privileged &&
+          (
+            g.restricted_to_clusters.blank? ||
+            g.restricted_to_clusters.include?(cluster.name)
+          ) &&
+          Allocation.exists?(
+            allocatable: g,
+            allocation_receivable: tokenable
+          )
+
+        unless allowed
+          errors.add(:groups, "contain an invalid group - '#{g.name}' is not allowed for this token")
+        end
+      end
     end
   end
 

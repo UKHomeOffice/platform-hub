@@ -38,8 +38,10 @@ FactoryGirl.define do
     end
 
     after(:create) do |group, evaluator|
-      if evaluator.allocate_to
-        create :allocation, allocatable: group, allocation_receivable: evaluator.allocate_to
+      unless evaluator.allocate_to.blank?
+        Array(evaluator.allocate_to).each do |ar|
+          create :allocation, allocatable: group, allocation_receivable: ar
+        end
       end
     end
   end

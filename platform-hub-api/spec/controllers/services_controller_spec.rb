@@ -1018,14 +1018,17 @@ RSpec.describe ServicesController, type: :controller do
       @service = create :service, project: project
       @other_service = create :service, project: other_project
 
-      @cluster = create :kubernetes_cluster
+      @cluster = create :kubernetes_cluster, allocate_to: [ @service, @other_service ]
+
+      @robot_group_1 = create :kubernetes_group, :not_privileged, :for_robot, allocate_to: [ @service, @other_service ]
+      @robot_group_2 = create :kubernetes_group, :not_privileged, :for_robot, allocate_to: [ @service, @other_service ]
     end
 
     let :post_data do
       {
         robot_token: {
           cluster_name: @cluster.name,
-          groups: [ 'group1', 'group2' ],
+          groups: [ @robot_group_1.name, @robot_group_2.name ],
           name: 'token',
           description: 'important token'
         }
@@ -1089,6 +1092,19 @@ RSpec.describe ServicesController, type: :controller do
         it 'should return a 404 for incorrect matching of project and service' do
           post :create_kubernetes_robot_token, params: post_data.merge({ project_id: other_project.friendly_id, id: @service.id })
           expect(response).to have_http_status(404)
+          expect(KubernetesToken.count).to eq 0
+        end
+
+        it 'should return a 422 for a cluster that hasn\'t been allocated to the service' do
+          unallocated_cluster = create :kubernetes_cluster
+          params = {
+            project_id: project.friendly_id,
+            id: @service.id,
+            robot_token: post_data.merge({ cluster_name: unallocated_cluster.name })
+          }
+          post :create_kubernetes_robot_token, params: params
+          expect(response).to have_http_status(422)
+          expect(KubernetesToken.count).to eq 0
         end
 
       end
@@ -1106,6 +1122,7 @@ RSpec.describe ServicesController, type: :controller do
         it 'cannot create a robot token for the service in the other project - returning 403 Forbidden' do
           post :create_kubernetes_robot_token, params: post_data.merge({ project_id: other_project.friendly_id, id: @other_service.id })
           expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
         end
 
       end
@@ -1119,11 +1136,13 @@ RSpec.describe ServicesController, type: :controller do
         it 'cannot create a robot token for the service in the project - returning 403 Forbidden' do
           post :create_kubernetes_robot_token, params: post_data.merge({ project_id: project.friendly_id, id: @service.id })
           expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
         end
 
         it 'cannot create a robot token for the service in the other project - returning 403 Forbidden' do
           post :create_kubernetes_robot_token, params: post_data.merge({ project_id: other_project.friendly_id, id: @other_service.id })
           expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
         end
 
       end
@@ -1137,6 +1156,7 @@ RSpec.describe ServicesController, type: :controller do
         it 'cannot create a robot token for the service in the project - returning 403 Forbidden' do
           post :create_kubernetes_robot_token, params: post_data.merge({ project_id: project.friendly_id, id: @service.id })
           expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
         end
 
         it 'can create a robot token for the service in the other project as expected' do
@@ -1154,11 +1174,13 @@ RSpec.describe ServicesController, type: :controller do
         it 'cannot create a robot token for the service in the project - returning 403 Forbidden' do
           post :create_kubernetes_robot_token, params: post_data.merge({ project_id: project.friendly_id, id: @service.id })
           expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
         end
 
         it 'cannot create a robot token for the service in the other project - returning 403 Forbidden' do
           post :create_kubernetes_robot_token, params: post_data.merge({ project_id: other_project.friendly_id, id: @other_service.id })
           expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
         end
 
       end
@@ -1172,12 +1194,15 @@ RSpec.describe ServicesController, type: :controller do
       @other_service = create :service, project: other_project
       @token = create :robot_kubernetes_token, tokenable: @service
       @other_token = create :robot_kubernetes_token, tokenable: @other_service
+
+      @robot_group_1 = create :kubernetes_group, :not_privileged, :for_robot, allocate_to: [ @service, @other_service ]
+      @robot_group_2 = create :kubernetes_group, :not_privileged, :for_robot, allocate_to: [ @service, @other_service ]
     end
 
     let :patch_data do
       {
         robot_token: {
-          groups: ['new', 'groups'],
+          groups: [ @robot_group_1.name, @robot_group_2.name ],
           description: 'new description'
         }
       }
