@@ -944,6 +944,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .post(`${apiEndpoint}/kubernetes/tokens`, {
         kind: 'user',
         user_id: userId,
+        project_id: data.project_id,
         cluster_name: data.cluster.name,
         groups: data.groups
       })

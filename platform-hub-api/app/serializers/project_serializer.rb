@@ -14,7 +14,7 @@ class ProjectSerializer < BaseSerializer
 
   attribute :cost_centre_code, if: :is_admin_or_project_manager?
 
-  def members_count
+  attribute :members_count do
     object.memberships.count
   end
 

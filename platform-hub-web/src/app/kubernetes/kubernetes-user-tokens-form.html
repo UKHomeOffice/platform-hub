@@ -45,6 +45,25 @@
           </md-autocomplete>
 
           <md-input-container class="md-block">
+            <label for="project">Project:</label>
+            <md-select ng-model="$ctrl.token.project_id"
+              name="project"
+              required
+              placeholder="Select the project this token is tied to"
+              ng-disabled="!$ctrl.isNew && $ctrl.token.project_id">
+              <md-option
+                ng-repeat="p in $ctrl.Projects.all track by p.id"
+                ng-disabled="$ctrl.assignedProjects.includes(p.id)"
+                value="{{p.id}}">
+                {{p.name}} ({{p.shortname}})
+              </md-option>
+            </md-select>
+            <div ng-messages="$ctrl.kubernetesTokenForm.project.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <md-input-container class="md-block">
             <label for="cluster">Cluster:</label>
             <md-select ng-model="$ctrl.token.cluster.name"
               name="cluster"
@@ -53,7 +72,7 @@
               ng-disabled="!$ctrl.isNew && $ctrl.token.cluster">
               <md-option
                 ng-repeat="c in $ctrl.KubernetesClusters.all track by c.name"
-                ng-if="!$ctrl.isNew || ($ctrl.isNew && !$ctrl.assignedKubernetesClusters.includes(c.name))"
+                ng-disabled="$ctrl.assignedKubernetesClusters.includes(c.name)"
                 value="{{c.name}}">
                 {{c.name}} ({{c.description}})
               </md-option>

@@ -8,6 +8,7 @@ FactoryGirl.define do
     factory :user_kubernetes_token do
       kind { 'user' }
       association :cluster, factory: :kubernetes_cluster
+      association :project
       association :tokenable, factory: :kubernetes_identity
       name { "user_#{SecureRandom.uuid}@example.com" }
 

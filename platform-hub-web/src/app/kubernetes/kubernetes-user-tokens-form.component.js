@@ -14,11 +14,13 @@ function KubernetesUserTokensFormController($q, $state, Projects, Identities, Ku
   const userId = ctrl.transition && ctrl.transition.params().userId;
   const tokenId = ctrl.transition && ctrl.transition.params().tokenId;
 
+  ctrl.Projects = Projects;
   ctrl.KubernetesClusters = KubernetesClusters;
   ctrl.loading = true;
   ctrl.saving = false;
   ctrl.isNew = true;
   ctrl.token = null;
+  ctrl.assignedProjects = null;
   ctrl.assignedKubernetesClusters = null;
   ctrl.searchText = '';
   ctrl.user = null;
@@ -33,14 +35,11 @@ function KubernetesUserTokensFormController($q, $state, Projects, Identities, Ku
     ctrl.isNew = !tokenId;
     ctrl.loading = true;
 
-    // Kubernetes clusters are defined as follows:
-    // [
-    //   {name: 'cluster1', description: 'Cluster 1'},
-    //   {name: 'cluster2', description: 'Cluster 2'},
-    //   ...
-    // ];
-    KubernetesClusters
-      .refresh()
+    const projectsFetch = Projects.refresh();
+
+    const clustersFetch = KubernetesClusters.refresh();
+
+    $q.all([projectsFetch, clustersFetch])
       .then(() => {
         if (userId) {
           return loadUserAndToken();
@@ -69,9 +68,11 @@ function KubernetesUserTokensFormController($q, $state, Projects, Identities, Ku
 
           if (identity) {
             ctrl.token = _.find(identity.kubernetes_tokens, ['id', tokenId]);
+            ctrl.assignedProjects = [];
             ctrl.assignedKubernetesClusters = _.map(identity.kubernetes_tokens, 'cluster.name');
           } else {
             ctrl.token = {};
+            ctrl.assignedProjects = [];
             ctrl.assignedKubernetesClusters = [];
           }
         });

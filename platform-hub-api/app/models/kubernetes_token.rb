@@ -8,11 +8,12 @@ class KubernetesToken < ApplicationRecord
   include Audited
   audited descriptor_field: :name, associated_field: :tokenable
 
-  attr_readonly :token, :name, :uid, :kind, :cluster_id
+  attr_readonly :token, :name, :uid, :kind, :cluster_id, :project_id
 
   before_save :downcase_name
 
   belongs_to :tokenable, -> { readonly }, polymorphic: true
+  belongs_to :project, -> { readonly }
   belongs_to :cluster, -> { readonly }, class_name: KubernetesCluster
 
   scope :privileged, -> { where.not(expire_privileged_at: nil) }
@@ -26,7 +27,7 @@ class KubernetesToken < ApplicationRecord
   }
 
   validates :uid, presence: true, length: { is: UID_LENGTH }, uniqueness: true
-  validates :kind, :cluster, presence: true
+  validates :kind, :tokenable, :project, :cluster, presence: true
   validates :name,
     presence: true,
     format: {
@@ -34,6 +35,8 @@ class KubernetesToken < ApplicationRecord
       message: "must start with letter and can only contain letters, numbers, underscores, dashes, dots and @"
     }
   validates :description, presence: true, if: :robot?
+
+  before_validation :set_project, if: :robot?
 
   validate :tokenable_set
   validate :token_must_not_be_blank
@@ -89,6 +92,12 @@ class KubernetesToken < ApplicationRecord
   end
 
   protected
+
+  def set_project
+    if tokenable.present? && tokenable.is_a?(Service)
+      self.project = tokenable.project
+    end
+  end
 
   def tokenable_set
     if robot?

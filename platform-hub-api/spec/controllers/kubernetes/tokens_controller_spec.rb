@@ -126,6 +126,11 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'id' => @token.cluster.friendly_id,
                 'name' => @token.cluster.name,
                 'description' => @token.cluster.description
+              },
+              'project'=> {
+                'id' => @token.project.friendly_id,
+                'shortname' => @token.project.shortname,
+                'name' => @token.project.name
               }
             })
           end
@@ -161,6 +166,11 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                   'shortname' => @token.tokenable.project.shortname,
                   'name' => @token.tokenable.project.name
                 }
+              },
+              'project'=> {
+                'id' => @token.project.friendly_id,
+                'shortname' => @token.project.shortname,
+                'name' => @token.project.name
               }
             })
           end
@@ -189,6 +199,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
     let(:user_group_2) { create :kubernetes_group, :not_privileged, :for_user }
 
     before do
+      @project = create(:project)
       @cluster = create(:kubernetes_cluster)
       @user = create(:user)
     end
@@ -200,6 +211,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
     let :token_data do
       {
         kind: kind,
+        project_id: @project.friendly_id,
         cluster_name: @cluster.name,
         groups: [ user_group_1.name, user_group_2.name ],
         name: name,
