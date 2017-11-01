@@ -145,12 +145,12 @@ class KubernetesToken < ApplicationRecord
   end
 
   def allowed_clusters_only
-    return unless tokenable.present? && cluster.present?
+    return unless project.present? && cluster.present?
 
     if robot?
       unless Allocation.exists?(
         allocatable: cluster,
-        allocation_receivable: tokenable
+        allocation_receivable: project
       )
         errors.add(:cluster_id, "is not allowed for this token")
       end

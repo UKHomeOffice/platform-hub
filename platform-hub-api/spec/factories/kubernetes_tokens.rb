@@ -38,8 +38,8 @@ FactoryGirl.define do
       end
 
       after(:build) do |token, evaluator|
-        if token.cluster.blank?
-          token.cluster = create :kubernetes_cluster, allocate_to: token.tokenable
+        if token.cluster.blank? && token.tokenable.present? && token.tokenable.is_a?(Service)
+          token.cluster = create :kubernetes_cluster, allocate_to: token.tokenable.project
         end
 
         if token.groups.nil? && !evaluator.groups_count.zero?

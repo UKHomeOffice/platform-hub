@@ -1033,7 +1033,7 @@ RSpec.describe ServicesController, type: :controller do
       @service = create :service, project: project
       @other_service = create :service, project: other_project
 
-      @cluster = create :kubernetes_cluster, allocate_to: [ @service, @other_service ]
+      @cluster = create :kubernetes_cluster, allocate_to: [ project, other_project ]
 
       @robot_group_1 = create :kubernetes_group, :not_privileged, :for_robot, allocate_to: [ @service, @other_service ]
       @robot_group_2 = create :kubernetes_group, :not_privileged, :for_robot, allocate_to: [ @service, @other_service ]

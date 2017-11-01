@@ -252,7 +252,7 @@ RSpec.describe KubernetesToken, type: :model do
 
     describe '#kind' do
       let(:service) { create :service }
-      let(:cluster) { create :kubernetes_cluster, allocate_to: service }
+      let(:cluster) { create :kubernetes_cluster, allocate_to: service.project }
 
       it 'does not allow to update kind' do
         expect { @t.update_attributes(kind: 'robot', tokenable: service, cluster: cluster, description: 'blah', groups: []) }.to raise_error(
@@ -311,10 +311,12 @@ RSpec.describe KubernetesToken, type: :model do
 
     describe '#tokenable_set' do
       context 'for robot token' do
+        let(:project) { create :project }
+        let(:cluster) { create :kubernetes_cluster, allocate_to: project }
         let(:identity) { create :identity }
 
         it 'raises error on tokenable_type other than User' do
-          expect { create :robot_kubernetes_token, tokenable: identity, project: create(:project) }.to raise_error(
+          expect { create :robot_kubernetes_token, tokenable: identity, project: project, cluster: cluster }.to raise_error(
             ActiveRecord::RecordInvalid, "Validation failed: Tokenable type must be `Service` for robot token"
           )
           expect(KubernetesToken.count).to eq 0
@@ -429,10 +431,11 @@ RSpec.describe KubernetesToken, type: :model do
 
       context 'for robot token' do
 
-        let!(:service) { create :service }
-        let!(:allocated_cluster) { create :kubernetes_cluster, allocate_to: service }
+        let!(:project) { create :project }
+        let!(:service) { create :service, project: project }
+        let!(:allocated_cluster) { create :kubernetes_cluster, allocate_to: project }
         let!(:unallocated_cluster) { create :kubernetes_cluster }
-        let!(:other_allocated_cluster) { create :kubernetes_cluster, allocate_to: create(:service) }
+        let!(:other_allocated_cluster) { create :kubernetes_cluster, allocate_to: create(:project) }
 
         it 'allows using the allocated cluster' do
           token = build :robot_kubernetes_token, tokenable: service, cluster: allocated_cluster
@@ -461,9 +464,10 @@ RSpec.describe KubernetesToken, type: :model do
 
       context 'for robot token' do
 
-        let!(:service) { create :service }
-        let!(:cluster) { create :kubernetes_cluster, allocate_to: service }
-        let!(:other_cluster) { create :kubernetes_cluster, allocate_to: service }
+        let!(:project) { create :project }
+        let!(:service) { create :service, project: project }
+        let!(:cluster) { create :kubernetes_cluster, allocate_to: project }
+        let!(:other_cluster) { create :kubernetes_cluster, allocate_to: project }
 
         def expect_allowed group
           token = build :robot_kubernetes_token, tokenable: service, cluster: cluster, groups: [ group.name ]

@@ -267,7 +267,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
           let(:name) { 'some_robot_name' }
           let(:description) { 'Robot to do things' }
           let!(:service) { create :service }
-          let!(:cluster) { create :kubernetes_cluster, allocate_to: service }
+          let!(:cluster) { create :kubernetes_cluster, allocate_to: service.project }
           let!(:robot_group_1) { create :kubernetes_group, :not_privileged, :for_robot, allocate_to: service }
           let!(:robot_group_2) { create :kubernetes_group, :not_privileged, :for_robot, allocate_to: service }
 
