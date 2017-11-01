@@ -6,7 +6,7 @@ export const KubernetesRobotTokensListComponent = {
   controller: KubernetesRobotTokensListController
 };
 
-function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, hubApiService, icons, KubernetesClusters) {
+function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, icons, KubernetesClusters, KubernetesTokens) {
   'ngInject';
 
   const ctrl = this;
@@ -41,8 +41,8 @@ function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, hubAp
     if (ctrl.cluster) {
       ctrl.busy = true;
 
-      return hubApiService
-        .getKubernetesRobotTokens(ctrl.cluster)
+      return KubernetesTokens
+        .getRobotTokens(ctrl.cluster)
         .then(tokens => {
           angular.copy(tokens, ctrl.tokens);
         })
@@ -71,8 +71,8 @@ function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, hubAp
     $mdDialog
       .show(confirm)
       .then(() => {
-        hubApiService
-          .deleteKubernetesToken(tokenId)
+        KubernetesTokens
+          .deleteToken(tokenId)
           .then(fetchTokens);
       });
   }

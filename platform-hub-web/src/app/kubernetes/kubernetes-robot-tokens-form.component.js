@@ -123,7 +123,7 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
     if (fromService) {
       fetch = Projects.getServiceKubernetesRobotToken(fromProject, fromService, tokenId);
     } else {
-      fetch = KubernetesTokens.getRobotToken(tokenId);
+      fetch = KubernetesTokens.getToken(tokenId);
     }
 
     return fetch

@@ -107,13 +107,14 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.allocateKubernetesGroup = allocateKubernetesGroup;
   service.getKubernetesGroupAllocations = buildSubCollectionFetcher('kubernetes/groups', 'allocations');
 
-  service.getKubernetesTokens = getKubernetesTokens;
-  service.deleteKubernetesToken = deleteKubernetesToken;
-  service.createKubernetesToken = createKubernetesToken;
-  service.updateKubernetesToken = updateKubernetesToken;
+  service.getKubernetesToken = buildResourceFetcher('kubernetes/tokens');
+  service.deleteKubernetesToken = buildResourceDeletor('kubernetes/tokens');
+
+  service.getKubernetesUserTokens = getKubernetesUserTokens;
+  service.createKubernetesUserToken = createKubernetesUserToken;
+  service.updateKubernetesUserToken = updateKubernetesUserToken;
 
   service.getKubernetesRobotTokens = getKubernetesRobotTokens;
-  service.getKubernetesRobotToken = buildResourceFetcher('kubernetes/tokens');
   service.createKubernetesRobotToken = createKubernetesRobotToken;
   service.updateKubernetesRobotToken = updateKubernetesRobotToken;
 
@@ -912,7 +913,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function getKubernetesTokens(userId) {
+  function getKubernetesUserTokens(userId) {
     if (_.isNull(userId) || _.isEmpty(userId)) {
       throw new Error('"userId" argument not specified or empty');
     }
@@ -931,21 +932,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function deleteKubernetesToken(tokenId) {
-    if (_.isNull(tokenId) || _.isEmpty(tokenId)) {
-      throw new Error('"tokenId" argument not specified or empty');
-    }
-
-    return $http
-      .delete(`${apiEndpoint}/kubernetes/tokens/${tokenId}`)
-      .then(handle4xxError)
-      .catch(response => {
-        logger.error(buildErrorMessageFromResponse('Failed to delete kubernetes token', response));
-        return $q.reject(response);
-      });
-  }
-
-  function createKubernetesToken(userId, data) {
+  function createKubernetesUserToken(userId, data) {
     if (_.isNull(userId) || _.isEmpty(userId)) {
       throw new Error('"userId" argument not specified or empty');
     }
@@ -967,7 +954,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       });
   }
 
-  function updateKubernetesToken(tokenId, data) {
+  function updateKubernetesUserToken(tokenId, data) {
     if (_.isNull(tokenId) || _.isEmpty(tokenId)) {
       throw new Error('"tokenId" argument not specified or empty');
     }
