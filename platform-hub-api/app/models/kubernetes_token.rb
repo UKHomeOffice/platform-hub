@@ -158,7 +158,7 @@ class KubernetesToken < ApplicationRecord
   end
 
   def allowed_groups_only
-    return unless tokenable.present? && cluster.present?
+    return unless tokenable.present? && project.present? && cluster.present?
 
     # We assume at this point that any group names set actually do exist in the
     # db (i.e. we expect a previous validation to take care of this)
@@ -172,9 +172,15 @@ class KubernetesToken < ApplicationRecord
             g.restricted_to_clusters.blank? ||
             g.restricted_to_clusters.include?(cluster.name)
           ) &&
-          Allocation.exists?(
-            allocatable: g,
-            allocation_receivable: tokenable
+          (
+            Allocation.exists?(
+              allocatable: g,
+              allocation_receivable: tokenable
+            ) ||
+            Allocation.exists?(
+              allocatable: g,
+              allocation_receivable: project
+            )
           )
 
         unless allowed

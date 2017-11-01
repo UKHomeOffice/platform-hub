@@ -543,6 +543,14 @@ RSpec.describe KubernetesToken, type: :model do
           end
         end
 
+        context 'for an allocated not privileged group with no cluster restrictions that has been allocated to the project' do
+          let(:group) { create :kubernetes_group, :not_privileged, :for_robot, allocate_to: service.project, restricted_to_clusters: [] }
+
+          it 'should allow the group to be set' do
+            expect_allowed group
+          end
+        end
+
       end
 
     end
