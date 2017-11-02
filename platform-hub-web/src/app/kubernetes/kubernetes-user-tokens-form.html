@@ -45,15 +45,34 @@
           </md-autocomplete>
 
           <md-input-container class="md-block">
+            <label for="project">Project:</label>
+            <md-select ng-model="$ctrl.token.project_id"
+              name="project"
+              required
+              placeholder="Select the project this token is tied to"
+              ng-disabled="!$ctrl.isNew && $ctrl.token.project_id">
+              <md-option
+                ng-repeat="p in $ctrl.Projects.all track by p.id"
+                ng-disabled="$ctrl.assignedProjects.includes(p.id)"
+                value="{{p.id}}">
+                {{p.name}} ({{p.shortname}})
+              </md-option>
+            </md-select>
+            <div ng-messages="$ctrl.kubernetesTokenForm.project.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <md-input-container class="md-block">
             <label for="cluster">Cluster:</label>
-            <md-select ng-model="$ctrl.tokenData.cluster.name"
+            <md-select ng-model="$ctrl.token.cluster.name"
               name="cluster"
               required
               placeholder="Select the cluster"
-              ng-disabled="!$ctrl.isNew && $ctrl.tokenData.cluster">
+              ng-disabled="!$ctrl.isNew && $ctrl.token.cluster">
               <md-option
                 ng-repeat="c in $ctrl.KubernetesClusters.all track by c.name"
-                ng-if="!$ctrl.isNew || ($ctrl.isNew && !$ctrl.assignedKubernetesClusters.includes(c.name))"
+                ng-disabled="$ctrl.assignedKubernetesClusters.includes(c.name)"
                 value="{{c.name}}">
                 {{c.name}} ({{c.description}})
               </md-option>
@@ -69,8 +88,8 @@
             <label for="token">Token:</label>
             <input
               name="token"
-              ng-model="$ctrl.tokenData.token"
-              ng-disabled="$ctrl.tokenData.token"
+              ng-model="$ctrl.token.token"
+              ng-disabled="$ctrl.token.token"
               required
               placeholder="Kubernetes access token"
               autofocus>
@@ -83,8 +102,8 @@
             <label for="uid">UID:</label>
             <input
               name="uid"
-              ng-model="$ctrl.tokenData.uid"
-              ng-disabled="$ctrl.tokenData.uid"
+              ng-model="$ctrl.token.uid"
+              ng-disabled="$ctrl.token.uid"
               required
               placeholder="Kubernetes user UID"
               autofocus>
@@ -97,7 +116,7 @@
             <label for="groups">Groups (optional):</label>
             <input
               name="groups"
-              ng-model="$ctrl.tokenData.groups"
+              ng-model="$ctrl.token.groups"
               placeholder="Comma separated list of groups.">
           </md-input-container>
 

@@ -14,10 +14,12 @@ module KubernetesTokensManagement
       case kind
       when 'user'
         user_params = user_token_create_params(params)
+        project = Project.friendly.find(user_params[:project_id])
         identity = find_or_create_kubernetes_identity(user_params[:user_id])
         identity.tokens.new(
           data.merge(
-            name: identity.user.email
+            name: identity.user.email,
+            project: project
           )
         )
       when 'robot'
@@ -124,6 +126,7 @@ module KubernetesTokensManagement
 
   def user_token_create_params(params)
     params.permit(
+      :project_id,
       :user_id
     )
   end

@@ -229,7 +229,7 @@ RSpec.describe KubernetesToken, type: :model do
     describe '#token' do
       it 'does not allow to update token' do
         expect { @t.update_attributes(token: SecureRandom.uuid) }.to raise_error(
-          ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id can't be modified"
+          ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
         )
       end
     end
@@ -237,7 +237,7 @@ RSpec.describe KubernetesToken, type: :model do
     describe '#uid' do
       it 'does not allow to update uid' do
         expect { @t.update_attributes(uid: SecureRandom.uuid) }.to raise_error(
-          ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id can't be modified"
+          ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
         )
       end
     end
@@ -245,55 +245,92 @@ RSpec.describe KubernetesToken, type: :model do
     describe '#name' do
       it 'does not allow to update name' do
         expect { @t.update_attributes(name: 'new_name') }.to raise_error(
-          ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id can't be modified"
+          ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
         )
       end
     end
 
     describe '#kind' do
       let(:service) { create :service }
-      let(:cluster) { create :kubernetes_cluster, allocate_to: service }
+      let(:cluster) { create :kubernetes_cluster, allocate_to: service.project }
 
       it 'does not allow to update kind' do
         expect { @t.update_attributes(kind: 'robot', tokenable: service, cluster: cluster, description: 'blah', groups: []) }.to raise_error(
-          ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id can't be modified"
+          ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
+        )
+      end
+    end
+
+    describe '#project' do
+      let(:new_project) { create :project }
+
+      it 'does not allow to update project' do
+        expect { @t.update_attributes(project: new_project) }.to raise_error(
+          ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
         )
       end
     end
 
     describe '#cluster' do
-      let(:new_cluster) { build :kubernetes_cluster }
+      let(:new_cluster) { create :kubernetes_cluster }
 
       it 'does not allow to update cluster' do
         expect { @t.update_attributes(cluster: new_cluster) }.to raise_error(
-          ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id can't be modified"
+          ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
         )
       end
     end
+  end
+
+  describe '#set_project callback' do
+
+    context 'for user token' do
+      it 'is not called' do
+        token = build :user_kubernetes_token
+        expect(token).to receive(:set_project).never
+        token.save!
+      end
+    end
+
+    context 'for robot token' do
+      let(:project) { create :project }
+      let(:other_project) { create :project }
+      let(:service) { create :service, project: project }
+
+      it 'sets the project from the service, even if another project is provided' do
+        token = build :robot_kubernetes_token, tokenable: service, project: other_project
+        expect(token).to receive(:set_project).and_call_original
+        token.save!
+        expect(token.project).to eq project
+      end
+    end
+
   end
 
   describe 'custom validations' do
 
     describe '#tokenable_set' do
       context 'for robot token' do
+        let(:project) { create :project }
+        let(:cluster) { create :kubernetes_cluster, allocate_to: project }
+        let(:identity) { create :identity }
+
         it 'raises error on tokenable_type other than User' do
-          expect { create :robot_kubernetes_token, tokenable_type: 'Identity' }.to raise_error(
+          expect { create :robot_kubernetes_token, tokenable: identity, project: project, cluster: cluster }.to raise_error(
             ActiveRecord::RecordInvalid, "Validation failed: Tokenable type must be `Service` for robot token"
           )
-          expect(KubernetesToken.user.count).to eq 0
+          expect(KubernetesToken.count).to eq 0
         end
       end
 
       context 'for user token' do
-        before do
-          @t = build :user_kubernetes_token, tokenable_type: 'Project'
-        end
+        let(:service) { create :service }
 
         it 'raises error on tokenable_type other than Identity' do
-          expect { @t.save! }.to raise_error(
+          expect { create :user_kubernetes_token, tokenable: service }.to raise_error(
             ActiveRecord::RecordInvalid, "Validation failed: Tokenable type must be `Identity` for user token"
           )
-          expect(KubernetesToken.user.count).to eq 0
+          expect(KubernetesToken.count).to eq 0
         end
       end
 
@@ -309,7 +346,7 @@ RSpec.describe KubernetesToken, type: :model do
         expect { create :user_kubernetes_token, token: '' }.to raise_error(
           ActiveRecord::RecordInvalid, "Validation failed: Token can't be blank"
         )
-        expect(KubernetesToken.user.count).to eq 0
+        expect(KubernetesToken.count).to eq 0
       end
     end
 
@@ -319,7 +356,7 @@ RSpec.describe KubernetesToken, type: :model do
           ActiveRecord::RecordInvalid,
           "Validation failed: Token is the wrong length (should be #{KubernetesToken::TOKEN_LENGTH} characters)"
         )
-        expect(KubernetesToken.user.count).to eq 0
+        expect(KubernetesToken.count).to eq 0
       end
     end
 
@@ -329,12 +366,12 @@ RSpec.describe KubernetesToken, type: :model do
       end
 
       it 'raises error on more than one token per user per cluster' do
-        expect(KubernetesToken.user.count).to eq 1
+        expect(KubernetesToken.count).to eq 1
         expect { create :user_kubernetes_token, cluster: @t.cluster, tokenable: @t.tokenable }.to raise_error(
           ActiveRecord::RecordInvalid,
           "Validation failed: User can have only one user token per cluster"
         )
-        expect(KubernetesToken.user.count).to eq 1
+        expect(KubernetesToken.count).to eq 1
       end
     end
 
@@ -394,10 +431,11 @@ RSpec.describe KubernetesToken, type: :model do
 
       context 'for robot token' do
 
-        let!(:service) { create :service }
-        let!(:allocated_cluster) { create :kubernetes_cluster, allocate_to: service }
+        let!(:project) { create :project }
+        let!(:service) { create :service, project: project }
+        let!(:allocated_cluster) { create :kubernetes_cluster, allocate_to: project }
         let!(:unallocated_cluster) { create :kubernetes_cluster }
-        let!(:other_allocated_cluster) { create :kubernetes_cluster, allocate_to: create(:service) }
+        let!(:other_allocated_cluster) { create :kubernetes_cluster, allocate_to: create(:project) }
 
         it 'allows using the allocated cluster' do
           token = build :robot_kubernetes_token, tokenable: service, cluster: allocated_cluster
@@ -426,9 +464,10 @@ RSpec.describe KubernetesToken, type: :model do
 
       context 'for robot token' do
 
-        let!(:service) { create :service }
-        let!(:cluster) { create :kubernetes_cluster, allocate_to: service }
-        let!(:other_cluster) { create :kubernetes_cluster, allocate_to: service }
+        let!(:project) { create :project }
+        let!(:service) { create :service, project: project }
+        let!(:cluster) { create :kubernetes_cluster, allocate_to: project }
+        let!(:other_cluster) { create :kubernetes_cluster, allocate_to: project }
 
         def expect_allowed group
           token = build :robot_kubernetes_token, tokenable: service, cluster: cluster, groups: [ group.name ]
@@ -505,6 +544,14 @@ RSpec.describe KubernetesToken, type: :model do
 
           it 'should not allow group to be set' do
             expect_error group
+          end
+        end
+
+        context 'for an allocated not privileged group with no cluster restrictions that has been allocated to the project' do
+          let(:group) { create :kubernetes_group, :not_privileged, :for_robot, allocate_to: service.project, restricted_to_clusters: [] }
+
+          it 'should allow the group to be set' do
+            expect_allowed group
           end
         end
 

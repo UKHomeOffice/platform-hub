@@ -303,7 +303,8 @@ CREATE TABLE kubernetes_tokens (
     description text,
     expire_privileged_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    project_id uuid NOT NULL
 );
 
 
@@ -317,7 +318,7 @@ CREATE TABLE platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying NOT NULL,
+    colour character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -853,6 +854,13 @@ CREATE INDEX index_kubernetes_tokens_on_kind ON kubernetes_tokens USING btree (k
 
 
 --
+-- Name: index_kubernetes_tokens_on_project_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_tokens_on_project_id ON kubernetes_tokens USING btree (project_id);
+
+
+--
 -- Name: index_kubernetes_tokens_on_token; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1035,6 +1043,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171003130836'),
 ('20171005115420'),
 ('20171010111440'),
-('20171012110416');
+('20171012110416'),
+('20171031164247');
 
 

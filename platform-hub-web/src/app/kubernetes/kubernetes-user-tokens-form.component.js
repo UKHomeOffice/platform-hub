@@ -6,7 +6,7 @@ export const KubernetesUserTokensFormComponent = {
   controller: KubernetesUserTokensFormController
 };
 
-function KubernetesUserTokensFormController($state, hubApiService, logger, _, KubernetesClusters) {
+function KubernetesUserTokensFormController($q, $state, Projects, Identities, KubernetesClusters, KubernetesTokens, hubApiService, logger, _) {
   'ngInject';
 
   const ctrl = this;
@@ -14,11 +14,13 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
   const userId = ctrl.transition && ctrl.transition.params().userId;
   const tokenId = ctrl.transition && ctrl.transition.params().tokenId;
 
+  ctrl.Projects = Projects;
   ctrl.KubernetesClusters = KubernetesClusters;
   ctrl.loading = true;
   ctrl.saving = false;
   ctrl.isNew = true;
-  ctrl.tokenData = null;
+  ctrl.token = null;
+  ctrl.assignedProjects = null;
   ctrl.assignedKubernetesClusters = null;
   ctrl.searchText = '';
   ctrl.user = null;
@@ -33,14 +35,11 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
     ctrl.isNew = !tokenId;
     ctrl.loading = true;
 
-    // Kubernetes clusters are defined as follows:
-    // [
-    //   {name: 'cluster1', description: 'Cluster 1'},
-    //   {name: 'cluster2', description: 'Cluster 2'},
-    //   ...
-    // ];
-    KubernetesClusters
-      .refresh()
+    const projectsFetch = Projects.refresh();
+
+    const clustersFetch = KubernetesClusters.refresh();
+
+    $q.all([projectsFetch, clustersFetch])
       .then(() => {
         if (userId) {
           return loadUserAndToken();
@@ -62,16 +61,18 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
 
   function loadTokenData() {
     if (ctrl.user) {
-      return hubApiService
+      return Identities
         .getUserIdentities(ctrl.user.id)
         .then(identities => {
           const identity = _.find(identities, ['provider', 'kubernetes']);
 
           if (identity) {
-            ctrl.tokenData = _.find(identity.kubernetes_tokens, ['id', tokenId]);
+            ctrl.token = _.find(identity.kubernetes_tokens, ['id', tokenId]);
+            ctrl.assignedProjects = [];
             ctrl.assignedKubernetesClusters = _.map(identity.kubernetes_tokens, 'cluster.name');
           } else {
-            ctrl.tokenData = {};
+            ctrl.token = {};
+            ctrl.assignedProjects = [];
             ctrl.assignedKubernetesClusters = [];
           }
         });
@@ -91,8 +92,8 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
     ctrl.saving = true;
 
     if (ctrl.isNew) {
-      hubApiService
-        .createKubernetesToken(ctrl.user.id, ctrl.tokenData)
+      KubernetesTokens
+        .createUserToken(ctrl.user.id, ctrl.token)
         .then(() => {
           logger.success('New kubernetes token created');
           $state.go('kubernetes.user-tokens.list', {userId: ctrl.user.id});
@@ -101,8 +102,8 @@ function KubernetesUserTokensFormController($state, hubApiService, logger, _, Ku
           ctrl.saving = false;
         });
     } else {
-      hubApiService
-        .updateKubernetesToken(tokenId, ctrl.tokenData)
+      KubernetesTokens
+        .updateUserToken(tokenId, ctrl.token)
         .then(() => {
           logger.success('Kubernetes token updated');
           $state.go('kubernetes.user-tokens.list', {userId: ctrl.user.id});

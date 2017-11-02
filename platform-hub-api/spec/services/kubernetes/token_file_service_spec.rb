@@ -5,7 +5,7 @@ describe Kubernetes::TokenFileService, type: :service do
   let(:service) { create :service }
 
   before do
-    @cluster = create :kubernetes_cluster, allocate_to: service
+    @cluster = create :kubernetes_cluster, allocate_to: service.project
   end
 
   describe '.generate' do

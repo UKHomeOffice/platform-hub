@@ -114,21 +114,31 @@ RSpec.describe ServicesController, type: :controller do
       def expect_service
         get :show, params: { project_id: project.friendly_id, id: @service.id }
         expect(response).to be_success
-        expect(json_response).to include(
+        expect(json_response).to eq({
           'id' => @service.id,
           'name' => @service.name,
-          'description' => @service.description
-        )
+          'description' => @service.description,
+          'project' => {
+            'id' => project.friendly_id,
+            'shortname' => project.shortname,
+            'name' => project.name
+          }
+        })
       end
 
       def expect_other_service
         get :show, params: { project_id: other_project.friendly_id, id: @other_service.id }
         expect(response).to be_success
-        expect(json_response).to include(
+        expect(json_response).to eq({
           'id' => @other_service.id,
           'name' => @other_service.name,
-          'description' => @other_service.description
-        )
+          'description' => @other_service.description,
+          'project' => {
+            'id' => other_project.friendly_id,
+            'shortname' => other_project.shortname,
+            'name' => other_project.name
+          }
+        })
       end
 
       context 'for a non-existent service' do
@@ -911,6 +921,11 @@ RSpec.describe ServicesController, type: :controller do
               'shortname' => project.shortname,
               'name' => project.name
             }
+          },
+          'project'=> {
+            'id' => project.friendly_id,
+            'shortname' => project.shortname,
+            'name' => project.name
           }
         })
       end
@@ -1018,7 +1033,7 @@ RSpec.describe ServicesController, type: :controller do
       @service = create :service, project: project
       @other_service = create :service, project: other_project
 
-      @cluster = create :kubernetes_cluster, allocate_to: [ @service, @other_service ]
+      @cluster = create :kubernetes_cluster, allocate_to: [ project, other_project ]
 
       @robot_group_1 = create :kubernetes_group, :not_privileged, :for_robot, allocate_to: [ @service, @other_service ]
       @robot_group_2 = create :kubernetes_group, :not_privileged, :for_robot, allocate_to: [ @service, @other_service ]
@@ -1068,6 +1083,11 @@ RSpec.describe ServicesController, type: :controller do
               'shortname' => project.shortname,
               'name' => project.name
             }
+          },
+          'project'=> {
+            'id' => project.friendly_id,
+            'shortname' => project.shortname,
+            'name' => project.name
           }
         })
 

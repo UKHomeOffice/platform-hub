@@ -22,4 +22,6 @@ class KubernetesTokenSerializer < BaseSerializer
     serializer: ServiceSerializer do
     object.tokenable
   end
+
+  belongs_to :project, serializer: ProjectEmbeddedSerializer
 end
