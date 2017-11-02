@@ -102,6 +102,12 @@ RSpec.describe KubernetesToken, type: :model do
     end
   end
 
+  describe '#obfuscated_token' do
+    it 'returns obfuscated kubernetes token value' do
+      expect(@t.obfuscated_token.chars.last(10).join).to eq 'XXXXX' + token.chars.last(5).join
+    end
+  end
+
   describe '#groups=' do
     context 'for comma separated list of groups' do
       it 'parses the string and assigns groups to kubernetes token' do

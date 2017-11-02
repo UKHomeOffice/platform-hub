@@ -64,6 +64,11 @@ class KubernetesToken < ApplicationRecord
     ENCRYPTOR.decrypt(token)
   end
 
+  def obfuscated_token
+    val = decrypted_token
+    val[0..30].gsub(/\w/, 'X') + val[31..35]
+  end
+
   def owner
     if self.user?
       case self.tokenable

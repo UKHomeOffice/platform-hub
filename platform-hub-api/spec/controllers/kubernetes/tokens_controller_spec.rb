@@ -29,21 +29,45 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
       it_behaves_like 'an admin' do
 
         context 'for user tokens' do
-          before do
-            @token = create :user_kubernetes_token, tokenable: @kube_identity
+
+          context 'when tokens belong to current user' do
+            before do
+              @token = create :user_kubernetes_token, tokenable: create(:kubernetes_identity, user: current_user)
+            end
+
+            it 'returns list of tokens with token value revealed' do
+              get :index, params: { kind: 'user', user_id: current_user.id }
+              expect(response).to be_success
+              expect(json_response.length).to eq 1
+              expect(json_response.first['cluster']['name']).to eq @token.cluster.name
+              expect(json_response.first['token']).to eq @token.decrypted_token
+              expect(json_response.first['obfuscated_token']).to eq @token.obfuscated_token
+              expect(json_response.first['uid']).to eq @token.uid
+              expect(json_response.first['name']).to eq @token.name
+              expect(json_response.first['groups']).to match_array @token.groups
+              expect(json_response.first['description']).to eq nil
+              expect(json_response.first['kind']).to eq 'user'
+            end
           end
 
-          it 'should return a list of all user tokens' do
-            get :index, params: { kind: 'user', user_id: @user.id }
-            expect(response).to be_success
-            expect(json_response.length).to eq 1
-            expect(json_response.first['cluster']['name']).to eq @token.cluster.name
-            expect(json_response.first['token']).to eq @token.decrypted_token
-            expect(json_response.first['uid']).to eq @token.uid
-            expect(json_response.first['name']).to eq @token.name
-            expect(json_response.first['groups']).to match_array @token.groups
-            expect(json_response.first['description']).to eq nil
-            expect(json_response.first['kind']).to eq 'user'
+          context 'when tokens do not belong to current user' do
+            before do
+              @token = create :user_kubernetes_token, tokenable: @kube_identity
+            end
+
+            it 'should return a list of all user tokens with obfuscated token only' do
+              get :index, params: { kind: 'user', user_id: @user.id }
+              expect(response).to be_success
+              expect(json_response.length).to eq 1
+              expect(json_response.first['cluster']['name']).to eq @token.cluster.name
+              expect(json_response.first['obfuscated_token']).to eq @token.obfuscated_token
+              expect(json_response.first['token']).to be_nil
+              expect(json_response.first['uid']).to eq @token.uid
+              expect(json_response.first['name']).to eq @token.name
+              expect(json_response.first['groups']).to match_array @token.groups
+              expect(json_response.first['description']).to eq nil
+              expect(json_response.first['kind']).to eq 'user'
+            end
           end
         end
 
@@ -111,13 +135,18 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
           end
         end
 
-        context 'for a user token that exists' do
-          it 'should return the specified token resource' do
+        context 'for a user token that exists and belongs to current user' do
+          before do
+            @token = create :user_kubernetes_token, tokenable: create(:kubernetes_identity, user: current_user)
+          end
+
+          it 'should return the specified token resource with token revealed' do
             get :show, params: { id: @token.id }
             expect(response).to be_success
             expect(json_response).to eq({
               'id' => @token.id,
               'kind' => 'user',
+              'obfuscated_token' => @token.obfuscated_token,
               'token' => @token.decrypted_token,
               'name' => @token.name,
               'uid' => @token.uid,
@@ -136,6 +165,32 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
           end
         end
 
+        context 'for a user token that exists but does not belong to current user' do
+          it 'should return the specified token resource but never expose token value' do
+            get :show, params: { id: @token.id }
+            expect(response).to be_success
+            expect(json_response).to eq({
+              'id' => @token.id,
+              'kind' => 'user',
+              'obfuscated_token' => @token.obfuscated_token,              
+              'name' => @token.name,
+              'uid' => @token.uid,
+              'groups' => @token.groups,
+              'cluster' => {
+                'id' => @token.cluster.friendly_id,
+                'name' => @token.cluster.name,
+                'description' => @token.cluster.description
+              },
+              'project'=> {
+                'id' => @token.project.friendly_id,
+                'shortname' => @token.project.shortname,
+                'name' => @token.project.name
+              }
+            })
+            expect(json_response['token']).to be_nil
+          end
+        end
+
         context 'for a robot token that exists' do
           before do
             @token = create :robot_kubernetes_token
@@ -147,6 +202,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             expect(json_response).to eq({
               'id' => @token.id,
               'kind' => 'robot',
+              'obfuscated_token' => @token.obfuscated_token,
               'token' => @token.decrypted_token,
               'name' => @token.name,
               'uid' => @token.uid,
@@ -247,7 +303,8 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             expect(token.tokenable).to eq @user.kubernetes_identity
             new_token_internal_id = token.id
             expect(json_response['kind']).to eq 'user'
-            expect(json_response['token'].length).to eq 36
+            expect(json_response['obfuscated_token'].length).to eq 36
+            expect(json_response['token']).to be_nil
             expect(json_response['uid'].length).to eq 36
             expect(json_response['name']).to eq @user.email
             expect(json_response['groups']).to match_array [ user_group_1.name, user_group_2.name ]
@@ -510,7 +567,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
           expect(response).to be_success
           expect(json_response['cluster']['name']).to eq @token.cluster.name
-          expect(json_response['token']).to eq @token.decrypted_token
+          expect(json_response['obfuscated_token']).to eq @token.obfuscated_token
           expect(json_response['uid']).to eq @token.uid
           expect(json_response['groups']).to match_array @token.groups << privileged_group.name
           expect(DateTime.parse(json_response['expire_privileged_at']).to_s(:db)).to eq expires_in_secs.seconds.from_now.to_s(:db)
@@ -575,7 +632,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
           expect(response).to be_success
           expect(json_response['cluster']['name']).to eq @token.cluster.name
-          expect(json_response['token']).to eq @token.decrypted_token
+          expect(json_response['obfuscated_token']).to eq @token.obfuscated_token
           expect(json_response['uid']).to eq @token.uid
           expect(json_response['groups']).to be_blank
           expect(json_response['expire_privileged_at']).to eq nil

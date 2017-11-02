@@ -790,6 +790,8 @@ RSpec.describe ServicesController, type: :controller do
         get :kubernetes_robot_tokens, params: { project_id: project.friendly_id, id: service.id }
         expect(response).to be_success
         expect(pluck_from_json_response('id')).to match_array tokens.map(&:id)
+        expect(pluck_from_json_response('obfuscated_token')).to match_array tokens.map(&:obfuscated_token)
+        expect(pluck_from_json_response('token')).to match_array tokens.map(&:decrypted_token)
       end
 
       it_behaves_like 'an admin' do
@@ -902,6 +904,7 @@ RSpec.describe ServicesController, type: :controller do
         expect(json_response).to eq({
           'id' => token.id,
           'kind' => 'robot',
+          'obfuscated_token' => token.obfuscated_token,
           'token' => token.decrypted_token,
           'name' => token.name,
           'uid' => token.uid,
@@ -1069,6 +1072,9 @@ RSpec.describe ServicesController, type: :controller do
           'id' => token.id,
           'kind' => 'robot',
           'name' => post_data[:robot_token][:name],
+          'obfuscated_token' => token.obfuscated_token,
+          'token' => token.decrypted_token,
+          'uid' => token.uid,
           'groups' => post_data[:robot_token][:groups],
           'cluster' => include({
             'name' => post_data[:robot_token][:cluster_name]
@@ -1243,6 +1249,7 @@ RSpec.describe ServicesController, type: :controller do
         expect(json_response).to include({
           'id' => token.id,
           'kind' => 'robot',
+          'obfuscated_token' => token.obfuscated_token,
           'token' => token.decrypted_token,
           'name' => token.name,
           'uid' => token.uid,
