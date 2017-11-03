@@ -69,6 +69,26 @@ RSpec.describe ProjectsController, type: :routing do
         expect(:get => '/projects/1/kubernetes_groups').to route_to('projects#kubernetes_groups', :id => '1')
       end
 
+      it 'routes to #kubernetes_user_tokens' do
+        expect(:get => '/projects/1/kubernetes_user_tokens').to route_to('projects#kubernetes_user_tokens', :id => '1')
+      end
+
+      it 'routes to #show_kubernetes_user_token' do
+        expect(:get => '/projects/1/kubernetes_user_tokens/123').to route_to('projects#show_kubernetes_user_token', :id => '1', :token_id => '123')
+      end
+
+      it 'routes to #create_kubernetes_user_token' do
+        expect(:post => '/projects/1/kubernetes_user_tokens').to route_to('projects#create_kubernetes_user_token', :id => '1')
+      end
+
+      it 'routes to #update_kubernetes_user_token' do
+        expect(:patch => '/projects/1/kubernetes_user_tokens/123').to route_to('projects#update_kubernetes_user_token', :id => '1', :token_id => '123')
+      end
+
+      it 'routes to #destroy_kubernetes_user_token' do
+        expect(:delete => '/projects/1/kubernetes_user_tokens/123').to route_to('projects#destroy_kubernetes_user_token', :id => '1', :token_id => '123')
+      end
+
     end
 
     context 'with projects feature flag disabled' do
@@ -131,6 +151,26 @@ RSpec.describe ProjectsController, type: :routing do
 
       it 'route to #kubernetes_groups is not routable' do
         expect(:get => '/projects/1/kubernetes_groups').to_not be_routable
+      end
+
+      it 'route to #kubernetes_user_tokens is not routable' do
+        expect(:get => '/projects/1/kubernetes_user_tokens').to_not be_routable
+      end
+
+      it 'route to #show_kubernetes_user_token is not routable' do
+        expect(:get => '/projects/1/kubernetes_user_tokens/123').to_not be_routable
+      end
+
+      it 'route to #create_kubernetes_user_token is not routable' do
+        expect(:post => '/projects/1/kubernetes_user_tokens').to_not be_routable
+      end
+
+      it 'route to #update_kubernetes_user_token is not routable' do
+        expect(:patch => '/projects/1/kubernetes_user_tokens/123').to_not be_routable
+      end
+
+      it 'route to #destroy_kubernetes_user_token is not routable' do
+        expect(:delete => '/projects/1/kubernetes_user_tokens/123').to_not be_routable
       end
 
     end

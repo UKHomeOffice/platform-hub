@@ -20,7 +20,9 @@ FactoryGirl.define do
       unless evaluator.allocate_to.blank?
         Array(evaluator.allocate_to).each do |ar|
           raise ArgumentError, '[factory create error] allocate_to must be a Project' unless ar.is_a?(Project)
-          create :allocation, allocatable: cluster, allocation_receivable: ar
+          unless Allocation.exists?(allocatable: cluster, allocation_receivable: ar)
+            create :allocation, allocatable: cluster, allocation_receivable: ar
+          end
         end
       end
     end

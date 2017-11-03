@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe PrivilegedTokenExpirerJob, type: :job do
+  include_context 'time helpers'
 
   describe '.is_already_queued' do
     it 'should recognise when the job is already queued' do
@@ -31,13 +32,19 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
     end
 
     context 'for privileged kubernetes token' do
-      let!(:not_privileged_group) { create :kubernetes_group }
-      let!(:privileged_group) { create :kubernetes_group, :privileged }
-      let(:groups) { [ privileged_group.name, not_privileged_group.name ] }
+      let!(:project) { create :project }
+      let!(:not_privileged_group) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: project }
+      let!(:privileged_group) { create :kubernetes_group, :privileged, :for_user, allocate_to: project }
+      let(:escalation_time_in_secs) { 60 }
+
+      before do
+        @token = create :user_kubernetes_token, project: project, groups: [ not_privileged_group.name ]
+        @token.escalate(privileged_group.name, escalation_time_in_secs)
+      end
 
       context 'when privileged group expiration time lapsed' do
         before do
-          @token = create :privileged_kubernetes_token, groups: groups, expire_privileged_at: 1.minute.ago
+          move_time_to (escalation_time_in_secs + 1).seconds.from_now
         end
 
         it 'deescalates given kubernetes token and registers an audit' do
@@ -55,10 +62,6 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
       end
 
       context 'when privileged group expiration time has not been reached yet' do
-        before do
-          @token = create :privileged_kubernetes_token, groups: groups, expire_privileged_at: 1.minute.from_now
-        end
-
         it 'skips that token' do
           expect(@token).to receive(:deescalate).never
           expect(AuditService).to receive(:log).never

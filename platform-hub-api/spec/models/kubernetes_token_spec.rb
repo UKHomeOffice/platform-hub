@@ -61,7 +61,7 @@ RSpec.describe KubernetesToken, type: :model do
 
     context 'for blank cluster' do
       it 'cluster validation will fail' do
-        expect { create(:user_kubernetes_token, cluster: nil) }.to raise_error(
+        expect { create(:user_kubernetes_token, :with_nil_cluster) }.to raise_error(
           ActiveRecord::RecordInvalid, "Validation failed: Cluster can't be blank"
         )
       end
@@ -139,54 +139,81 @@ RSpec.describe KubernetesToken, type: :model do
   end
 
   describe '#escalate' do
-    let(:privileged_group) { create(:kubernetes_group, :privileged, :for_user) }
+    let(:privileged_group) { create(:kubernetes_group, :privileged, :for_user, allocate_to: @t.project) }
 
-    it 'escalates token for given group and expiration time' do
-      expect(@t.escalate(privileged_group.name, 2000)).to be true
-      expect(@t.privileged?).to be true
-      expect(@t.groups).to include privileged_group.name
-      expect(@t.expire_privileged_at).to eq 2000.seconds.from_now
+    context 'new record' do
+      it 'should not allow escalation' do
+        expect { @t.escalate(privileged_group.name, 2000) }.to raise_error(
+          ActiveRecord::ActiveRecordError,
+          "cannot update a new record"
+        )
+      end
     end
 
-    context 'for invalid token' do
+    context 'existing record' do
       before do
-        @t.uid = nil
+        @t.save!
       end
 
-      it 'returns false if escalated record not valid' do
-        expect(@t.escalate(privileged_group.name)).to eq false
-      end
-    end
-
-    context 'when expiration time in seconds is not provided' do
-      it 'sets expiration to 600 sec by default' do
-        @t.escalate privileged_group.name
+      it 'escalates token for given group and expiration time' do
+        expect(@t.escalate(privileged_group.name, 2000)).to be true
         expect(@t.privileged?).to be true
         expect(@t.groups).to include privileged_group.name
-        expect(@t.expire_privileged_at).to eq 600.seconds.from_now
+        expect(@t.expire_privileged_at).to eq 2000.seconds.from_now
       end
-    end
 
-    context 'when exp time in seconds is lower than PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS' do
-      it 'sets the value as passed number of seconds from now' do
-        move_time_to now
-        @t.escalate privileged_group.name, 180
-        expect(@t.expire_privileged_at).to eq 180.seconds.from_now
+      context 'for a non existing group' do
+        it 'raise an error' do
+          expect { @t.escalate('non-existent') }.to raise_error(
+            ActiveRecord::RecordNotFound
+          )
+        end
       end
-    end
 
-    context 'when exp time in seconds is greater than PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS' do
-      it 'limits and sets value as PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS from now' do
-        move_time_to now
-        @t.escalate privileged_group.name, KubernetesToken::PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS + 10
-        expect(@t.expire_privileged_at).to eq (KubernetesToken::PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS).seconds.from_now
+      context 'for invalid token' do
+        before do
+          @t.uid = nil
+        end
+
+        it 'still allows escalation' do
+          expect(@t.escalate(privileged_group.name, 2000)).to be true
+          expect(@t.privileged?).to be true
+          expect(@t.groups).to include privileged_group.name
+          expect(@t.expire_privileged_at).to eq 2000.seconds.from_now
+        end
+      end
+
+      context 'when expiration time in seconds is not provided' do
+        it 'sets expiration to 600 sec by default' do
+          @t.escalate privileged_group.name
+          expect(@t.privileged?).to be true
+          expect(@t.groups).to include privileged_group.name
+          expect(@t.expire_privileged_at).to eq 600.seconds.from_now
+        end
+      end
+
+      context 'when exp time in seconds is lower than PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS' do
+        it 'sets the value as passed number of seconds from now' do
+          move_time_to now
+          @t.escalate privileged_group.name, 180
+          expect(@t.expire_privileged_at).to eq 180.seconds.from_now
+        end
+      end
+
+      context 'when exp time in seconds is greater than PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS' do
+        it 'limits and sets value as PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS from now' do
+          move_time_to now
+          @t.escalate privileged_group.name, KubernetesToken::PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS + 10
+          expect(@t.expire_privileged_at).to eq (KubernetesToken::PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS).seconds.from_now
+        end
       end
     end
   end
 
   describe '#deescalate' do
     before do
-      @privileged_group = create :kubernetes_group, :privileged
+      @t.save!
+      @privileged_group = create :kubernetes_group, :privileged, :for_user, allocate_to: @t.project
       @t.escalate @privileged_group.name, 2000
     end
 
@@ -204,25 +231,6 @@ RSpec.describe KubernetesToken, type: :model do
 
       it 'returns false if deescalated record not valid' do
         expect(@t.deescalate).to eq false
-      end
-    end
-  end
-
-  describe '#owner' do
-    context 'for user kubernetes token' do
-      it 'returns user via kubernetes identity' do
-        expect(@t.tokenable_type).to eq 'Identity'
-        expect(@t.owner).to eq @t.tokenable.user
-      end
-    end
-
-    context 'for robot kubernetes token' do
-      before do
-        @t = build :robot_kubernetes_token, token: token
-      end
-
-      it 'doesn\'t have an owner' do
-        expect(@t.owner).to be_nil
       end
     end
   end
@@ -270,6 +278,11 @@ RSpec.describe KubernetesToken, type: :model do
     describe '#project' do
       let(:new_project) { create :project }
 
+      before do
+        create :allocation, allocatable: @t.cluster, allocation_receivable: new_project
+        create :project_membership, project: new_project, user: @t.tokenable.user
+      end
+
       it 'does not allow to update project' do
         expect { @t.update_attributes(project: new_project) }.to raise_error(
           ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
@@ -278,7 +291,7 @@ RSpec.describe KubernetesToken, type: :model do
     end
 
     describe '#cluster' do
-      let(:new_cluster) { create :kubernetes_cluster }
+      let(:new_cluster) { create :kubernetes_cluster, allocate_to: @t.project }
 
       it 'does not allow to update cluster' do
         expect { @t.update_attributes(cluster: new_cluster) }.to raise_error(
@@ -366,18 +379,67 @@ RSpec.describe KubernetesToken, type: :model do
       end
     end
 
-    describe '#one_user_token_per_cluster' do
+    describe '#user_is_allowed_for_project' do
+      let!(:user) { create :user }
+      let!(:identity) { create :identity, user: user }
+      let!(:project) { create :project }
+      let!(:cluster) { create :kubernetes_cluster, allocate_to: project }
+
+      context 'when user is not a member of the project' do
+        before do
+          @token = build :user_kubernetes_token, :user_is_not_member_of_project, tokenable: identity, project: project, cluster: cluster
+        end
+
+        it 'raises an error' do
+          expect { @token.save! }.to raise_error(
+            ActiveRecord::RecordInvalid,
+            "Validation failed: User is not a member of the project"
+          )
+        end
+      end
+
+      context 'when user is a member of the project' do
+        before do
+          create :project_membership, project: project, user: user
+          @token = build :user_kubernetes_token, tokenable: identity, project: project, cluster: cluster
+        end
+
+        it 'should not raise an error' do
+          expect { @token.save! }.not_to raise_error
+          expect(@token).to be_valid
+          expect(KubernetesToken.count).to eq 1
+        end
+      end
+
+    end
+
+    describe '#one_user_token_per_cluster_per_project' do
       before do
         @t.save! # first entry built in before block at the top
       end
 
-      it 'raises error on more than one token per user per cluster' do
+      it 'raises error on more than one token per user per cluster per project' do
         expect(KubernetesToken.count).to eq 1
-        expect { create :user_kubernetes_token, cluster: @t.cluster, tokenable: @t.tokenable }.to raise_error(
+        expect { create :user_kubernetes_token, cluster: @t.cluster, tokenable: @t.tokenable, project: @t.project }.to raise_error(
           ActiveRecord::RecordInvalid,
-          "Validation failed: User can have only one user token per cluster"
+          "Validation failed: User can have only one user token per cluster per project"
         )
         expect(KubernetesToken.count).to eq 1
+      end
+
+      it 'allows different tokens per user for different clusters per project' do
+        new_cluster = create :kubernetes_cluster, allocate_to: @t.project
+        expect(KubernetesToken.count).to eq 1
+        expect { create :user_kubernetes_token, cluster: new_cluster, tokenable: @t.tokenable, project: @t.project }.to_not raise_error
+        expect(KubernetesToken.count).to eq 2
+      end
+
+      it 'allows different tokens per user per cluster for different projects' do
+        new_project = create :project
+        create :allocation, allocatable: @t.cluster, allocation_receivable: new_project
+        expect(KubernetesToken.count).to eq 1
+        expect { create :user_kubernetes_token, cluster: @t.cluster, tokenable: @t.tokenable, project: new_project }.to_not raise_error
+        expect(KubernetesToken.count).to eq 2
       end
     end
 
@@ -412,21 +474,22 @@ RSpec.describe KubernetesToken, type: :model do
     end
 
     describe '#group_names_exist' do
-      let(:existing_group_name) { create(:kubernetes_group).name }
+      let(:project) { create :project }
+      let(:existing_group_name) { create(:kubernetes_group, allocate_to: project).name }
       let(:not_existing_group_name) { 'non-existent-group' }
 
       it 'still allows setting empty groups' do
-        token = build :user_kubernetes_token, groups: []
+        token = build :user_kubernetes_token, project: project, groups: []
         expect(token).to be_valid
       end
 
       it 'allows setting an existing group' do
-        token = build :user_kubernetes_token, groups: [ existing_group_name ]
+        token = build :user_kubernetes_token, project: project, groups: [ existing_group_name ]
         expect(token).to be_valid
       end
 
       it 'raises error when trying to set a group that does not exist' do
-        expect { create :user_kubernetes_token, groups: [ existing_group_name, not_existing_group_name ] }.to raise_error(
+        expect { create :user_kubernetes_token, project: project, groups: [ existing_group_name, not_existing_group_name ] }.to raise_error(
           ActiveRecord::RecordInvalid,
           "Validation failed: Groups contain an invalid group - 'non-existent-group' does not exist"
         )
@@ -434,6 +497,37 @@ RSpec.describe KubernetesToken, type: :model do
     end
 
     describe '#allowed_clusters_only' do
+
+      context 'for user token' do
+
+        let!(:user) { create :user }
+        let!(:identity) { create :identity, user: user }
+        let!(:project) { create :project }
+        let!(:membership) { create :project_membership, project: project, user: user }
+        let!(:allocated_cluster) { create :kubernetes_cluster, allocate_to: project }
+        let!(:unallocated_cluster) { create :kubernetes_cluster }
+        let!(:other_allocated_cluster) { create :kubernetes_cluster, allocate_to: create(:project) }
+
+        it 'allows using the allocated cluster' do
+          token = build :user_kubernetes_token, tokenable: identity, cluster: allocated_cluster, project: project
+          expect(token).to be_valid
+        end
+
+        it 'raises error when using unallocated cluster' do
+          expect { create :user_kubernetes_token, tokenable: identity, cluster: unallocated_cluster, project: project }.to raise_error(
+            ActiveRecord::RecordInvalid,
+            "Validation failed: Cluster is not allowed for this token"
+          )
+        end
+
+        it 'raises error when using other allocated cluster' do
+          expect { create :user_kubernetes_token, tokenable: identity, cluster: other_allocated_cluster, project: project }.to raise_error(
+            ActiveRecord::RecordInvalid,
+            "Validation failed: Cluster is not allowed for this token"
+          )
+        end
+
+      end
 
       context 'for robot token' do
 
@@ -467,6 +561,118 @@ RSpec.describe KubernetesToken, type: :model do
     end
 
     describe '#allowed_groups_only' do
+
+      # This is essentially a duplicate of the #allowed_groups_only validation
+      # test. We repeat it here because we make an assumption in this
+      # validation that groups have already been checked for existence.
+      context 'when using a non-existent group' do
+        let(:non_existent_group_name) { 'non-existent-group' }
+
+        it 'should throw an error' do
+          expect { create :user_kubernetes_token, groups: [ non_existent_group_name ] }.to raise_error(
+            ActiveRecord::RecordInvalid,
+            "Validation failed: Groups contain an invalid group - '#{non_existent_group_name}' does not exist"
+          )
+        end
+      end
+
+      context 'for user token' do
+
+        let!(:user) { create :user }
+        let!(:identity) { create :identity, user: user }
+        # We expect the user token factory to set up the necessary membership
+        let!(:project) { create :project }
+        let!(:cluster) { create :kubernetes_cluster, allocate_to: project }
+        let!(:other_cluster) { create :kubernetes_cluster, allocate_to: project }
+
+        def expect_allowed group
+          token = build :user_kubernetes_token, tokenable: identity, project: project, cluster: cluster, groups: [ group.name ]
+          expect(token).to be_valid
+        end
+
+        def expect_error group
+          expect {
+            create :user_kubernetes_token, tokenable: identity, project: project, cluster: cluster, groups: [ group.name ]
+          }.to raise_error(
+            ActiveRecord::RecordInvalid,
+            "Validation failed: Groups contain an invalid group - '#{group.name}' is not allowed for this token"
+          )
+        end
+
+        context 'for an allocated not privileged robot group with no cluster restrictions' do
+          let(:group) { create :kubernetes_group, :not_privileged, :for_robot, allocate_to: project, restricted_to_clusters: [] }
+
+          it 'should not allow group to be set' do
+            expect_error group
+          end
+        end
+
+        context 'for an allocated not privileged user group with no cluster restrictions' do
+          let(:group) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: project, restricted_to_clusters: [] }
+
+          it 'should allow the group to be set' do
+            expect_allowed group
+          end
+        end
+
+        context 'for an allocated not privileged user group restricted to same cluster' do
+          let(:group) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: project, restricted_to_clusters: [ cluster.name ] }
+
+          it 'should allow the group to be set' do
+            expect_allowed group
+          end
+        end
+
+        context 'for an allocated not privileged user group restricted to other cluster' do
+          let(:group) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: project, restricted_to_clusters: [ other_cluster.name ] }
+
+          it 'should not allow group to be set' do
+            expect_error group
+          end
+        end
+
+        context 'for an allocated privileged user group with no cluster restrictions' do
+          let(:group) { create :kubernetes_group, :privileged, :for_user, restricted_to_clusters: [ ] }
+
+          it 'should not allow group to be set' do
+            expect_error group
+          end
+        end
+
+        context 'for an unallocated not privileged user group with no cluster restrictions' do
+          let(:group) { create :kubernetes_group, :not_privileged, :for_user, restricted_to_clusters: [] }
+
+          it 'should not allow group to be set' do
+            expect_error group
+          end
+        end
+
+        context 'for an unallocated not privileged group restricted to cluster' do
+          let(:group) { create :kubernetes_group, :not_privileged, :for_user, restricted_to_clusters: [ cluster.name ] }
+
+          it 'should not allow group to be set' do
+            expect_error group
+          end
+        end
+
+        context 'for an unallocated privileged group with no cluster restrictions' do
+          let(:group) { create :kubernetes_group, :privileged, :for_user, restricted_to_clusters: [] }
+
+          it 'should not allow group to be set' do
+            expect_error group
+          end
+        end
+
+        context 'for an allocated not privileged group with no cluster restrictions that has been allocated to a service within the project' do
+          let(:service) { create :service, project: project }
+          let(:group) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: service, restricted_to_clusters: [] }
+
+          it 'should allow the group to be set' do
+            expect_allowed group
+          end
+        end
+
+      end
 
       context 'for robot token' do
 

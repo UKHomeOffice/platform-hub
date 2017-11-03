@@ -44,7 +44,6 @@ module KubernetesTokensManagement
           cluster: token.cluster.name
         }
       )
-
       render json: token, status: :created
     else
       render_model_errors token.errors

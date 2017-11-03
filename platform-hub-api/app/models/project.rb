@@ -43,4 +43,8 @@ class Project < ApplicationRecord
     source: :allocatable,
     source_type: 'KubernetesGroup'
 
+  has_many :kubernetes_user_tokens,
+    -> { where kind: 'user' },
+    class_name: 'KubernetesToken'
+
 end

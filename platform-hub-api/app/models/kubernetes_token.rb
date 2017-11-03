@@ -18,7 +18,8 @@ class KubernetesToken < ApplicationRecord
 
   scope :privileged, -> { where.not(expire_privileged_at: nil) }
   scope :by_tokenable, ->(tokenable) { where(tokenable: tokenable) }
-  scope :by_cluster, ->(c) { where(cluster_id: c.id) }
+  scope :by_project, ->(project) { where(project: project) }
+  scope :by_cluster, ->(c) { where(cluster: c) }
   scope :by_name, ->(n) { where(name: n.downcase) }
 
   enum kind: {
@@ -41,7 +42,8 @@ class KubernetesToken < ApplicationRecord
   validate :tokenable_set
   validate :token_must_not_be_blank
   validate :token_must_be_of_expected_length
-  validate :one_user_token_per_cluster
+  validate :user_is_allowed_for_project
+  validate :one_user_token_per_cluster_per_project
   validate :robot_name_unique_for_given_cluster
   validate :group_names_exist
   validate :allowed_clusters_only
@@ -69,23 +71,25 @@ class KubernetesToken < ApplicationRecord
     val[0..30].gsub(/\w/, 'X') + val[31..35]
   end
 
-  def owner
-    if self.user?
-      case self.tokenable
-      when Identity
-        self.tokenable.user
-      end
-    end
-  end
-
   def privileged?
     expire_privileged_at.present?
   end
 
-  def escalate(privileged_group, expire_in_secs = 600)
-    update_attributes(
+  def escalate(privileged_group_name, expire_in_secs = 600)
+    group = KubernetesGroup.find_by!(name: privileged_group_name)
+
+    unless is_group_valid?(group, allow_privileged_groups: true)
+      raise ArgumentError, "specified privileged group '#{privileged_group_name}' is not a valid group for this token (it may not be allocated yet)"
+    end
+
+    # Update the db directly, bypassing validations.
+    #
+    # This is because the `allowed_groups_only` validation check won't allow
+    # privileged groups to be set (to prevent project admins from explicitly
+    # setting this when creating/editing tokens from the UI/API).
+    update_columns(
       expire_privileged_at: [ expire_in_secs, PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS ].min.seconds.from_now,
-      groups: groups << privileged_group
+      groups: groups << privileged_group_name
     )
   end
 
@@ -125,11 +129,18 @@ class KubernetesToken < ApplicationRecord
     end
   end
 
-  def one_user_token_per_cluster
+  def user_is_allowed_for_project
+    return unless user? && project.present? && tokenable.present? && tokenable.is_a?(Identity)
+    unless ProjectMembershipsService.is_user_a_member_of_project?(project.id, tokenable.user.id)
+      errors.add(:user, "is not a member of the project")
+    end
+  end
+
+  def one_user_token_per_cluster_per_project
     # For user token we only allow one per cluster
-    return unless owner
-    if new_record? && user_token_for_cluster_exists?(cluster)
-      errors.add(:user, "can have only one user token per cluster")
+    return unless user? && cluster.present?
+    if new_record? && KubernetesToken.user.by_tokenable(tokenable).by_cluster(cluster).by_project(project).exists?
+      errors.add(:user, "can have only one user token per cluster per project")
     end
   end
 
@@ -152,43 +163,26 @@ class KubernetesToken < ApplicationRecord
   def allowed_clusters_only
     return unless project.present? && cluster.present?
 
-    if robot?
-      unless Allocation.exists?(
-        allocatable: cluster,
-        allocation_receivable: project
-      )
-        errors.add(:cluster_id, "is not allowed for this token")
-      end
+    unless Allocation.exists?(
+      allocatable: cluster,
+      allocation_receivable: project
+    )
+      errors.add(:cluster_id, "is not allowed for this token")
     end
   end
 
   def allowed_groups_only
     return unless tokenable.present? && project.present? && cluster.present?
 
-    # We assume at this point that any group names set actually do exist in the
-    # db (i.e. we expect a previous validation to take care of this)
-    if robot? && groups.present?
+    if groups.present?
       groups.each do |name|
         g = KubernetesGroup.where(name: name).first
 
-        allowed = g.robot? &&
-          !g.is_privileged &&
-          (
-            g.restricted_to_clusters.blank? ||
-            g.restricted_to_clusters.include?(cluster.name)
-          ) &&
-          (
-            Allocation.exists?(
-              allocatable: g,
-              allocation_receivable: tokenable
-            ) ||
-            Allocation.exists?(
-              allocatable: g,
-              allocation_receivable: project
-            )
-          )
+        # We assume at this point that the existence of the groups has already
+        # been validated elsewhere. So just need to be defensive here.
+        next if g.blank?
 
-        unless allowed
+        unless is_group_valid?(g)
           errors.add(:groups, "contain an invalid group - '#{g.name}' is not allowed for this token")
         end
       end
@@ -210,14 +204,48 @@ class KubernetesToken < ApplicationRecord
 
   private
 
-  def user_token_for_cluster_exists?(cluster)
-    return unless tokenable.present? && cluster.present?
-    KubernetesToken.user.by_tokenable(tokenable).by_cluster(cluster).exists?
-  end
-
   def robot_token_for_cluster_and_name_exists?(cluster, name)
     return unless cluster.present? && name.present?
     KubernetesToken.robot.by_cluster(cluster).by_name(name).exists?
+  end
+
+  def is_group_valid? group, allow_privileged_groups: false
+    privileged_check = allow_privileged_groups || !group.is_privileged
+
+    group_target_allowed = if user?
+      !!group.user?
+    elsif robot?
+      !!group.robot?
+    else
+      false
+    end
+
+    group_allowed_for_cluster = group.restricted_to_clusters.blank? ||
+      group.restricted_to_clusters.include?(cluster.name)
+
+    allocation_exists = Allocation.exists?(
+      allocatable: group,
+      allocation_receivable: project
+    ) ||
+      if user?
+        Allocation.exists?(
+          allocatable: group,
+          allocation_receivable_type: Service.name,
+          allocation_receivable_id: project.services.pluck(&:id)
+        )
+      elsif robot?
+        Allocation.exists?(
+          allocatable: group,
+          allocation_receivable: tokenable
+        )
+      else
+        false
+      end
+
+    privileged_check &&
+      group_target_allowed &&
+      group_allowed_for_cluster &&
+      allocation_exists
   end
 
 end

@@ -40,7 +40,10 @@ FactoryGirl.define do
     after(:create) do |group, evaluator|
       unless evaluator.allocate_to.blank?
         Array(evaluator.allocate_to).each do |ar|
-          create :allocation, allocatable: group, allocation_receivable: ar
+          raise ArgumentError, '[factory create error] allocate_to must be a Project or a Service' unless ar.is_a?(Project) || ar.is_a?(Service)
+          unless Allocation.exists?(allocatable: group, allocation_receivable: ar)
+            create :allocation, allocatable: group, allocation_receivable: ar
+          end
         end
       end
     end

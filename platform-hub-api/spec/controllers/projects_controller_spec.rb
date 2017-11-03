@@ -960,4 +960,453 @@ RSpec.describe ProjectsController, type: :controller do
     end
   end
 
+  describe 'GET #kubernetes_user_tokens' do
+    before do
+      @project = create :project
+      @other_project = create :project
+      @tokens = create_list :user_kubernetes_token, 2, project: @project
+      @other_tokens = create_list :user_kubernetes_token, 1, project: @other_project
+
+      # Create some random other tokens so we have a pool of tokens to query from
+      create :user_kubernetes_token
+      create :robot_kubernetes_token
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :kubernetes_user_tokens, params: { id: @project.friendly_id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      def expect_tokens project, tokens
+        get :kubernetes_user_tokens, params: { id: project.friendly_id }
+        expect(response).to be_success
+        expect(pluck_from_json_response('id')).to match_array tokens.map(&:id)
+      end
+
+      it_behaves_like 'an admin' do
+
+        it 'can fetch user tokens for the project as expected' do
+          expect_tokens @project, @tokens
+        end
+
+        it 'can fetch user tokens for the other project as expected' do
+          expect_tokens @other_project, @other_tokens
+        end
+
+      end
+
+      context 'not an admin but is manager of the project' do
+
+        before do
+          create :project_membership_as_manager, project: @project, user: current_user
+        end
+
+        it 'can fetch user tokens for the project as expected' do
+          expect_tokens @project, @tokens
+        end
+
+        it 'cannot fetch user tokens for the other project - returning 403 Forbidden' do
+          get :kubernetes_user_tokens, params: { id: @other_project.friendly_id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+      context 'not an admin but is a member of the project' do
+
+        before do
+          create :project_membership, project: @project, user: current_user
+        end
+
+        it 'cannot fetch user tokens for the project - returning 403 Forbidden' do
+          get :kubernetes_user_tokens, params: { id: @project.friendly_id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'cannot fetch user tokens for the other project - returning 403 Forbidden' do
+          get :kubernetes_user_tokens, params: { id: @other_project.friendly_id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+      context 'not an admin but is manager of the other project' do
+
+        before do
+          create :project_membership_as_manager, project: @other_project, user: current_user
+        end
+
+        it 'cannot fetch user tokens for the project - returning 403 Forbidden' do
+          get :kubernetes_user_tokens, params: { id: @project.friendly_id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'can fetch user tokens for the other project as expected' do
+          expect_tokens @other_project, @other_tokens
+        end
+
+      end
+
+      context 'not an admin but is a member of the other project' do
+
+        before do
+          create :project_membership, project: @other_project, user: current_user
+        end
+
+        it 'cannot fetch user tokens for the project - returning 403 Forbidden' do
+          get :kubernetes_user_tokens, params: { id: @project.friendly_id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'cannot fetch user tokens for the other project - returning 403 Forbidden' do
+          get :kubernetes_user_tokens, params: { id: @other_project.friendly_id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+    end
+  end
+
+  describe 'GET #show_kubernetes_user_token' do
+    before do
+      @user = create :user
+      @other_user = create :user
+      @identity = create :kubernetes_identity, user: @user
+      @other_identity = create :kubernetes_identity, user: @other_user
+      @project = create :project
+      @other_project = create :project
+      create :project_membership, project: @project, user: @user
+      create :project_membership, project: @other_project, user: @other_user
+      @token = create :user_kubernetes_token, tokenable: @identity, project: @project
+      @other_token = create :user_kubernetes_token, tokenable: @other_identity, project: @other_project
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        get :show_kubernetes_user_token, params: { id: @project.id, token_id: @token.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      def expect_token project, token, user
+        get :show_kubernetes_user_token, params: { id: project.id, token_id: token.id }
+        expect(response).to be_success
+        expect(json_response).to eq({
+          'id' => token.id,
+          'kind' => 'user',
+          'obfuscated_token' => token.obfuscated_token,
+          'name' => token.name,
+          'uid' => token.uid,
+          'groups' => token.groups,
+          'cluster' => {
+            'id' => token.cluster.friendly_id,
+            'name' => token.cluster.name,
+            'description' => token.cluster.description
+          },
+          'user' => {
+            'id' => user.id,
+            'name' => user.name,
+            'email' => user.email,
+            'is_active' => user.is_active,
+            'is_managerial' => user.is_managerial,
+            'is_technical' => user.is_technical
+          },
+          'project'=> {
+            'id' => project.friendly_id,
+            'shortname' => project.shortname,
+            'name' => project.name
+          }
+        })
+      end
+
+      it_behaves_like 'an admin' do
+
+        it 'can fetch a user token for the project as expected' do
+          expect_token @project, @token, @user
+        end
+
+        it 'can fetch a user token for the other project as expected' do
+          expect_token @other_project, @other_token, @other_user
+        end
+
+        it 'should return a 404 for a non-existent token' do
+          get :show_kubernetes_user_token, params: { id: @project.id, token_id: 'non-existent' }
+          expect(response).to have_http_status(404)
+        end
+
+        it 'should return a 404 for incorrect matching of token to project' do
+          get :show_kubernetes_user_token, params: { id: @project.id, token_id: @other_token.id }
+          expect(response).to have_http_status(404)
+        end
+
+      end
+
+      context 'not an admin but is manager of the project' do
+
+        before do
+          create :project_membership_as_manager, project: @project, user: current_user
+        end
+
+        it 'can fetch a user token for the project as expected' do
+          expect_token @project, @token, @user
+        end
+
+        it 'cannot fetch a user token for the other project - returning 403 Forbidden' do
+          get :show_kubernetes_user_token, params: { id: @other_project.id, token_id: @other_token.id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+      context 'not an admin but is a member of the project' do
+
+        before do
+          create :project_membership, project: @project, user: current_user
+        end
+
+        it 'cannot fetch a user token for the project - returning 403 Forbidden' do
+          get :show_kubernetes_user_token, params: { id: @project.id, token_id: @token.id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'cannot fetch a user token for the other project - returning 403 Forbidden' do
+          get :show_kubernetes_user_token, params: { id: @other_project.id, token_id: @other_token.id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+      context 'not an admin but is manager of the other project' do
+
+        before do
+          create :project_membership_as_manager, project: @other_project, user: current_user
+        end
+
+        it 'cannot fetch a user token for the project - returning 403 Forbidden' do
+          get :show_kubernetes_user_token, params: { id: @project.id, token_id: @token.id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'can fetch a user token for the other project as expected' do
+          expect_token @other_project, @other_token, @other_user
+        end
+
+      end
+
+      context 'not an admin but is a member of the other project' do
+
+        before do
+          create :project_membership, project: @other_project, user: current_user
+        end
+
+        it 'cannot fetch a user token for the project - returning 403 Forbidden' do
+          get :show_kubernetes_user_token, params: { id: @project.id, token_id: @token.id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'cannot fetch a user token for the other project - returning 403 Forbidden' do
+          get :show_kubernetes_user_token, params: { id: @other_project.id, token_id: @other_token.id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+    end
+  end
+
+  describe 'POST #create_kubernetes_user_token' do
+    before do
+      @user = create :user
+      @other_user = create :user
+      @identity = create :kubernetes_identity, user: @user
+      @other_identity = create :kubernetes_identity, user: @other_user
+      @project = create :project
+      @service = create :service, project: @project
+      @other_project = create :project
+      @other_service = create :service, project: @other_project
+      create :project_membership, project: @project, user: @user
+      create :project_membership, project: @other_project, user: @other_user
+
+      @cluster = create :kubernetes_cluster, allocate_to: [ @project, @other_project ]
+
+      @user_group_1 = create :kubernetes_group, :not_privileged, :for_user, allocate_to: [ @project, @other_project ]
+      @user_group_2 = create :kubernetes_group, :not_privileged, :for_user, allocate_to: [ @service, @other_service ]
+    end
+
+    let :user_token_data do
+      {
+        cluster_name: @cluster.name,
+        groups: [ @user_group_1.name, @user_group_2.name ]
+      }
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :create_kubernetes_user_token, params: { id: @project.id, user_token: user_token_data.merge({ user_id: @user.id }) }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      def expect_create project, user
+        expect(KubernetesToken.count).to eq 0
+        expect(Audit.count).to eq 0
+        post :create_kubernetes_user_token, params: { id: project.id, user_token: user_token_data.merge({ user_id: user.id }) }
+        expect(response).to be_success
+        expect(KubernetesToken.count).to eq 1
+        token = KubernetesToken.first
+        expect(json_response).to include({
+          'id' => token.id,
+          'kind' => 'user',
+          'name' => token.name,
+          'groups' => user_token_data[:groups],
+          'cluster' => include({
+            'name' => user_token_data[:cluster_name]
+          }),
+          'user' => {
+            'id' => user.id,
+            'name' => user.name,
+            'email' => user.email,
+            'is_active' => user.is_active,
+            'is_managerial' => user.is_managerial,
+            'is_technical' => user.is_technical
+          },
+          'project'=> {
+            'id' => project.friendly_id,
+            'shortname' => project.shortname,
+            'name' => project.name
+          }
+        })
+
+        expect(Audit.count).to eq 1
+        audit = Audit.first
+        expect(audit.action).to eq 'create'
+        expect(audit.auditable).to eq token
+        expect(audit.associated).to eq user.kubernetes_identity
+        expect(audit.user).to eq current_user
+      end
+
+      it_behaves_like 'an admin' do
+
+        it 'can create a user token for the project as expected' do
+          expect_create @project, @user
+        end
+
+        it 'can create a user token for the other project as expected' do
+          expect_create @other_project, @other_user
+        end
+
+        it 'should return a 422 for a cluster that hasn\'t been allocated to the project' do
+          unallocated_cluster = create :kubernetes_cluster
+          params = {
+            id: @project.id,
+            user_token: user_token_data.merge({
+              cluster_name: unallocated_cluster.name,
+              user_id: @user.id
+            })
+          }
+          post :create_kubernetes_user_token, params: params
+          expect(response).to have_http_status(422)
+          expect(KubernetesToken.count).to eq 0
+        end
+
+        it 'should return a 422 for a user that\'s not a member of the project' do
+          not_a_member = create :user
+          params = {
+            id: @project.id,
+            user_token: user_token_data.merge({
+              user_id: not_a_member.id
+            })
+          }
+          post :create_kubernetes_user_token, params: params
+          expect(response).to have_http_status(422)
+          expect(KubernetesToken.count).to eq 0
+        end
+
+      end
+
+      context 'not an admin but is manager of the project' do
+
+        before do
+          create :project_membership_as_manager, project: @project, user: current_user
+        end
+
+        it 'can create a user token for the project as expected' do
+          expect_create @project, @user
+        end
+
+        it 'cannot create a user token for the other project - returning 403 Forbidden' do
+          post :create_kubernetes_user_token, params: { id: @other_project.id, user_token: user_token_data.merge({ user_id: @other_user.id }) }
+          expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
+        end
+
+      end
+
+      context 'not an admin but is a member of the project' do
+
+        before do
+          create :project_membership, project: @project, user: current_user
+        end
+
+        it 'cannot create a user token for the project - returning 403 Forbidden' do
+          post :create_kubernetes_user_token, params: { id: @project.id, user_token: user_token_data.merge({ user_id: @user.id }) }
+          expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
+        end
+
+        it 'cannot create a user token for the other project - returning 403 Forbidden' do
+          post :create_kubernetes_user_token, params: { id: @other_project.id, user_token: user_token_data.merge({ user_id: @other_user.id }) }
+          expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
+        end
+
+      end
+
+      context 'not an admin but is manager of the other project' do
+
+        before do
+          create :project_membership_as_manager, project: @other_project, user: current_user
+        end
+
+        it 'cannot create a user token for the project - returning 403 Forbidden' do
+          post :create_kubernetes_user_token, params: { id: @project.id, user_token: user_token_data.merge({ user_id: @user.id }) }
+          expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
+        end
+
+        it 'can create a user token for the other project as expected' do
+          expect_create @other_project, @other_user
+        end
+
+      end
+
+      context 'not an admin but is a member of the other project' do
+
+        before do
+          create :project_membership, project: @other_project, user: current_user
+        end
+
+        it 'cannot create a user token for the project - returning 403 Forbidden' do
+          post :create_kubernetes_user_token, params: { id: @project.id, user_token: user_token_data.merge({ user_id: @user.id }) }
+          expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
+        end
+
+        it 'cannot create a user token for the other project - returning 403 Forbidden' do
+          post :create_kubernetes_user_token, params: { id: @other_project.id, user_token: user_token_data.merge({ user_id: @other_user.id }) }
+          expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
+        end
+
+      end
+
+    end
+  end
+
 end

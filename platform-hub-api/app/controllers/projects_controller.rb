@@ -1,6 +1,7 @@
 class ProjectsController < ApiJsonController
 
   include KubernetesGroupsSubCollection
+  include KubernetesTokensManagement
 
   before_action :find_project, only: [
     :show,
@@ -13,7 +14,12 @@ class ProjectsController < ApiJsonController
     :unset_role,
     :role_check,
     :kubernetes_clusters,
-    :kubernetes_groups
+    :kubernetes_groups,
+    :kubernetes_user_tokens,
+    :show_kubernetes_user_token,
+    :create_kubernetes_user_token,
+    :update_kubernetes_user_token,
+    :destroy_kubernetes_user_token
   ]
 
   before_action :find_user, only: [
@@ -21,6 +27,12 @@ class ProjectsController < ApiJsonController
     :remove_membership,
     :set_role,
     :unset_role
+  ]
+
+  before_action :find_user_token, only: [
+    :show_kubernetes_user_token,
+    :update_kubernetes_user_token,
+    :destroy_kubernetes_user_token
   ]
 
   skip_authorization_check only: [
@@ -35,8 +47,13 @@ class ProjectsController < ApiJsonController
     :show,
     :memberships,
     :role_check,
-    :kubernetes_clusters,  # Will be checked separately
-    :kubernetes_groups  # Will be checked separately
+    :kubernetes_clusters,
+    :kubernetes_groups,
+    :kubernetes_user_tokens,
+    :show_kubernetes_user_token,
+    :create_kubernetes_user_token,
+    :update_kubernetes_user_token,
+    :destroy_kubernetes_user_token
   ]
 
   # GET /projects
@@ -181,6 +198,44 @@ class ProjectsController < ApiJsonController
     kubernetes_groups_sub_collection @project, params[:target]
   end
 
+  # GET /projects/:id/kubernetes_user_tokens
+  def kubernetes_user_tokens
+    authorize! :administer_projects, @project
+
+    render json: @project.kubernetes_user_tokens.order(:name)
+  end
+
+  # GET /projects/:id/kubernetes_user_tokens/:token_id
+  def show_kubernetes_user_token
+    authorize! :administer_projects, @project
+
+    render json: @token
+  end
+
+  # POST /projects/:id/kubernetes_user_tokens
+  def create_kubernetes_user_token
+    authorize! :administer_projects, @project
+
+    token_params = params.require(:user_token)
+    token_params[:project_id] = @project.id
+    create_kubernetes_token 'user', token_params
+  end
+
+  # PATCH /projects/:id/kubernetes_user_tokens/:token_id
+  def update_kubernetes_user_token
+    authorize! :administer_projects, @project
+
+    token_params = params.require(:user_token)
+    update_kubernetes_token 'user', @token, token_params
+  end
+
+  # DELETE /projects/:id/kubernetes_user_tokens/:token_id
+  def destroy_kubernetes_user_token
+    authorize! :administer_projects, @project
+
+    destroy_kubernetes_token @token
+  end
+
   private
 
   def find_project
@@ -189,6 +244,10 @@ class ProjectsController < ApiJsonController
 
   def find_user
     @user = User.find params[:user_id]
+  end
+
+  def find_user_token
+    @token = @project.kubernetes_user_tokens.find params[:token_id]
   end
 
   # Only allow a trusted parameter "white list" through
