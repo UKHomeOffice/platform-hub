@@ -24,6 +24,11 @@ export const Projects = function ($window, $q, apiBackoffTimeMs, hubApiService, 
 
   model.getKubernetesClusters = hubApiService.getProjectKubernetesClusters;
   model.getKubernetesGroups = hubApiService.getProjectKubernetesGroups;
+  model.getKubernetesUserTokens = hubApiService.getProjectKubernetesUserTokens;
+  model.getKubernetesUserToken = hubApiService.getProjectKubernetesUserToken;
+  model.createKubernetesUserToken = hubApiService.createProjectKubernetesUserToken;
+  model.updateKubernetesUserToken = hubApiService.updateProjectKubernetesUserToken;
+  model.deleteKubernetesUserToken = hubApiService.deleteProjectKubernetesUserToken;
 
   model.getServices = hubApiService.getProjectServices;
   model.getService = hubApiService.getProjectService;

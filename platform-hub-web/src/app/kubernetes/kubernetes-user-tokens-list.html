@@ -9,14 +9,7 @@
       <span flex></span>
 
       <md-button
-        ng-if="
-          !$ctrl.loading &&
-          (
-            !$ctrl.user || (
-              $ctrl.user.is_active &&
-              $ctrl.tokens.length < $ctrl.KubernetesClusters.all.length
-            )
-          )"
+        ng-if="!$ctrl.loading && (!$ctrl.user || $ctrl.user.is_active)"
         aria-label="Add new token"
         ui-sref="kubernetes.user-tokens.new({userId: $ctrl.user.id})">
         <md-icon>{{$ctrl.addTokenIcon}}</md-icon>

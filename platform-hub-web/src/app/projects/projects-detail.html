@@ -106,7 +106,7 @@
                   <md-list ng-if="$ctrl.memberships.length > 0">
                     <md-list-item
                       class="md-2-line"
-                      ng-repeat="m in $ctrl.memberships">
+                      ng-repeat="m in $ctrl.memberships track by m.user.id">
 
                       <div class="md-list-item-text">
                         <h3>
@@ -233,6 +233,98 @@
               </md-button>
             </md-card-actions>
           </md-card>
+        </md-tab-body>
+      </md-tab>
+
+      <md-tab
+        id="kube-user-tokens-tab"
+        ng-if="$ctrl.isAdmin || $ctrl.isProjectManager"
+        md-on-select="$ctrl.loadKubernetesUserTokens()">
+        <md-tab-label>Kube User Tokens</md-tab-label>
+        <md-tab-body>
+          <loading-indicator loading="$ctrl.processingKubernetesUserTokens"></loading-indicator>
+
+          <p
+            ng-if="!$ctrl.memberships.length"
+            class="md-body-1 none-text">
+            This project has no team members yet
+          </p>
+
+          <div ng-if="$ctrl.memberships.length > 0">
+            <md-toolbar md-colors="{background: 'primary-50'}">
+              <div class="md-toolbar-tools">
+                <md-select
+                  ng-model="$ctrl.kubernetesUserTokensSelectedUser"
+                  placeholder="Select a project team member"
+                  aria-label="Select a user to see their tokens for this project">
+                  <md-option
+                    ng-repeat="m in $ctrl.memberships track by m.user.id"
+                    value="{{m.user.id}}">
+                    {{m.user.name}} ({{m.user.email}})
+                  </md-option>
+                </md-select>
+              </div>
+            </md-toolbar>
+
+            <div
+              layout="row"
+              layout-align="center center"
+              ng-if="$ctrl.kubernetesUserTokensSelectedUser">
+              <md-button
+                class="md-primary md-raised"
+                aria-label="Create a new Kubernetes token for this user"
+                ui-sref="kubernetes.user-tokens.new({userId: $ctrl.kubernetesUserTokensSelectedUser, fromProject: $ctrl.project.id})">
+                Create a new Kubernetes user token for this user
+              </md-button>
+            </div>
+
+            <md-card
+              ng-if="$ctrl.kubernetesUserTokensSelectedUser"
+              ng-repeat="t in $ctrl.kubernetesUserTokens | orderBy: 'cluster.name' | filter: { user: { id: $ctrl.kubernetesUserTokensSelectedUser } } track by t.id">
+              <md-card-title>
+                <md-card-title-text>
+                  <span class="md-headline">
+                    {{t.cluster.name}} cluster
+                  </span>
+                </md-card-title-text>
+              </md-card-title>
+
+              <md-card-content>
+                <p class="md-body-1">
+                  <strong>Token:</strong> <kubernetes-token-value item="t"></kubernetes-token-value>
+                </p>
+                <p class="md-body-1">
+                  <strong>UID:</strong> {{t.uid}}
+                </p>
+                <p class="md-body-1" ng-if="t.groups && t.groups.length > 0">
+                  <strong>Groups:</strong> {{t.groups.join(', ')}}
+                </p>
+                <p
+                  class="md-body-1"
+                  ng-if="t.expire_privileged_at"
+                  md-colors="{color: 'accent'}">
+                  <strong>Escalated privilege ends at:</strong>
+                  {{t.expire_privileged_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+                  (<span am-time-ago="t.expire_privileged_at"></span>)
+                </p>
+              </md-card-content>
+
+              <md-card-actions layout="row" layout-align="start center">
+                <md-button
+                  ng-if="t.user.is_active"
+                  class="md-primary"
+                  aria-label="View and edit details for this token"
+                  ui-sref="kubernetes.user-tokens.edit({userId: t.user.id, tokenId: t.id, fromProject: $ctrl.project.id})">
+                  View and edit
+                </md-button>
+                <md-button
+                  ng-click="$ctrl.deleteKubernetesUserToken(t.id, $event)"
+                  aria-label="Remove kubernetes user token">
+                  Delete
+                </md-button>
+              </md-card-actions>
+            </md-card>
+          </div>
         </md-tab-body>
       </md-tab>
 

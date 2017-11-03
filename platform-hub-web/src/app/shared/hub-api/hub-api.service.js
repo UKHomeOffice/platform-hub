@@ -35,6 +35,11 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.projectUnsetMembershipRole = projectUnsetMembershipRole;
   service.getProjectKubernetesClusters = buildSubCollectionFetcher('projects', 'kubernetes_clusters');
   service.getProjectKubernetesGroups = getProjectKubernetesGroups;
+  service.getProjectKubernetesUserTokens = buildSubCollectionFetcher('projects', 'kubernetes_user_tokens');
+  service.getProjectKubernetesUserToken = buildSubResourceFetcher('projects', 'kubernetes_user_tokens');
+  service.createProjectKubernetesUserToken = createProjectKubernetesUserToken;
+  service.updateProjectKubernetesUserToken = updateProjectKubernetesUserToken;
+  service.deleteProjectKubernetesUserToken = buildSubResourceDeletor('projects', 'kubernetes_user_tokens');
   service.getProjectServices = buildSubCollectionFetcher('projects', 'services');
   service.getProjectService = buildSubResourceFetcher('projects', 'services');
   service.createProjectService = buildSubResourceCreator('projects', 'services');
@@ -379,6 +384,55 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to fetch kubernetes groups for project', response));
+        return $q.reject(response);
+      });
+  }
+
+  function createProjectKubernetesUserToken(projectId, data) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/projects/${projectId}/kubernetes_user_tokens`, {
+        user_token: {
+          cluster_name: data.cluster.name,
+          groups: data.groups,
+          user_id: data.user.id
+        }
+      })
+      .then(handle4xxError)
+      .then(response => response.data)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to create new user token for project', response));
+        return $q.reject(response);
+      });
+  }
+
+  function updateProjectKubernetesUserToken(projectId, tokenId, data) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(tokenId) || _.isEmpty(tokenId)) {
+      throw new Error('"tokenId" argument not specified or empty');
+    }
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .patch(`${apiEndpoint}/projects/${projectId}/kubernetes_user_tokens/${tokenId}`, {
+        user_token: {
+          groups: data.groups
+        }
+      })
+      .then(handle4xxError)
+      .then(response => response.data)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to update user token for project', response));
         return $q.reject(response);
       });
   }
@@ -944,7 +998,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .post(`${apiEndpoint}/kubernetes/tokens`, {
         kind: 'user',
         user_id: userId,
-        project_id: data.project_id,
+        project_id: data.project.id,
         cluster_name: data.cluster.name,
         groups: data.groups
       })

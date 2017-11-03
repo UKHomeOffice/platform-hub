@@ -422,7 +422,7 @@ RSpec.describe KubernetesToken, type: :model do
         expect(KubernetesToken.count).to eq 1
         expect { create :user_kubernetes_token, cluster: @t.cluster, tokenable: @t.tokenable, project: @t.project }.to raise_error(
           ActiveRecord::RecordInvalid,
-          "Validation failed: User can have only one user token per cluster per project"
+          "Validation failed: User already has a token for this project and cluster"
         )
         expect(KubernetesToken.count).to eq 1
       end

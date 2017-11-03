@@ -6,7 +6,7 @@ module KubernetesGroupsSubCollection
     scope = resource.kubernetes_groups.not_privileged
     groups = if target.present?
       unless KubernetesGroup.targets.keys.include?(target)
-        bad_request_error('Invalid `kind` param specified') and return
+        bad_request_error('Invalid `target` param specified') and return
       end
       scope.send(target)
     else

@@ -5,10 +5,11 @@ import chai from 'chai';
 import 'chai/register-should';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
+import _ from 'lodash';
 
 import {KubernetesModule} from './kubernetes.module';
 
-describe('kubernetes robot tokens form', () => {
+describe('kubernetes user tokens form', () => {
   let sandbox = null;
 
   let params = {};
@@ -21,15 +22,14 @@ describe('kubernetes robot tokens form', () => {
   let $state = null;
   let roleCheckerService = null;
   let Projects = null;
-  let KubernetesTokens = null;
 
   beforeEach(() => {
-    const moduleName = `${KubernetesModule}.KubernetesRobotTokensFormComponent.spec`;
+    const moduleName = `${KubernetesModule}.KubernetesUserTokensFormComponent.spec`;
     angular.module(moduleName, ['app']);
     angular.mock.module(moduleName);
   });
 
-  beforeEach(angular.mock.inject((_$compile_, _$rootScope_, _$q_, _$httpBackend_, _$state_, _roleCheckerService_, _Projects_, _KubernetesTokens_) => {
+  beforeEach(angular.mock.inject((_$compile_, _$rootScope_, _$q_, _$httpBackend_, _$state_, _roleCheckerService_, _Projects_) => {
     sandbox = sinon.sandbox.create();
 
     $compile = _$compile_;
@@ -39,7 +39,6 @@ describe('kubernetes robot tokens form', () => {
     $state = _$state_;
     roleCheckerService = _roleCheckerService_;
     Projects = _Projects_;
-    KubernetesTokens = _KubernetesTokens_;
 
     $httpBackend
       .whenGET(/.+/)
@@ -60,7 +59,7 @@ describe('kubernetes robot tokens form', () => {
       }
     };
 
-    element = $compile('<kubernetes-robot-tokens-form transition="transition"></kubernetes-robot-tokens-form>')($rootScope);
+    element = $compile('<kubernetes-user-tokens-form transition="transition"></kubernetes-user-tokens-form>')($rootScope);
     $rootScope.$digest();
   }
 
@@ -80,41 +79,21 @@ describe('kubernetes robot tokens form', () => {
       .resolves({result});
   }
 
-  function stubProjectsGetServiceKubernetesRobotToken(tokenId, projectId, serviceId) {
+  function stubProjectMemberships(projectId, userIds) {
     sandbox
-      .stub(Projects, 'getServiceKubernetesRobotToken')
-      .withArgs(projectId, serviceId, tokenId)
+      .stub(Projects, 'getMemberships')
+      .withArgs(params.fromProject)
       .usingPromise($q)
-      .resolves(buildTokenObject(tokenId, projectId, serviceId));
-  }
-
-  function stubKubernetesTokensGetToken(tokenId, projectId, serviceId) {
-    sandbox
-      .stub(KubernetesTokens, 'getToken')
-      .withArgs(tokenId)
-      .usingPromise($q)
-      .resolves(buildTokenObject(tokenId, projectId, serviceId));
-  }
-
-  function buildTokenObject(tokenId, projectId, serviceId) {
-    return {
-      id: tokenId,
-      kind: 'robot',
-      service: {
-        id: serviceId,
-        project: {
-          id: projectId
-        }
-      },
-      project: {
-        id: projectId
-      }
-    };
+      .resolves(
+        _.map(userIds, i => {
+          return {user: {id: i}};
+        })
+      );
   }
 
   beforeEach(() => {
     sandbox.spy($state, 'go');
-    sandbox.spy(Projects, 'getService');
+    sandbox.spy(Projects, 'refresh');
   });
 
   describe('for an admin user', () => {
@@ -122,103 +101,140 @@ describe('kubernetes robot tokens form', () => {
       stubAdmin(true);
     });
 
-    describe('for a new robot token', () => {
-      describe('when providing mismatched fromProject and fromService params', () => {
+    describe('for a new user token', () => {
+      describe('when not providing the fromProject params', () => {
         beforeEach(() => {
-          params.fromProject = '';
-          params.fromService = 'bar';
+          renderComponentWithTransitionParams(params);
+        });
+
+        it('should load the form as expected', () => {
+          $state.go.should.have.callCount(0);
+          Projects.refresh.should.have.callCount(1);
+          expect(element).toContainElement('div.kubernetes-user-tokens-form');
+        });
+      });
+
+      describe('when providing fromProject=foo', () => {
+        beforeEach(() => {
+          params.fromProject = 'foo';
+
+          stubProjectMemberships('foo', ['bob']);
+
+          renderComponentWithTransitionParams(params);
+        });
+
+        it('should load the form as expected', () => {
+          $state.go.should.have.callCount(0);
+          Projects.refresh.should.have.callCount(1);
+          expect(element).toContainElement('div.kubernetes-user-tokens-form');
+        });
+      });
+
+      describe('when providing mismatched fromProject and userId params', () => {
+        beforeEach(() => {
+          params.fromProject = 'foo';
+          params.userId = 'bob';
+
+          stubProjectMemberships('foo', ['notbob', 'definitelynotbob!']);
 
           renderComponentWithTransitionParams(params);
         });
 
         it('should boot the user out', () => {
           $state.go.should.have.been.calledWith('home');
-          Projects.getService.should.have.callCount(0);
-        });
-      });
-
-      describe('when not providing fromProject and fromService params', () => {
-        beforeEach(() => {
-          renderComponentWithTransitionParams(params);
-        });
-
-        it('should load the form as expected', () => {
-          $state.go.should.have.callCount(0);
-          Projects.getService.should.have.callCount(0);
-          expect(element).toContainElement('div.kubernetes-robot-tokens-form');
-        });
-      });
-
-      describe('when providing fromProject=foo and fromService=bar params', () => {
-        beforeEach(() => {
-          params.fromProject = 'foo';
-          params.fromService = 'bar';
-
-          renderComponentWithTransitionParams(params);
-        });
-
-        it('should load the form as expected', () => {
-          $state.go.should.have.callCount(0);
-          Projects.getService.should.have.been.calledWith('foo', 'bar');
-          expect(element).toContainElement('div.kubernetes-robot-tokens-form');
+          Projects.refresh.should.have.callCount(0);
         });
       });
     });
 
-    describe('for an existing robot token', () => {
+    describe('for an existing user token', () => {
       beforeEach(() => {
-        params.cluster = 'cluster1';
+        params.userId = 'bob';
         params.tokenId = 'token1';
       });
 
-      describe('when not providing fromProject and fromService params', () => {
+      describe('when not providing the fromProject param', () => {
         beforeEach(() => {
-          stubKubernetesTokensGetToken('token1', 'project1', 'service1');
+          renderComponentWithTransitionParams(params);
+        });
+
+        it('should load the form as expected', () => {
+          $state.go.should.have.callCount(0);
+          Projects.refresh.should.have.callCount(1);
+          expect(element).toContainElement('div.kubernetes-user-tokens-form');
+        });
+      });
+
+      describe('when providing fromProject=foo param and user is a member', () => {
+        beforeEach(() => {
+          params.fromProject = 'foo';
+
+          stubProjectMemberships('foo', ['bob']);
 
           renderComponentWithTransitionParams(params);
         });
 
         it('should load the form as expected', () => {
           $state.go.should.have.callCount(0);
-          Projects.getService.should.have.been.calledWith('project1', 'service1');
-          expect(element).toContainElement('div.kubernetes-robot-tokens-form');
+          Projects.refresh.should.have.callCount(1);
+          expect(element).toContainElement('div.kubernetes-user-tokens-form');
         });
       });
 
-      describe('when providing fromProject=foo and fromService=bar params', () => {
+      describe('when providing fromProject=foo param and user is not a member', () => {
         beforeEach(() => {
           params.fromProject = 'foo';
-          params.fromService = 'bar';
 
-          stubProjectsGetServiceKubernetesRobotToken('token1', 'foo', 'bar');
-
-          renderComponentWithTransitionParams(params);
-        });
-
-        it('should load the form as expected', () => {
-          $state.go.should.have.callCount(0);
-          Projects.getService.should.have.been.calledWith('foo', 'bar');
-          expect(element).toContainElement('div.kubernetes-robot-tokens-form');
-        });
-      });
-
-      describe('when service in token doesn\'t match fromService param provided', () => {
-        beforeEach(() => {
-          params.fromProject = 'foo';
-          params.fromService = 'bar';
-
-          sandbox
-            .stub(Projects, 'getServiceKubernetesRobotToken')
-            .withArgs('foo', 'bar', 'token1')
-            .usingPromise($q)
-            .rejects();
+          stubProjectMemberships('foo', ['notbob', 'definitelynotbob!']);
 
           renderComponentWithTransitionParams(params);
         });
 
         it('should boot the user out', () => {
           $state.go.should.have.been.calledWith('home');
-          Projects.getService.should.have.callCount(0);
+          Projects.refresh.should.have.callCount(0);
+        });
+      });
+
+      describe('when user in token doesn\'t match userId param provided', () => {
+        beforeEach(() => {
+          params.userId = 'someoneelse';
+          params.fromProject = 'foo';
+
+          stubProjectMemberships('foo', ['bob', 'someoneelse']);
+
+          // Unspy the existing spy!
+          Projects.refresh.restore();
+
+          sandbox
+            .stub(Projects, 'refresh')
+            .withArgs()
+            .usingPromise($q)
+            .resolves([]);
+
+          sandbox
+            .stub(Projects, 'getKubernetesUserToken')
+            .withArgs('foo', 'token1')
+            .usingPromise($q)
+            .resolves({
+              id: 'token1',
+              kind: 'user',
+              user: {
+                id: 'bob'  // This token does not belong to someoneelse!
+              },
+              project: {
+                id: 'foo'
+              }
+            });
+
+          sandbox.spy(Projects, 'getKubernetesClusters');
+
+          renderComponentWithTransitionParams(params);
+        });
+
+        it('should boot the user out', () => {
+          $state.go.should.have.been.calledWith('home');
+          Projects.getKubernetesClusters.should.have.callCount(0);
         });
       });
     });
@@ -230,8 +246,8 @@ describe('kubernetes robot tokens form', () => {
     });
 
     describe('for a project manager of project foo', () => {
-      describe('for a new robot token', () => {
-        describe('when not providing fromProject and fromService params', () => {
+      describe('for a new user token', () => {
+        describe('when not providing the fromProject param', () => {
           beforeEach(() => {
             stubProjectManagerRole('foo', true);
 
@@ -240,103 +256,97 @@ describe('kubernetes robot tokens form', () => {
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            Projects.getService.should.have.callCount(0);
+            Projects.refresh.should.have.callCount(0);
           });
         });
 
-        describe('when providing fromProject=foo and fromService=bar params', () => {
+        describe('when providing fromProject=foo param', () => {
           beforeEach(() => {
             stubProjectManagerRole('foo', true);
 
             params.fromProject = 'foo';
-            params.fromService = 'bar';
+
+            stubProjectMemberships('foo', []);
 
             renderComponentWithTransitionParams(params);
           });
 
           it('should load the form as expected', () => {
             $state.go.should.have.callCount(0);
-            Projects.getService.should.have.been.calledWith('foo', 'bar');
-            expect(element).toContainElement('div.kubernetes-robot-tokens-form');
+            Projects.refresh.should.have.callCount(1);
+            expect(element).toContainElement('div.kubernetes-user-tokens-form');
           });
         });
 
-        describe('when providing fromProject=other and fromService=bar params', () => {
+        describe('when providing fromProject=other param', () => {
           beforeEach(() => {
             stubProjectManagerRole('other', false);
 
             params.fromProject = 'other';
-            params.fromService = 'bar';
+
+            stubProjectMemberships('other', []);
 
             renderComponentWithTransitionParams(params);
           });
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            Projects.getService.should.have.callCount(0);
+            Projects.refresh.should.have.callCount(0);
           });
         });
       });
 
-      describe('for an existing robot token', () => {
+      describe('for an existing user token', () => {
         beforeEach(() => {
-          params.cluster = 'cluster1';
+          params.userId = 'bob';
           params.tokenId = 'token1';
         });
 
-        describe('when not providing fromProject and fromService params', () => {
+        describe('when not providing the fromProject param', () => {
           beforeEach(() => {
             stubProjectManagerRole('foo', true);
-
-            sandbox.spy(KubernetesTokens, 'getToken');
-            sandbox.spy(Projects, 'getServiceKubernetesRobotToken');
 
             renderComponentWithTransitionParams(params);
           });
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            KubernetesTokens.getToken.should.have.callCount(0);
-            Projects.getServiceKubernetesRobotToken.should.have.callCount(0);
-            Projects.getService.should.have.callCount(0);
+            Projects.refresh.should.have.callCount(0);
           });
         });
 
-        describe('when providing fromProject=foo and fromService=bar params', () => {
+        describe('when providing fromProject=foo param', () => {
           beforeEach(() => {
             stubProjectManagerRole('foo', true);
 
             params.fromProject = 'foo';
-            params.fromService = 'bar';
 
-            stubProjectsGetServiceKubernetesRobotToken('token1', 'foo', 'bar');
+            stubProjectMemberships('foo', ['bob']);
 
             renderComponentWithTransitionParams(params);
           });
 
           it('should load the form as expected', () => {
             $state.go.should.have.callCount(0);
-            Projects.getService.should.have.been.calledWith('foo', 'bar');
-            expect(element).toContainElement('div.kubernetes-robot-tokens-form');
+            Projects.refresh.should.have.callCount(1);
+            expect(element).toContainElement('div.kubernetes-user-tokens-form');
           });
         });
 
-        describe('when providing fromProject=other and fromService=bar params', () => {
+        describe('when providing fromProject=other param', () => {
           beforeEach(() => {
             stubProjectManagerRole('other', false);
 
             params.fromProject = 'other';
-            params.fromService = 'bar';
 
-            sandbox.spy(Projects, 'getServiceKubernetesRobotToken');
+            stubProjectMemberships('other', ['bob']);
 
             renderComponentWithTransitionParams(params);
           });
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            Projects.getServiceKubernetesRobotToken.should.have.callCount(0);
-            Projects.getService.should.have.callCount(0);
+            Projects.refresh.should.have.callCount(0);
           });
         });
       });
@@ -350,100 +360,93 @@ describe('kubernetes robot tokens form', () => {
           .resolves({result: false});
       });
 
-      describe('for a new robot token', () => {
-        describe('when not providing fromProject and fromService params', () => {
+      describe('for a new user token', () => {
+        describe('when not providing the fromProject param', () => {
           beforeEach(() => {
             renderComponentWithTransitionParams(params);
           });
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            Projects.getService.should.have.callCount(0);
+            Projects.refresh.should.have.callCount(0);
           });
         });
 
-        describe('when providing fromProject=foo and fromService=bar params', () => {
+        describe('when providing fromProject=foo param', () => {
           beforeEach(() => {
             params.fromProject = 'foo';
-            params.fromService = 'bar';
 
-            sandbox.spy(Projects, 'getServiceKubernetesRobotToken');
+            stubProjectMemberships('foo', []);
 
             renderComponentWithTransitionParams(params);
           });
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            Projects.getService.should.have.callCount(0);
+            Projects.refresh.should.have.callCount(0);
           });
         });
 
-        describe('when providing fromProject=other and fromService=bar params', () => {
+        describe('when providing fromProject=other param', () => {
           beforeEach(() => {
             params.fromProject = 'other';
-            params.fromService = 'bar';
+
+            stubProjectMemberships('other', []);
 
             renderComponentWithTransitionParams(params);
           });
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            Projects.getService.should.have.callCount(0);
+            Projects.refresh.should.have.callCount(0);
           });
         });
       });
 
-      describe('for an existing robot token', () => {
+      describe('for an existing user token', () => {
         beforeEach(() => {
-          params.cluster = 'cluster1';
+          params.userId = 'bob';
           params.tokenId = 'token1';
         });
 
-        describe('when not providing fromProject and fromService params', () => {
+        describe('when not providing the fromProject param', () => {
           beforeEach(() => {
-            sandbox.spy(Projects, 'getServiceKubernetesRobotToken');
-
             renderComponentWithTransitionParams(params);
           });
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            Projects.getServiceKubernetesRobotToken.should.have.callCount(0);
-            Projects.getService.should.have.callCount(0);
+            Projects.refresh.should.have.callCount(0);
           });
         });
 
-        describe('when providing fromProject=foo and fromService=bar params', () => {
+        describe('when providing fromProject=foo param', () => {
           beforeEach(() => {
             params.fromProject = 'foo';
-            params.fromService = 'bar';
 
-            sandbox.spy(Projects, 'getServiceKubernetesRobotToken');
+            stubProjectMemberships('foo', ['bob']);
 
             renderComponentWithTransitionParams(params);
           });
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            Projects.getServiceKubernetesRobotToken.should.have.callCount(0);
-            Projects.getService.should.have.callCount(0);
+            Projects.refresh.should.have.callCount(0);
           });
         });
 
-        describe('when providing fromProject=other and fromService=bar params', () => {
+        describe('when providing fromProject=other param', () => {
           beforeEach(() => {
             params.fromProject = 'other';
-            params.fromService = 'bar';
 
-            sandbox.spy(Projects, 'getServiceKubernetesRobotToken');
+            stubProjectMemberships('foo', ['other']);
 
             renderComponentWithTransitionParams(params);
           });
 
           it('should boot the user out', () => {
             $state.go.should.have.been.calledWith('home');
-            Projects.getServiceKubernetesRobotToken.should.have.callCount(0);
-            Projects.getService.should.have.callCount(0);
+            Projects.refresh.should.have.callCount(0);
           });
         });
       });

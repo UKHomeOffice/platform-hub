@@ -6,15 +6,17 @@ export const KubernetesRobotTokensFormComponent = {
   controller: KubernetesRobotTokensFormController
 };
 
-function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerService, projectServiceSelectorPopupService, AppSettings, KubernetesTokens, Projects, logger, _) {
+function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerService, projectServiceSelectorPopupService, AppSettings, KubernetesTokens, KubernetesGroups, Projects, logger, _) {
   'ngInject';
 
   const ctrl = this;
 
-  const cluster = ctrl.transition && ctrl.transition.params().cluster;
-  const tokenId = ctrl.transition && ctrl.transition.params().tokenId;
-  const fromProject = ctrl.transition && ctrl.transition.params().fromProject;
-  const fromService = ctrl.transition && ctrl.transition.params().fromService;
+  const transitionParams = ctrl.transition && ctrl.transition.params();
+
+  const cluster = _.get(transitionParams, 'cluster');
+  const tokenId = _.get(transitionParams, 'tokenId');
+  const fromProject = _.get(transitionParams, 'fromProject');
+  const fromService = _.get(transitionParams, 'fromService');
 
   ctrl.AppSettings = AppSettings;
 
@@ -32,7 +34,7 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
   ctrl.allowedGroups = [];
 
   ctrl.canChangeService = canChangeService;
-  ctrl.choose = choose;
+  ctrl.chooseService = chooseService;
   ctrl.handleClusterChange = handleClusterChange;
   ctrl.createOrUpdate = createOrUpdate;
 
@@ -48,18 +50,16 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
       (!fromProject && fromService) ||
       (fromProject && !fromService)
     ) {
-      bootOut();
-      return;
+      return bootOut();
     }
 
     topLevelAuthorisationChecks()
       .then(passed => {
         if (!passed) {
-          bootOut();
-          return;
+          return bootOut();
         }
 
-        return setupTokenVerifyAndFetchService();
+        return setupTokenAndFetchService();
       })
       .finally(() => {
         ctrl.loading = false;
@@ -79,9 +79,7 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
 
           return Projects
             .membershipRoleCheck(fromProject, 'manager')
-            .then(data => {
-              return data.result;
-            });
+            .then(data => data.result);
         }
 
         return true;
@@ -97,11 +95,12 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
   }
 
   function bootOut() {
-    logger.error('You are not allowed to access this page!');
+    logger.error('You are not allowed to access this form!');
     $state.go('home');
+    return $q.reject();
   }
 
-  function setupTokenVerifyAndFetchService() {
+  function setupTokenAndFetchService() {
     if (ctrl.isNew) {
       ctrl.token = {
         cluster: {
@@ -121,9 +120,13 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
 
     let fetch = null;
     if (fromService) {
-      fetch = Projects.getServiceKubernetesRobotToken(fromProject, fromService, tokenId);
+      fetch = Projects
+        .getServiceKubernetesRobotToken(fromProject, fromService, tokenId)
+        .catch(bootOut);
     } else {
-      fetch = KubernetesTokens.getToken(tokenId);
+      fetch = KubernetesTokens
+        .getToken(tokenId)
+        .catch(bootOut);
     }
 
     return fetch
@@ -131,7 +134,7 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
         ctrl.token = token;
 
         if (fromService && ctrl.token.service.id !== fromService) {
-          bootOut();
+          return bootOut();
         }
 
         return fetchService(ctrl.token.service.project.id, ctrl.token.service.id).catch(bootOut);
@@ -151,7 +154,7 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
     return ctrl.isNew && ctrl.isAdmin && !ctrl.fromService;
   }
 
-  function choose(targetEvent) {
+  function chooseService(targetEvent) {
     if (!canChangeService()) {
       return;
     }
@@ -232,15 +235,10 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
   function filterGroups() {
     ctrl.allowedGroups = [];
 
-    if (ctrl.token && ctrl.token.cluster) {
-      ctrl.allowedGroups = _.filter(ctrl.possibleGroups, g => {
-        return !g.is_privileged &&
-          (
-            !g.restricted_to_clusters ||
-            _.isEmpty(g.restricted_to_clusters) ||
-            g.restricted_to_clusters.includes(ctrl.token.cluster.name)
-          );
-      });
+    const clusterName = _.get(ctrl.token, 'cluster.name');
+
+    if (clusterName) {
+      ctrl.allowedGroups = KubernetesGroups.filterGroupsForCluster(ctrl.possibleGroups, clusterName);
     }
   }
 

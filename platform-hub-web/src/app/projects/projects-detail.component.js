@@ -24,6 +24,9 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.processing = false;
   ctrl.services = [];
   ctrl.loadingServices = false;
+  ctrl.kubernetesUserTokens = [];
+  ctrl.kubernetesUserTokensSelectedUser = null;
+  ctrl.processingKubernetesUserTokens = false;
 
   ctrl.deleteProject = deleteProject;
   ctrl.searchUsers = searchUsers;
@@ -39,6 +42,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.shouldShowServicesTab = shouldShowServicesTab;
   ctrl.loadServices = loadServices;
   ctrl.shouldShowCreateServiceButton = shouldShowCreateServiceButton;
+  ctrl.loadKubernetesUserTokens = loadKubernetesUserTokens;
+  ctrl.deleteKubernetesUserToken = deleteKubernetesUserToken;
 
   init();
 
@@ -351,5 +356,45 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
 
   function shouldShowCreateServiceButton() {
     return ctrl.isAdmin || ctrl.isProjectManager;
+  }
+
+  function loadKubernetesUserTokens() {
+    ctrl.processingKubernetesUserTokens = true;
+    ctrl.kubernetesUserTokens = [];
+
+    Projects
+      .getKubernetesUserTokens(ctrl.project.id)
+      .then(tokens => {
+        angular.copy(tokens, ctrl.kubernetesUserTokens);
+      })
+      .finally(() => {
+        ctrl.processingKubernetesUserTokens = false;
+      });
+  }
+
+  function deleteKubernetesUserToken(id, targetEvent) {
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent('This will delete this kubernetes user token permanently.')
+      .ariaLabel('Confirm deletion of a kubernetes user token for this project')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(() => {
+        ctrl.processingKubernetesUserTokens = true;
+
+        Projects
+          .deleteKubernetesUserToken(ctrl.project.id, id)
+          .then(() => {
+            logger.success('Token deleted');
+            return loadKubernetesUserTokens();
+          })
+          .finally(() => {
+            ctrl.processingKubernetesUserTokens = false;
+          });
+      });
   }
 }
