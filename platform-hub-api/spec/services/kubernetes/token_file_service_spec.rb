@@ -2,20 +2,21 @@ require 'rails_helper'
 
 describe Kubernetes::TokenFileService, type: :service do
 
-  let(:service) { create :service }
+  let(:project) { create :project }
+  let(:service) { create :service, project: project }
 
   before do
-    @cluster = create :kubernetes_cluster, allocate_to: service.project
+    @cluster = create :kubernetes_cluster, allocate_to: [ project, service.project ]
   end
 
   describe '.generate' do
-    let(:user_group_1) { create :kubernetes_group, :not_privileged, :for_user }
-    let(:user_group_2) { create :kubernetes_group, :not_privileged, :for_user }
+    let(:user_group_1) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: project }
+    let(:user_group_2) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: service }
     let(:robot_group_1) { create :kubernetes_group, :not_privileged, :for_robot, allocate_to: service }
 
     before do
-      @u1 = create :user_kubernetes_token, cluster: @cluster, groups: "#{user_group_1.name},#{user_group_2.name}"
-      @u2 = create :user_kubernetes_token, cluster: @cluster, groups: []
+      @u1 = create :user_kubernetes_token, project: project, cluster: @cluster, groups: "#{user_group_1.name},#{user_group_2.name}"
+      @u2 = create :user_kubernetes_token, project: project, cluster: @cluster, groups: []
       @r1 = create :robot_kubernetes_token, tokenable: service, cluster: @cluster, groups: [ robot_group_1.name ]
     end
 

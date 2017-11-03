@@ -7,21 +7,40 @@ FactoryGirl.define do
 
     factory :user_kubernetes_token do
       kind { 'user' }
-      association :cluster, factory: :kubernetes_cluster
       association :project
       association :tokenable, factory: :kubernetes_identity
       name { "user_#{SecureRandom.uuid}@example.com" }
 
-      groups do
-        [
-          create(:kubernetes_group, :not_privileged, :for_user).name,
-          create(:kubernetes_group, :not_privileged, :for_user).name
-        ]
+      transient do
+        groups_count 2
       end
 
-      factory :privileged_kubernetes_token do
-        groups { create(:kubernetes_group, :privileged, :for_user).name }
-        expire_privileged_at { 3600.seconds.from_now }
+      after(:build) do |token, _|
+        if token.cluster.blank? && token.project.present?
+          token.cluster = create :kubernetes_cluster, allocate_to: token.project
+        end
+
+        if token.user? && token.project.present? && token.tokenable.present? && token.tokenable.is_a?(Identity) && !ProjectMembership.exists?(project_id: token.project_id, user_id: token.tokenable.user_id)
+          create :project_membership, project: token.project, user: token.tokenable.user
+        end
+
+        if token.groups.nil? && !evaluator.groups_count.zero?
+          token.groups = evaluator.groups_count.map do |i|
+            create :kubernetes_group, :not_privileged, :for_user, allocate_to: token.project
+          end
+        end
+      end
+
+      trait :with_nil_cluster do
+        after(:build) do |token, _|
+          token.cluster = nil
+        end
+      end
+
+      trait :user_is_not_member_of_project do
+        after(:build) do |token, _|
+          ProjectMembership.where(project_id: token.project_id, user_id: token.tokenable.user_id).delete_all
+        end
       end
     end
 

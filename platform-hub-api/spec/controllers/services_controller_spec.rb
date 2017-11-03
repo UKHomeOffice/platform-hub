@@ -971,7 +971,7 @@ RSpec.describe ServicesController, type: :controller do
         end
 
         it 'cannot fetch a robot token for the service in the other project - returning 403 Forbidden' do
-          get :show_kubernetes_robot_token, params: { project_id: other_project.friendly_id, id: @other_service.id, token_id: @other_token }
+          get :show_kubernetes_robot_token, params: { project_id: other_project.friendly_id, id: @other_service.id, token_id: @other_token.id }
           expect(response).to have_http_status(403)
         end
 
@@ -988,7 +988,7 @@ RSpec.describe ServicesController, type: :controller do
         end
 
         it 'cannot fetch a robot token for the service in the other project - returning 403 Forbidden' do
-          get :show_kubernetes_robot_token, params: { project_id: other_project.friendly_id, id: @other_service.id, token_id: @other_token }
+          get :show_kubernetes_robot_token, params: { project_id: other_project.friendly_id, id: @other_service.id, token_id: @other_token.id }
           expect(response).to have_http_status(403)
         end
 
@@ -1001,7 +1001,7 @@ RSpec.describe ServicesController, type: :controller do
         end
 
         it 'cannot fetch a robot token for the service in the project - returning 403 Forbidden' do
-          get :show_kubernetes_robot_token, params: { project_id: project.friendly_id, id: @service.id, token_id: @token }
+          get :show_kubernetes_robot_token, params: { project_id: project.friendly_id, id: @service.id, token_id: @token.id }
           expect(response).to have_http_status(403)
         end
 
@@ -1121,7 +1121,7 @@ RSpec.describe ServicesController, type: :controller do
           expect(KubernetesToken.count).to eq 0
         end
 
-        it 'should return a 422 for a cluster that hasn\'t been allocated to the service' do
+        it 'should return a 422 for a cluster that hasn\'t been allocated to the project' do
           unallocated_cluster = create :kubernetes_cluster
           params = {
             project_id: project.friendly_id,

@@ -62,6 +62,11 @@ Rails.application.routes.draw do
 
       get :kubernetes_clusters, on: :member
       get :kubernetes_groups, on: :member
+      get :kubernetes_user_tokens, on: :member
+      get '/kubernetes_user_tokens/:token_id', to: 'projects#show_kubernetes_user_token', on: :member
+      post :kubernetes_user_tokens, to: 'projects#create_kubernetes_user_token', on: :member
+      patch '/kubernetes_user_tokens/:token_id', to: 'projects#update_kubernetes_user_token', on: :member
+      delete '/kubernetes_user_tokens/:token_id', to: 'projects#destroy_kubernetes_user_token', on: :member
 
       resources :services do
         get :kubernetes_groups, on: :member

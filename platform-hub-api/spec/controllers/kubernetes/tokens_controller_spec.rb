@@ -6,7 +6,6 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
   let(:cluster_name) { 'development' }
 
   before do
-    @cluster = create(:kubernetes_cluster, name: cluster_name)
     @user = create(:user)
     @kube_identity = create(:kubernetes_identity, user: @user)
   end
@@ -109,7 +108,9 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
   describe 'GET #show' do
     before do
-      @token = create :user_kubernetes_token
+      @user = create :user
+      @identity = create :identity, user: @user
+      @token = create :user_kubernetes_token, tokenable: @identity
     end
 
     it_behaves_like 'unauthenticated not allowed'  do
@@ -156,6 +157,14 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'name' => @token.cluster.name,
                 'description' => @token.cluster.description
               },
+              'user' => {
+                'id' => current_user.id,
+                'name' => current_user.name,
+                'email' => current_user.email,
+                'is_active' => current_user.is_active,
+                'is_managerial' => current_user.is_managerial,
+                'is_technical' => current_user.is_technical
+              },
               'project'=> {
                 'id' => @token.project.friendly_id,
                 'shortname' => @token.project.shortname,
@@ -172,7 +181,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             expect(json_response).to eq({
               'id' => @token.id,
               'kind' => 'user',
-              'obfuscated_token' => @token.obfuscated_token,              
+              'obfuscated_token' => @token.obfuscated_token,
               'name' => @token.name,
               'uid' => @token.uid,
               'groups' => @token.groups,
@@ -180,6 +189,14 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'id' => @token.cluster.friendly_id,
                 'name' => @token.cluster.name,
                 'description' => @token.cluster.description
+              },
+              'user' => {
+                'id' => @user.id,
+                'name' => @user.name,
+                'email' => @user.email,
+                'is_active' => @user.is_active,
+                'is_managerial' => @user.is_managerial,
+                'is_technical' => @user.is_technical
               },
               'project'=> {
                 'id' => @token.project.friendly_id,
@@ -233,8 +250,13 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
         end
 
         context 'for escalated token with expiration date set' do
+          let!(:project) { create :project }
+          let!(:privileged_group) { create :kubernetes_group, :privileged, :for_user, allocate_to: project }
+          let(:escalation_time_in_secs) { 60 }
+
           before do
-            @token = create :privileged_kubernetes_token
+            @token = create :user_kubernetes_token, project: project
+            @token.escalate(privileged_group.name, escalation_time_in_secs)
           end
 
           it 'should present expire_privileged_at' do
@@ -251,13 +273,14 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
   end
 
   describe 'POST #create' do
-    let(:user_group_1) { create :kubernetes_group, :not_privileged, :for_user }
-    let(:user_group_2) { create :kubernetes_group, :not_privileged, :for_user }
+    let(:project) { create :project }
+    let(:cluster) { create(:kubernetes_cluster, allocate_to: project) }
+    let(:user_group_1) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: project }
+    let(:user_group_2) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: project }
 
     before do
-      @project = create(:project)
-      @cluster = create(:kubernetes_cluster)
       @user = create(:user)
+      create :project_membership, project: project, user: @user
     end
 
     let(:kind) { 'user' }
@@ -267,8 +290,8 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
     let :token_data do
       {
         kind: kind,
-        project_id: @project.friendly_id,
-        cluster_name: @cluster.name,
+        project_id: project.friendly_id,
+        cluster_name: cluster.name,
         groups: [ user_group_1.name, user_group_2.name ],
         name: name,
         description: description
@@ -308,13 +331,13 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             expect(json_response['uid'].length).to eq 36
             expect(json_response['name']).to eq @user.email
             expect(json_response['groups']).to match_array [ user_group_1.name, user_group_2.name ]
-            expect(json_response['cluster']['name']).to eq @cluster.name
+            expect(json_response['cluster']['name']).to eq cluster.name
             expect(Audit.count).to eq 1
             audit = Audit.first
             expect(audit.action).to eq 'create'
             expect(audit.auditable.id).to eq new_token_internal_id
             expect(audit.user.id).to eq current_user_id
-            expect(audit.data['cluster']).to eq @cluster.name
+            expect(audit.data['cluster']).to eq cluster.name
           end
 
         end
@@ -358,11 +381,12 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
   end
 
   describe 'PUT #update' do
-    let(:user_group_1) { create :kubernetes_group, :not_privileged, :for_user }
-    let(:user_group_2) { create :kubernetes_group, :not_privileged, :for_user }
+    let(:project) { create :project }
+    let(:user_group_1) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: project }
+    let(:user_group_2) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: project }
 
     before do
-      @token = create :user_kubernetes_token
+      @token = create :user_kubernetes_token, project: project
     end
 
     let(:kind) { 'user' }
@@ -520,11 +544,12 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
   end
 
   describe 'PATCH #escalate' do
-    let(:privileged_group) { create :kubernetes_group, :privileged, :for_user }
+    let(:project) { create :project }
+    let(:privileged_group) { create :kubernetes_group, :privileged, :for_user, allocate_to: project }
     let(:expires_in_secs) { 180 }
 
     before do
-      @token = create :user_kubernetes_token
+      @token = create :user_kubernetes_token, project: project
     end
 
     let(:escalate_params) do
@@ -595,10 +620,13 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
   end
 
   describe 'PATCH #deescalate' do
+    let(:project) { create :project }
+    let(:privileged_group) { create :kubernetes_group, :privileged, :for_user, allocate_to: project }
+    let(:escalation_time_in_secs) { 60 }
+
     before do
-      privileged_group = create :kubernetes_group, :privileged
-      @token = create :privileged_kubernetes_token,
-                groups: [privileged_group.name]
+      @token = create :user_kubernetes_token, project: project
+      @token.escalate(privileged_group.name, escalation_time_in_secs)
     end
 
     it_behaves_like 'unauthenticated not allowed' do
@@ -616,9 +644,11 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
       end
 
       it_behaves_like 'an admin' do
-        it 'should deescalate token and return it' do
-          move_time_to now
+        before do
+          move_time_to (escalation_time_in_secs + 1).seconds.from_now
+        end
 
+        it 'should deescalate token and return it' do
           expect(AuditService).to receive(:log).with(
             context: anything,
             action: 'deescalate',
