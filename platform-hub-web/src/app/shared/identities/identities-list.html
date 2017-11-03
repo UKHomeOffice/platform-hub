@@ -68,8 +68,9 @@
             <h5>Tokens</h5>
             <ul class="md-body-1">
               <li ng-repeat="t in i.kubernetes_tokens">
+
                 <p>
-                  {{t.cluster.name}}: <strong>{{t.token}}</strong>
+                  {{t.cluster.name}}: <kubernetes-token-value item="t"></kubernetes-token-value>
                 </p>
 
                 <ul ng-if="t.groups.length > 0 || t.expire_privileged_at">

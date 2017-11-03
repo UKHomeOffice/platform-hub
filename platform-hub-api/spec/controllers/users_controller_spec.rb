@@ -238,6 +238,51 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
+      context 'for kubernetes identity' do
+        before do
+          FeatureFlagService.create_or_update(:kubernetes_tokens, true)
+        end
+
+        context 'when identity belongs to current user' do
+          before do
+            @identity = create(:kubernetes_identity, user: current_user)
+            @kubernetes_token = create :user_kubernetes_token, tokenable: @identity
+          end
+
+          it 'should return it with decrypted token value' do
+            get :identities, params: { id: current_user.id }
+            expect(response).to be_success
+
+            kube_identity = json_response.find {|i| i['provider'] == 'kubernetes'}
+
+            t = kube_identity['kubernetes_tokens'].first
+            expect(t['obfuscated_token']).to eq @kubernetes_token.obfuscated_token
+            expect(t['token']).to eq @kubernetes_token.decrypted_token
+          end
+        end
+
+        context 'when identity does not belong to current user' do
+          before do
+            @kubernetes_token = create :user_kubernetes_token
+            @identity = @kubernetes_token.tokenable
+            @user = @identity.user
+          end
+
+          it_behaves_like 'an admin' do
+            it 'should return it without revealing token value' do
+              get :identities, params: { id: @user.id }
+              expect(response).to be_success
+              expect(json_response.length).to eq 1
+              expect(json_response.first['provider']).to eq @identity.provider
+              t = json_response.first['kubernetes_tokens'].first
+              expect(t['obfuscated_token']).to eq @kubernetes_token.obfuscated_token
+              expect(t['token']).to be_nil
+            end
+          end
+        end
+
+      end
+
     end
   end
 

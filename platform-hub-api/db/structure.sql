@@ -318,7 +318,7 @@ CREATE TABLE platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying,
+    colour character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json

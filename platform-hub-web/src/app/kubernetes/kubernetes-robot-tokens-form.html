@@ -129,8 +129,8 @@
             <label for="token">Token:</label>
             <input
               name="token"
-              ng-model="$ctrl.token.token"
-              ng-disabled="!$ctrl.service || $ctrl.token.token"
+              ng-model="$ctrl.token.obfuscated_token"
+              ng-disabled="!$ctrl.service || $ctrl.token.obfuscated_token"
               required
               placeholder="Kubernetes access token">
             <div ng-messages="$ctrl.kubernetesTokenForm.token.$error">

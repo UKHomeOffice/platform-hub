@@ -1,0 +1,13 @@
+<span ng-if="$ctrl.item.token">
+  <strong><span ng-bind="showToken ? '{{$ctrl.item.token}}' : '{{$ctrl.item.obfuscated_token}}'"></span></strong>
+  <md-button
+    ng-click="!showToken ? showToken = true : showToken = false"
+    class="md-icon-button"
+    aria-label="reveal">
+    <md-icon ng-if="!showToken">visibility</md-icon>
+    <md-icon ng-if="showToken">visibility_off</md-icon>
+  </md-button>
+</span>
+<span ng-if="!$ctrl.item.token">
+  <strong>{{$ctrl.item.obfuscated_token}}</strong>
+</span>
