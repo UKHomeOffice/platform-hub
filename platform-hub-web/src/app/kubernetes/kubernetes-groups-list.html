@@ -60,7 +60,7 @@
             Restricted to particular clusters:
           </span>
           <span ng-if="g.restricted_to_clusters.length > 0">
-            {{g.restricted_to_clusters.join}}
+            {{g.restricted_to_clusters.join(', ')}}
           </span>
           <span class="none-text" ng-if="!g.restricted_to_clusters.length">
             --
