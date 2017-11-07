@@ -61,7 +61,10 @@
         </md-tab-body>
       </md-tab>
 
-      <md-tab id="kube-robot-tokens-tab" md-on-select="$ctrl.loadKubernetesRobotTokens()">
+      <md-tab
+        id="kube-robot-tokens-tab"
+        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)"
+        md-on-select="$ctrl.loadKubernetesRobotTokens()">
         <md-tab-label>Kube Robot Tokens</md-tab-label>
         <md-tab-body>
           <loading-indicator loading="$ctrl.processingKubernetesRobotTokens"></loading-indicator>

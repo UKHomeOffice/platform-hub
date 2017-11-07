@@ -238,7 +238,7 @@
 
       <md-tab
         id="kube-user-tokens-tab"
-        ng-if="$ctrl.isAdmin || $ctrl.isProjectManager"
+        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens) && ($ctrl.isAdmin || $ctrl.isProjectManager)"
         md-on-select="$ctrl.loadKubernetesUserTokens()">
         <md-tab-label>Kube User Tokens</md-tab-label>
         <md-tab-body>

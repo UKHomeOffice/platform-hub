@@ -6,12 +6,15 @@ export const ProjectsDetailComponent = {
   controller: ProjectsDetailController
 };
 
-function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, Me, Projects, logger, _) {
+function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, FeatureFlags, featureFlagKeys, Me, Projects, logger, _) {
   'ngInject';
 
   const ctrl = this;
 
   const id = ctrl.transition.params().id;
+
+  ctrl.FeatureFlags = FeatureFlags;
+  ctrl.featureFlagKeys = featureFlagKeys;
 
   ctrl.loading = true;
   ctrl.isAdmin = false;

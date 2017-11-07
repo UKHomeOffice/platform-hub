@@ -6,13 +6,16 @@ export const ProjectServicesDetailComponent = {
   controller: ProjectServicesDetailController
 };
 
-function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerService, Projects, logger) {
+function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerService, FeatureFlags, featureFlagKeys, Projects, logger) {
   'ngInject';
 
   const ctrl = this;
 
   const projectId = ctrl.transition.params().projectId;
   const id = ctrl.transition.params().id;
+
+  ctrl.FeatureFlags = FeatureFlags;
+  ctrl.featureFlagKeys = featureFlagKeys;
 
   ctrl.projectId = projectId;
   ctrl.loading = true;
