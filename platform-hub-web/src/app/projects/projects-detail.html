@@ -291,13 +291,22 @@
 
               <md-card-content>
                 <p class="md-body-1">
+                  <strong>Cluster:</strong> {{t.cluster.name}}
+                </p>
+                <p class="md-body-1">
                   <strong>Token:</strong> <kubernetes-token-value item="t"></kubernetes-token-value>
                 </p>
                 <p class="md-body-1">
                   <strong>UID:</strong> {{t.uid}}
                 </p>
-                <p class="md-body-1" ng-if="t.groups && t.groups.length > 0">
-                  <strong>Groups:</strong> {{t.groups.join(', ')}}
+                <p class="md-body-1">
+                  <strong>Groups:</strong>
+                  <span ng-if="t.groups && t.groups.length > 0">
+                    {{t.groups.join(', ')}}
+                  </span>
+                  <span ng-if="!t.groups.length" class="none-text">
+                    no RBAC groups assigned to this token
+                  </span>
                 </p>
                 <p
                   class="md-body-1"
