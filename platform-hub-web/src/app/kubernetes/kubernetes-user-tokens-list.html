@@ -90,7 +90,7 @@
 
     <md-card
       ng-if="!$ctrl.loading && $ctrl.tokens.length > 0"
-      ng-repeat="t in $ctrl.tokens track by t.cluster.name">
+      ng-repeat="t in $ctrl.tokens | orderBy: 'cluster.name' track by t.id">
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">
