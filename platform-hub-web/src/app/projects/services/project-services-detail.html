@@ -61,7 +61,10 @@
         </md-tab-body>
       </md-tab>
 
-      <md-tab id="kube-robot-tokens-tab" md-on-select="$ctrl.loadKubernetesRobotTokens()">
+      <md-tab
+        id="kube-robot-tokens-tab"
+        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)"
+        md-on-select="$ctrl.loadKubernetesRobotTokens()">
         <md-tab-label>Kube Robot Tokens</md-tab-label>
         <md-tab-body>
           <loading-indicator loading="$ctrl.processingKubernetesRobotTokens"></loading-indicator>
@@ -72,16 +75,13 @@
             layout-align="center center">
             <md-button
               class="md-primary md-raised"
-              aria-label="Create a new kubernetes robot token for this service"
+              aria-label="Create a new Kubernetes robot token for this service"
               ui-sref="kubernetes.robot-tokens.new({fromProject: $ctrl.projectId, fromService: $ctrl.service.id})">
-              Create a new kube robot token
+              Create a new Kubernetes robot token for this service
             </md-button>
           </div>
 
-          <!-- TODO: may need to DRY this up! Can we? -->
-          <md-card
-            ng-if="$ctrl.kubernetesRobotTokens.length > 0"
-            ng-repeat="t in $ctrl.kubernetesRobotTokens track by t.name">
+          <md-card ng-repeat="t in $ctrl.kubernetesRobotTokens track by t.id">
             <md-card-title>
               <md-card-title-text>
                 <span class="md-headline">
@@ -98,6 +98,7 @@
                 ng-bind-html='t.description | simpleFormat'
                 layout-padding>
               </p>
+              <br />
               <p class="md-body-1">
                 <strong>Cluster:</strong> {{t.cluster.name}}
               </p>
@@ -107,8 +108,14 @@
               <p class="md-body-1">
                 <strong>UID:</strong> {{t.uid}}
               </p>
-              <p class="md-body-1" ng-if="t.groups && t.groups.length > 0">
-                <strong>Groups:</strong> {{t.groups.join(', ')}}
+              <p class="md-body-1">
+                <strong>Groups:</strong>
+                <span ng-if="t.groups && t.groups.length > 0">
+                  {{t.groups.join(', ')}}
+                </span>
+                <span ng-if="!t.groups.length" class="none-text">
+                  no RBAC groups assigned to this token
+                </span>
               </p>
             </md-card-content>
 
@@ -135,5 +142,5 @@
 
   </md-content>
 
-  <br /><br />
+  <br /><br /><br /><br />
 </div>

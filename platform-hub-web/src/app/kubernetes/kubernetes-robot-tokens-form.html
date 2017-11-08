@@ -24,7 +24,7 @@
             <md-input-container
               flex
               class="md-block md-icon-float"
-              ng-click="$ctrl.choose()">
+              ng-click="$ctrl.chooseService()">
               <label for="service">For service</label>
               <input
                 name="service"
@@ -55,7 +55,7 @@
               class="md-icon-button input-button-end"
               aria-label="Choose a service"
               ng-if="$ctrl.canChangeService()"
-              ng-click="$ctrl.choose()">
+              ng-click="$ctrl.chooseService()">
               <md-icon>create</md-icon>
               <md-tooltip md-direction="bottom">
                 Choose service
@@ -76,12 +76,12 @@
           <md-input-container class="md-block">
             <label for="cluster">Cluster:</label>
             <md-select
-            name="cluster"
               ng-model="$ctrl.token.cluster.name"
               ng-change="$ctrl.handleClusterChange()"
+              name="cluster"
               required
               placeholder="Select the cluster"
-              ng-disabled="!$ctrl.service || (!$ctrl.isNew && $ctrl.token.cluster) || $ctrl.allowedClusters.length == 0">
+              ng-disabled="$ctrl.processing || !$ctrl.service || (!$ctrl.isNew && $ctrl.token.cluster) || !$ctrl.allowedClusters.length">
               <md-option
                 ng-repeat="c in $ctrl.allowedClusters track by c.name"
                 ng-value="c.name">
@@ -111,7 +111,7 @@
               name="groups"
               ng-model="$ctrl.token.groups"
               md-selected-text="$ctrl.token.groups.length ? $ctrl.token.groups.join(', ') : 'Select RBAC group(s) *'"
-              ng-disabled="!$ctrl.allowedGroups.length || !$ctrl.service || !$ctrl.token.cluster.name"
+              ng-disabled="$ctrl.processing || !$ctrl.allowedGroups.length || !$ctrl.service || !$ctrl.token.cluster.name"
               multiple>
               <md-option
                 ng-repeat="g in $ctrl.allowedGroups track by g.name"

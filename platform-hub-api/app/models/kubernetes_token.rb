@@ -140,7 +140,7 @@ class KubernetesToken < ApplicationRecord
     # For user token we only allow one per cluster
     return unless user? && cluster.present?
     if new_record? && KubernetesToken.user.by_tokenable(tokenable).by_cluster(cluster).by_project(project).exists?
-      errors.add(:user, "can have only one user token per cluster per project")
+      errors.add(:user, "already has a token for this project and cluster")
     end
   end
 
@@ -213,9 +213,9 @@ class KubernetesToken < ApplicationRecord
     privileged_check = allow_privileged_groups || !group.is_privileged
 
     group_target_allowed = if user?
-      !!group.user?
+      group.user?
     elsif robot?
-      !!group.robot?
+      group.robot?
     else
       false
     end
@@ -231,7 +231,7 @@ class KubernetesToken < ApplicationRecord
         Allocation.exists?(
           allocatable: group,
           allocation_receivable_type: Service.name,
-          allocation_receivable_id: project.services.pluck(&:id)
+          allocation_receivable_id: project.services.pluck(:id)
         )
       elsif robot?
         Allocation.exists?(

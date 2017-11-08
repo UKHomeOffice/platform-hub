@@ -28,6 +28,8 @@ export const KubernetesGroups = function ($window, hubApiService, apiBackoffTime
   model.allocateToService = allocateToService;
   model.getAllocations = hubApiService.getKubernetesGroupAllocations;
 
+  model.filterGroupsForCluster = filterGroupsForCluster;
+
   return model;
 
   function refresh(force) {
@@ -54,5 +56,16 @@ export const KubernetesGroups = function ($window, hubApiService, apiBackoffTime
 
   function allocateToService(groupId, projectId, serviceId) {
     return hubApiService.allocateKubernetesGroup(groupId, projectId, serviceId);
+  }
+
+  function filterGroupsForCluster(groups, clusterName) {
+    return _.filter(groups, g => {
+      return !g.is_privileged &&
+        (
+          !g.restricted_to_clusters ||
+          _.isEmpty(g.restricted_to_clusters) ||
+          g.restricted_to_clusters.includes(clusterName)
+        );
+    });
   }
 };

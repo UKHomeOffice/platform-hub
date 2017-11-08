@@ -9,14 +9,7 @@
       <span flex></span>
 
       <md-button
-        ng-if="
-          !$ctrl.loading &&
-          (
-            !$ctrl.user || (
-              $ctrl.user.is_active &&
-              $ctrl.tokens.length < $ctrl.KubernetesClusters.all.length
-            )
-          )"
+        ng-if="!$ctrl.loading && (!$ctrl.user || $ctrl.user.is_active)"
         aria-label="Add new token"
         ui-sref="kubernetes.user-tokens.new({userId: $ctrl.user.id})">
         <md-icon>{{$ctrl.addTokenIcon}}</md-icon>
@@ -97,7 +90,7 @@
 
     <md-card
       ng-if="!$ctrl.loading && $ctrl.tokens.length > 0"
-      ng-repeat="t in $ctrl.tokens track by t.cluster.name">
+      ng-repeat="t in $ctrl.tokens | orderBy: 'cluster.name' track by t.id">
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">
@@ -108,13 +101,25 @@
 
       <md-card-content>
         <p class="md-body-1">
+          <strong>Project:</strong> {{t.project.name}} ({{t.project.shortname}})
+        </p>
+        <p class="md-body-1">
+          <strong>Cluster:</strong> {{t.cluster.name}}
+        </p>
+        <p class="md-body-1">
           <strong>Token:</strong> <kubernetes-token-value item="t"></kubernetes-token-value>
         </p>
         <p class="md-body-1">
           <strong>UID:</strong> {{t.uid}}
         </p>
-        <p class="md-body-1" ng-if="t.groups && t.groups.length > 0">
-          <strong>Groups:</strong> {{t.groups.join(', ')}}
+        <p class="md-body-1">
+          <strong>Groups:</strong>
+          <span ng-if="t.groups && t.groups.length > 0">
+            {{t.groups.join(', ')}}
+          </span>
+          <span ng-if="!t.groups.length" class="none-text">
+            no RBAC groups assigned to this token
+          </span>
         </p>
         <p
           class="md-body-1"

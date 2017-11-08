@@ -243,30 +243,32 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           }
         })
         .state('kubernetes.user-tokens.new', {
-          url: '/new/:userId',
+          url: '/new/:userId?fromProject',
           component: KubernetesUserTokensForm,
           resolve: {
             transition: '$transition$'
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
-            rolePermitted: 'admin'
+            featureFlag: featureFlagKeys.kubernetesTokens
           },
           params: {
-            userId: ''
+            userId: '',
+            fromProject: null
           }
         })
         .state('kubernetes.user-tokens.edit', {
-          url: '/edit/:userId/:tokenId',
+          url: '/edit/:userId/:tokenId?fromProject',
           component: KubernetesUserTokensForm,
           resolve: {
             transition: '$transition$'
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
-            rolePermitted: 'admin'
+            featureFlag: featureFlagKeys.kubernetesTokens
+          },
+          params: {
+            fromProject: null
           }
         })
       .state('kubernetes.robot-tokens', {

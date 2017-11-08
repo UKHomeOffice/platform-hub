@@ -64,19 +64,25 @@
         <div ng-if="$ctrl.showKubeTokens">
           <br />
 
-          <div ng-if="i.kubernetes_tokens.length > 0">
-            <h5>Tokens</h5>
+          <div ng-repeat="(label, tokens) in $ctrl.kubernetesTokensByProject track by label">
+            <h5>{{label}}</h5>
             <ul class="md-body-1">
-              <li ng-repeat="t in i.kubernetes_tokens">
-
+              <li ng-repeat="t in tokens">
                 <p>
-                  {{t.cluster.name}}: <kubernetes-token-value item="t"></kubernetes-token-value>
+                  {{t.cluster.name}}:
+                  <kubernetes-token-value item="t"></kubernetes-token-value>
                 </p>
 
-                <ul ng-if="t.groups.length > 0 || t.expire_privileged_at">
-                  <li ng-if="t.groups.length > 0">
+                <ul style="margin-bottom: 0.75em">
+                  <li>
                     <p>
-                      Groups: {{t.groups.join(', ')}}
+                      Groups:
+                      <span ng-if="t.groups && t.groups.length > 0">
+                        {{t.groups.join(', ')}}
+                      </span>
+                      <span ng-if="!t.groups.length" class="none-text">
+                        no RBAC groups assigned to this token
+                      </span>
                     </p>
                   </li>
                   <li ng-if="t.expire_privileged_at">

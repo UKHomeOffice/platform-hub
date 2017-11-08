@@ -1,3 +1,5 @@
+/* eslint camelcase: 0 */
+
 export const KubernetesUserTokensFormComponent = {
   bindings: {
     transition: '<'
@@ -6,81 +8,301 @@ export const KubernetesUserTokensFormComponent = {
   controller: KubernetesUserTokensFormController
 };
 
-function KubernetesUserTokensFormController($q, $state, Projects, Identities, KubernetesClusters, KubernetesTokens, hubApiService, logger, _) {
+function KubernetesUserTokensFormController($q, $state, $mdSelect, Projects, AppSettings, KubernetesTokens, KubernetesGroups, roleCheckerService, hubApiService, logger, _) {
   'ngInject';
 
   const ctrl = this;
 
-  const userId = ctrl.transition && ctrl.transition.params().userId;
-  const tokenId = ctrl.transition && ctrl.transition.params().tokenId;
+  const transitionParams = ctrl.transition && ctrl.transition.params();
 
+  const userId = _.get(transitionParams, 'userId');
+  const tokenId = _.get(transitionParams, 'tokenId');
+  const fromProject = _.get(transitionParams, 'fromProject');
+
+  ctrl._ = _;
+  ctrl.AppSettings = AppSettings;
   ctrl.Projects = Projects;
-  ctrl.KubernetesClusters = KubernetesClusters;
+
+  ctrl.fromProject = fromProject;
   ctrl.loading = true;
+  ctrl.processing = false;
   ctrl.saving = false;
   ctrl.isNew = true;
   ctrl.token = null;
-  ctrl.assignedProjects = null;
-  ctrl.assignedKubernetesClusters = null;
-  ctrl.searchText = '';
-  ctrl.user = null;
+  ctrl.allowedUsers = [];
+  ctrl.projectServices = [];
+  ctrl.allowedClusters = [];
+  ctrl.possibleGroups = {};
+  ctrl.allowedGroups = {};
 
-  ctrl.loadTokenData = loadTokenData;
-  ctrl.searchUsers = searchUsers;
+  ctrl.canChangeProject = canChangeProject;
+  ctrl.handleProjectChange = handleProjectChange;
+  ctrl.handleClusterChange = handleClusterChange;
   ctrl.createOrUpdate = createOrUpdate;
 
   init();
 
   function init() {
-    ctrl.isNew = !tokenId;
     ctrl.loading = true;
 
-    const projectsFetch = Projects.refresh();
+    ctrl.isNew = !tokenId;
+    ctrl.token = null;
 
-    const clustersFetch = KubernetesClusters.refresh();
-
-    $q.all([projectsFetch, clustersFetch])
-      .then(() => {
-        if (userId) {
-          return loadUserAndToken();
+    fetchInitialUsers()
+      .then(topLevelAuthorisationChecks)
+      .then(passed => {
+        if (!passed) {
+          return bootOut();
         }
+
+        if (userId && fromProject) {
+          // Make sure the user specified in the params is a member of the
+          // project specified in the params
+          const userIsMember = _.some(ctrl.allowedUsers, u => u.id === userId);
+          if (!userIsMember) {
+            return bootOut();
+          }
+        }
+
+        return Projects
+          .refresh()
+          .then(setupToken);
       })
       .finally(() => {
         ctrl.loading = false;
       });
   }
 
-  function loadUserAndToken() {
-    return hubApiService
-      .getUser(userId)
-      .then(user => {
-        ctrl.user = user;
-        return loadTokenData();
+  function fetchInitialUsers() {
+    if (fromProject) {
+      return fetchUsers(fromProject);
+    }
+
+    return $q.when();
+  }
+
+  function topLevelAuthorisationChecks() {
+    return loadAdminStatus()
+      .then(() => {
+        // If not an admin, then `fromProject` param must be provided, and
+        // verified for project manager status.
+
+        if (!ctrl.isAdmin) {
+          if (!fromProject) {
+            return false;
+          }
+
+          return Projects
+            .membershipRoleCheck(fromProject, 'manager')
+            .then(data => data.result);
+        }
+
+        return true;
       });
   }
 
-  function loadTokenData() {
-    if (ctrl.user) {
-      return Identities
-        .getUserIdentities(ctrl.user.id)
-        .then(identities => {
-          const identity = _.find(identities, ['provider', 'kubernetes']);
-
-          if (identity) {
-            ctrl.token = _.find(identity.kubernetes_tokens, ['id', tokenId]);
-            ctrl.assignedProjects = [];
-            ctrl.assignedKubernetesClusters = _.map(identity.kubernetes_tokens, 'cluster.name');
-          } else {
-            ctrl.token = {};
-            ctrl.assignedProjects = [];
-            ctrl.assignedKubernetesClusters = [];
-          }
-        });
-    }
+  function loadAdminStatus() {
+    return roleCheckerService
+    .hasHubRole('admin')
+    .then(hasRole => {
+      ctrl.isAdmin = hasRole;
+    });
   }
 
-  function searchUsers(query) {
-    return hubApiService.searchUsers(query, true);
+  function bootOut() {
+    logger.error('You are not allowed to access this form!');
+    $state.go('home');
+    return $q.reject();
+  }
+
+  function fetchUsers(projectId) {
+    return Projects
+    .getMemberships(projectId)
+    .then(memberships => {
+      ctrl.allowedUsers = _.map(memberships, 'user');
+    });
+  }
+
+  function setupToken() {
+    if (ctrl.isNew) {
+      ctrl.token = {
+        project: {
+          id: fromProject
+        },
+        user: {
+          id: userId,
+          is_active: true
+        },
+        cluster: {},
+        groups: []
+      };
+
+      if (fromProject) {
+        return refreshForProject();
+      }
+
+      return $q.when();
+    }
+
+    // We have an existing token, people! Look sharp!
+
+    let fetch = null;
+    if (fromProject) {
+      fetch = Projects
+        .getKubernetesUserToken(fromProject, tokenId)
+        .catch(bootOut);
+    } else {
+      fetch = KubernetesTokens
+        .getToken(tokenId)
+        .catch(bootOut);
+    }
+
+    return fetch
+      .then(token => {
+        ctrl.token = token;
+
+        if (fromProject && ctrl.token.project.id !== fromProject) {
+          return bootOut();
+        }
+
+        if (userId && ctrl.token.user.id !== userId) {
+          return bootOut();
+        }
+
+        return refreshForProject();
+      });
+  }
+
+  function canChangeProject() {
+    return ctrl.isNew && ctrl.isAdmin && !ctrl.fromProject;
+  }
+
+  function handleProjectChange() {
+    ctrl.processing = true;
+
+    // Reset the token's groups as they may not be applicable to this
+    // project anymore.
+    if (ctrl.token) {
+      ctrl.token.groups = [];
+    }
+
+    return refreshForProject()
+      .finally(() => {
+        ctrl.processing = false;
+      });
+  }
+
+  function handleClusterChange() {
+    ctrl.processing = true;
+
+    // Reset the token's groups as they may not be applicable to the cluster anymore.
+    ctrl.token.groups = [];
+
+    // See: https://github.com/angular/material/issues/10747
+    $mdSelect
+      .hide()
+      .then(filterGroups)
+      .finally(() => {
+        ctrl.processing = false;
+      });
+  }
+
+  function refreshForProject() {
+    return fetchUsers(ctrl.token.project.id)
+      .then(fetchServices)
+      .then(fetchClusters)
+      .then(fetchGroups)
+      .then(filterGroups);
+  }
+
+  function fetchServices() {
+    ctrl.projectServices = [];
+
+    const projectId = _.get(ctrl.token, 'project.id');
+
+    if (projectId) {
+      return Projects
+        .getServices(projectId)
+        .then(services => {
+          ctrl.projectServices = services;
+        });
+    }
+
+    return $q.when();
+  }
+
+  function fetchClusters() {
+    ctrl.allowedClusters = [];
+
+    const projectId = _.get(ctrl.token, 'project.id');
+
+    if (projectId) {
+      return Projects
+        .getKubernetesClusters(projectId)
+        .then(clusters => {
+          ctrl.allowedClusters = clusters;
+        });
+    }
+
+    return $q.when();
+  }
+
+  function fetchGroups() {
+    ctrl.possibleGroups = {};
+    ctrl.allowedGroups = {};
+
+    const projectId = _.get(ctrl.token, 'project.id');
+
+    if (projectId) {
+      const projectGroupsFetch = Projects.getKubernetesGroups(projectId, 'user');
+
+      const serviceGroupsFetches = ctrl.projectServices.map(s => Projects.getServiceKubernetesGroups(projectId, s.id, 'user'));
+
+      const allFetches = [projectGroupsFetch].concat(serviceGroupsFetches);
+
+      return $q
+        .all(allFetches)
+        .then(data => {
+          ctrl.possibleGroups = data.reduce((acc, groups, ix) => {
+            // The first one is for project level groups
+            if (ix === 0) {
+              acc['Project level groups'] = groups;
+            } else {
+              const service = ctrl.projectServices[ix - 1];
+              acc[`Service: ${service.name}`] = groups;
+            }
+            return acc;
+          }, {});
+        });
+    }
+
+    return $q.when();
+  }
+
+  function filterGroups() {
+    ctrl.allowedGroups = [];
+
+    const clusterName = _.get(ctrl.token, 'cluster.name');
+
+    if (clusterName) {
+      const seen = {};
+      ctrl.allowedGroups = Object.keys(ctrl.possibleGroups).reduce((acc, key) => {
+        const forCluster = KubernetesGroups.filterGroupsForCluster(ctrl.possibleGroups[key], clusterName);
+
+        // Need to consider dup groups between services etc.
+        const dedupped = forCluster.filter(g => {
+          const allowed = !seen[g.name];
+          seen[g.name] = 1;
+          return allowed;
+        });
+
+        if (!_.isEmpty(dedupped)) {
+          acc[key] = dedupped;
+        }
+
+        return acc;
+      }, {});
+    }
   }
 
   function createOrUpdate() {
@@ -91,26 +313,42 @@ function KubernetesUserTokensFormController($q, $state, Projects, Identities, Ku
 
     ctrl.saving = true;
 
+    let promise = null;
+
     if (ctrl.isNew) {
-      KubernetesTokens
-        .createUserToken(ctrl.user.id, ctrl.token)
+      if (fromProject) {
+        promise = Projects.createKubernetesUserToken(ctrl.token.project.id, ctrl.token);
+      } else {
+        promise = KubernetesTokens.createUserToken(ctrl.token.user.id, ctrl.token);
+      }
+
+      promise = promise
         .then(() => {
-          logger.success('New kubernetes token created');
-          $state.go('kubernetes.user-tokens.list', {userId: ctrl.user.id});
-        })
-        .finally(() => {
-          ctrl.saving = false;
+          logger.success('New kubernetes robot token created');
         });
     } else {
-      KubernetesTokens
-        .updateUserToken(tokenId, ctrl.token)
+      if (fromProject) {
+        promise = Projects.updateKubernetesUserToken(ctrl.token.project.id, ctrl.token.id, ctrl.token);
+      } else {
+        promise = KubernetesTokens.updateUserToken(ctrl.token.id, ctrl.token);
+      }
+
+      promise = promise
         .then(() => {
-          logger.success('Kubernetes token updated');
-          $state.go('kubernetes.user-tokens.list', {userId: ctrl.user.id});
-        })
-        .finally(() => {
-          ctrl.saving = false;
+          logger.success('Kubernetes robot token updated');
         });
     }
+
+    return promise
+      .then(() => {
+        if (fromProject) {
+          $state.go('projects.detail', {id: fromProject});
+        } else {
+          $state.go('kubernetes.user-tokens.list', {userId: ctrl.token.user.id});
+        }
+      })
+      .finally(() => {
+        ctrl.saving = false;
+      });
   }
 }
