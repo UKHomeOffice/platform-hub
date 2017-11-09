@@ -6,7 +6,7 @@ export const KubernetesUserTokensListComponent = {
   controller: KubernetesUserTokensListController
 };
 
-function KubernetesUserTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, KubernetesClusters, icons, kubernetesTokenEscalatePrivilegePopupService) {
+function KubernetesUserTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, Identities, KubernetesClusters, KubernetesTokens, icons, kubernetesTokenEscalatePrivilegePopupService) {
   'ngInject';
 
   const ctrl = this;
@@ -71,7 +71,7 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
   function fetchKubernetesTokens() {
     ctrl.tokens = [];
 
-    return hubApiService
+    return Identities
       .getUserIdentities(ctrl.user.id)
       .then(identities => {
         const identity = _.find(identities, ['provider', 'kubernetes']);
@@ -82,18 +82,17 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
       });
   }
 
-  function escalatePrivilege(user, cluster, targetEvent) {
+  function escalatePrivilege(tokenId, targetEvent) {
     kubernetesTokenEscalatePrivilegePopupService.open(
-      user,
-      cluster,
+      tokenId,
       targetEvent
     ).then(filterKubernetesTokensByUser);
   }
 
-  function deleteToken(userId, cluster, targetEvent) {
+  function deleteToken(tokenId, targetEvent) {
     const confirm = $mdDialog.confirm()
       .title(`Are you sure?`)
-      .textContent(`This will delete the "${cluster}" token.`)
+      .textContent(`This will delete selected token.`)
       .ariaLabel('Confirm token removal')
       .targetEvent(targetEvent)
       .ok('Do it')
@@ -102,10 +101,10 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
     $mdDialog
       .show(confirm)
       .then(() => {
-        hubApiService
-          .deleteKubernetesToken(userId, cluster)
+        KubernetesTokens
+          .deleteToken(tokenId)
           .then(() => {
-            loadUserAndTokens(userId);
+            loadUserAndTokens(ctrl.user.id);
           });
       });
   }
@@ -117,8 +116,8 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
   function revokeToken(targetEvent) {
     const confirm = $mdDialog.prompt()
       .title('Revoke kubernetes token')
-      .textContent('This will revoke existing kubernetes token entirely.')
-      .placeholder('Kubernetes token you would like to revoke')
+      .textContent('This will revoke an existing Kubernetes token using the token value provided.')
+      .placeholder('Kubernetes token value you would like to revoke')
       .ariaLabel('Revoke token')
       .initialValue('')
       .targetEvent(targetEvent)
@@ -127,13 +126,13 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
 
     $mdDialog
       .show(confirm)
-      .then(revokedToken => {
-        if (_.isNull(revokedToken) || _.isEmpty(revokedToken)) {
+      .then(tokenValueToRevoke => {
+        if (_.isNull(tokenValueToRevoke) || _.isEmpty(tokenValueToRevoke)) {
           logger.error('Kubernetes token not specified or empty!');
         } else {
           ctrl.busy = true;
-          hubApiService
-            .revokeKubernetesToken({token: revokedToken})
+          KubernetesTokens
+            .revokeToken(tokenValueToRevoke)
             .then(() => {
               logger.success('Kubernetes token revoked successfully!');
               $state.reload();

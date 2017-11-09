@@ -1,0 +1,112 @@
+<div class="kubernetes-groups-detail">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3 ng-if="$ctrl.group">
+        <span>Kubernetes RBAC Group: </span>
+        <span>{{$ctrl.group.name}}</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        ng-if="$ctrl.group"
+        aria-label="Edit this group"
+        ui-sref="kubernetes.groups.edit({id: $ctrl.group.id})">
+        <md-icon>edit</md-icon>
+        Edit
+      </md-button>
+      <md-button
+        ng-if="$ctrl.group"
+        aria-label="Delete this group"
+        ng-click="$ctrl.deleteGroup($event)">
+        <md-icon>delete</md-icon>
+        Delete
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content>
+    <md-tabs
+      ng-if="!$ctrl.loading && $ctrl.group"
+      md-dynamic-height
+      md-border-bottom>
+
+      <md-tab id="overview-tab">
+        <md-tab-label>Overview</md-tab-label>
+        <md-tab-body>
+          <div layout-padding>
+            <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+              <md-content layout-padding>
+
+                <h3 class="md-title">
+                  {{$ctrl.group.name}}
+
+                  <span
+                    class="badge float-right"
+                    md-colors="{background: 'green'}">
+                    {{$ctrl.group.target}}
+                  </span>
+
+                  <span
+                    class="badge float-right"
+                    md-colors="{background: 'blue'}">
+                    {{$ctrl.group.kind}}
+                  </span>
+
+                  <span
+                    ng-if="$ctrl.group.is_privileged"
+                    class="badge float-right"
+                    md-colors="{background: 'accent'}">
+                    Privileged
+                  </span>
+                </h3>
+
+                <p
+                  class="md-body-1"
+                  md-colors="{background: 'blue-grey-50'}"
+                  ng-if="$ctrl.group.description"
+                  ng-bind-html='$ctrl.group.description | simpleFormat'>
+                </p>
+
+                <p class="md-body-1">
+                  <span md-colors="{color: 'blue-grey-700'}">
+                    Restricted to particular clusters:
+                  </span>
+                  <span ng-if="$ctrl.group.restricted_to_clusters.length > 0">
+                    {{$ctrl.group.restricted_to_clusters.join(', ')}}
+                  </span>
+                  <span class="none-text" ng-if="!$ctrl.group.restricted_to_clusters.length">
+                    --
+                  </span>
+                </p>
+
+              </md-content>
+            </div>
+          </div>
+        </md-tab-body>
+      </md-tab>
+
+      <md-tab id="allocations-tab" md-on-select="$ctrl.loadAllocations()">
+        <md-tab-label>Allocations</md-tab-label>
+        <md-tab-body>
+          <loading-indicator loading="$ctrl.loadingAllocations"></loading-indicator>
+
+          <div layout="row" layout-align="center center">
+            <md-button
+              class="md-primary md-raised"
+              ng-click="$ctrl.allocate($event)">
+              Allocate this group to a project OR a project's service
+            </md-button>
+          </div>
+
+          <allocations-listing
+            busy="$ctrl.loadingAllocations"
+            items="$ctrl.allocations"
+            allocatable-noun="group"
+            after-delete="$ctrl.loadAllocations()">
+          </allocations-listing>
+        </md-tab-body>
+      </md-tab>
+    </md-tabs>
+  </md-content>
+</div>

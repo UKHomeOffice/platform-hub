@@ -6,21 +6,30 @@ export const ProjectsDetailComponent = {
   controller: ProjectsDetailController
 };
 
-function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, Me, logger, _) {
+function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, FeatureFlags, featureFlagKeys, Me, Projects, logger, _) {
   'ngInject';
 
   const ctrl = this;
 
   const id = ctrl.transition.params().id;
 
+  ctrl.FeatureFlags = FeatureFlags;
+  ctrl.featureFlagKeys = featureFlagKeys;
+
   ctrl.loading = true;
   ctrl.isAdmin = false;
+  ctrl.isProjectTeamMember = false;
   ctrl.isProjectManager = false;
   ctrl.project = null;
   ctrl.memberships = [];
   ctrl.searchSelectedUser = null;
   ctrl.searchText = '';
   ctrl.processing = false;
+  ctrl.services = [];
+  ctrl.loadingServices = false;
+  ctrl.kubernetesUserTokens = [];
+  ctrl.kubernetesUserTokensSelectedUser = null;
+  ctrl.processingKubernetesUserTokens = false;
 
   ctrl.deleteProject = deleteProject;
   ctrl.searchUsers = searchUsers;
@@ -33,12 +42,25 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.userOnboardGitHub = userOnboardGitHub;
   ctrl.userOffboardGitHub = userOffboardGitHub;
   ctrl.offboardAndRemove = offboardAndRemove;
+  ctrl.shouldShowServicesTab = shouldShowServicesTab;
+  ctrl.loadServices = loadServices;
+  ctrl.shouldShowCreateServiceButton = shouldShowCreateServiceButton;
+  ctrl.loadKubernetesUserTokens = loadKubernetesUserTokens;
+  ctrl.deleteKubernetesUserToken = deleteKubernetesUserToken;
 
   init();
 
   function init() {
-    loadProject();
-    loadAdminStatus();
+    loadAdminStatus()
+      .then(loadProject);
+  }
+
+  function loadAdminStatus() {
+    return roleCheckerService
+      .hasHubRole('admin')
+      .then(hasRole => {
+        ctrl.isAdmin = hasRole;
+      });
   }
 
   function loadProject() {
@@ -49,38 +71,36 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
     ctrl.searchSelectedUser = null;
     ctrl.searchText = '';
 
-    const projectFetch = hubApiService
-      .getProject(id)
+    const projectFetch = Projects
+      .get(id)
       .then(project => {
         ctrl.project = project;
       });
 
-    const membershipsFetch = hubApiService
-      .getProjectMemberships(id)
+    const membershipsFetch = Projects
+      .getMemberships(id)
       .then(memberships => {
         ctrl.memberships = memberships;
 
-        // Check to see if logged in user is a project team manager
+        // We expect at this point that the Me resource has definitely been fetched!
         const currentUserId = Me.data.id;
         if (currentUserId) {
-          ctrl.isProjectManager = _.some(memberships, m => {
-            return m.role === 'manager' && m.user.id === currentUserId;
+          ctrl.isProjectTeamMember = _.some(memberships, m => {
+            return m.user.id === currentUserId;
           });
         }
       });
 
-    $q
-      .all([projectFetch, membershipsFetch])
+    const managerCheck = Projects
+      .membershipRoleCheck(id, 'manager')
+      .then(data => {
+        ctrl.isProjectManager = data.result;
+      });
+
+    return $q
+      .all([projectFetch, membershipsFetch, managerCheck])
       .finally(() => {
         ctrl.loading = false;
-      });
-  }
-
-  function loadAdminStatus() {
-    roleCheckerService
-      .hasHubRole('admin')
-      .then(hasRole => {
-        ctrl.isAdmin = hasRole;
       });
   }
 
@@ -91,7 +111,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
 
     const confirm = $mdDialog.confirm()
       .title('Are you sure?')
-      .textContent('This will delete the project permanently from the hub.')
+      .textContent('This will delete the project (and all it\'s memberships and services) permanently from the hub.')
       .ariaLabel('Confirm deletion of project')
       .targetEvent(targetEvent)
       .ok('Do it')
@@ -102,8 +122,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(() => {
         ctrl.loading = true;
 
-        hubApiService
-          .deleteProject(ctrl.project.id)
+        Projects
+          .delete(ctrl.project.id)
           .then(() => {
             logger.success('Project deleted');
             $state.go('projects.list');
@@ -131,8 +151,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       return;
     }
 
-    hubApiService
-      .addProjectMembership(ctrl.project.id, ctrl.searchSelectedUser.id)
+    Projects
+      .addMembership(ctrl.project.id, ctrl.searchSelectedUser.id)
       .then(() => {
         logger.success('Team member added to project');
         loadProject();
@@ -157,8 +177,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(() => {
         ctrl.loading = true;
 
-        hubApiService
-          .removeProjectMembership(ctrl.project.id, membership.user.id)
+        Projects
+          .removeMembership(ctrl.project.id, membership.user.id)
           .then(() => {
             logger.success('Team member removed from project');
             loadProject();
@@ -184,8 +204,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(() => {
         ctrl.loading = true;
 
-        hubApiService
-          .projectSetRole(ctrl.project.id, membership.user.id, 'manager')
+        Projects
+          .setMembershipRole(ctrl.project.id, membership.user.id, 'manager')
           .then(() => {
             logger.success('Team member promoted to manager!');
             loadProject();
@@ -211,8 +231,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(() => {
         ctrl.loading = true;
 
-        hubApiService
-          .projectUnsetRole(ctrl.project.id, membership.user.id, 'manager')
+        Projects
+          .unsetMembershipRole(ctrl.project.id, membership.user.id, 'manager')
           .then(() => {
             logger.success('Team member demoted from manager role!');
             loadProject();
@@ -303,8 +323,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .then(() => {
         ctrl.loading = true;
 
-        hubApiService
-          .removeProjectMembership(ctrl.project.id, membership.user.id)
+        Projects
+          .removeMembership(ctrl.project.id, membership.user.id)
           .then(() => {
             ctrl.processing = true;
 
@@ -317,6 +337,66 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
               .finally(() => {
                 ctrl.processing = false;
               });
+          });
+      });
+  }
+
+  function shouldShowServicesTab() {
+    return ctrl.isAdmin || ctrl.isProjectTeamMember;
+  }
+
+  function loadServices() {
+    ctrl.loadingServices = true;
+
+    Projects
+      .getServices(ctrl.project.id)
+      .then(services => {
+        angular.copy(services, ctrl.services);
+      }).finally(() => {
+        ctrl.loadingServices = false;
+      });
+  }
+
+  function shouldShowCreateServiceButton() {
+    return ctrl.isAdmin || ctrl.isProjectManager;
+  }
+
+  function loadKubernetesUserTokens() {
+    ctrl.processingKubernetesUserTokens = true;
+    ctrl.kubernetesUserTokens = [];
+
+    Projects
+      .getKubernetesUserTokens(ctrl.project.id)
+      .then(tokens => {
+        angular.copy(tokens, ctrl.kubernetesUserTokens);
+      })
+      .finally(() => {
+        ctrl.processingKubernetesUserTokens = false;
+      });
+  }
+
+  function deleteKubernetesUserToken(id, targetEvent) {
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent('This will delete this kubernetes user token permanently.')
+      .ariaLabel('Confirm deletion of a kubernetes user token for this project')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(() => {
+        ctrl.processingKubernetesUserTokens = true;
+
+        Projects
+          .deleteKubernetesUserToken(ctrl.project.id, id)
+          .then(() => {
+            logger.success('Token deleted');
+            return loadKubernetesUserTokens();
+          })
+          .finally(() => {
+            ctrl.processingKubernetesUserTokens = false;
           });
       });
   }

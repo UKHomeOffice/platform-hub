@@ -6,7 +6,7 @@ export const KubernetesRobotTokensListComponent = {
   controller: KubernetesRobotTokensListController
 };
 
-function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, hubApiService, icons, KubernetesClusters) {
+function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, icons, KubernetesClusters, KubernetesTokens) {
   'ngInject';
 
   const ctrl = this;
@@ -41,8 +41,8 @@ function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, hubAp
     if (ctrl.cluster) {
       ctrl.busy = true;
 
-      return hubApiService
-        .getKubernetesRobotTokens(ctrl.cluster)
+      return KubernetesTokens
+        .getRobotTokens(ctrl.cluster)
         .then(tokens => {
           angular.copy(tokens, ctrl.tokens);
         })
@@ -59,11 +59,11 @@ function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, hubAp
     });
   }
 
-  function deleteToken(cluster, name, targetEvent) {
+  function deleteToken(tokenId, targetEvent) {
     const confirm = $mdDialog.confirm()
       .title(`Are you sure?`)
-      .textContent(`This will delete the robot token '${name}' for cluster '${cluster}'`)
-      .ariaLabel('Confirm token deletion')
+      .textContent(`This will delete selected robot token.`)
+      .ariaLabel('Confirm token removal')
       .targetEvent(targetEvent)
       .ok('Do it')
       .cancel('Cancel');
@@ -71,8 +71,8 @@ function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, hubAp
     $mdDialog
       .show(confirm)
       .then(() => {
-        hubApiService
-          .deleteKubernetesRobotToken(cluster, name)
+        KubernetesTokens
+          .deleteToken(tokenId)
           .then(fetchTokens);
       });
   }

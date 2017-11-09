@@ -16,6 +16,7 @@ class Audit < ApplicationRecord
   scope :descending, -> { reorder(version: :desc) }
   scope :by_action, -> (action) { where(action: action) }
   scope :by_auditable, -> (auditable_id, auditable_type) { where(auditable_id: auditable_id, auditable_type: auditable_type) }
+  scope :by_auditable_type, -> (auditable_type) { where(auditable_type: auditable_type) }
   scope :by_associated, -> (associated_id, associated_type) { where(associated_id: associated_id, associated_type: associated_type) }
 
   def message

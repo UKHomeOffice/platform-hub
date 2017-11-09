@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe PrivilegedTokenExpirerJob, type: :job do
+  include_context 'time helpers'
 
   describe '.is_already_queued' do
     it 'should recognise when the job is already queued' do
@@ -13,68 +14,56 @@ RSpec.describe PrivilegedTokenExpirerJob, type: :job do
   end
 
   describe '.perform' do
-    let!(:kubernetes_clusters) { create :kubernetes_clusters_hash_record }
-    let!(:kubernetes_groups) { create :kubernetes_groups_hash_record }
-
-    let(:cluster) { 'development' }
-
     before do
       FeatureFlagService.create_or_update(:kubernetes_tokens, true)
-
-      user = create(:user)
-
-      @kubernetes_identity = create(:kubernetes_identity, user: user, data: { tokens: [] })
-      user_kube_token = {
-        identity_id: @kubernetes_identity.id,
-        cluster: cluster,
-        token: ENCRYPTOR.encrypt('some-random-token'),
-        uid: 'some-random-uid',
-        groups: groups,
-        expire_privileged_at: expire_privileged_at
-      }
-      @kubernetes_identity.data["tokens"] << user_kube_token
-      @kubernetes_identity.save!
     end
 
-    context 'for kubernetes identity token with non privileged group' do
-      let(:groups) { [ 'not-privileged-group'] }
-      let(:expire_privileged_at) { nil }
+    context 'for non privileged kubernetes token' do
+      before do
+        @token = create :user_kubernetes_token
+      end
 
-      it 'does not update kubernetes identity' do
-        expect(@kubernetes_identity).to receive(:save!).never
+      it 'skips that token' do
+        expect(@token).to receive(:deescalate).never
         expect(AuditService).to receive(:log).never
 
         PrivilegedTokenExpirerJob.new.perform
       end
     end
 
-    context 'for kubernetes identity token with privileged group' do
-      let(:groups) { Kubernetes::TokenGroupService.privileged_group_ids }
+    context 'for privileged kubernetes token' do
+      let!(:project) { create :project }
+      let!(:not_privileged_group) { create :kubernetes_group, :not_privileged, :for_user, allocate_to: project }
+      let!(:privileged_group) { create :kubernetes_group, :privileged, :for_user, allocate_to: project }
+      let(:escalation_time_in_secs) { 60 }
+
+      before do
+        @token = create :user_kubernetes_token, project: project, groups: [ not_privileged_group.name ]
+        @token.escalate(privileged_group.name, escalation_time_in_secs)
+      end
 
       context 'when privileged group expiration time lapsed' do
-        let(:expire_privileged_at) { 1.minute.ago }
+        before do
+          move_time_to (escalation_time_in_secs + 1).seconds.from_now
+        end
 
-        it 'updates user kubernetes identity and registers an audit' do
+        it 'deescalates given kubernetes token and registers an audit' do
           expect(AuditService).to receive(:log).with(
-            action: 'deescalate_kubernetes_token',
-            auditable: @kubernetes_identity,
-            data: { cluster: cluster },
-            comment: "Privileged kubernetes token expired for `#{@kubernetes_identity.user.email}` in `#{cluster}` via background job."
+            action: 'deescalate',
+            auditable: @token
           )
 
           PrivilegedTokenExpirerJob.new.perform
 
-          kube_token = @kubernetes_identity.reload.data["tokens"].first
-          expect(kube_token['groups']).to be_empty
-          expect(kube_token['expire_privileged_at']).to be_nil
+          @token.reload
+          expect(@token.groups).to match_array([ not_privileged_group.name ])
+          expect(@token.expire_privileged_at).to be nil
         end
       end
 
       context 'when privileged group expiration time has not been reached yet' do
-        let(:expire_privileged_at) { 1.minute.from_now }
-
-        it 'does not update user kubernetes identity' do
-          expect(@kubernetes_identity).to receive(:save!).never
+        it 'skips that token' do
+          expect(@token).to receive(:deescalate).never
           expect(AuditService).to receive(:log).never
 
           PrivilegedTokenExpirerJob.new.perform

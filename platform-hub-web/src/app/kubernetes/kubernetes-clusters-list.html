@@ -2,7 +2,7 @@
   <md-toolbar md-scroll-shrink>
     <div class="md-toolbar-tools">
       <h3>
-        <span>All Kubernetes Cluster Configs</span>
+        <span>All Kubernetes Clusters</span>
       </h3>
       <span flex></span>
       <md-button
@@ -18,10 +18,10 @@
 
   <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.KubernetesClusters.all.length > 0">
 
-    <md-card ng-repeat="c in $ctrl.KubernetesClusters.all track by c.id">
+    <md-card ng-repeat="c in $ctrl.KubernetesClusters.all track by c.name">
       <md-card-title>
         <span class="md-headline">
-          {{c.id}}
+          {{c.name}}
         </span>
       </md-card-title>
       <md-card-content>
@@ -29,13 +29,14 @@
           {{c.description}}
         </p>
       </md-card-content>
-      <md-card-actions layout="row">
+      <md-card-actions layout="row" layout-align="start center">
         <md-button
           class="md-primary"
-          aria-label="Edit cluster config"
-          ui-sref="kubernetes.clusters.edit({id: c.id})">
-          Edit
+          aria-label="View details of this kubernetes cluster"
+          ui-sref="kubernetes.clusters.detail({id: c.id})">
+          Details
         </md-button>
+      </md-card-actions>
       </md-card-actions>
     </md-card>
 

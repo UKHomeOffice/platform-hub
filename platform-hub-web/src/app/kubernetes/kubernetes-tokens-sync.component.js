@@ -26,8 +26,8 @@ function KubernetesTokensSyncController($state, hubApiService, logger, _, Kubern
 
     // Kubernetes clusters are defined as follows:
     // [
-    //   {id: 'cluster1', description: 'Cluster 1'},
-    //   {id: 'cluster2', description: 'Cluster 2'},
+    //   {name: 'cluster1', description: 'Cluster 1'},
+    //   {name: 'cluster2', description: 'Cluster 2'},
     //   ...
     // ];
     KubernetesClusters

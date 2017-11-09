@@ -63,6 +63,21 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: allocations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE allocations (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    allocatable_type character varying NOT NULL,
+    allocatable_id uuid NOT NULL,
+    allocation_receivable_type character varying NOT NULL,
+    allocation_receivable_id uuid NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: announcement_templates; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -237,6 +252,63 @@ CREATE TABLE identities (
 
 
 --
+-- Name: kubernetes_clusters; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE kubernetes_clusters (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    name character varying NOT NULL,
+    description text NOT NULL,
+    s3_region character varying NOT NULL,
+    s3_bucket_name character varying NOT NULL,
+    s3_access_key_id character varying NOT NULL,
+    s3_secret_access_key character varying NOT NULL,
+    s3_object_key character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: kubernetes_groups; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE kubernetes_groups (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    name character varying NOT NULL,
+    kind character varying NOT NULL,
+    target character varying NOT NULL,
+    description text NOT NULL,
+    is_privileged boolean DEFAULT false,
+    restricted_to_clusters character varying[],
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: kubernetes_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE kubernetes_tokens (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    tokenable_type character varying NOT NULL,
+    tokenable_id uuid NOT NULL,
+    cluster_id uuid NOT NULL,
+    kind character varying NOT NULL,
+    token character varying NOT NULL,
+    name character varying NOT NULL,
+    uid character varying NOT NULL,
+    groups character varying[] DEFAULT '{}'::character varying[],
+    description text,
+    expire_privileged_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    project_id uuid NOT NULL
+);
+
+
+--
 -- Name: platform_themes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -246,7 +318,7 @@ CREATE TABLE platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying,
+    colour character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -325,6 +397,20 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: services; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE services (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    name character varying NOT NULL,
+    description text NOT NULL,
+    project_id uuid NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: support_request_templates; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -397,6 +483,14 @@ ALTER TABLE ONLY read_marks ALTER COLUMN id SET DEFAULT nextval('read_marks_id_s
 
 
 --
+-- Name: allocations allocations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY allocations
+    ADD CONSTRAINT allocations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: announcement_templates announcement_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -461,6 +555,30 @@ ALTER TABLE ONLY identities
 
 
 --
+-- Name: kubernetes_clusters kubernetes_clusters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kubernetes_clusters
+    ADD CONSTRAINT kubernetes_clusters_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kubernetes_groups kubernetes_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kubernetes_groups
+    ADD CONSTRAINT kubernetes_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kubernetes_tokens kubernetes_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kubernetes_tokens
+    ADD CONSTRAINT kubernetes_tokens_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: platform_themes platform_themes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -490,6 +608,14 @@ ALTER TABLE ONLY read_marks
 
 ALTER TABLE ONLY schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: services services_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY services
+    ADD CONSTRAINT services_pkey PRIMARY KEY (id);
 
 
 --
@@ -529,6 +655,20 @@ ALTER TABLE ONLY users
 --
 
 CREATE INDEX delayed_jobs_priority ON delayed_jobs USING btree (priority, run_at);
+
+
+--
+-- Name: index_allocations_on_al_rec_type_and_al_rec_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_allocations_on_al_rec_type_and_al_rec_id ON allocations USING btree (allocation_receivable_type, allocation_receivable_id);
+
+
+--
+-- Name: index_allocations_on_al_type_and_al_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_allocations_on_al_type_and_al_id ON allocations USING btree (allocatable_type, allocatable_id);
 
 
 --
@@ -658,6 +798,90 @@ CREATE INDEX index_identities_on_user_id ON identities USING btree (user_id);
 
 
 --
+-- Name: index_kubernetes_clusters_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_kubernetes_clusters_on_name ON kubernetes_clusters USING btree (name);
+
+
+--
+-- Name: index_kubernetes_groups_on_is_privileged; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_groups_on_is_privileged ON kubernetes_groups USING btree (is_privileged);
+
+
+--
+-- Name: index_kubernetes_groups_on_kind; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_groups_on_kind ON kubernetes_groups USING btree (kind);
+
+
+--
+-- Name: index_kubernetes_groups_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_kubernetes_groups_on_name ON kubernetes_groups USING btree (name);
+
+
+--
+-- Name: index_kubernetes_groups_on_restricted_to_clusters; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_groups_on_restricted_to_clusters ON kubernetes_groups USING gin (restricted_to_clusters);
+
+
+--
+-- Name: index_kubernetes_groups_on_target; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_groups_on_target ON kubernetes_groups USING btree (target);
+
+
+--
+-- Name: index_kubernetes_tokens_on_cluster_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_tokens_on_cluster_id ON kubernetes_tokens USING btree (cluster_id);
+
+
+--
+-- Name: index_kubernetes_tokens_on_kind; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_tokens_on_kind ON kubernetes_tokens USING btree (kind);
+
+
+--
+-- Name: index_kubernetes_tokens_on_project_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_tokens_on_project_id ON kubernetes_tokens USING btree (project_id);
+
+
+--
+-- Name: index_kubernetes_tokens_on_token; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_kubernetes_tokens_on_token ON kubernetes_tokens USING btree (token);
+
+
+--
+-- Name: index_kubernetes_tokens_on_tokenable_type_and_tokenable_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_tokens_on_tokenable_type_and_tokenable_id ON kubernetes_tokens USING btree (tokenable_type, tokenable_id);
+
+
+--
+-- Name: index_kubernetes_tokens_on_uid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_kubernetes_tokens_on_uid ON kubernetes_tokens USING btree (uid);
+
+
+--
 -- Name: index_platform_themes_on_slug; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -718,6 +942,13 @@ CREATE INDEX index_read_marks_on_readable_type_and_readable_id ON read_marks USI
 --
 
 CREATE INDEX index_read_marks_on_reader_type_and_reader_id ON read_marks USING btree (reader_type, reader_id);
+
+
+--
+-- Name: index_services_on_project_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_services_on_project_id ON services USING btree (project_id);
 
 
 --
@@ -806,6 +1037,13 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170712132824'),
 ('20170717165305'),
 ('20170721125027'),
-('20170727103721');
+('20170727103721'),
+('20170920154859'),
+('20171001181648'),
+('20171003130836'),
+('20171005115420'),
+('20171010111440'),
+('20171012110416'),
+('20171031164247');
 
 

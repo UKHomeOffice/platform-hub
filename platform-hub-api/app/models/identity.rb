@@ -10,6 +10,8 @@ class Identity < ApplicationRecord
     kubernetes: 'kubernetes'
   }
 
+  has_many :tokens, -> { where kind: 'user' }, as: :tokenable, class_name: KubernetesToken
+
   belongs_to :user
   validates :user_id, presence: true
 

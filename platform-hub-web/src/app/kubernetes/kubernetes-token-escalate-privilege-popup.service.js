@@ -7,7 +7,7 @@ export const kubernetesTokenEscalatePrivilegePopupService = function ($document,
 
   return service;
 
-  function open(user, cluster, targetEvent) {
+  function open(tokenId, targetEvent) {
     return $mdDialog.show({
       template: require('./kubernetes-token-escalate-privilege-popup.html'),
       controller: 'KubernetesTokenEscalatePrivilegePopupController',
@@ -18,8 +18,7 @@ export const kubernetesTokenEscalatePrivilegePopupService = function ($document,
       clickOutsideToClose: false,
       escapeToClose: false,
       locals: {
-        user,
-        cluster
+        tokenId
       }
     });
   }

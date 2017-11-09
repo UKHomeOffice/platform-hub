@@ -50,13 +50,31 @@ Rails.application.routes.draw do
     end
 
     resources :projects, constraints: lambda { |request| FeatureFlagService.is_enabled?(:projects) } do
-      get '/memberships', to: 'projects#memberships', on: :member
+      get :memberships, on: :member
       put '/memberships/:user_id', to: 'projects#add_membership', on: :member
       delete '/memberships/:user_id', to: 'projects#remove_membership', on: :member
 
       constraints lambda { |request| ProjectMembership.roles.keys.include?(request.params[:role]) } do
+        get '/memberships/role_check/:role', to: 'projects#role_check', on: :member
         put '/memberships/:user_id/role/:role', to: 'projects#set_role', on: :member
         delete '/memberships/:user_id/role/:role', to: 'projects#unset_role', on: :member
+      end
+
+      get :kubernetes_clusters, on: :member
+      get :kubernetes_groups, on: :member
+      get :kubernetes_user_tokens, on: :member
+      get '/kubernetes_user_tokens/:token_id', to: 'projects#show_kubernetes_user_token', on: :member
+      post :kubernetes_user_tokens, to: 'projects#create_kubernetes_user_token', on: :member
+      patch '/kubernetes_user_tokens/:token_id', to: 'projects#update_kubernetes_user_token', on: :member
+      delete '/kubernetes_user_tokens/:token_id', to: 'projects#destroy_kubernetes_user_token', on: :member
+
+      resources :services do
+        get :kubernetes_groups, on: :member
+        get :kubernetes_robot_tokens, on: :member
+        get '/kubernetes_robot_tokens/:token_id', to: 'services#show_kubernetes_robot_token', on: :member
+        post :kubernetes_robot_tokens, to: 'services#create_kubernetes_robot_token', on: :member
+        patch '/kubernetes_robot_tokens/:token_id', to: 'services#update_kubernetes_robot_token', on: :member
+        delete '/kubernetes_robot_tokens/:token_id', to: 'services#destroy_kubernetes_robot_token', on: :member
       end
     end
 
@@ -73,7 +91,7 @@ Rails.application.routes.draw do
 
     resources :contact_lists,
       except: [ :create ],
-      constraints: { id: ContactList::ID_REGEX }
+      constraints: { id: ContactList::ID_REGEX_FOR_ROUTES }
 
     resources :announcement_templates do
       get :form_field_types, on: :collection
@@ -89,31 +107,33 @@ Rails.application.routes.draw do
 
     constraints lambda { |request| FeatureFlagService.is_enabled?(:kubernetes_tokens) } do
       namespace :kubernetes do
-        # Tokens management
-        get '/tokens/:user_id', to: 'tokens#index'
-        put '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
-        patch '/tokens/:user_id/:cluster', to: 'tokens#create_or_update'
-        delete '/tokens/:user_id/:cluster', to: 'tokens#destroy'
-        post '/tokens/:user_id/:cluster/escalate', to: 'tokens#escalate'
 
-        get '/robot_tokens/:cluster', to: 'robot_tokens#index'
-        put '/robot_tokens/:cluster/:name', to: 'robot_tokens#create_or_update'
-        patch '/robot_tokens/:cluster/:name', to: 'robot_tokens#create_or_update'
-        delete '/robot_tokens/:cluster/:name', to: 'robot_tokens#destroy'
+        resources :tokens do
+          patch '/escalate', to: 'tokens#escalate', on: :member
+          patch '/deescalate', to: 'tokens#deescalate', on: :member
+        end
 
-        get '/clusters', to: 'clusters#index'
-        put '/clusters/:id', to: 'clusters#create_or_update'
-        patch '/clusters/:id', to: 'clusters#create_or_update'
+        resources :clusters, except: :destroy do
+          post :allocate, on: :member
+          get :allocations, on: :member
+        end
 
         get '/changeset/:cluster', to: 'changeset#index'
 
         post '/sync', to: 'sync#sync'
-        post '/claim', to: 'claim#claim'
         post '/revoke', to: 'revoke#revoke'
 
-        get '/groups/privileged', to: 'groups#privileged'
+        resources :groups do
+          get :privileged, on: :collection
+
+          post :allocate, on: :member
+          get :allocations, on: :member
+        end
       end
     end
+
+    resources :allocations, only: [ :destroy ]
+
   end
 
 end

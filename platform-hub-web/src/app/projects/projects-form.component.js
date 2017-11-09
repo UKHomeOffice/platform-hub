@@ -6,7 +6,7 @@ export const ProjectsFormComponent = {
   controller: ProjectsFormController
 };
 
-function ProjectsFormController($state, hubApiService, logger) {
+function ProjectsFormController($state, Projects, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -37,8 +37,8 @@ function ProjectsFormController($state, hubApiService, logger) {
     ctrl.loading = true;
     ctrl.project = null;
 
-    hubApiService
-      .getProject(id)
+    Projects
+      .get(id)
       .then(project => {
         ctrl.project = project;
       })
@@ -51,8 +51,8 @@ function ProjectsFormController($state, hubApiService, logger) {
     ctrl.saving = true;
 
     if (ctrl.isNew) {
-      hubApiService
-        .createProject(ctrl.project)
+      Projects
+        .create(ctrl.project)
         .then(project => {
           logger.success('New project created');
           $state.go('projects.detail', {id: project.id});
@@ -61,8 +61,8 @@ function ProjectsFormController($state, hubApiService, logger) {
           ctrl.saving = false;
         });
     } else {
-      hubApiService
-        .updateProject(ctrl.project.id, ctrl.project)
+      Projects
+        .update(ctrl.project.id, ctrl.project)
         .then(project => {
           logger.success('Project updated');
           $state.go('projects.detail', {id: project.id});

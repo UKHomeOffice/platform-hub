@@ -2,12 +2,10 @@ class Kubernetes::SyncController < ApiJsonController
 
   # POST /kubernetes/sync
   def sync
-    authorize! :manage, :identity
+    authorize! :manage, KubernetesToken
 
     begin
-      Kubernetes::TokenSyncService.sync_tokens(
-        cluster: params[:cluster]
-      )
+      Kubernetes::TokenSyncService.sync_tokens(params[:cluster])
     rescue => e
       log_error e
       render_error "Kubernetes tokens sync to `#{params[:cluster]}` cluster failed - #{e.message}", 

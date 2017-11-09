@@ -1,10 +1,60 @@
 class ProjectsController < ApiJsonController
 
-  before_action :find_project, only: [ :show, :update, :destroy, :memberships, :add_membership, :remove_membership, :set_role, :unset_role ]
-  before_action :find_user, only: [ :add_membership, :remove_membership, :set_role, :unset_role ]
+  include KubernetesGroupsSubCollection
+  include KubernetesTokensManagement
 
-  skip_authorization_check only: [ :index, :show, :memberships ]
-  authorize_resource except: [ :index, :show, :memberships ]
+  before_action :find_project, only: [
+    :show,
+    :update,
+    :destroy,
+    :memberships,
+    :add_membership,
+    :remove_membership,
+    :set_role,
+    :unset_role,
+    :role_check,
+    :kubernetes_clusters,
+    :kubernetes_groups,
+    :kubernetes_user_tokens,
+    :show_kubernetes_user_token,
+    :create_kubernetes_user_token,
+    :update_kubernetes_user_token,
+    :destroy_kubernetes_user_token
+  ]
+
+  before_action :find_user, only: [
+    :add_membership,
+    :remove_membership,
+    :set_role,
+    :unset_role
+  ]
+
+  before_action :find_user_token, only: [
+    :show_kubernetes_user_token,
+    :update_kubernetes_user_token,
+    :destroy_kubernetes_user_token
+  ]
+
+  skip_authorization_check only: [
+    :index,
+    :show,
+    :memberships,
+    :role_check
+  ]
+
+  authorize_resource except: [
+    :index,
+    :show,
+    :memberships,
+    :role_check,
+    :kubernetes_clusters,
+    :kubernetes_groups,
+    :kubernetes_user_tokens,
+    :show_kubernetes_user_token,
+    :create_kubernetes_user_token,
+    :update_kubernetes_user_token,
+    :destroy_kubernetes_user_token
+  ]
 
   # GET /projects
   def index
@@ -112,6 +162,17 @@ class ProjectsController < ApiJsonController
     head :no_content
   end
 
+  # GET /projects/:id/memberships/role_check/:role
+  def role_check
+    case params[:role]
+    when 'manager'
+      is_manager = ProjectMembershipsService.is_user_a_manager_of_project?(@project.id, current_user.id)
+      render json: { result: is_manager }
+    else
+      not_found_error
+    end
+  end
+
   # PUT /projects/:id/memberships/:user_id/role/:role
   def set_role
     role = params[:role]
@@ -123,6 +184,58 @@ class ProjectsController < ApiJsonController
     handle_role_change role: nil
   end
 
+  # GET /projects/:id/kubernetes_clusters
+  def kubernetes_clusters
+    authorize! :read_resources_in_project, @project
+
+    render json: @project.kubernetes_clusters.order(:name)
+  end
+
+  # GET /projects/:id/kubernetes_groups
+  def kubernetes_groups
+    authorize! :read_resources_in_project, @project
+
+    kubernetes_groups_sub_collection @project, params[:target]
+  end
+
+  # GET /projects/:id/kubernetes_user_tokens
+  def kubernetes_user_tokens
+    authorize! :administer_projects, @project
+
+    render json: @project.kubernetes_user_tokens.order(:name)
+  end
+
+  # GET /projects/:id/kubernetes_user_tokens/:token_id
+  def show_kubernetes_user_token
+    authorize! :administer_projects, @project
+
+    render json: @token
+  end
+
+  # POST /projects/:id/kubernetes_user_tokens
+  def create_kubernetes_user_token
+    authorize! :administer_projects, @project
+
+    token_params = params.require(:user_token)
+    token_params[:project_id] = @project.id
+    create_kubernetes_token 'user', token_params
+  end
+
+  # PATCH /projects/:id/kubernetes_user_tokens/:token_id
+  def update_kubernetes_user_token
+    authorize! :administer_projects, @project
+
+    token_params = params.require(:user_token)
+    update_kubernetes_token 'user', @token, token_params
+  end
+
+  # DELETE /projects/:id/kubernetes_user_tokens/:token_id
+  def destroy_kubernetes_user_token
+    authorize! :administer_projects, @project
+
+    destroy_kubernetes_token @token
+  end
+
   private
 
   def find_project
@@ -131,6 +244,10 @@ class ProjectsController < ApiJsonController
 
   def find_user
     @user = User.find params[:user_id]
+  end
+
+  def find_user_token
+    @token = @project.kubernetes_user_tokens.find params[:token_id]
   end
 
   # Only allow a trusted parameter "white list" through

@@ -26,8 +26,12 @@ import {
 } from './home/home.module';
 import {IdentitiesManager} from './identities/identities.module';
 import {
+  KubernetesClustersDetail,
   KubernetesClustersForm,
   KubernetesClustersList,
+  KubernetesGroupsDetail,
+  KubernetesGroupsForm,
+  KubernetesGroupsList,
   KubernetesRobotTokensForm,
   KubernetesRobotTokensList,
   KubernetesTokensSync,
@@ -46,7 +50,9 @@ import {
 import {
   ProjectsForm,
   ProjectsDetail,
-  ProjectsList
+  ProjectsList,
+  ProjectServicesDetail,
+  ProjectServicesForm
 } from './projects/projects.module';
 import {TermsOfService} from './terms-of-service/terms-of-service.module';
 import {UsersList} from './users/users.module';
@@ -136,6 +142,18 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             rolePermitted: 'admin'
           }
         })
+        .state('kubernetes.clusters.detail', {
+          url: '/detail/:id',
+          component: KubernetesClustersDetail,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.projects,
+            rolePermitted: 'admin'
+          }
+        })
         .state('kubernetes.clusters.new', {
           url: '/new',
           component: KubernetesClustersForm,
@@ -148,6 +166,53 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         .state('kubernetes.clusters.edit', {
           url: '/edit/:id',
           component: KubernetesClustersForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+      .state('kubernetes.groups', {
+        abstract: true,
+        url: '/groups',
+        template: '<ui-view></ui-view>'
+      })
+        .state('kubernetes.groups.list', {
+          url: '/list',
+          component: KubernetesGroupsList,
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('kubernetes.groups.detail', {
+          url: '/detail/:id',
+          component: KubernetesGroupsDetail,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.projects,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('kubernetes.groups.new', {
+          url: '/new',
+          component: KubernetesGroupsForm,
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.kubernetesTokens,
+            rolePermitted: 'admin'
+          }
+        })
+        .state('kubernetes.groups.edit', {
+          url: '/edit/:id',
+          component: KubernetesGroupsForm,
           resolve: {
             transition: '$transition$'
           },
@@ -178,30 +243,32 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           }
         })
         .state('kubernetes.user-tokens.new', {
-          url: '/new/:userId',
+          url: '/new/:userId?fromProject',
           component: KubernetesUserTokensForm,
           resolve: {
             transition: '$transition$'
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
-            rolePermitted: 'admin'
+            featureFlag: featureFlagKeys.kubernetesTokens
           },
           params: {
-            userId: ''
+            userId: '',
+            fromProject: null
           }
         })
         .state('kubernetes.user-tokens.edit', {
-          url: '/edit/:userId/:cluster',
+          url: '/edit/:userId/:tokenId?fromProject',
           component: KubernetesUserTokensForm,
           resolve: {
             transition: '$transition$'
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
-            rolePermitted: 'admin'
+            featureFlag: featureFlagKeys.kubernetesTokens
+          },
+          params: {
+            fromProject: null
           }
         })
       .state('kubernetes.robot-tokens', {
@@ -225,30 +292,34 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           }
         })
         .state('kubernetes.robot-tokens.new', {
-          url: '/new/:cluster',
+          url: '/new/:cluster?fromProject&fromService',
           component: KubernetesRobotTokensForm,
           resolve: {
             transition: '$transition$'
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
-            rolePermitted: 'admin'
+            featureFlag: featureFlagKeys.kubernetesTokens
           },
           params: {
-            cluster: ''
+            cluster: '',
+            fromProject: null,
+            fromService: null
           }
         })
         .state('kubernetes.robot-tokens.edit', {
-          url: '/edit/:cluster/:name',
+          url: '/edit/:cluster/:tokenId?fromProject&fromService',
           component: KubernetesRobotTokensForm,
           resolve: {
             transition: '$transition$'
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
-            rolePermitted: 'admin'
+            featureFlag: featureFlagKeys.kubernetesTokens
+          },
+          params: {
+            fromProject: null,
+            fromService: null
           }
         })
     .state('projects', {
@@ -296,6 +367,44 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           rolePermitted: 'admin'
         }
       })
+      .state('projects.services', {
+        abstract: true,
+        url: '/:projectId/services',
+        template: '<ui-view></ui-view>'
+      })
+        .state('projects.services.detail', {
+          url: '/detail/:id',
+          component: ProjectServicesDetail,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.projects
+          }
+        })
+        .state('projects.services.new', {
+          url: '/new',
+          component: ProjectServicesForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.projects
+          }
+        })
+        .state('projects.services.edit', {
+          url: '/edit/:id',
+          component: ProjectServicesForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlag: featureFlagKeys.projects
+          }
+        })
     .state('users', {
       url: '/users',
       component: UsersList,

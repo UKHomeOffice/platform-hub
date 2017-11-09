@@ -64,18 +64,25 @@
         <div ng-if="$ctrl.showKubeTokens">
           <br />
 
-          <div ng-if="i.kubernetes_tokens.length > 0">
-            <h5>User tokens</h5>
+          <div ng-repeat="(label, tokens) in $ctrl.kubernetesTokensByProject track by label">
+            <h5>{{label}}</h5>
             <ul class="md-body-1">
-              <li ng-repeat="t in i.kubernetes_tokens">
+              <li ng-repeat="t in tokens">
                 <p>
-                  {{t.cluster}}: <strong>{{t.token}}</strong>
+                  {{t.cluster.name}}:
+                  <kubernetes-token-value item="t"></kubernetes-token-value>
                 </p>
 
-                <ul ng-if="t.groups.length > 0 || t.expire_privileged_at">
-                  <li ng-if="t.groups.length > 0">
+                <ul style="margin-bottom: 0.75em">
+                  <li>
                     <p>
-                      Groups: {{t.groups.join(', ')}}
+                      Groups:
+                      <span ng-if="t.groups && t.groups.length > 0">
+                        {{t.groups.join(', ')}}
+                      </span>
+                      <span ng-if="!t.groups.length" class="none-text">
+                        no RBAC groups assigned to this token
+                      </span>
                     </p>
                   </li>
                   <li ng-if="t.expire_privileged_at">
@@ -85,30 +92,6 @@
                       <br />
                       {{t.expire_privileged_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
                       (<span am-time-ago="t.expire_privileged_at"></span>)
-                    </p>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-
-          <div ng-if="i.kubernetes_robot_tokens.length > 0">
-            <h5>Robot tokens</h5>
-            <ul class="md-body-1">
-              <li ng-repeat="t in i.kubernetes_robot_tokens">
-                <p>
-                  {{t.cluster}}: <strong>{{t.token}}</strong>
-                </p>
-
-                <ul ng-if="t.description || t.groups.length > 0">
-                  <li ng-if="t.description">
-                    <p>
-                      <em>{{t.description}}</em>
-                    </p>
-                  </li>
-                  <li ng-if="t.groups.length > 0">
-                    <p>
-                      Groups: {{t.groups.join(', ')}}
                     </p>
                   </li>
                 </ul>

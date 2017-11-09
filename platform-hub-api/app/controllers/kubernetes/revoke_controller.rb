@@ -1,37 +1,31 @@
 class Kubernetes::RevokeController < ApiJsonController
 
+  before_action :find_token, only: [ :revoke ]
+
+  authorize_resource class: KubernetesToken
+
   # POST /kubernetes/revoke
   def revoke
-    authorize! :manage, :identity
-    
-    begin
-      summary = Kubernetes::TokenRevokeService.remove(params[:token])
-    rescue Kubernetes::TokenRevokeService::Errors::TokenNotFound => e
-      log_error e
-      render_error "Kubernetes token not found.",
-                    :unprocessable_entity and return
-    rescue => e
-      log_error e
-      render_error "Kubernetes token revoke failed - #{e.message}",
-                    :unprocessable_entity and return
-    end
+    @token.destroy
 
-    summary.each do |cluster, msg|
-      AuditService.log(
-        context: audit_context,
-        action: 'revoke_kubernetes_token',
-        data: { cluster: cluster, token: params[:token] },
-        comment: msg
-      )
-    end
+    AuditService.log(
+      context: audit_context,
+      action: 'destroy',
+      auditable: @token,
+      data: {
+        cluster: @token.cluster.name
+      },
+      comment: "User '#{current_user.email}' revoked `#{@token.cluster.name}` token (name: '#{@token.name}')"
+    )
 
     head :no_content
   end
 
   private
 
-  def log_error(e)
-    Rails.logger.error "Kubernetes token revoke failed - exception: type = #{e.class.name}, message = #{e.message}, backtrace = #{e.backtrace.join("\n")}"
+  def find_token
+    @token = KubernetesToken.all.find {|t| t.decrypted_token == params[:token]}
+    raise ActiveRecord::RecordNotFound if @token.nil?
   end
 
 end

@@ -44,6 +44,10 @@ class User < ApplicationRecord
     identity :keycloak
   end
 
+  def kubernetes_identity
+    identity :kubernetes
+  end
+
   def identity provider
     identities.find_by provider: provider
   end

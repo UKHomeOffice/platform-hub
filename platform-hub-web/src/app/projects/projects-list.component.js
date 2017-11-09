@@ -3,14 +3,15 @@ export const ProjectsListComponent = {
   controller: ProjectsListController
 };
 
-function ProjectsListController(roleCheckerService, hubApiService) {
+function ProjectsListController(roleCheckerService, Projects) {
   'ngInject';
 
   const ctrl = this;
 
+  ctrl.Projects = Projects;
+
   ctrl.loading = true;
   ctrl.isAdmin = false;
-  ctrl.projects = [];
 
   init();
 
@@ -21,13 +22,9 @@ function ProjectsListController(roleCheckerService, hubApiService) {
 
   function loadProjects() {
     ctrl.loading = true;
-    ctrl.projects = [];
 
-    hubApiService
-      .getProjects()
-      .then(projects => {
-        ctrl.projects = projects;
-      })
+    Projects
+      .refresh()
       .finally(() => {
         ctrl.loading = false;
       });

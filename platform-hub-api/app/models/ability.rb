@@ -13,10 +13,32 @@ class Ability
     # Projects
 
     can :add_membership, Project do |project|
-      manage_project_membership project, user
+      can_administer_project project, user
     end
     can :remove_membership, Project do |project|
-      manage_project_membership project, user
+      can_administer_project project, user
+    end
+    can :administer_projects, Project do |project|
+      can_administer_project project, user
+    end
+    can :read_resources_in_project, Project do |project|
+      can_participate_in_project project, user
+    end
+
+
+    # Services in projects
+
+    can :read_services_in_project, Project do |project|
+      can_participate_in_project project, user
+    end
+    can :administer_services_in_project, Project do |project|
+      can_administer_project project, user
+    end
+    can :read_resources_in_services_in_project, Project do |project|
+      can_participate_in_project project, user
+    end
+    can :administer_resources_in_services_in_project, Project do |project|
+      can_administer_project project, user
     end
 
 
@@ -27,10 +49,10 @@ class Ability
     end
 
     can :onboard_github, User do |target_user|
-      onboard_or_offboard_github user, target_user
+      can_onboard_or_offboard_github user, target_user
     end
     can :offboard_github, User do |target_user|
-      onboard_or_offboard_github user, target_user
+      can_onboard_or_offboard_github user, target_user
     end
 
 
@@ -42,7 +64,7 @@ class Ability
 
     can do |action, subject_class, subject|
       if action == :search && subject_class == User
-        ProjectManagersService.is_user_a_manager_of_any_project?(user.id)
+        ProjectMembershipsService.is_user_a_manager_of_any_project?(user.id)
       end
     end
 
@@ -50,16 +72,23 @@ class Ability
 
   private
 
-  def manage_project_membership project, user
-    ProjectManagersService.is_user_a_manager_of_project?(
+  def can_administer_project project, user
+    ProjectMembershipsService.is_user_a_manager_of_project?(
       project.id,
       user.id
     )
   end
 
-  def onboard_or_offboard_github user, target_user
+  def can_participate_in_project project, user
+    ProjectMembershipsService.is_user_a_member_of_project?(
+      project.id,
+      user.id
+    )
+  end
+
+  def can_onboard_or_offboard_github user, target_user
     (user == target_user) ||
-    ProjectManagersService.is_user_a_manager_of_a_common_project?(
+    ProjectMembershipsService.is_user_a_manager_of_a_common_project?(
       user,
       target_user
     )

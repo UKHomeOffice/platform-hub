@@ -8,21 +8,17 @@ class TokensSyncJob < ApplicationJob
   def perform
     return unless FeatureFlagService.is_enabled?(:kubernetes_tokens)
 
-    cluster_ids = Kubernetes::ClusterService.list.map{|c| c['id']}
-
-    cluster_ids.each do |id|
+    KubernetesCluster.names.each do |cluster_name|
       begin
-        Kubernetes::TokenSyncService.sync_tokens(
-          cluster: id
-        )
+        Kubernetes::TokenSyncService.sync_tokens(cluster_name)
 
         AuditService.log(
           action: 'sync_kubernetes_tokens',
-          data: { background_job: true, cluster: id },
-          comment: "Kubernetes tokens synced to `#{id}` cluster via background job."
+          data: { background_job: true, cluster: cluster_name },
+          comment: "Kubernetes tokens synced to `#{cluster_name}` cluster via background job."
         )
       rescue => e
-        Rails.logger.error "Kubernetes tokens sync to `#{id}` cluster failed - exception: type = #{e.class.name}, message = #{e.message}, backtrace = #{e.backtrace.join("\n")}"
+        Rails.logger.error "Kubernetes tokens sync to `#{cluster_name}` cluster failed - exception: type = #{e.class.name}, message = #{e.message}, backtrace = #{e.backtrace.join("\n")}"
       end
     end
   end

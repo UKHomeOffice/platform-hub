@@ -56,14 +56,26 @@ function KubernetesClustersFormController($state, KubernetesClusters, logger) {
 
     ctrl.saving = true;
 
-    KubernetesClusters
-      .createOrUpdate(ctrl.cluster.id, ctrl.cluster)
-      .then(() => {
-        logger.success('Cluster created or updated successfully');
-        $state.go('kubernetes.clusters.list');
-      })
-      .finally(() => {
-        ctrl.saving = false;
-      });
+    if (ctrl.isNew) {
+      KubernetesClusters
+        .create(ctrl.cluster)
+        .then(() => {
+          logger.success('New cluster created');
+          $state.go('kubernetes.clusters.list');
+        })
+        .finally(() => {
+          ctrl.saving = false;
+        });
+    } else {
+      KubernetesClusters
+        .update(ctrl.cluster.id, ctrl.cluster)
+        .then(() => {
+          logger.success('Cluster updated');
+          $state.go('kubernetes.clusters.list');
+        })
+        .finally(() => {
+          ctrl.saving = false;
+        });
+    }
   }
 }

@@ -45,6 +45,10 @@ RSpec.describe ProjectsController, type: :routing do
         expect(:delete => '/projects/1/memberships/25').to route_to('projects#remove_membership', :id => '1', :user_id => '25')
       end
 
+      it 'routes to #role_check' do
+        expect(:get => '/projects/1/memberships/role_check/manager').to route_to('projects#role_check', :id => '1', :role => 'manager')
+      end
+
       it 'routes to #set_role' do
         expect(:put => '/projects/1/memberships/25/role/manager').to route_to('projects#set_role', :id => '1', :user_id => '25', :role => 'manager')
       end
@@ -55,6 +59,34 @@ RSpec.describe ProjectsController, type: :routing do
 
       it 'does not route when given an unidentified "role"' do
         expect(:put => '/projects/1/memberships/25/role/unknown_role').not_to be_routable
+      end
+
+      it 'routes to #kubernetes_clusters' do
+        expect(:get => '/projects/1/kubernetes_clusters').to route_to('projects#kubernetes_clusters', :id => '1')
+      end
+
+      it 'routes to #kubernetes_groups' do
+        expect(:get => '/projects/1/kubernetes_groups').to route_to('projects#kubernetes_groups', :id => '1')
+      end
+
+      it 'routes to #kubernetes_user_tokens' do
+        expect(:get => '/projects/1/kubernetes_user_tokens').to route_to('projects#kubernetes_user_tokens', :id => '1')
+      end
+
+      it 'routes to #show_kubernetes_user_token' do
+        expect(:get => '/projects/1/kubernetes_user_tokens/123').to route_to('projects#show_kubernetes_user_token', :id => '1', :token_id => '123')
+      end
+
+      it 'routes to #create_kubernetes_user_token' do
+        expect(:post => '/projects/1/kubernetes_user_tokens').to route_to('projects#create_kubernetes_user_token', :id => '1')
+      end
+
+      it 'routes to #update_kubernetes_user_token' do
+        expect(:patch => '/projects/1/kubernetes_user_tokens/123').to route_to('projects#update_kubernetes_user_token', :id => '1', :token_id => '123')
+      end
+
+      it 'routes to #destroy_kubernetes_user_token' do
+        expect(:delete => '/projects/1/kubernetes_user_tokens/123').to route_to('projects#destroy_kubernetes_user_token', :id => '1', :token_id => '123')
       end
 
     end
@@ -101,12 +133,44 @@ RSpec.describe ProjectsController, type: :routing do
         expect(:delete => '/projects/1/memberships/25').to_not be_routable
       end
 
+      it 'route to #role_check is not routable' do
+        expect(:get => '/projects/1/memberships/role_check/manager').to_not be_routable
+      end
+
       it 'route to #set_role is not routable' do
         expect(:put => '/projects/1/memberships/25/role/manager').to_not be_routable
       end
 
       it 'route to #unset_role is not routable' do
         expect(:delete => '/projects/1/memberships/25/role/manager').to_not be_routable
+      end
+
+      it 'route to #kubernetes_clusters is not routable' do
+        expect(:get => '/projects/1/kubernetes_clusters').to_not be_routable
+      end
+
+      it 'route to #kubernetes_groups is not routable' do
+        expect(:get => '/projects/1/kubernetes_groups').to_not be_routable
+      end
+
+      it 'route to #kubernetes_user_tokens is not routable' do
+        expect(:get => '/projects/1/kubernetes_user_tokens').to_not be_routable
+      end
+
+      it 'route to #show_kubernetes_user_token is not routable' do
+        expect(:get => '/projects/1/kubernetes_user_tokens/123').to_not be_routable
+      end
+
+      it 'route to #create_kubernetes_user_token is not routable' do
+        expect(:post => '/projects/1/kubernetes_user_tokens').to_not be_routable
+      end
+
+      it 'route to #update_kubernetes_user_token is not routable' do
+        expect(:patch => '/projects/1/kubernetes_user_tokens/123').to_not be_routable
+      end
+
+      it 'route to #destroy_kubernetes_user_token is not routable' do
+        expect(:delete => '/projects/1/kubernetes_user_tokens/123').to_not be_routable
       end
 
     end

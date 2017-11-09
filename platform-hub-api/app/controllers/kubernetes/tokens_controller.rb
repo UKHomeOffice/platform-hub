@@ -1,127 +1,95 @@
 class Kubernetes::TokensController < ApiJsonController
 
-  before_action :find_identity
+  include KubernetesTokensManagement
 
-  # GET /kubernetes/tokens/:user_id
+  before_action :find_token, only: [ :show, :update, :destroy, :escalate, :deescalate ]
+
+  authorize_resource class: KubernetesToken
+
+  # GET /kubernetes/tokens
   def index
-    authorize! :read, :identity
-    render json: Kubernetes::TokenService.tokens_from_identity_data(identity_data)
-  end
-
-  # PATCH/PUT /kubernetes/tokens/:user_id/:cluster
-  def create_or_update
-    authorize! :manage, :identity
-    tokens, created_or_updated_token = Kubernetes::TokenService.create_or_update_token(
-      identity_data,
-      @identity.id,
-      params[:cluster],
-      params[:token][:groups]
-    )
-
-    unless created_or_updated_token.valid?
-      render_model_errors created_or_updated_token.errors and return
-    end
-
-    @identity.with_lock do
-      @identity.data[:tokens] = tokens
-
-      if @identity.save!
-        AuditService.log(
-          context: audit_context,
-          action: 'update_kubernetes_identity',
-          auditable: @identity,
-          data: { cluster: params[:cluster] },
-          comment: "Kubernetes `#{params[:cluster]}` token created or updated for user '#{@identity.user.email}' - Assigned groups: #{created_or_updated_token.groups}"
-        )
-
-        render json: created_or_updated_token
-      else
-        render_model_errors @identity.errors
+    tokens = case params.require(:kind)
+      when 'user'
+        user = User.find params.require(:user_id)
+        user.kubernetes_identity ? user.kubernetes_identity.tokens : []
+      when 'robot'
+        cluster = KubernetesCluster.find_by! name: params.require(:cluster_name)
+        KubernetesToken.robot.by_cluster(cluster)
       end
-    end
+
+    render json: tokens
   end
 
-  # DELETE /kubernetes/tokens/:user_id/:cluster
+  # GET /kubernetes/tokens/:id
+  def show
+    render json: @token
+  end
+
+  # POST /kubernetes/tokens
+  def create
+    token_params = params.require(:token)
+    kind = token_params.require(:kind)
+    create_kubernetes_token kind, token_params
+  end
+
+  # PATCH/PUT /kubernetes/tokens/:id
+  def update
+    token_params = params.require(:token)
+    kind = token_params.require(:kind)
+    update_kubernetes_token kind, @token, token_params
+  end
+
+  # DELETE /kubernetes/tokens/:id
   def destroy
-    authorize! :manage, :identity
-    tokens, _ = Kubernetes::TokenService.delete_token(identity_data, params[:cluster])
-
-    @identity.with_lock do
-      @identity.data[:tokens] = tokens
-
-      if @identity.save!
-        AuditService.log(
-          context: audit_context,
-          action: 'update_kubernetes_identity',
-          auditable: @identity,
-          data: { cluster: params[:cluster] },
-          comment: "Kubernetes `#{params[:cluster]}` token removed for user '#{@identity.user.email}'"
-        )
-
-        head :no_content
-      else
-        render_model_errors @identity.errors
-      end
-    end
+    destroy_kubernetes_token @token
   end
 
-  # POST /kubernetes/tokens/:user_id/:cluster/escalate
-  def escalate
-    authorize! :manage, :identity
 
+  # PATCH /kubernetes/tokens/:id/escalate
+  def escalate
     privileged_group, expires_in_secs = params.require([:privileged_group, :expires_in_secs])
 
-    tokens, privileged_token = Kubernetes::TokenService.escalate_token(
-      identity_data,
-      params[:cluster],
-      privileged_group,
-      expires_in_secs
-    )
+    if @token.escalate(privileged_group, expires_in_secs)
+      AuditService.log(
+        context: audit_context,
+        action: 'escalate',
+        auditable: @token,
+        data: {
+          cluster: @token.cluster.name,
+          privileged_group: privileged_group
+        }
+      )
 
-    unless privileged_token.valid?
-      render_model_errors privileged_token.errors and return
+      render json: @token
+    else
+      render_model_errors @token.errors
     end
+  end
 
-    @identity.with_lock do
-      @identity.data[:tokens] = tokens
+  # PATCH /kubernetes/tokens/:id/deescalate
+  def deescalate
+    if @token.deescalate
+      AuditService.log(
+        context: audit_context,
+        action: 'deescalate',
+        auditable: @token,
+        data: {
+          cluster: @token.cluster.name
+        }
+      )
 
-      if @identity.save!
-        AuditService.log(
-          context: audit_context,
-          action: 'escalate_kubernetes_token',
-          auditable: @identity,
-          data: {
-            cluster: params[:cluster], 
-            privileged_group: privileged_group, 
-            expire_privileged_at: privileged_token.expire_privileged_at
-          },
-          comment: "Kubernetes `#{params[:cluster]}` token escalated for user '#{@identity.user.email}' - Assigned groups: #{privileged_token.groups}"
-        )
-
-        render json: privileged_token
-      else
-        render_model_errors @identity.errors
-      end
+      render json: @token
+    else
+      render_model_errors @token.errors
     end
-
   end
 
   private
 
-  def find_identity
-    user = User.find(params[:user_id])
-    @identity = user.identity(:kubernetes)
-
-    if @identity.nil?
-      @identity = user.identities.create!(
-        provider: :kubernetes,
-        external_id: user.email,
-        data: {tokens: []}
-      )
-    end
+  def find_token
+    @token = KubernetesToken.find params[:id]
   end
 
-  def identity_data
-    @identity.try(:data) || {}
-  end
+
+
 end

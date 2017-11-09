@@ -19,6 +19,7 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
 
   ctrl.currentUserId = null;
   ctrl.userIdentities = {};
+  ctrl.kubernetesTokensByProject = {};
 
   ctrl.connect = connect;
   ctrl.disconnect = disconnect;
@@ -61,6 +62,11 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
               {connected: !_.isEmpty(match)}
             );
           });
+
+          const kubernetesIdentity = _.find(identities, ['provider', 'kubernetes']);
+          if (kubernetesIdentity && !_.isEmpty(kubernetesIdentity.kubernetes_tokens)) {
+            ctrl.kubernetesTokensByProject = _.groupBy(kubernetesIdentity.kubernetes_tokens, t => `Project: ${t.project.name} (${t.project.shortname})`);
+          }
         }
       })
       .finally(() => {

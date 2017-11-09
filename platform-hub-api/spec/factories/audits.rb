@@ -12,20 +12,27 @@ FactoryGirl.define do
     request_uuid { SecureRandom.uuid }
     created_at { Time.now }
 
+    # Set by Kubernetes Sync controller
     factory :sync_kubernetes_tokens_audit do
-      action 'sync_kubernetes_tokens'
+      action :sync_kubernetes_tokens
     end
 
-    factory :update_kubernetes_identity_audit do
-      action 'update_kubernetes_identity'
+    # KubernetesToken specific audits
+    factory :create_kubernetes_token_audit do
+      action :create
+    end
+    factory :update_kubernetes_token_audit do
+      action :update
+    end
+    factory :destroy_kubernetes_token_audit do
+      action :destroy
+    end
+    factory :escalate_kubernetes_token_audit do
+      action :escalate
+    end
+    factory :deescalate_kubernetes_token_audit do
+      action :deescalate
     end
 
-    factory :revoke_kubernetes_token_audit do
-      action 'revoke_kubernetes_token'
-    end
-
-    factory :claim_kubernetes_token_audit do
-      action 'claim_kubernetes_token'
-    end
   end
 end
