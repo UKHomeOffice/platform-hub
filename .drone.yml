@@ -111,7 +111,7 @@ pipeline:
     image: platform-hub-api:${DRONE_COMMIT_SHA}
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
-      - PORT=30000
+      - PORT=6055
       - PHUB_DB_HOST=postgres
       - PHUB_DB_NAME=phub_development
       - PHUB_DB_USERNAME=phub
