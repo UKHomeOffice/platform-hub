@@ -6,13 +6,16 @@ export const KubernetesUserTokensListComponent = {
   controller: KubernetesUserTokensListController
 };
 
-function KubernetesUserTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, Identities, KubernetesClusters, KubernetesTokens, icons, kubernetesTokenEscalatePrivilegePopupService) {
+function KubernetesUserTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, featureFlagKeys, FeatureFlags, Identities, KubernetesClusters, KubernetesTokens, icons, kubernetesTokenEscalatePrivilegePopupService) {
   'ngInject';
 
   const ctrl = this;
   const userId = ctrl.transition && ctrl.transition.params().userId;
 
+  ctrl.featureFlagKeys = featureFlagKeys;
+  ctrl.FeatureFlags = FeatureFlags;
   ctrl.KubernetesClusters = KubernetesClusters;
+
   ctrl.searchSelectedUser = null;
   ctrl.loading = true;
   ctrl.busy = false;

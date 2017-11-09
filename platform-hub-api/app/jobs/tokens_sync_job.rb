@@ -6,7 +6,10 @@ class TokensSyncJob < ApplicationJob
   end
 
   def perform
-    return unless FeatureFlagService.is_enabled?(:kubernetes_tokens)
+    return unless FeatureFlagService.all_enabled?([
+      :kubernetes_tokens_sync,
+      :kubernetes_tokens
+    ])
 
     KubernetesCluster.names.each do |cluster_name|
       begin

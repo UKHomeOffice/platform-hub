@@ -15,7 +15,7 @@ describe('routes', () => {
   const ALLOWED_DATA_CONFIG_FIELDS = [
     'authenticate',
     'rolePermitted',
-    'featureFlag'
+    'featureFlags'
   ];
 
   const abstractStates = {};
@@ -85,7 +85,7 @@ describe('routes', () => {
 
         sandbox.stub(loginDialogService, 'run').usingPromise($q).rejects();
 
-        sandbox.spy(FeatureFlags, 'isEnabled');
+        sandbox.spy(FeatureFlags, 'allEnabled');
 
         sandbox.spy(roleCheckerService, 'hasHubRole');
       }
@@ -94,13 +94,13 @@ describe('routes', () => {
         if (state.data.authenticate) {
           authService.isAuthenticated.should.have.callCount(1);
           loginDialogService.run.should.have.callCount(1);
-          FeatureFlags.isEnabled.should.have.callCount(0);
+          FeatureFlags.allEnabled.should.have.callCount(0);
           roleCheckerService.hasHubRole.should.have.callCount(0);
           expect($state.current.name).toBe('home');
         } else {
           authService.isAuthenticated.should.have.callCount(0);
           loginDialogService.run.should.have.callCount(0);
-          FeatureFlags.isEnabled.should.have.callCount(0);
+          FeatureFlags.allEnabled.should.have.callCount(0);
           roleCheckerService.hasHubRole.should.have.callCount(0);
           expect($state.current.name).toBe(state.name);
         }
@@ -130,7 +130,7 @@ describe('routes', () => {
             sandbox.stub(loginDialogService, 'run').usingPromise($q).resolves();
 
             sandbox.stub(FeatureFlags, 'refresh').usingPromise($q).resolves({});
-            sandbox.stub(FeatureFlags, 'isEnabled').returns(true);
+            sandbox.stub(FeatureFlags, 'allEnabled').returns(true);
 
             sandbox.spy(roleCheckerService, 'hasHubRole');
 
@@ -141,8 +141,8 @@ describe('routes', () => {
             if (state.data.authenticate) {
               loginDialogService.run.should.have.callCount(1);
 
-              if (hasFeatureFlag(state)) {
-                FeatureFlags.isEnabled.should.have.callCount(1);
+              if (hasFeatureFlags(state)) {
+                FeatureFlags.allEnabled.should.have.callCount(1);
               }
 
               if (requiresAdmin(state)) {
@@ -157,7 +157,7 @@ describe('routes', () => {
             } else {
               authService.isAuthenticated.should.have.callCount(0);
               loginDialogService.run.should.have.callCount(0);
-              FeatureFlags.isEnabled.should.have.callCount(0);
+              FeatureFlags.allEnabled.should.have.callCount(0);
               roleCheckerService.hasHubRole.should.have.callCount(0);
               expect($state.current.name).toBe(state.name);
             }
@@ -179,7 +179,7 @@ describe('routes', () => {
             sandbox.stub(loginDialogService, 'run').usingPromise($q).resolves();
 
             sandbox.stub(FeatureFlags, 'refresh').usingPromise($q).resolves({});
-            sandbox.stub(FeatureFlags, 'isEnabled').returns(true);
+            sandbox.stub(FeatureFlags, 'allEnabled').returns(true);
 
             sandbox.spy(roleCheckerService, 'hasHubRole');
 
@@ -190,8 +190,8 @@ describe('routes', () => {
             if (state.data.authenticate) {
               loginDialogService.run.should.have.callCount(1);
 
-              if (hasFeatureFlag(state)) {
-                FeatureFlags.isEnabled.should.have.callCount(1);
+              if (hasFeatureFlags(state)) {
+                FeatureFlags.allEnabled.should.have.callCount(1);
               }
 
               if (requiresAdmin(state)) {
@@ -206,7 +206,7 @@ describe('routes', () => {
             } else {
               authService.isAuthenticated.should.have.callCount(0);
               loginDialogService.run.should.have.callCount(0);
-              FeatureFlags.isEnabled.should.have.callCount(0);
+              FeatureFlags.allEnabled.should.have.callCount(0);
               roleCheckerService.hasHubRole.should.have.callCount(0);
               expect($state.current.name).toBe(state.name);
             }
@@ -227,14 +227,14 @@ describe('routes', () => {
           function stubs(state) {
             const stub = sandbox.stub(authService, 'isAuthenticated');
             stub.onFirstCall().returns(false);
-            if (!hasFeatureFlag(state)) {
+            if (!hasFeatureFlags(state)) {
               stub.onSecondCall().returns(true);
             }
 
             sandbox.stub(loginDialogService, 'run').usingPromise($q).resolves();
 
             sandbox.stub(FeatureFlags, 'refresh').usingPromise($q).resolves({});
-            sandbox.stub(FeatureFlags, 'isEnabled').returns(false);
+            sandbox.stub(FeatureFlags, 'allEnabled').returns(false);
 
             sandbox.spy(roleCheckerService, 'hasHubRole');
 
@@ -245,26 +245,26 @@ describe('routes', () => {
             if (state.data.authenticate) {
               loginDialogService.run.should.have.callCount(1);
 
-              if (hasFeatureFlag(state)) {
+              if (hasFeatureFlags(state)) {
                 authService.isAuthenticated.should.have.callCount(1);
-                FeatureFlags.isEnabled.should.have.callCount(1);
+                FeatureFlags.allEnabled.should.have.callCount(1);
                 roleCheckerService.hasHubRole.should.have.callCount(0);
                 expect($state.current.name).toBe('home');
               } else if (requiresAdmin(state)) {
                 authService.isAuthenticated.should.have.callCount(2);
-                FeatureFlags.isEnabled.should.have.callCount(0);
+                FeatureFlags.allEnabled.should.have.callCount(0);
                 roleCheckerService.hasHubRole.should.have.callCount(1);
                 expect($state.current.name).toBe('home');
               } else {
                 authService.isAuthenticated.should.have.callCount(1);
-                FeatureFlags.isEnabled.should.have.callCount(0);
+                FeatureFlags.allEnabled.should.have.callCount(0);
                 roleCheckerService.hasHubRole.should.have.callCount(0);
                 expect($state.current.name).toBe(state.name);
               }
             } else {
               authService.isAuthenticated.should.have.callCount(0);
               loginDialogService.run.should.have.callCount(0);
-              FeatureFlags.isEnabled.should.have.callCount(0);
+              FeatureFlags.allEnabled.should.have.callCount(0);
               roleCheckerService.hasHubRole.should.have.callCount(0);
               expect($state.current.name).toBe(state.name);
             }
@@ -281,14 +281,14 @@ describe('routes', () => {
           function stubs(state) {
             const stub = sandbox.stub(authService, 'isAuthenticated');
             stub.onFirstCall().returns(false);
-            if (!hasFeatureFlag(state)) {
+            if (!hasFeatureFlags(state)) {
               stub.onSecondCall().returns(true);
             }
 
             sandbox.stub(loginDialogService, 'run').usingPromise($q).resolves();
 
             sandbox.stub(FeatureFlags, 'refresh').usingPromise($q).resolves({});
-            sandbox.stub(FeatureFlags, 'isEnabled').returns(false);
+            sandbox.stub(FeatureFlags, 'allEnabled').returns(false);
 
             sandbox.spy(roleCheckerService, 'hasHubRole');
 
@@ -299,26 +299,26 @@ describe('routes', () => {
             if (state.data.authenticate) {
               loginDialogService.run.should.have.callCount(1);
 
-              if (hasFeatureFlag(state)) {
+              if (hasFeatureFlags(state)) {
                 authService.isAuthenticated.should.have.callCount(1);
-                FeatureFlags.isEnabled.should.have.callCount(1);
+                FeatureFlags.allEnabled.should.have.callCount(1);
                 roleCheckerService.hasHubRole.should.have.callCount(0);
                 expect($state.current.name).toBe('home');
               } else if (requiresAdmin(state)) {
                 authService.isAuthenticated.should.have.callCount(2);
-                FeatureFlags.isEnabled.should.have.callCount(0);
+                FeatureFlags.allEnabled.should.have.callCount(0);
                 roleCheckerService.hasHubRole.should.have.callCount(1);
                 expect($state.current.name).toBe(state.name);
               } else {
                 authService.isAuthenticated.should.have.callCount(1);
-                FeatureFlags.isEnabled.should.have.callCount(0);
+                FeatureFlags.allEnabled.should.have.callCount(0);
                 roleCheckerService.hasHubRole.should.have.callCount(0);
                 expect($state.current.name).toBe(state.name);
               }
             } else {
               authService.isAuthenticated.should.have.callCount(0);
               loginDialogService.run.should.have.callCount(0);
-              FeatureFlags.isEnabled.should.have.callCount(0);
+              FeatureFlags.allEnabled.should.have.callCount(0);
               roleCheckerService.hasHubRole.should.have.callCount(0);
               expect($state.current.name).toBe(state.name);
             }
@@ -383,8 +383,8 @@ describe('routes', () => {
     });
   }
 
-  function hasFeatureFlag(state) {
-    return lodash.has(state.data, 'featureFlag');
+  function hasFeatureFlags(state) {
+    return lodash.has(state.data, 'featureFlags');
   }
 
   function requiresAdmin(state) {

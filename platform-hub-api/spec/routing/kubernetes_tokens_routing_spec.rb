@@ -27,14 +27,6 @@ RSpec.describe Kubernetes::TokensController, type: :routing do
       it 'routes to #destroy' do
         expect(:delete => '/kubernetes/tokens/1').to route_to('kubernetes/tokens#destroy', :id => '1')
       end
-
-      it 'routes to #escalate' do
-        expect(:patch => '/kubernetes/tokens/1/escalate').to route_to('kubernetes/tokens#escalate', :id => '1')
-      end
-
-      it 'routes to #deescalate' do
-        expect(:patch => '/kubernetes/tokens/1/deescalate').to route_to('kubernetes/tokens#deescalate', :id => '1')
-      end
     end
 
     context 'with kubernetes_tokens feature flag disabled' do
@@ -56,6 +48,43 @@ RSpec.describe Kubernetes::TokensController, type: :routing do
 
       it 'route to #destroy is not routable' do
         expect(:delete => '/kubernetes/tokens/1').to_not be_routable
+      end
+    end
+
+    context 'with kubernetes_tokens_escalate_privilege and kubernetes_tokens feature flags enabled' do
+      before do
+        FeatureFlagService.create_or_update(:kubernetes_tokens_escalate_privilege, true)
+        FeatureFlagService.create_or_update(:kubernetes_tokens, true)
+      end
+
+      it 'routes to #escalate' do
+        expect(:patch => '/kubernetes/tokens/1/escalate').to route_to('kubernetes/tokens#escalate', :id => '1')
+      end
+
+      it 'routes to #deescalate' do
+        expect(:patch => '/kubernetes/tokens/1/deescalate').to route_to('kubernetes/tokens#deescalate', :id => '1')
+      end
+    end
+
+    context 'with kubernetes_tokens_escalate_privilege feature flag disabled' do
+      before do
+        FeatureFlagService.create_or_update(:kubernetes_tokens_escalate_privilege, false)
+        FeatureFlagService.create_or_update(:kubernetes_tokens, true)
+      end
+
+      it 'route to #escalate is not routable' do
+        expect(:post => '/kubernetes/tokens/1/escalate').to_not be_routable
+      end
+
+      it 'route to #deescalate is not routable' do
+        expect(:post => '/kubernetes/tokens/1/deescalate').to_not be_routable
+      end
+    end
+
+    context 'with kubernetes_tokens_sync feature flag disabled' do
+      before do
+        FeatureFlagService.create_or_update(:kubernetes_tokens_escalate_privilege, true)
+        FeatureFlagService.create_or_update(:kubernetes_tokens, false)
       end
 
       it 'route to #escalate is not routable' do

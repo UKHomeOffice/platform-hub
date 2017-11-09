@@ -105,12 +105,14 @@ Rails.application.routes.draw do
       post :resend, on: :member
     end
 
-    constraints lambda { |request| FeatureFlagService.is_enabled?(:kubernetes_tokens) } do
+    constraints lambda { |_| FeatureFlagService.is_enabled?(:kubernetes_tokens) } do
       namespace :kubernetes do
 
         resources :tokens do
-          patch '/escalate', to: 'tokens#escalate', on: :member
-          patch '/deescalate', to: 'tokens#deescalate', on: :member
+          constraints lambda { |_| FeatureFlagService.all_enabled?([:kubernetes_tokens_escalate_privilege, :kubernetes_tokens])} do
+            patch '/escalate', to: 'tokens#escalate', on: :member
+            patch '/deescalate', to: 'tokens#deescalate', on: :member
+          end
         end
 
         resources :clusters, except: :destroy do
@@ -120,7 +122,7 @@ Rails.application.routes.draw do
 
         get '/changeset/:cluster', to: 'changeset#index'
 
-        post '/sync', to: 'sync#sync'
+        post '/sync', to: 'sync#sync', constraints: lambda { |_| FeatureFlagService.all_enabled?([:kubernetes_tokens_sync, :kubernetes_tokens]) }
         post '/revoke', to: 'revoke#revoke'
 
         resources :groups do

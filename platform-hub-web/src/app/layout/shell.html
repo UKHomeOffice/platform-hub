@@ -87,7 +87,7 @@
 
             <md-sidemenu-button
               ng-repeat="item in $ctrl.myAccountNavStates"
-              ng-if="!_.has(item, 'featureFlag') || $ctrl.FeatureFlags.isEnabled(item.featureFlag)"
+              ng-if="!_.has(item, 'featureFlags') || $ctrl.FeatureFlags.allEnabled(item.featureFlags)"
               ui-sref="{{item.state}}"
               ui-sref-active="{ 'active': item.activeState || item.state }">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
@@ -100,7 +100,7 @@
 
             <md-sidemenu-button
               ng-repeat="item in $ctrl.orgNavStates"
-              ng-if="!_.has(item, 'featureFlag') || $ctrl.FeatureFlags.isEnabled(item.featureFlag)"
+              ng-if="!_.has(item, 'featureFlags') || $ctrl.FeatureFlags.allEnabled(item.featureFlags)"
               ui-sref="{{item.state}}"
               ui-sref-active="{ 'active': item.activeState || item.state }">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
@@ -113,7 +113,7 @@
 
             <md-sidemenu-button
               ng-repeat="item in $ctrl.helpNavStates"
-              ng-if="!_.has(item, 'featureFlag') || $ctrl.FeatureFlags.isEnabled(item.featureFlag)"
+              ng-if="!_.has(item, 'featureFlags') || $ctrl.FeatureFlags.allEnabled(item.featureFlags)"
               ui-sref="{{item.state}}"
               ui-sref-active="{ 'active': item.activeState || item.state }">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
@@ -126,7 +126,7 @@
 
             <md-sidemenu-button
               ng-repeat="item in $ctrl.adminNavStates"
-              ng-if="!_.has(item, 'featureFlag') || $ctrl.FeatureFlags.isEnabled(item.featureFlag)"
+              ng-if="!_.has(item, 'featureFlags') || $ctrl.FeatureFlags.allEnabled(item.featureFlags)"
               ui-sref="{{item.state}}"
               ui-sref-active="{ 'active': item.activeState || item.state }">
               <md-icon ng-if="item.icon">{{item.icon}}</md-icon>

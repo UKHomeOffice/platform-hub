@@ -2,8 +2,11 @@ namespace :kubernetes do
 
   desc "Trigger the Kubernetes sync tokens job if it's not already in the queue"
   task trigger_tokens_sync: :environment do
-    if !FeatureFlagService.is_enabled?(:kubernetes_tokens)
-      puts 'Kubernetes tokens feature flag is turned off... will not trigger tokens sync job'
+    if !FeatureFlagService.all_enabled?([
+      :kubernetes_tokens_sync,
+      :kubernetes_tokens
+    ])
+      puts 'Kubernetes tokens and/or tokens sync feature flags are turned off... will not trigger tokens sync job'
     elsif TokensSyncJob.is_already_queued
       puts 'Tokens sync job already in queue... will not trigger another one'
     else
