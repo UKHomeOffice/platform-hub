@@ -124,7 +124,10 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         },
         data: {
           authenticate: true,
-          featureFlag: featureFlagKeys.kubernetesTokens,
+          featureFlags: [
+            featureFlagKeys.kubernetesTokensSync,
+            featureFlagKeys.kubernetesTokens
+          ],
           rolePermitted: 'admin'
         }
       })
@@ -138,7 +141,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: KubernetesClustersList,
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
+            featureFlags: [featureFlagKeys.kubernetesTokens],
             rolePermitted: 'admin'
           }
         })
@@ -150,7 +153,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.projects,
+            featureFlags: [featureFlagKeys.projects],
             rolePermitted: 'admin'
           }
         })
@@ -159,7 +162,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: KubernetesClustersForm,
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
+            featureFlags: [featureFlagKeys.kubernetesTokens],
             rolePermitted: 'admin'
           }
         })
@@ -171,7 +174,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
+            featureFlags: [featureFlagKeys.kubernetesTokens],
             rolePermitted: 'admin'
           }
         })
@@ -185,7 +188,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: KubernetesGroupsList,
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
+            featureFlags: [featureFlagKeys.kubernetesTokens],
             rolePermitted: 'admin'
           }
         })
@@ -197,7 +200,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.projects,
+            featureFlags: [featureFlagKeys.projects],
             rolePermitted: 'admin'
           }
         })
@@ -206,7 +209,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: KubernetesGroupsForm,
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
+            featureFlags: [featureFlagKeys.kubernetesTokens],
             rolePermitted: 'admin'
           }
         })
@@ -218,7 +221,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
+            featureFlags: [featureFlagKeys.kubernetesTokens],
             rolePermitted: 'admin'
           }
         })
@@ -232,7 +235,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: KubernetesUserTokensList,
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
+            featureFlags: [featureFlagKeys.kubernetesTokens],
             rolePermitted: 'admin'
           },
           resolve: {
@@ -250,7 +253,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens
+            featureFlags: [featureFlagKeys.kubernetesTokens]
           },
           params: {
             userId: '',
@@ -265,7 +268,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens
+            featureFlags: [featureFlagKeys.kubernetesTokens]
           },
           params: {
             fromProject: null
@@ -281,7 +284,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: KubernetesRobotTokensList,
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens,
+            featureFlags: [featureFlagKeys.kubernetesTokens],
             rolePermitted: 'admin'
           },
           resolve: {
@@ -299,7 +302,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens
+            featureFlags: [featureFlagKeys.kubernetesTokens]
           },
           params: {
             cluster: '',
@@ -315,7 +318,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.kubernetesTokens
+            featureFlags: [featureFlagKeys.kubernetesTokens]
           },
           params: {
             fromProject: null,
@@ -332,7 +335,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         component: ProjectsList,
         data: {
           authenticate: true,
-          featureFlag: featureFlagKeys.projects
+          featureFlags: [featureFlagKeys.projects]
         }
       })
       .state('projects.detail', {
@@ -343,7 +346,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         },
         data: {
           authenticate: true,
-          featureFlag: featureFlagKeys.projects
+          featureFlags: [featureFlagKeys.projects]
         }
       })
       .state('projects.new', {
@@ -351,7 +354,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         component: ProjectsForm,
         data: {
           authenticate: true,
-          featureFlag: featureFlagKeys.projects,
+          featureFlags: [featureFlagKeys.projects],
           rolePermitted: 'admin'
         }
       })
@@ -363,7 +366,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         },
         data: {
           authenticate: true,
-          featureFlag: featureFlagKeys.projects,
+          featureFlags: [featureFlagKeys.projects],
           rolePermitted: 'admin'
         }
       })
@@ -380,7 +383,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.projects
+            featureFlags: [featureFlagKeys.projects]
           }
         })
         .state('projects.services.new', {
@@ -391,7 +394,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.projects
+            featureFlags: [featureFlagKeys.projects]
           }
         })
         .state('projects.services.edit', {
@@ -402,7 +405,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            featureFlag: featureFlagKeys.projects
+            featureFlags: [featureFlagKeys.projects]
           }
         })
     .state('users', {

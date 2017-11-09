@@ -33,6 +33,10 @@ module FeatureFlagService
     feature_flags.data.with_indifferent_access[flag] || false
   end
 
+  def all_enabled?(flags)
+    return flags.all?(&method(:is_enabled?))
+  end
+
   private
 
   def feature_flags

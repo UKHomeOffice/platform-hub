@@ -11,6 +11,7 @@ export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, 
 
   model.refresh = refresh;
   model.isEnabled = isEnabled;
+  model.allEnabled = allEnabled;
   model.update = update;
 
   return model;
@@ -34,7 +35,12 @@ export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, 
     if (_.includes(featureFlagKeys, featureKey)) {
       return model.data[featureKey] || false;
     }
+    logger.debug(`Unknown feature flag used: ${featureKey}`);
     return false;
+  }
+
+  function allEnabled(flags) {
+    return _.every(flags, isEnabled);
   }
 
   function update(flag, state) {

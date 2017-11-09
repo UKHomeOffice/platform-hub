@@ -67,7 +67,7 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       state: 'projects.list',
       activeState: 'projects',
       icon: icons.projects,
-      featureFlag: featureFlagKeys.projects
+      featureFlags: [featureFlagKeys.projects]
     }
   ];
 
@@ -124,31 +124,34 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       title: 'Kubernetes Tokens Sync',
       state: 'kubernetes.tokens-sync',
       icon: icons.syncTokens,
-      featureFlag: featureFlagKeys.kubernetesTokens
+      featureFlags: [
+        featureFlagKeys.kubernetesTokensSync,
+        featureFlagKeys.kubernetesTokens
+      ]
     },
     {
       title: 'Kubernetes Clusters',
       state: 'kubernetes.clusters.list',
       icon: icons.kubernetesClusters,
-      featureFlag: featureFlagKeys.kubernetesTokens
+      featureFlags: [featureFlagKeys.kubernetesTokens]
     },
     {
       title: 'Kubernetes RBAC Groups',
       state: 'kubernetes.groups.list',
       icon: icons.kubernetesGroups,
-      featureFlag: featureFlagKeys.kubernetesTokens
+      featureFlags: [featureFlagKeys.kubernetesTokens]
     },
     {
       title: 'Kubernetes User Tokens',
       state: 'kubernetes.user-tokens.list',
       icon: icons.kubernetesTokens,
-      featureFlag: featureFlagKeys.kubernetesTokens
+      featureFlags: [featureFlagKeys.kubernetesTokens]
     },
     {
       title: 'Kubernetes Robot Tokens',
       state: 'kubernetes.robot-tokens.list',
       icon: icons.kubernetesTokens,
-      featureFlag: featureFlagKeys.kubernetesTokens
+      featureFlags: [featureFlagKeys.kubernetesTokens]
     },
     {
       title: 'Feature Flags',
@@ -205,7 +208,7 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
 
   function shouldShowSection(section) {
     return section.some(e => {
-      return !_.has(e, 'featureFlag') || FeatureFlags.isEnabled(e.featureFlag);
+      return !_.has(e, 'featureFlags') || FeatureFlags.allEnabled(e.featureFlags);
     });
   }
 }

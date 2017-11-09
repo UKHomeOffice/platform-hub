@@ -72,6 +72,24 @@ describe FeatureFlagService, type: :service do
     end
   end
 
+  describe '.all_enabled?' do
+    it 'returns false for known features' do
+      expect(subject.all_enabled?([@flag1, @flag2])).to be false
+    end
+
+    it 'returns true for the enabled feature' do
+      expect(subject.all_enabled?([@flag1])).to be true
+    end
+
+    it 'returns false for the disabled feature' do
+      expect(subject.all_enabled?([@flag2])).to be false
+    end
+
+    it 'returns false when there is an unknown feature flag' do
+      expect(subject.all_enabled?([@flag1, :unknown_feature])).to be false
+    end
+  end
+
   describe 'private methods' do
     describe '.feature_flags' do
       it 'finds or creates general hash record by id' do

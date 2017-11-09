@@ -80,11 +80,11 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
       .catch(reject);
   }
 
-  function featureFlagChecker(flag) {
+  function featureFlagsChecker(flags) {
     return FeatureFlags
       .refresh()
       .then(() => {
-        if (FeatureFlags.isEnabled(flag)) {
+        if (FeatureFlags.allEnabled(flags)) {
           return $q.resolve(true);
         }
         return reject();
@@ -109,8 +109,8 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
 
     const shouldAuthenticate = Boolean(config.authenticate);
 
-    const shouldCheckFeatureFlag = _.has(config, 'featureFlag');
-    const featureFlag = config.featureFlag;
+    const shouldCheckFeatureFlags = _.has(config, 'featureFlags');
+    const featureFlags = config.featureFlags;
 
     const shouldCheckRole = _.has(config, 'rolePermitted');
     const rolePermitted = config.rolePermitted;
@@ -121,8 +121,8 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
     if (shouldAuthenticate) {
       return authenticationChecker()
         .then(() => {
-          if (shouldCheckFeatureFlag) {
-            return featureFlagChecker(featureFlag);
+          if (shouldCheckFeatureFlags) {
+            return featureFlagsChecker(featureFlags);
           }
           return true;
         })

@@ -14,8 +14,9 @@ RSpec.describe TokensSyncJob, type: :job do
 
   describe '.perform' do
 
-    context 'with kubernetes_tokens feature flag enabled' do
+    context 'with kubernetes_tokens_sync and kubernetes_tokens feature flags enabled' do
       before do
+        FeatureFlagService.create_or_update(:kubernetes_tokens_sync, true)
         FeatureFlagService.create_or_update(:kubernetes_tokens, true)
         create(:kubernetes_cluster)
       end
@@ -37,7 +38,25 @@ RSpec.describe TokensSyncJob, type: :job do
       end
     end
 
+    context 'with kubernetes_tokens_sync feature flag disabled' do
+      before do
+        FeatureFlagService.create_or_update(:kubernetes_tokens_sync, false)
+        FeatureFlagService.create_or_update(:kubernetes_tokens, true)
+      end
+
+      it 'should not do anything' do
+        expect(KubernetesCluster).to receive(:names).never
+        expect(Kubernetes::TokenSyncService).to receive(:sync_tokens).never
+        expect(AuditService).to receive(:log).never
+      end
+    end
+
     context 'with kubernetes_tokens feature flag disabled' do
+      before do
+        FeatureFlagService.create_or_update(:kubernetes_tokens_sync, true)
+        FeatureFlagService.create_or_update(:kubernetes_tokens, false)
+      end
+
       it 'should not do anything' do
         expect(KubernetesCluster).to receive(:names).never
         expect(Kubernetes::TokenSyncService).to receive(:sync_tokens).never

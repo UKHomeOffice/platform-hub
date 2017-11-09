@@ -140,7 +140,7 @@
           View and edit
         </md-button>
         <md-button
-          ng-if="$ctrl.user.is_active"
+          ng-if="$ctrl.user.is_active && $ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetes_tokens_escalate_privilege)"
           aria-label="Escalate privilege for this particular token. Opens up a popup where you can choose details for the escalation."
           ng-click="$ctrl.escalatePrivilege(t.id, $event)">
           Escalate privilege
