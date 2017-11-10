@@ -1,5 +1,10 @@
 class AppSettingsController < ApiJsonController
 
+  PUBLIC_FIELDS = [
+    'platformName',
+    'platform_overview'
+  ]
+
   skip_before_action :require_authentication, only: :show
 
   before_action :load_app_settings_hash_record
@@ -8,7 +13,11 @@ class AppSettingsController < ApiJsonController
 
   # GET /app_settings
   def show
-    render json: @app_settings.data
+    if authenticated?
+      render json: @app_settings.data
+    else
+      render json: @app_settings.data.select { |k,_| PUBLIC_FIELDS.include? k }
+    end
   end
 
   # PATCH/PUT /app_settings

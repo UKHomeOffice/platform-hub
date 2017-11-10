@@ -6,12 +6,7 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
   // Inject lodash into templates that have rootScope access.
   $rootScope._ = _;
 
-  // Fetch public AppSettings and inject into templates that have rootScope access.
-  AppSettings
-    .refresh()
-    .then(() => {
-      $rootScope.AppSettings = AppSettings;
-    });
+  refreshAppSettings();
 
   // Fetch feature flags now if user is logged in (otherwise they will be
   // fetched later when user does log in).
@@ -19,11 +14,21 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
     FeatureFlags.refresh();
   }
 
+  function refreshAppSettings() {
+    // Fetch public AppSettings and inject into templates that have rootScope access.
+    return AppSettings
+      .refresh()
+      .then(() => {
+        $rootScope.AppSettings = AppSettings;
+      });
+  }
+
   // Listen for auth data change and react accordingly.
   const authDataHandler = $rootScope.$on(events.auth.updated, () => {
     Me.clear();
 
     if (authService.isAuthenticated()) {
+      refreshAppSettings();
       Me.refresh();
       FeatureFlags.refresh();
     }
