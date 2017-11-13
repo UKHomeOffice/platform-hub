@@ -5,6 +5,12 @@ RSpec.describe AppSettingsController, type: :controller do
   let(:key) { 'app_settings' }
 
   describe 'GET #show' do
+    let(:public_field_key) { 'public_field' }
+    let(:private_field_key) { 'private_field' }
+
+    before do
+      stub_const('AppSettingsController::PUBLIC_FIELDS', [public_field_key])
+    end
 
     context 'when no app settings exist' do
       it 'creates an empty app settings under the hood and returns it' do
@@ -18,20 +24,34 @@ RSpec.describe AppSettingsController, type: :controller do
 
     context 'when app settings already exist' do
       let :data do
-        { 'foo' => 'bar' }
+        {
+          public_field_key => 'foo',
+          private_field_key => 'bar'
+        }
       end
 
       before do
         @app_settings = create :hash_record, id: key, scope: 'webapp', data: data
       end
 
-      it 'returns the existing app settings data' do
-        get :show
-        expect(response).to be_success
-        expect(json_response).to eq data
+      context 'when not authenticated' do
+        it 'only returns the public fields' do
+          get :show
+          expect(response).to be_success
+          expect(json_response).to eq({
+            public_field_key => 'foo'
+          })
+        end
+      end
+
+      it_behaves_like 'authenticated' do
+        it 'returns all the fields' do
+          get :show
+          expect(response).to be_success
+          expect(json_response).to eq data
+        end
       end
     end
-    
   end
 
   describe 'PUT #update' do
