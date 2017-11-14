@@ -13,13 +13,13 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :index
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         before do
           @announcement_templates = create_list :announcement_template, 3
@@ -58,13 +58,13 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :show, params: { id: @announcement_template.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for a non-existent announcement template' do
           it 'should return a 404' do
@@ -114,13 +114,13 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :create, params: post_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'creates a new announcement template as expected' do
           expect(AnnouncementTemplate.count).to eq 0
@@ -173,13 +173,13 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :update, params: put_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'updates the specified announcement template' do
           expect(AnnouncementTemplate.count).to eq 1
@@ -216,13 +216,13 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           delete :destroy, params: { id: @announcement_template.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should delete the specified announcement template' do
           expect(AnnouncementTemplate.exists?(@announcement_template.id)).to be true
@@ -250,13 +250,13 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :form_field_types
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
         it 'should return the available form field types' do
           get :form_field_types
           expect(response).to be_success
@@ -297,13 +297,13 @@ RSpec.describe AnnouncementTemplatesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :preview, params: params
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should handle a missing "templates" param' do
           post :preview, params: {}

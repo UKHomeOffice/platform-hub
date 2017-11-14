@@ -318,7 +318,7 @@ CREATE TABLE platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying NOT NULL,
+    colour character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -1044,6 +1044,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171005115420'),
 ('20171010111440'),
 ('20171012110416'),
-('20171031164247');
+('20171031164247'),
+('20171114100517');
 
 

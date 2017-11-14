@@ -85,7 +85,7 @@ function KubernetesUserTokensFormController($q, $state, $mdSelect, Projects, App
     return loadAdminStatus()
       .then(() => {
         // If not an admin, then `fromProject` param must be provided, and
-        // verified for project manager status.
+        // verified for project admin status.
 
         if (!ctrl.isAdmin) {
           if (!fromProject) {
@@ -93,7 +93,7 @@ function KubernetesUserTokensFormController($q, $state, $mdSelect, Projects, App
           }
 
           return Projects
-            .membershipRoleCheck(fromProject, 'manager')
+            .membershipRoleCheck(fromProject, 'admin')
             .then(data => data.result);
         }
 

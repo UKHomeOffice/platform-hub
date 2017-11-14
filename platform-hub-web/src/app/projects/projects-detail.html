@@ -71,7 +71,7 @@
                     <span ng-if="$ctrl.isAdmin">Why not add some?</span>
                   </p>
 
-                  <md-toolbar md-colors="{background: 'primary-50'}" ng-if="$ctrl.isAdmin || $ctrl.isProjectManager">
+                  <md-toolbar md-colors="{background: 'primary-50'}" ng-if="$ctrl.isAdmin || $ctrl.isProjectAdmin">
                     <div class="md-toolbar-tools">
                       <md-autocomplete
                         md-no-cache="true"
@@ -111,7 +111,7 @@
                       <div class="md-list-item-text">
                         <h3>
                           {{m.user.name}}
-                          <small class="badge" ng-if="m.role == 'manager'" md-colors="{background: 'accent'}">Manager</small>
+                          <small class="badge" ng-if="m.role == 'admin'" md-colors="{background: 'accent'}">Admin</small>
                           <small class="badge" ng-if="!m.user.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
                         </h3>
                         <h4>{{m.user.email}}</h4>
@@ -138,23 +138,23 @@
                               Offboard GitHub
                             </md-button>
                           </md-menu-item>
-                          <md-menu-item ng-if="$ctrl.isAdmin && m.role != 'manager'">
+                          <md-menu-item ng-if="$ctrl.isAdmin && m.role != 'admin'">
                             <md-button
                               ng-if="m.user.is_active"
-                              ng-click="$ctrl.makeManager(m, $event)"
-                              aria-label="Make this person a team manager">
-                              Make manager
+                              ng-click="$ctrl.makeAdmin(m, $event)"
+                              aria-label="Make this person a project admin">
+                              Make admin
                             </md-button>
                           </md-menu-item>
-                          <md-menu-item ng-if="$ctrl.isAdmin && m.role == 'manager'">
+                          <md-menu-item ng-if="$ctrl.isAdmin && m.role == 'admin'">
                             <md-button
                               ng-if="m.user.is_active"
-                              ng-click="$ctrl.demoteManager(m, $event)"
-                              aria-label="Demote this person from their team manager role">
-                              Demote manager
+                              ng-click="$ctrl.demoteAdmin(m, $event)"
+                              aria-label="Demote this person from their project admin role">
+                              Demote admin
                             </md-button>
                           </md-menu-item>
-                          <md-menu-item ng-if="$ctrl.isAdmin || $ctrl.isProjectManager">
+                          <md-menu-item ng-if="$ctrl.isAdmin || $ctrl.isProjectAdmin">
                             <md-button
                               ng-click="$ctrl.removeMembership(m, $event)"
                               aria-label="Remove this person from this project team">
@@ -238,7 +238,7 @@
 
       <md-tab
         id="kube-user-tokens-tab"
-        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens) && ($ctrl.isAdmin || $ctrl.isProjectManager)"
+        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens) && ($ctrl.isAdmin || $ctrl.isProjectAdmin)"
         md-on-select="$ctrl.loadKubernetesUserTokens()">
         <md-tab-label>Kube User Tokens</md-tab-label>
         <md-tab-body>

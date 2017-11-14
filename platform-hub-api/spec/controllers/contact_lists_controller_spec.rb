@@ -13,13 +13,13 @@ RSpec.describe ContactListsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :index
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         before do
           @contact_lists = create_list :contact_list, 3
@@ -59,13 +59,13 @@ RSpec.describe ContactListsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :show, params: { id: @contact_list.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for a non-existent contact list' do
           it 'should return a 404' do
@@ -113,13 +113,13 @@ RSpec.describe ContactListsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :update, params: put_params
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
         context 'for a contact list that doesn\'t yet exist' do
           it 'should create a new contact list with the ID specified' do
             expect(ContactList.count).to eq 0
@@ -174,13 +174,13 @@ RSpec.describe ContactListsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           delete :destroy, params: { id: @contact_list.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should delete the specified contact list' do
           expect(ContactList.exists?(@contact_list.id)).to be true

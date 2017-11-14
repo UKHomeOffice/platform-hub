@@ -12,13 +12,13 @@ module AdminAuthorizationHelpers
 
   end
 
-  RSpec.shared_examples 'not an admin so forbidden' do
+  RSpec.shared_examples 'not a hub admin so forbidden' do
     it 'will return a 403 Forbidden' do
       expect(response).to have_http_status(403)
     end
   end
 
-  RSpec.shared_examples 'an admin' do
+  RSpec.shared_examples 'a hub admin' do
     include_context 'admin authorization helpers'
 
     before do

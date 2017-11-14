@@ -19,7 +19,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.loading = true;
   ctrl.isAdmin = false;
   ctrl.isProjectTeamMember = false;
-  ctrl.isProjectManager = false;
+  ctrl.isProjectAdmin = false;
   ctrl.project = null;
   ctrl.memberships = [];
   ctrl.searchSelectedUser = null;
@@ -36,8 +36,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.shouldShowActionsMenu = shouldShowActionsMenu;
   ctrl.addMembership = addMembership;
   ctrl.removeMembership = removeMembership;
-  ctrl.makeManager = makeManager;
-  ctrl.demoteManager = demoteManager;
+  ctrl.makeAdmin = makeAdmin;
+  ctrl.demoteAdmin = demoteAdmin;
   ctrl.allowOnboardOrOffboardGitHub = allowOnboardOrOffboardGitHub;
   ctrl.userOnboardGitHub = userOnboardGitHub;
   ctrl.userOffboardGitHub = userOffboardGitHub;
@@ -65,7 +65,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
 
   function loadProject() {
     ctrl.loading = true;
-    ctrl.isProjectManager = false;
+    ctrl.isProjectAdmin = false;
     ctrl.project = null;
     ctrl.memberships = [];
     ctrl.searchSelectedUser = null;
@@ -91,14 +91,14 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
         }
       });
 
-    const managerCheck = Projects
-      .membershipRoleCheck(id, 'manager')
+    const adminCheck = Projects
+      .membershipRoleCheck(id, 'admin')
       .then(data => {
-        ctrl.isProjectManager = data.result;
+        ctrl.isProjectAdmin = data.result;
       });
 
     return $q
-      .all([projectFetch, membershipsFetch, managerCheck])
+      .all([projectFetch, membershipsFetch, adminCheck])
       .finally(() => {
         ctrl.loading = false;
       });
@@ -143,11 +143,11 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
     // so it must represent the ORed logic of all the conditions used for the
     // menu buttons, i.e. determine if at least one button will be shown.
 
-    return ctrl.isAdmin || ctrl.isProjectManager || allowOnboardOrOffboardGitHub(membership);
+    return ctrl.isAdmin || ctrl.isProjectAdmin || allowOnboardOrOffboardGitHub(membership);
   }
 
   function addMembership() {
-    if (!ctrl.isAdmin && !ctrl.isProjectManager) {
+    if (!ctrl.isAdmin && !ctrl.isProjectAdmin) {
       return;
     }
 
@@ -160,7 +160,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   }
 
   function removeMembership(membership, targetEvent) {
-    if (!ctrl.isAdmin && !ctrl.isProjectManager) {
+    if (!ctrl.isAdmin && !ctrl.isProjectAdmin) {
       return;
     }
 
@@ -186,15 +186,15 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       });
   }
 
-  function makeManager(membership, targetEvent) {
+  function makeAdmin(membership, targetEvent) {
     if (!ctrl.isAdmin) {
       return;
     }
 
     const confirm = $mdDialog.confirm()
       .title('Are you sure?')
-      .textContent('This will make this person a team manager of the project (giving them certain priviledges).')
-      .ariaLabel('Confirm making this person a team manager.')
+      .textContent('This will make this person an admin of the project (giving them certain privileges).')
+      .ariaLabel('Confirm making this person a project admin.')
       .targetEvent(targetEvent)
       .ok('Do it')
       .cancel('Cancel');
@@ -205,23 +205,23 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
         ctrl.loading = true;
 
         Projects
-          .setMembershipRole(ctrl.project.id, membership.user.id, 'manager')
+          .setMembershipRole(ctrl.project.id, membership.user.id, 'admin')
           .then(() => {
-            logger.success('Team member promoted to manager!');
+            logger.success('Team member promoted to admin!');
             loadProject();
           });
       });
   }
 
-  function demoteManager(membership, targetEvent) {
+  function demoteAdmin(membership, targetEvent) {
     if (!ctrl.isAdmin) {
       return;
     }
 
     const confirm = $mdDialog.confirm()
       .title('Are you sure?')
-      .textContent('This will demote this person from their team manager role in the project (though they will still be a member of the project).')
-      .ariaLabel('Confirm demotion of a project team manager.')
+      .textContent('This will demote this person from their admin role in the project (though they will still be a member of the project).')
+      .ariaLabel('Confirm demotion of a project admin.')
       .targetEvent(targetEvent)
       .ok('Do it')
       .cancel('Cancel');
@@ -232,9 +232,9 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
         ctrl.loading = true;
 
         Projects
-          .unsetMembershipRole(ctrl.project.id, membership.user.id, 'manager')
+          .unsetMembershipRole(ctrl.project.id, membership.user.id, 'admin')
           .then(() => {
-            logger.success('Team member demoted from manager role!');
+            logger.success('Team member demoted from admin role!');
             loadProject();
           });
       });
@@ -242,13 +242,13 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
 
   function allowOnboardOrOffboardGitHub(membership) {
     return (
-      (ctrl.isAdmin || ctrl.isProjectManager) &&
+      (ctrl.isAdmin || ctrl.isProjectAdmin) &&
       _.includes(membership.user.enabled_identities, 'github')
     );
   }
 
   function userOnboardGitHub(userId, targetEvent) {
-    if (!ctrl.isAdmin && !ctrl.isProjectManager) {
+    if (!ctrl.isAdmin && !ctrl.isProjectAdmin) {
       return;
     }
 
@@ -277,7 +277,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   }
 
   function userOffboardGitHub(userId, targetEvent) {
-    if (!ctrl.isAdmin && !ctrl.isProjectManager) {
+    if (!ctrl.isAdmin && !ctrl.isProjectAdmin) {
       return;
     }
 
@@ -306,7 +306,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   }
 
   function offboardAndRemove(membership, targetEvent) {
-    if (!ctrl.isAdmin && !ctrl.isProjectManager) {
+    if (!ctrl.isAdmin && !ctrl.isProjectAdmin) {
       return;
     }
 
@@ -358,7 +358,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   }
 
   function shouldShowCreateServiceButton() {
-    return ctrl.isAdmin || ctrl.isProjectManager;
+    return ctrl.isAdmin || ctrl.isProjectAdmin;
   }
 
   function loadKubernetesUserTokens() {

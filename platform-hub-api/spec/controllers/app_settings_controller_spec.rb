@@ -71,13 +71,13 @@ RSpec.describe AppSettingsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :update, params: put_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
         it 'allows updating of the whole app settings data' do
           expect(HashRecord.webapp.where(id: key).count).to eq 1
           put :update, params: put_data

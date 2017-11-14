@@ -20,7 +20,7 @@ function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerServi
   ctrl.projectId = projectId;
   ctrl.loading = true;
   ctrl.isAdmin = false;
-  ctrl.isProjectManager = false;
+  ctrl.isProjectAdmin = false;
   ctrl.service = null;
   ctrl.kubernetesRobotTokens = [];
   ctrl.processingKubernetesRobotTokens = false;
@@ -55,14 +55,14 @@ function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerServi
         ctrl.service = service;
       });
 
-    const managerCheck = Projects
-      .membershipRoleCheck(projectId, 'manager')
+    const adminCheck = Projects
+      .membershipRoleCheck(projectId, 'admin')
       .then(data => {
-        ctrl.isProjectManager = data.result;
+        ctrl.isProjectAdmin = data.result;
       });
 
     return $q
-      .all([serviceFetch, managerCheck])
+      .all([serviceFetch, adminCheck])
       .finally(() => {
         ctrl.loading = false;
       });
@@ -95,7 +95,7 @@ function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerServi
   }
 
   function shouldShowCreateKubernetesRobotTokenButton() {
-    return ctrl.isAdmin || ctrl.isProjectManager;
+    return ctrl.isAdmin || ctrl.isProjectAdmin;
   }
 
   function loadKubernetesRobotTokens() {

@@ -102,13 +102,13 @@ RSpec.describe SupportRequestTemplatesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :create, params: post_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'creates a new support request template as expected' do
           expect(SupportRequestTemplate.count).to eq 0
@@ -171,13 +171,13 @@ RSpec.describe SupportRequestTemplatesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :update, params: put_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'updates the specified support request template' do
           expect(SupportRequestTemplate.count).to eq 1
@@ -216,13 +216,13 @@ RSpec.describe SupportRequestTemplatesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           delete :destroy, params: { id: @support_request_template.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should delete the specified support request template' do
           expect(SupportRequestTemplate.exists?(@support_request_template.id)).to be true

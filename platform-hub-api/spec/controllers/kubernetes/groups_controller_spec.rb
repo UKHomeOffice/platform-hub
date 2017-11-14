@@ -13,13 +13,13 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :index
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'when no kubernetes groups exist' do
           it 'returns an empty list' do
@@ -68,13 +68,13 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :show, params: { id: @group.friendly_id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for a non-existent group' do
           it 'should return a 404' do
@@ -126,13 +126,13 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :create, params: post_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'creates a new group as expected' do
           expect(KubernetesGroup.count).to eq 0
@@ -208,13 +208,13 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :update, params: put_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'updates the specified group' do
           expect(KubernetesGroup.count).to eq 1
@@ -254,13 +254,13 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           delete :destroy, params: { id: @group.friendly_id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should delete the specified group' do
           expect(KubernetesGroup.exists?(@group.id)).to be true
@@ -290,13 +290,13 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :privileged
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
         let!(:not_privileged_group) { create :kubernetes_group, is_privileged: false }
         let!(:privileged_group) { create :kubernetes_group, is_privileged: true }
         let!(:default_privileged_group) { create :kubernetes_group }
@@ -332,13 +332,13 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :allocate, params: { id: @group.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for a non-existent project' do
           it 'should return a 404' do
@@ -418,13 +418,13 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :allocations, params: { id: @group.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'when no allocations exist' do
           it 'returns an empty list' do
