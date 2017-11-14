@@ -17,13 +17,13 @@ RSpec.describe AllocationsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           delete :destroy, params: { id: @allocation.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should delete the specified allocation' do
           expect(Allocation.exists?(@allocation.id)).to be true

@@ -64,7 +64,7 @@ class Ability
 
     can do |action, subject_class, subject|
       if action == :search && subject_class == User
-        ProjectMembershipsService.is_user_a_manager_of_any_project?(user.id)
+        ProjectMembershipsService.is_user_an_admin_of_any_project?(user.id)
       end
     end
 
@@ -73,7 +73,7 @@ class Ability
   private
 
   def can_administer_project project, user
-    ProjectMembershipsService.is_user_a_manager_of_project?(
+    ProjectMembershipsService.is_user_an_admin_of_project?(
       project.id,
       user.id
     )
@@ -88,7 +88,7 @@ class Ability
 
   def can_onboard_or_offboard_github user, target_user
     (user == target_user) ||
-    ProjectMembershipsService.is_user_a_manager_of_a_common_project?(
+    ProjectMembershipsService.is_user_an_admin_of_a_common_project?(
       user,
       target_user
     )

@@ -98,13 +98,13 @@ RSpec.describe PlatformThemesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :create, params: post_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'creates a new platform theme as expected' do
           expect(PlatformTheme.count).to eq 0
@@ -160,13 +160,13 @@ RSpec.describe PlatformThemesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :update, params: put_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'updates the specified platform theme' do
           expect(PlatformTheme.count).to eq 1
@@ -203,13 +203,13 @@ RSpec.describe PlatformThemesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           delete :destroy, params: { id: @platform_theme.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should delete the specified platform theme' do
           expect(PlatformTheme.exists?(@platform_theme.id)).to be true

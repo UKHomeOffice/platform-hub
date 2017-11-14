@@ -3,8 +3,8 @@ FactoryGirl.define do
     project
     user
 
-    factory :project_membership_as_manager do
-      role 'manager'
+    factory :project_membership_as_admin do
+      role 'admin'
     end
   end
 end

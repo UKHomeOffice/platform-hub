@@ -71,10 +71,10 @@ describe('kubernetes user tokens form', () => {
       .resolves(result);
   }
 
-  function stubProjectManagerRole(projectId, result) {
+  function stubProjectAdminRole(projectId, result) {
     sandbox
       .stub(Projects, 'membershipRoleCheck')
-      .withArgs(projectId, 'manager')
+      .withArgs(projectId, 'admin')
       .usingPromise($q)
       .resolves({result});
   }
@@ -245,11 +245,11 @@ describe('kubernetes user tokens form', () => {
       stubAdmin(false);
     });
 
-    describe('for a project manager of project foo', () => {
+    describe('for a project admin of project foo', () => {
       describe('for a new user token', () => {
         describe('when not providing the fromProject param', () => {
           beforeEach(() => {
-            stubProjectManagerRole('foo', true);
+            stubProjectAdminRole('foo', true);
 
             renderComponentWithTransitionParams(params);
           });
@@ -262,7 +262,7 @@ describe('kubernetes user tokens form', () => {
 
         describe('when providing fromProject=foo param', () => {
           beforeEach(() => {
-            stubProjectManagerRole('foo', true);
+            stubProjectAdminRole('foo', true);
 
             params.fromProject = 'foo';
 
@@ -280,7 +280,7 @@ describe('kubernetes user tokens form', () => {
 
         describe('when providing fromProject=other param', () => {
           beforeEach(() => {
-            stubProjectManagerRole('other', false);
+            stubProjectAdminRole('other', false);
 
             params.fromProject = 'other';
 
@@ -304,7 +304,7 @@ describe('kubernetes user tokens form', () => {
 
         describe('when not providing the fromProject param', () => {
           beforeEach(() => {
-            stubProjectManagerRole('foo', true);
+            stubProjectAdminRole('foo', true);
 
             renderComponentWithTransitionParams(params);
           });
@@ -317,7 +317,7 @@ describe('kubernetes user tokens form', () => {
 
         describe('when providing fromProject=foo param', () => {
           beforeEach(() => {
-            stubProjectManagerRole('foo', true);
+            stubProjectAdminRole('foo', true);
 
             params.fromProject = 'foo';
 
@@ -335,7 +335,7 @@ describe('kubernetes user tokens form', () => {
 
         describe('when providing fromProject=other param', () => {
           beforeEach(() => {
-            stubProjectManagerRole('other', false);
+            stubProjectAdminRole('other', false);
 
             params.fromProject = 'other';
 
@@ -352,7 +352,7 @@ describe('kubernetes user tokens form', () => {
       });
     });
 
-    describe('for a user that is not a project manager of any project', () => {
+    describe('for a user that is not a project admin of any project', () => {
       beforeEach(() => {
         sandbox
           .stub(Projects, 'membershipRoleCheck')

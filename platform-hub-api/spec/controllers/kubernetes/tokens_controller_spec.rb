@@ -19,13 +19,13 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :index, params: { user_id: @user.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for user tokens' do
 
@@ -121,13 +121,13 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :show, params: { id: @token.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for a non-existent token' do
           it 'should return a 404' do
@@ -306,13 +306,13 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :create, params: { token: token_data }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for user' do
 
@@ -414,13 +414,13 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :update, params: put_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for user token' do
 
@@ -510,13 +510,13 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           delete :destroy, params: { id: @token.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should delete the specified token' do
           expect(KubernetesToken.exists?(@token.id)).to be true
@@ -568,13 +568,13 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           patch :escalate, params: escalate_params
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
         it 'should escalate token and return it' do
           move_time_to now
 
@@ -637,13 +637,13 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           patch :deescalate, params: { id: @token.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
         before do
           move_time_to (escalation_time_in_secs + 1).seconds.from_now
         end

@@ -11,7 +11,7 @@ describe ProjectMembershipsService, type: :service do
   let!(:user_3) { create :user }
 
   before do
-    create :project_membership_as_manager,
+    create :project_membership_as_admin,
       project: project_1,
       user: user_1
     create :project_membership,
@@ -21,11 +21,11 @@ describe ProjectMembershipsService, type: :service do
     create :project_membership,
       project: project_2,
       user: user_1
-    create :project_membership_as_manager,
+    create :project_membership_as_admin,
       project: project_2,
       user: user_2
 
-    create :project_membership_as_manager,
+    create :project_membership_as_admin,
       project: project_3,
       user: user_2
     create :project_membership,
@@ -59,7 +59,7 @@ describe ProjectMembershipsService, type: :service do
 
   end
 
-  describe '.is_user_a_manager_of_project?' do
+  describe '.is_user_an_admin_of_project?' do
 
     let :mappings do
       {
@@ -75,35 +75,35 @@ describe ProjectMembershipsService, type: :service do
       }
     end
 
-    it 'should only return true for actual project managers' do
+    it 'should only return true for actual project admins' do
       mappings.each do |((p_id, u_id), result)|
         expect(
-          subject.is_user_a_manager_of_project?(p_id, u_id)
+          subject.is_user_an_admin_of_project?(p_id, u_id)
         ).to be result
       end
     end
 
   end
 
-  describe '.is_user_a_manager_of_any_project?' do
+  describe '.is_user_an_admin_of_any_project?' do
 
-    it 'should only return true if user is a manager of any project' do
+    it 'should only return true if user is an admin of any project' do
       expect(
-        subject.is_user_a_manager_of_any_project?(user_1.id)
+        subject.is_user_an_admin_of_any_project?(user_1.id)
       ).to be true
 
       expect(
-        subject.is_user_a_manager_of_any_project?(user_2.id)
+        subject.is_user_an_admin_of_any_project?(user_2.id)
       ).to be true
 
       expect(
-        subject.is_user_a_manager_of_any_project?(user_3.id)
+        subject.is_user_an_admin_of_any_project?(user_3.id)
       ).to be false
     end
 
   end
 
-  describe '.is_user_a_manager_of_a_common_project?' do
+  describe '.is_user_an_admin_of_a_common_project?' do
 
     let :mappings do
       {
@@ -116,10 +116,10 @@ describe ProjectMembershipsService, type: :service do
       }
     end
 
-    it 'should only return true for cases where the two users share a project and the first user is a manager of any of those projects' do
+    it 'should only return true for cases where the two users share a project and the first user is an admin of any of those projects' do
       mappings.each do |((user, target_user), result)|
         expect(
-          subject.is_user_a_manager_of_a_common_project?(user, target_user)
+          subject.is_user_an_admin_of_a_common_project?(user, target_user)
         ).to be result
       end
     end

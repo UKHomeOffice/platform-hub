@@ -165,9 +165,9 @@ class ProjectsController < ApiJsonController
   # GET /projects/:id/memberships/role_check/:role
   def role_check
     case params[:role]
-    when 'manager'
-      is_manager = ProjectMembershipsService.is_user_a_manager_of_project?(@project.id, current_user.id)
-      render json: { result: is_manager }
+    when 'admin'
+      is_admin = ProjectMembershipsService.is_user_an_admin_of_project?(@project.id, current_user.id)
+      render json: { result: is_admin }
     else
       not_found_error
     end

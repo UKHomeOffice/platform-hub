@@ -13,13 +13,13 @@ RSpec.describe AnnouncementsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :index
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         before do
           @announcements = create_list :announcement, 3
@@ -128,13 +128,13 @@ RSpec.describe AnnouncementsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :create, params: post_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for an announcement with provided content' do
           let :post_data do
@@ -263,13 +263,13 @@ RSpec.describe AnnouncementsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :update, params: put_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for non readonly announcement' do
           it 'updates the specified announcement' do
@@ -373,13 +373,13 @@ RSpec.describe AnnouncementsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           delete :destroy, params: { id: @announcement.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for non readonly announcement' do
           it 'should delete the specified announcement' do
@@ -431,13 +431,13 @@ RSpec.describe AnnouncementsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :mark_sticky, params: { id: @announcement.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should mark the specified announcement as sticky' do
           expect(@announcement.is_sticky).to be false
@@ -470,13 +470,13 @@ RSpec.describe AnnouncementsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :unmark_sticky, params: { id: @announcement.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should unmark the specified announcement as sticky' do
           expect(@announcement.is_sticky).to be true
@@ -509,13 +509,13 @@ RSpec.describe AnnouncementsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :resend, params: { id: @announcement.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for a published announcement' do
           before do

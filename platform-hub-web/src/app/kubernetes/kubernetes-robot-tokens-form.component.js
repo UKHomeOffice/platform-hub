@@ -70,7 +70,7 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
     return loadAdminStatus()
       .then(() => {
         // If not an admin, then `fromProject` and `fromService` params must be
-        // provided, and verified for project manager status.
+        // provided, and verified for project admin status.
 
         if (!ctrl.isAdmin) {
           if (!fromProject || !fromService) {
@@ -78,7 +78,7 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
           }
 
           return Projects
-            .membershipRoleCheck(fromProject, 'manager')
+            .membershipRoleCheck(fromProject, 'admin')
             .then(data => data.result);
         }
 

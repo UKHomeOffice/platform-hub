@@ -12,13 +12,13 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :index
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'when no kubernetes clusters exist' do
           before do
@@ -66,13 +66,13 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :show, params: { id: @cluster.friendly_id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for a non-existent cluster' do
           it 'should return a 404' do
@@ -121,13 +121,13 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :create, params: post_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'creates a new kubernetes cluster config as expected' do
           expect(KubernetesCluster.count).to eq 0
@@ -200,13 +200,13 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :update, params: put_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'updates the specified cluster' do
           expect(KubernetesCluster.count).to eq 1
@@ -243,13 +243,13 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :allocate, params: { id: @cluster.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for a non-existent project' do
           it 'should return a 404' do
@@ -301,13 +301,13 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :allocations, params: { id: @cluster.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'when no allocations exist' do
           it 'returns an empty list' do

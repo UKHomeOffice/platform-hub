@@ -13,13 +13,13 @@ RSpec.describe UsersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :index
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'when only the authenticated user exists' do
           it 'should return a list with only the authenticated user' do
@@ -69,13 +69,13 @@ RSpec.describe UsersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :show, params: { id: @user.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for a non-existent user' do
           it 'should return a 404' do
@@ -117,13 +117,13 @@ RSpec.describe UsersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :search, params: { q: 'foo' }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'when no users exist' do
           it 'should not return any results' do
@@ -161,10 +161,10 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context 'not an admin but is a project manager of some project' do
+      context 'not an admin but is a project admin of some project' do
         before do
           project = create :project
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
 
           create_list :user, 3
           @user = create :user, name: 'foobar'
@@ -213,13 +213,13 @@ RSpec.describe UsersController, type: :controller do
         ])
       end
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :identities, params: { id: @user.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
         it 'should return the user\'s list of identities' do
           expect_identities @user, identity
         end
@@ -268,7 +268,7 @@ RSpec.describe UsersController, type: :controller do
             @user = @identity.user
           end
 
-          it_behaves_like 'an admin' do
+          it_behaves_like 'a hub admin' do
             it 'should return it without revealing token value' do
               get :identities, params: { id: @user.id }
               expect(response).to be_success
@@ -299,13 +299,13 @@ RSpec.describe UsersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :make_admin, params: { id: @user.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should make the specified user an admin' do
           expect(@user.admin?).to be false
@@ -338,13 +338,13 @@ RSpec.describe UsersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :revoke_admin, params: { id: @user.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should revoke the admin role for the specified user' do
           expect(@user.admin?).to be true
@@ -382,13 +382,13 @@ RSpec.describe UsersController, type: :controller do
         instance_double('Agents::GitHubAgentService')
       end
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :onboard_github, params: { id: @user.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'when user does not have a GitHub identity connected' do
           it 'should return a 400 Bad Request with an appropriate error message' do
@@ -417,11 +417,11 @@ RSpec.describe UsersController, type: :controller do
 
       end
 
-      context 'not an admin but is project manager of same project' do
+      context 'not an admin but is project admin of same project' do
         before do
           project = create :project
           create :project_membership, project: project, user: @user
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'should onboard the user and return a success response with no content' do
@@ -437,13 +437,13 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context 'not an admin but is project manager but of a different and not common project' do
+      context 'not an admin but is project admin but of a different and not common project' do
         before do
           project1 = create :project
           project2 = create :project
           create :project_membership, project: project1, user: @user
           create :project_membership, project: project1, user: current_user
-          create :project_membership_as_manager, project: project2, user: current_user
+          create :project_membership_as_admin, project: project2, user: current_user
         end
 
         it 'should not be able to onboard the user on GitHub - returning 403 Forbidden' do
@@ -474,13 +474,13 @@ RSpec.describe UsersController, type: :controller do
         instance_double('Agents::GitHubAgentService')
       end
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :offboard_github, params: { id: @user.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'when user does not have a GitHub identity connected' do
           it 'should return a 400 Bad Request with an appropriate error message' do
@@ -509,11 +509,11 @@ RSpec.describe UsersController, type: :controller do
 
       end
 
-      context 'not an admin but is project manager of same project' do
+      context 'not an admin but is project admin of same project' do
         before do
           project = create :project
           create :project_membership, project: project, user: @user
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'should offboard the user and return a success response with no content' do
@@ -529,13 +529,13 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context 'not an admin but is project manager but of a different and not common project' do
+      context 'not an admin but is project admin but of a different and not common project' do
         before do
           project1 = create :project
           project2 = create :project
           create :project_membership, project: project1, user: @user
           create :project_membership, project: project1, user: current_user
-          create :project_membership_as_manager, project: project2, user: current_user
+          create :project_membership_as_admin, project: project2, user: current_user
         end
 
         it 'should not be able to offboard the user on GitHub - returning 403 Forbidden' do
@@ -562,13 +562,13 @@ RSpec.describe UsersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           get :activate, params: { id: @user.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
         let(:keycloak_agent_service) { instance_double('Agents::KeycloakAgentService') }
         let(:user_representation) { double }
 
@@ -615,13 +615,13 @@ RSpec.describe UsersController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :deactivate, params: { id: @user.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
         let(:keycloak_agent_service) { instance_double('Agents::KeycloakAgentService') }
         let(:user_representation) { double }
 

@@ -325,7 +325,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .get(`${apiEndpoint}/projects/${projectId}/memberships/role_check/${role}`)
       .then(response => response.data)
       .catch(response => {
-        logger.error(buildErrorMessageFromResponse('Failed to check if user if a manager for the specific project', response));
+        logger.error(buildErrorMessageFromResponse(`Failed to check if user is ${role} for the specific project`, response));
         return $q.reject(response);
       });
   }

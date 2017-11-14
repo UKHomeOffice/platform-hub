@@ -48,7 +48,7 @@ RSpec.describe ServicesController, type: :controller do
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should return a list of all services for the project' do
           expect_project_services
@@ -148,7 +148,7 @@ RSpec.describe ServicesController, type: :controller do
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should return the service' do
           expect_service
@@ -241,7 +241,7 @@ RSpec.describe ServicesController, type: :controller do
         expect(audit.user).to eq current_user
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can create a new service in the project as expected' do
           expect_create_service project
@@ -253,10 +253,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'can create a new service in the project as expected' do
@@ -288,10 +288,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: other_project, user: current_user
+          create :project_membership_as_admin, project: other_project, user: current_user
         end
 
         it 'cannot create a new service in the project - returning 403 Forbidden' do
@@ -371,7 +371,7 @@ RSpec.describe ServicesController, type: :controller do
         expect(audit.user).to eq current_user
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can update a service in the project as expected' do
           expect_update_service project, @service
@@ -388,10 +388,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'can update a service in the project as expected' do
@@ -423,10 +423,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: other_project, user: current_user
+          create :project_membership_as_admin, project: other_project, user: current_user
         end
 
         it 'cannot update a service in the project - returning 403 Forbidden' do
@@ -489,7 +489,7 @@ RSpec.describe ServicesController, type: :controller do
         expect(audit.user.id).to eq current_user_id
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can delete a service in the project as expected' do
           expect_destroy_service project, @service
@@ -506,10 +506,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'can delete a service in the project as expected' do
@@ -541,10 +541,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: other_project, user: current_user
+          create :project_membership_as_admin, project: other_project, user: current_user
         end
 
         it 'cannot delete a service in the project - returning 403 Forbidden' do
@@ -649,7 +649,7 @@ RSpec.describe ServicesController, type: :controller do
         expect(pluck_from_json_response('name')).to match_array groups.map(&:name)
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'no target specified' do
           it 'can fetch groups for service in the project as expected' do
@@ -695,10 +695,10 @@ RSpec.describe ServicesController, type: :controller do
 
       # NOTE: we don't need to repeat the target filtering specs anymore
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'can fetch groups for service in the project as expected' do
@@ -729,10 +729,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: other_project, user: current_user
+          create :project_membership_as_admin, project: other_project, user: current_user
         end
 
         it 'cannot fetch groups for service in the project - returning 403 Forbidden' do
@@ -794,7 +794,7 @@ RSpec.describe ServicesController, type: :controller do
         expect(pluck_from_json_response('token')).to match_array tokens.map(&:decrypted_token)
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can fetch robot tokens for service in the project as expected' do
           expect_tokens project, @service, @tokens
@@ -811,10 +811,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'can fetch robot tokens for service in the project as expected' do
@@ -845,10 +845,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: other_project, user: current_user
+          create :project_membership_as_admin, project: other_project, user: current_user
         end
 
         it 'cannot fetch robot tokens for service in the project - returning 403 Forbidden' do
@@ -933,7 +933,7 @@ RSpec.describe ServicesController, type: :controller do
         })
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can fetch a robot token for the service in the project as expected' do
           expect_token project, @service, @token
@@ -960,10 +960,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'can fetch a robot token for the service in the project as expected' do
@@ -994,10 +994,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: other_project, user: current_user
+          create :project_membership_as_admin, project: other_project, user: current_user
         end
 
         it 'cannot fetch a robot token for the service in the project - returning 403 Forbidden' do
@@ -1105,7 +1105,7 @@ RSpec.describe ServicesController, type: :controller do
         expect(audit.user).to eq current_user
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can create a robot token for the service in the project as expected' do
           expect_create project, @service
@@ -1135,10 +1135,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'can create a robot token for the service in the project as expected' do
@@ -1173,10 +1173,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: other_project, user: current_user
+          create :project_membership_as_admin, project: other_project, user: current_user
         end
 
         it 'cannot create a robot token for the service in the project - returning 403 Forbidden' do
@@ -1280,7 +1280,7 @@ RSpec.describe ServicesController, type: :controller do
         expect(audit.user).to eq current_user
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can update a robot token for the service in the project as expected' do
           expect_update project, @service, @token
@@ -1307,10 +1307,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'can update a robot token for the service in the project as expected' do
@@ -1342,10 +1342,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: other_project, user: current_user
+          create :project_membership_as_admin, project: other_project, user: current_user
         end
 
         it 'cannot update a robot token for the service in the project - returning 403 Forbidden' do
@@ -1409,7 +1409,7 @@ RSpec.describe ServicesController, type: :controller do
         expect(audit.user).to eq current_user
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can delete a robot token for the service in the project as expected' do
           expect_destroy project, @service, @token
@@ -1436,10 +1436,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: project, user: current_user
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'can delete a robot token for the service in the project as expected' do
@@ -1471,10 +1471,10 @@ RSpec.describe ServicesController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: other_project, user: current_user
+          create :project_membership_as_admin, project: other_project, user: current_user
         end
 
         it 'cannot delete a robot token for the service in the project - returning 403 Forbidden' do

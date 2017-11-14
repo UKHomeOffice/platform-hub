@@ -3,7 +3,7 @@ class ProjectMembership < ApplicationRecord
   self.primary_keys = :project_id, :user_id
 
   enum role: {
-    manager: 'manager'
+    admin: 'admin'
   }
 
   belongs_to :project

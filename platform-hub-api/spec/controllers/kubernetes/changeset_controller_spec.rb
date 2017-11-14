@@ -17,13 +17,13 @@ RSpec.describe Kubernetes::ChangesetController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden' do
+      it_behaves_like 'not a hub admin so forbidden' do
         before do
           get :index, params: { cluster: @cluster.name }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         before do
           auditable = build :user_kubernetes_token, cluster: @cluster

@@ -72,7 +72,7 @@ RSpec.describe ProjectsController, type: :controller do
           end
         end
 
-        it_behaves_like 'an admin' do
+        it_behaves_like 'a hub admin' do
           it 'should return the specified project resource with protected fields' do
             get :show, params: { id: @project.friendly_id }
             expect(response).to be_success
@@ -89,9 +89,9 @@ RSpec.describe ProjectsController, type: :controller do
           end
         end
 
-        context 'not an admin but is project manager' do
+        context 'not an admin but is project admin' do
           before do
-            create :project_membership_as_manager, project: @project, user: current_user
+            create :project_membership_as_admin, project: @project, user: current_user
           end
 
           it 'should return the specified project resource with protected fields' do
@@ -134,13 +134,13 @@ RSpec.describe ProjectsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :create, params: post_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'creates a new project as expected' do
           expect(Project.count).to eq 0
@@ -220,13 +220,13 @@ RSpec.describe ProjectsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :update, params: put_data
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'updates the specified project' do
           expect(Project.count).to eq 1
@@ -264,13 +264,13 @@ RSpec.describe ProjectsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           delete :destroy, params: { id: @project.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should delete the specified project' do
           expect(Project.exists?(@project.id)).to be true
@@ -356,13 +356,13 @@ RSpec.describe ProjectsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :add_membership, params: { id: @project.id, user_id: @user.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should add the specified user to the project membership list' do
           expect(@project.memberships.count).to eq 0
@@ -381,9 +381,9 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is project manager of same project' do
+      context 'not an admin but is project admin of same project' do
         before do
-          create :project_membership_as_manager, project: @project, user: current_user
+          create :project_membership_as_admin, project: @project, user: current_user
         end
 
         it 'should add the specified user to the project membership list' do
@@ -402,10 +402,10 @@ RSpec.describe ProjectsController, type: :controller do
         end
       end
 
-      context 'not an admin but is project manager of a different project' do
+      context 'not an admin but is project admin of a different project' do
         before do
           another_project = create :project
-          create :project_membership_as_manager, project: another_project, user: current_user
+          create :project_membership_as_admin, project: another_project, user: current_user
         end
 
         it 'should not be able to add the user to the project team - returning 403 Forbidden' do
@@ -432,13 +432,13 @@ RSpec.describe ProjectsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :remove_membership, params: { id: @project.id, user_id: @user.id }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should remove the specified user from the project membership list' do
           expect(@project.memberships.count).to eq 1
@@ -456,9 +456,9 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is project manager of same project' do
+      context 'not an admin but is project admin of same project' do
         before do
-          create :project_membership_as_manager, project: @project, user: current_user
+          create :project_membership_as_admin, project: @project, user: current_user
         end
 
         it 'should remove the specified user from the project membership list' do
@@ -476,10 +476,10 @@ RSpec.describe ProjectsController, type: :controller do
         end
       end
 
-      context 'not an admin but is project manager of a different project' do
+      context 'not an admin but is project admin of a different project' do
         before do
           another_project = create :project
-          create :project_membership_as_manager, project: another_project, user: current_user
+          create :project_membership_as_admin, project: another_project, user: current_user
         end
 
         it 'should not be able to remove the user from the project team - returning 403 Forbidden' do
@@ -493,7 +493,7 @@ RSpec.describe ProjectsController, type: :controller do
 
   describe 'GET #role_check' do
     let :role do
-      'manager'
+      'admin'
     end
 
     before do
@@ -514,7 +514,7 @@ RSpec.describe ProjectsController, type: :controller do
         expect(json_response['result']).to eq result
       end
 
-      context 'not an admin' do
+      context 'not a hub admin' do
 
         context 'and not a member of the project' do
           it 'should return a false result' do
@@ -522,7 +522,7 @@ RSpec.describe ProjectsController, type: :controller do
           end
         end
 
-        context 'is a member of the project but not a manager' do
+        context 'is a member of the project but not an admin' do
           before do
             create :project_membership, project: @project, user: current_user
           end
@@ -532,9 +532,9 @@ RSpec.describe ProjectsController, type: :controller do
           end
         end
 
-        context 'is a manager for the project' do
+        context 'is an admin for the project' do
           before do
-            create :project_membership_as_manager, project: @project, user: current_user
+            create :project_membership_as_admin, project: @project, user: current_user
           end
 
           it 'should return a true result' do
@@ -542,10 +542,10 @@ RSpec.describe ProjectsController, type: :controller do
           end
         end
 
-        context 'is manager of a different project' do
+        context 'is an admin of a different project' do
           before do
             another_project = create :project
-            create :project_membership_as_manager, project: another_project, user: current_user
+            create :project_membership_as_admin, project: another_project, user: current_user
           end
 
           it 'should return a false result' do
@@ -555,17 +555,17 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
-        context 'but not a member or manager for the project' do
+        context 'but not a member or admin for the project' do
           it 'should return a false result' do
             expect_result false
           end
         end
 
-        context 'is a manager for the project' do
+        context 'is an admin for the project' do
           before do
-            create :project_membership_as_manager, project: @project, user: current_user
+            create :project_membership_as_admin, project: @project, user: current_user
           end
 
           it 'should return a true result' do
@@ -580,7 +580,7 @@ RSpec.describe ProjectsController, type: :controller do
 
   describe 'PUT #set_role' do
     let :role do
-      'manager'
+      'admin'
     end
 
     before do
@@ -596,13 +596,13 @@ RSpec.describe ProjectsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :set_role, params: { id: @project.id, user_id: @user.id, role: role }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'when user is not a project team member' do
           it 'should return a 400 Bad Request error' do
@@ -641,7 +641,7 @@ RSpec.describe ProjectsController, type: :controller do
 
   describe 'DELETE #unset_role' do
     let :role do
-      'manager'
+      'admin'
     end
 
     before do
@@ -657,13 +657,13 @@ RSpec.describe ProjectsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           delete :unset_role, params: { id: @project.id, user_id: @user.id, role: role }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'when user is not a project team member' do
           it 'should return a 400 Bad Request error' do
@@ -743,7 +743,7 @@ RSpec.describe ProjectsController, type: :controller do
         expect(pluck_from_json_response('name')).to match_array clusters.map(&:name)
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can fetch clusters for the project as expected' do
           expect_clusters @project, project_clusters
@@ -755,10 +755,10 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: @project, user: current_user
+          create :project_membership_as_admin, project: @project, user: current_user
         end
 
         it 'can fetch clusters for the project as expected' do
@@ -789,10 +789,10 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: @other_project, user: current_user
+          create :project_membership_as_admin, project: @other_project, user: current_user
         end
 
         it 'cannot fetch clusters for the project - returning 403 Forbidden' do
@@ -848,7 +848,7 @@ RSpec.describe ProjectsController, type: :controller do
         expect(pluck_from_json_response('name')).to match_array groups.map(&:name)
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'no target specified' do
           it 'can fetch groups for the project as expected' do
@@ -889,10 +889,10 @@ RSpec.describe ProjectsController, type: :controller do
 
       # NOTE: we don't need to repeat the target filtering specs anymore
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: @project, user: current_user
+          create :project_membership_as_admin, project: @project, user: current_user
         end
 
         it 'can fetch groups for the project as expected' do
@@ -923,10 +923,10 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: @other_project, user: current_user
+          create :project_membership_as_admin, project: @other_project, user: current_user
         end
 
         it 'cannot fetch groups for the project - returning 403 Forbidden' do
@@ -986,7 +986,7 @@ RSpec.describe ProjectsController, type: :controller do
         expect(pluck_from_json_response('id')).to match_array tokens.map(&:id)
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can fetch user tokens for the project as expected' do
           expect_tokens @project, @tokens
@@ -998,10 +998,10 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: @project, user: current_user
+          create :project_membership_as_admin, project: @project, user: current_user
         end
 
         it 'can fetch user tokens for the project as expected' do
@@ -1033,10 +1033,10 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: @other_project, user: current_user
+          create :project_membership_as_admin, project: @other_project, user: current_user
         end
 
         it 'cannot fetch user tokens for the project - returning 403 Forbidden' do
@@ -1124,7 +1124,7 @@ RSpec.describe ProjectsController, type: :controller do
         })
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can fetch a user token for the project as expected' do
           expect_token @project, @token, @user
@@ -1146,10 +1146,10 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: @project, user: current_user
+          create :project_membership_as_admin, project: @project, user: current_user
         end
 
         it 'can fetch a user token for the project as expected' do
@@ -1181,10 +1181,10 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: @other_project, user: current_user
+          create :project_membership_as_admin, project: @other_project, user: current_user
         end
 
         it 'cannot fetch a user token for the project - returning 403 Forbidden' do
@@ -1291,7 +1291,7 @@ RSpec.describe ProjectsController, type: :controller do
         expect(audit.user).to eq current_user
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'can create a user token for the project as expected' do
           expect_create @project, @user
@@ -1330,10 +1330,10 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the project' do
+      context 'not an admin but is an admin of the project' do
 
         before do
-          create :project_membership_as_manager, project: @project, user: current_user
+          create :project_membership_as_admin, project: @project, user: current_user
         end
 
         it 'can create a user token for the project as expected' do
@@ -1368,10 +1368,10 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is manager of the other project' do
+      context 'not an admin but is an admin of the other project' do
 
         before do
-          create :project_membership_as_manager, project: @other_project, user: current_user
+          create :project_membership_as_admin, project: @other_project, user: current_user
         end
 
         it 'cannot create a user token for the project - returning 403 Forbidden' do

@@ -16,13 +16,13 @@ RSpec.describe Kubernetes::RevokeController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :revoke, params: { token: @token.decrypted_token }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         context 'for existing token' do
           it 'should remove token' do

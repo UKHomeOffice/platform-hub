@@ -14,13 +14,13 @@ RSpec.describe Kubernetes::SyncController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           post :sync, params: { cluster: cluster_name }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'should upload tokens to selected cluster' do
           expect(Kubernetes::TokenSyncService).to receive(:sync_tokens).with(cluster_name)

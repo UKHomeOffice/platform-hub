@@ -61,13 +61,13 @@ RSpec.describe FeatureFlagsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not an admin so forbidden'  do
+      it_behaves_like 'not a hub admin so forbidden'  do
         before do
           put :update_flag, params: { flag: flag1 }
         end
       end
 
-      it_behaves_like 'an admin' do
+      it_behaves_like 'a hub admin' do
 
         it 'sets an existing flag to true' do
           put :update_flag, params: { flag: flag1, feature_flag: { state: true } }
