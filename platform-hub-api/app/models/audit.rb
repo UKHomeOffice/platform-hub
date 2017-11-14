@@ -63,7 +63,7 @@ class Audit < ApplicationRecord
   end
 
   def output_log_message
-    logger.info self.message
+    logger.debug self.message
   end
 
 end
