@@ -8,8 +8,10 @@ export const KubernetesUserTokensFormComponent = {
   controller: KubernetesUserTokensFormController
 };
 
-function KubernetesUserTokensFormController($q, $state, $mdSelect, Projects, AppSettings, KubernetesTokens, KubernetesGroups, roleCheckerService, hubApiService, logger, _) {
+function KubernetesUserTokensFormController($scope, $q, $state, $mdSelect, Projects, AppSettings, KubernetesTokens, KubernetesGroups, roleCheckerService, hubApiService, logger, _) {
   'ngInject';
+
+  $scope._ = _;
 
   const ctrl = this;
 
@@ -19,7 +21,6 @@ function KubernetesUserTokensFormController($q, $state, $mdSelect, Projects, App
   const tokenId = _.get(transitionParams, 'tokenId');
   const fromProject = _.get(transitionParams, 'fromProject');
 
-  ctrl._ = _;
   ctrl.AppSettings = AppSettings;
   ctrl.Projects = Projects;
 
@@ -247,7 +248,7 @@ function KubernetesUserTokensFormController($q, $state, $mdSelect, Projects, App
   }
 
   function filterGroups() {
-    ctrl.allowedGroups = [];
+    ctrl.allowedGroups = {};
 
     const clusterName = _.get(ctrl.token, 'cluster.name');
 
