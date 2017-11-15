@@ -89,7 +89,7 @@ RSpec.describe ProjectsController, type: :controller do
           end
         end
 
-        context 'not an admin but is project admin' do
+        context 'not a hub admin but is project admin' do
           before do
             create :project_membership_as_admin, project: @project, user: current_user
           end
@@ -311,7 +311,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       let :results do
         # Important: we shouldn't be able to see the user's identities here
-        # (since we're not an admin)
+        # (since we're not a hub admin)
 
         @memberships.map do |m|
           user = m.user
@@ -381,7 +381,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is project admin of same project' do
+      context 'not a hub admin but is project admin of same project' do
         before do
           create :project_membership_as_admin, project: @project, user: current_user
         end
@@ -402,7 +402,7 @@ RSpec.describe ProjectsController, type: :controller do
         end
       end
 
-      context 'not an admin but is project admin of a different project' do
+      context 'not a hub admin but is project admin of a different project' do
         before do
           another_project = create :project
           create :project_membership_as_admin, project: another_project, user: current_user
@@ -456,7 +456,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is project admin of same project' do
+      context 'not a hub admin but is project admin of same project' do
         before do
           create :project_membership_as_admin, project: @project, user: current_user
         end
@@ -476,7 +476,7 @@ RSpec.describe ProjectsController, type: :controller do
         end
       end
 
-      context 'not an admin but is project admin of a different project' do
+      context 'not a hub admin but is project admin of a different project' do
         before do
           another_project = create :project
           create :project_membership_as_admin, project: another_project, user: current_user
@@ -522,7 +522,7 @@ RSpec.describe ProjectsController, type: :controller do
           end
         end
 
-        context 'is a member of the project but not an admin' do
+        context 'is a member of the project but not a project admin' do
           before do
             create :project_membership, project: @project, user: current_user
           end
@@ -755,7 +755,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is an admin of the project' do
+      context 'not a hub admin but is an admin of the project' do
 
         before do
           create :project_membership_as_admin, project: @project, user: current_user
@@ -772,7 +772,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is a member of the project' do
+      context 'not a hub or project admin but is a member of the project' do
 
         before do
           create :project_membership, project: @project, user: current_user
@@ -789,7 +789,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is an admin of the other project' do
+      context 'not a hub admin but is an admin of the other project' do
 
         before do
           create :project_membership_as_admin, project: @other_project, user: current_user
@@ -806,7 +806,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is a member of other project' do
+      context 'not a hub or other project admin but is a member of other project' do
 
         before do
           create :project_membership, project: @other_project, user: current_user
@@ -889,7 +889,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       # NOTE: we don't need to repeat the target filtering specs anymore
 
-      context 'not an admin but is an admin of the project' do
+      context 'not a hub admin but is an admin of the project' do
 
         before do
           create :project_membership_as_admin, project: @project, user: current_user
@@ -906,7 +906,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is a member of the project' do
+      context 'not a hub or project admin but is a member of the project' do
 
         before do
           create :project_membership, project: @project, user: current_user
@@ -923,7 +923,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is an admin of the other project' do
+      context 'not a hub admin but is an admin of the other project' do
 
         before do
           create :project_membership_as_admin, project: @other_project, user: current_user
@@ -940,7 +940,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is a member of other project' do
+      context 'not a hub or other project admin but is a member of other project' do
 
         before do
           create :project_membership, project: @other_project, user: current_user
@@ -998,7 +998,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is an admin of the project' do
+      context 'not a hub admin but is an admin of the project' do
 
         before do
           create :project_membership_as_admin, project: @project, user: current_user
@@ -1015,7 +1015,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is a member of the project' do
+      context 'not a hub or project admin but is a member of the project' do
 
         before do
           create :project_membership, project: @project, user: current_user
@@ -1033,7 +1033,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is an admin of the other project' do
+      context 'not a hub admin but is an admin of the other project' do
 
         before do
           create :project_membership_as_admin, project: @other_project, user: current_user
@@ -1050,7 +1050,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is a member of the other project' do
+      context 'not a hub or other project admin but is a member of the other project' do
 
         before do
           create :project_membership, project: @other_project, user: current_user
@@ -1146,7 +1146,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is an admin of the project' do
+      context 'not a hub admin but is an admin of the project' do
 
         before do
           create :project_membership_as_admin, project: @project, user: current_user
@@ -1163,7 +1163,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is a member of the project' do
+      context 'not a hub or project admin but is a member of the project' do
 
         before do
           create :project_membership, project: @project, user: current_user
@@ -1181,7 +1181,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is an admin of the other project' do
+      context 'not a hub admin but is an admin of the other project' do
 
         before do
           create :project_membership_as_admin, project: @other_project, user: current_user
@@ -1198,7 +1198,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is a member of the other project' do
+      context 'not a hub or other project admin but is a member of the other project' do
 
         before do
           create :project_membership, project: @other_project, user: current_user
@@ -1330,7 +1330,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is an admin of the project' do
+      context 'not a hub admin but is an admin of the project' do
 
         before do
           create :project_membership_as_admin, project: @project, user: current_user
@@ -1348,7 +1348,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is a member of the project' do
+      context 'not a hub or project admin but is a member of the project' do
 
         before do
           create :project_membership, project: @project, user: current_user
@@ -1368,7 +1368,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is an admin of the other project' do
+      context 'not a hub admin but is an admin of the other project' do
 
         before do
           create :project_membership_as_admin, project: @other_project, user: current_user
@@ -1386,7 +1386,7 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
-      context 'not an admin but is a member of the other project' do
+      context 'not a hub or other project admin but is a member of the other project' do
 
         before do
           create :project_membership, project: @other_project, user: current_user
