@@ -19,7 +19,7 @@ module ProjectMembershipsService
     user_projects = user.project_ids
     common_projects = target_user_projects & user_projects
 
-    # Now check to see if user is an admin of any of these common projects
+    # Now check to see if user is a project admin of any of these common projects
     admin_scope.exists? project_id: common_projects, user_id: user.id
   end
 

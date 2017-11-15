@@ -87,7 +87,7 @@ describe ProjectMembershipsService, type: :service do
 
   describe '.is_user_an_admin_of_any_project?' do
 
-    it 'should only return true if user is an admin of any project' do
+    it 'should only return true if user is a project admin of any project' do
       expect(
         subject.is_user_an_admin_of_any_project?(user_1.id)
       ).to be true

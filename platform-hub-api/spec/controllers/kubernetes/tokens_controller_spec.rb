@@ -618,7 +618,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
         end
       end
 
-      context 'not an admin but is an admin of the project' do
+      context 'not a hub admin but is an admin of the project' do
         before do
           create :project_membership_as_admin, project: project, user: current_user
         end
@@ -628,7 +628,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
         end
       end
 
-      context 'not an admin but is a member of the project' do
+      context 'not a hub or project admin but is a member of the project' do
         before do
           create :project_membership, project: project, user: current_user
         end
@@ -702,7 +702,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
         end
       end
 
-      context 'not an admin but is an admin of the project' do
+      context 'not a hub admin but is an admin of the project' do
         before do
           create :project_membership_as_admin, project: project, user: current_user
         end
@@ -712,7 +712,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
         end
       end
 
-      context 'not an admin but is a member of the project' do
+      context 'not a hub or project admin but is a member of the project' do
         before do
           create :project_membership, project: project, user: current_user
         end

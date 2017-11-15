@@ -161,7 +161,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context 'not an admin but is a project admin of some project' do
+      context 'not a hub admin but is a project admin of some project' do
         before do
           project = create :project
           create :project_membership_as_admin, project: project, user: current_user
@@ -225,14 +225,14 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context 'not an admin and a different user' do
+      context 'not a hub admin and a different user' do
         it 'should not be able to load identities - returning 403 Forbidden' do
           get :identities, params: { id: @user.id }
           expect(response).to have_http_status(403)
         end
       end
 
-      context 'not an admin but same user' do
+      context 'not a hub admin but same user' do
         it 'should be able to load your own identities' do
           expect_identities current_user, current_user.identities.first
         end
@@ -307,7 +307,7 @@ RSpec.describe UsersController, type: :controller do
 
       it_behaves_like 'a hub admin' do
 
-        it 'should make the specified user an admin' do
+        it 'should make the specified user a hub admin' do
           expect(@user.admin?).to be false
           expect(Audit.count).to eq 0
           post :make_admin, params: { id: @user.id }
@@ -346,7 +346,7 @@ RSpec.describe UsersController, type: :controller do
 
       it_behaves_like 'a hub admin' do
 
-        it 'should revoke the admin role for the specified user' do
+        it 'should revoke the hub admin role for the specified user' do
           expect(@user.admin?).to be true
           expect(Audit.count).to eq 0
           post :revoke_admin, params: { id: @user.id }
@@ -417,7 +417,7 @@ RSpec.describe UsersController, type: :controller do
 
       end
 
-      context 'not an admin but is project admin of same project' do
+      context 'not a hub admin but is project admin of same project' do
         before do
           project = create :project
           create :project_membership, project: project, user: @user
@@ -437,7 +437,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context 'not an admin but is project admin but of a different and not common project' do
+      context 'not a hub admin but is project admin but of a different and not common project' do
         before do
           project1 = create :project
           project2 = create :project
@@ -509,7 +509,7 @@ RSpec.describe UsersController, type: :controller do
 
       end
 
-      context 'not an admin but is project admin of same project' do
+      context 'not a hub admin but is project admin of same project' do
         before do
           project = create :project
           create :project_membership, project: project, user: @user
@@ -529,7 +529,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
-      context 'not an admin but is project admin but of a different and not common project' do
+      context 'not a hub admin but is project admin but of a different and not common project' do
         before do
           project1 = create :project
           project2 = create :project
