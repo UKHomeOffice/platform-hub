@@ -126,7 +126,6 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.getKubernetesTokensChangeset = getKubernetesTokensChangeset;
   service.syncKubernetesTokens = syncKubernetesTokens;
   service.revokeKubernetesToken = revokeKubernetesToken;
-  service.getPrivilegedGroupsForKubernetesTokens = buildSimpleFetcher('kubernetes/groups/privileged', 'kubernetes privileged groups');
   service.escalatePrivilegeForKubernetesTokens = escalatePrivilegeForKubernetesTokens;
 
   service.getFeatureFlags = buildSimpleFetcher('feature_flags', 'feature flags');

@@ -33,10 +33,6 @@ RSpec.describe Kubernetes::GroupsController, type: :routing do
         expect(:delete => '/kubernetes/groups/1').to route_to('kubernetes/groups#destroy', :id => '1')
       end
 
-      it 'routes to #privileged' do
-        expect(:get => '/kubernetes/groups/privileged').to route_to('kubernetes/groups#privileged')
-      end
-
       it 'routes to #allocate' do
         expect(:post => '/kubernetes/groups/1/allocate').to route_to('kubernetes/groups#allocate', :id => '1')
       end
@@ -75,10 +71,6 @@ RSpec.describe Kubernetes::GroupsController, type: :routing do
 
       it 'route to #destroy is not routable' do
         expect(:delete => '/kubernetes/groups/1').to_not be_routable
-      end
-
-      it 'route to #privileged is not routable' do
-        expect(:get => '/kubernetes/groups/privileged').to_not be_routable
       end
 
       it 'route to #allocate is not routable' do

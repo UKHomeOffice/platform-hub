@@ -327,6 +327,15 @@
                   View and edit
                 </md-button>
                 <md-button
+                  ng-if="t.user.is_active && $ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokensEscalatePrivilege)"
+                  aria-label="Escalate privilege for this particular token. Opens up a popup where you can choose details for the escalation."
+                  ng-click="$ctrl.escalatePrivilegeForKubernetesUserToken(t, $event)">
+                  Escalate privilege
+                  <md-tooltip md-direction="bottom">
+                    Grant a short lived escalation of privilege for this token. Opens a popup where you can configure and apply this escalation.
+                  </md-tooltip>
+                </md-button>
+                <md-button
                   ng-click="$ctrl.deleteKubernetesUserToken(t.id, $event)"
                   aria-label="Remove kubernetes user token">
                   Delete

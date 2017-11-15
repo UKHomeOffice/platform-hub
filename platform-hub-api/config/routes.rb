@@ -126,8 +126,6 @@ Rails.application.routes.draw do
         post '/revoke', to: 'revoke#revoke'
 
         resources :groups do
-          get :privileged, on: :collection
-
           post :allocate, on: :member
           get :allocations, on: :member
         end

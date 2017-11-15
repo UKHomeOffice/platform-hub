@@ -112,7 +112,7 @@
             <md-select
               name="groups"
               ng-model="$ctrl.token.groups"
-              md-selected-text="$ctrl.token.groups.length ? $ctrl.token.groups.join(', ') : 'Select RBAC group(s) *'"
+              md-selected-text="$ctrl.token.groups.length ? $ctrl.token.groups.join(', ') : 'Select RBAC group(s):'"
               ng-disabled="$ctrl.processing || _.isEmpty($ctrl.allowedGroups) || !$ctrl.token.project.id || !$ctrl.token.cluster.name"
               multiple>
               <md-optgroup

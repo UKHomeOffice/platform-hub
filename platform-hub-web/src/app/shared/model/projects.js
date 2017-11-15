@@ -42,6 +42,8 @@ export const Projects = function ($window, $q, apiBackoffTimeMs, hubApiService, 
   model.updateServiceKubernetesRobotToken = hubApiService.updateProjectServiceKubernetesRobotToken;
   model.deleteServiceKubernetesRobotToken = hubApiService.deleteProjectServiceKubernetesRobotToken;
 
+  model.getAllKubernetesGroupsGrouped = getAllKubernetesGroupsGrouped;
+
   return model;
 
   function refresh(force) {
@@ -60,5 +62,31 @@ export const Projects = function ($window, $q, apiBackoffTimeMs, hubApiService, 
         });
     }
     return fetcherPromise;
+  }
+
+  function getAllKubernetesGroupsGrouped(projectId, target) {
+    return model.getServices(projectId)
+      .then(services => {
+        const projectGroupsFetch = model.getKubernetesGroups(projectId, target);
+
+        const serviceGroupsFetches = services.map(s => model.getServiceKubernetesGroups(projectId, s.id, target));
+
+        const allFetches = [projectGroupsFetch].concat(serviceGroupsFetches);
+
+        return $q
+          .all(allFetches)
+          .then(data => {
+            return data.reduce((acc, groups, ix) => {
+              // The first one is for project level groups
+              if (ix === 0) {
+                acc['Project level groups'] = groups;
+              } else {
+                const service = services[ix - 1];
+                acc[`Service: ${service.name}`] = groups;
+              }
+              return acc;
+            }, {});
+          });
+      });
   }
 };

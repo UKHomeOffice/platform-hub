@@ -6,7 +6,7 @@ export const ProjectsDetailComponent = {
   controller: ProjectsDetailController
 };
 
-function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, FeatureFlags, featureFlagKeys, Me, Projects, logger, _) {
+function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, kubernetesTokenEscalatePrivilegePopupService, FeatureFlags, featureFlagKeys, Me, Projects, logger, _) {
   'ngInject';
 
   const ctrl = this;
@@ -46,6 +46,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.loadServices = loadServices;
   ctrl.shouldShowCreateServiceButton = shouldShowCreateServiceButton;
   ctrl.loadKubernetesUserTokens = loadKubernetesUserTokens;
+  ctrl.escalatePrivilegeForKubernetesUserToken = escalatePrivilegeForKubernetesUserToken;
   ctrl.deleteKubernetesUserToken = deleteKubernetesUserToken;
 
   init();
@@ -373,6 +374,13 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       .finally(() => {
         ctrl.processingKubernetesUserTokens = false;
       });
+  }
+
+  function escalatePrivilegeForKubernetesUserToken(token, targetEvent) {
+    return kubernetesTokenEscalatePrivilegePopupService.open(
+      token,
+      targetEvent
+    ).then(loadKubernetesUserTokens);
   }
 
   function deleteKubernetesUserToken(id, targetEvent) {

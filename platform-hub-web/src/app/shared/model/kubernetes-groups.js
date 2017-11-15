@@ -60,12 +60,11 @@ export const KubernetesGroups = function ($window, hubApiService, apiBackoffTime
 
   function filterGroupsForCluster(groups, clusterName) {
     return _.filter(groups, g => {
-      return !g.is_privileged &&
-        (
-          !g.restricted_to_clusters ||
-          _.isEmpty(g.restricted_to_clusters) ||
-          g.restricted_to_clusters.includes(clusterName)
-        );
+      return (
+        !g.restricted_to_clusters ||
+        _.isEmpty(g.restricted_to_clusters) ||
+        g.restricted_to_clusters.includes(clusterName)
+      );
     });
   }
 };

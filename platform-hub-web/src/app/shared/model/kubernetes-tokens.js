@@ -15,6 +15,7 @@ export const KubernetesTokens = function (hubApiService) {
   model.updateRobotToken = hubApiService.updateKubernetesRobotToken;
 
   model.revokeToken = revokeToken;
+  model.escalatePrivilege = hubApiService.escalatePrivilegeForKubernetesTokens;
 
   return model;
 

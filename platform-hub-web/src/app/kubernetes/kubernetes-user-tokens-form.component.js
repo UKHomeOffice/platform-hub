@@ -30,7 +30,6 @@ function KubernetesUserTokensFormController($q, $state, $mdSelect, Projects, App
   ctrl.isNew = true;
   ctrl.token = null;
   ctrl.allowedUsers = [];
-  ctrl.projectServices = [];
   ctrl.allowedClusters = [];
   ctrl.possibleGroups = {};
   ctrl.allowedGroups = {};
@@ -209,26 +208,9 @@ function KubernetesUserTokensFormController($q, $state, $mdSelect, Projects, App
 
   function refreshForProject() {
     return fetchUsers(ctrl.token.project.id)
-      .then(fetchServices)
       .then(fetchClusters)
       .then(fetchGroups)
       .then(filterGroups);
-  }
-
-  function fetchServices() {
-    ctrl.projectServices = [];
-
-    const projectId = _.get(ctrl.token, 'project.id');
-
-    if (projectId) {
-      return Projects
-        .getServices(projectId)
-        .then(services => {
-          ctrl.projectServices = services;
-        });
-    }
-
-    return $q.when();
   }
 
   function fetchClusters() {
@@ -254,25 +236,10 @@ function KubernetesUserTokensFormController($q, $state, $mdSelect, Projects, App
     const projectId = _.get(ctrl.token, 'project.id');
 
     if (projectId) {
-      const projectGroupsFetch = Projects.getKubernetesGroups(projectId, 'user');
-
-      const serviceGroupsFetches = ctrl.projectServices.map(s => Projects.getServiceKubernetesGroups(projectId, s.id, 'user'));
-
-      const allFetches = [projectGroupsFetch].concat(serviceGroupsFetches);
-
-      return $q
-        .all(allFetches)
-        .then(data => {
-          ctrl.possibleGroups = data.reduce((acc, groups, ix) => {
-            // The first one is for project level groups
-            if (ix === 0) {
-              acc['Project level groups'] = groups;
-            } else {
-              const service = ctrl.projectServices[ix - 1];
-              acc[`Service: ${service.name}`] = groups;
-            }
-            return acc;
-          }, {});
+      return Projects
+        .getAllKubernetesGroupsGrouped(projectId, 'user')
+        .then(grouped => {
+          ctrl.possibleGroups = grouped;
         });
     }
 
@@ -287,7 +254,9 @@ function KubernetesUserTokensFormController($q, $state, $mdSelect, Projects, App
     if (clusterName) {
       const seen = {};
       ctrl.allowedGroups = Object.keys(ctrl.possibleGroups).reduce((acc, key) => {
-        const forCluster = KubernetesGroups.filterGroupsForCluster(ctrl.possibleGroups[key], clusterName);
+        const forCluster = KubernetesGroups
+          .filterGroupsForCluster(ctrl.possibleGroups[key], clusterName)
+          .filter(g => !g.is_privileged);
 
         // Need to consider dup groups between services etc.
         const dedupped = forCluster.filter(g => {

@@ -75,11 +75,12 @@ class KubernetesToken < ApplicationRecord
     expire_privileged_at.present?
   end
 
-  def escalate(privileged_group_name, expire_in_secs = 600)
+  def escalate(privileged_group_name, expires_in_secs = 600)
     group = KubernetesGroup.find_by!(name: privileged_group_name)
 
     unless is_group_valid?(group, allow_privileged_groups: true)
-      raise ArgumentError, "specified privileged group '#{privileged_group_name}' is not a valid group for this token (it may not be allocated yet)"
+      errors[:base] << "group '#{privileged_group_name}' cannot be used to escalate privilege for this token"
+      return false
     end
 
     # Update the db directly, bypassing validations.
@@ -88,7 +89,7 @@ class KubernetesToken < ApplicationRecord
     # privileged groups to be set (to prevent project admins from explicitly
     # setting this when creating/editing tokens from the UI/API).
     update_columns(
-      expire_privileged_at: [ expire_in_secs, PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS ].min.seconds.from_now,
+      expire_privileged_at: [ expires_in_secs, PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS ].min.seconds.from_now,
       groups: groups << privileged_group_name
     )
   end

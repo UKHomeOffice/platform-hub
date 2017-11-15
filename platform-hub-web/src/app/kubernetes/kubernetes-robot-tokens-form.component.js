@@ -238,7 +238,9 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
     const clusterName = _.get(ctrl.token, 'cluster.name');
 
     if (clusterName) {
-      ctrl.allowedGroups = KubernetesGroups.filterGroupsForCluster(ctrl.possibleGroups, clusterName);
+      ctrl.allowedGroups = KubernetesGroups
+        .filterGroupsForCluster(ctrl.possibleGroups, clusterName)
+        .filter(g => !g.is_privileged);
     }
   }
 

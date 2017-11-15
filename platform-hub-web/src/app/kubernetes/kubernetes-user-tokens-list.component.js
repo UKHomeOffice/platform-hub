@@ -85,9 +85,9 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
       });
   }
 
-  function escalatePrivilege(tokenId, targetEvent) {
-    kubernetesTokenEscalatePrivilegePopupService.open(
-      tokenId,
+  function escalatePrivilege(token, targetEvent) {
+    return kubernetesTokenEscalatePrivilegePopupService.open(
+      token,
       targetEvent
     ).then(filterKubernetesTokensByUser);
   }
