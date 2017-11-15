@@ -545,73 +545,107 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
   describe 'PATCH #escalate' do
     let(:project) { create :project }
-    let(:privileged_group) { create :kubernetes_group, :privileged, :for_user, allocate_to: project }
-    let(:expires_in_secs) { 180 }
 
     before do
       @token = create :user_kubernetes_token, project: project
     end
 
-    let(:escalate_params) do
-      {
-        id: @token.id,
-        privileged_group: privileged_group.name,
-        expires_in_secs: expires_in_secs
-      }
-    end
-
     it_behaves_like 'unauthenticated not allowed' do
       before do
-        patch :escalate, params: escalate_params
+        patch :escalate, params: { id: @token.id }
       end
     end
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not a hub admin so forbidden'  do
-        before do
-          patch :escalate, params: escalate_params
-        end
+      let(:privileged_group) { create :kubernetes_group, :privileged, :for_user, allocate_to: project }
+      let(:expires_in_secs) { 180 }
+
+      def expect_escalate token, privileged_group, expires_in_secs
+        move_time_to now
+
+        params = {
+          id: token.id,
+          privileged_group: privileged_group.name,
+          expires_in_secs: expires_in_secs
+        }
+
+        expect(AuditService).to receive(:log).with(
+          context: anything,
+          action: 'escalate',
+          auditable: token,
+          data: {
+            cluster: token.cluster.name,
+            privileged_group: privileged_group.name
+          }
+        ).and_call_original
+
+        patch :escalate, params: params
+
+        expect(response).to be_success
+        expect(json_response['cluster']['name']).to eq token.cluster.name
+        expect(json_response['obfuscated_token']).to eq token.obfuscated_token
+        expect(json_response['uid']).to eq token.uid
+        expect(json_response['groups']).to match_array token.groups << privileged_group.name
+        expect(DateTime.parse(json_response['expire_privileged_at']).to_s(:db)).to eq expires_in_secs.seconds.from_now.to_s(:db)
+        expect(Audit.count).to eq 1
       end
 
       it_behaves_like 'a hub admin' do
         it 'should escalate token and return it' do
-          move_time_to now
-
-          expect(AuditService).to receive(:log).with(
-            context: anything,
-            action: 'escalate',
-            auditable: @token,
-            data: {
-              cluster: @token.cluster.name,
-              privileged_group: privileged_group.name
-            }
-          ).and_call_original
-
-          patch :escalate, params: escalate_params
-
-          expect(response).to be_success
-          expect(json_response['cluster']['name']).to eq @token.cluster.name
-          expect(json_response['obfuscated_token']).to eq @token.obfuscated_token
-          expect(json_response['uid']).to eq @token.uid
-          expect(json_response['groups']).to match_array @token.groups << privileged_group.name
-          expect(DateTime.parse(json_response['expire_privileged_at']).to_s(:db)).to eq expires_in_secs.seconds.from_now.to_s(:db)
-          expect(Audit.count).to eq 1
+          expect_escalate @token, privileged_group, expires_in_secs
         end
 
-        context 'with privileged expiration greater than 6h' do
-          let(:expires_in_secs) { 7 * 3600 } #7h
+        context 'with privileged expiration greater than the max' do
+          let(:expires_in_secs) { KubernetesToken::PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS.seconds + 100 }
 
           it 'limits expiration time to maximum 6h from now' do
             move_time_to now
 
-            patch :escalate, params: escalate_params
+            params = {
+              id: @token.id,
+              privileged_group: privileged_group.name,
+              expires_in_secs: expires_in_secs
+            }
+
+            patch :escalate, params: params
 
             expect(response).to be_success
             expect(
               DateTime.parse(json_response['expire_privileged_at']).to_s(:db)
             ).to eq KubernetesToken::PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS.seconds.from_now.to_s(:db)
           end
+        end
+      end
+
+      context 'not an admin but is an admin of the project' do
+        before do
+          create :project_membership_as_admin, project: project, user: current_user
+        end
+
+        it 'should escalate token and return it' do
+          expect_escalate @token, privileged_group, expires_in_secs
+        end
+      end
+
+      context 'not an admin but is a member of the project' do
+        before do
+          create :project_membership, project: project, user: current_user
+        end
+
+        it 'cannot escalate the token - returning 403 Forbidden' do
+          original_groups = @token.groups.dup
+
+          params = {
+            id: @token.id,
+            privileged_group: privileged_group.name,
+            expires_in_secs: expires_in_secs
+          }
+
+          patch :escalate, params: params
+          expect(response).to have_http_status(403)
+          expect(@token.reload.groups).to eq original_groups
+          expect(Audit.count).to eq 0
         end
       end
 
@@ -637,36 +671,59 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not a hub admin so forbidden'  do
-        before do
-          patch :deescalate, params: { id: @token.id }
-        end
+      before do
+        move_time_to (escalation_time_in_secs + 1).seconds.from_now
+      end
+
+      def expect_deescalate token
+        expect(AuditService).to receive(:log).with(
+          context: anything,
+          action: 'deescalate',
+          auditable: token,
+          data: {
+            cluster: token.cluster.name
+          }
+        ).and_call_original
+
+        patch :deescalate, params: { id: token.id }
+
+        expect(response).to be_success
+        expect(json_response['cluster']['name']).to eq token.cluster.name
+        expect(json_response['obfuscated_token']).to eq token.obfuscated_token
+        expect(json_response['uid']).to eq token.uid
+        expect(json_response['groups']).to be_blank
+        expect(json_response['expire_privileged_at']).to eq nil
+        expect(Audit.count).to eq 1
       end
 
       it_behaves_like 'a hub admin' do
+        it 'should deescalate token and return it' do
+          expect_deescalate @token
+        end
+      end
+
+      context 'not an admin but is an admin of the project' do
         before do
-          move_time_to (escalation_time_in_secs + 1).seconds.from_now
+          create :project_membership_as_admin, project: project, user: current_user
         end
 
         it 'should deescalate token and return it' do
-          expect(AuditService).to receive(:log).with(
-            context: anything,
-            action: 'deescalate',
-            auditable: @token,
-            data: {
-              cluster: @token.cluster.name
-            }
-          ).and_call_original
+          expect_deescalate @token
+        end
+      end
+
+      context 'not an admin but is a member of the project' do
+        before do
+          create :project_membership, project: project, user: current_user
+        end
+
+        it 'cannot deescalate the token - returning 403 Forbidden' do
+          original_groups = @token.groups.dup
 
           patch :deescalate, params: { id: @token.id }
-
-          expect(response).to be_success
-          expect(json_response['cluster']['name']).to eq @token.cluster.name
-          expect(json_response['obfuscated_token']).to eq @token.obfuscated_token
-          expect(json_response['uid']).to eq @token.uid
-          expect(json_response['groups']).to be_blank
-          expect(json_response['expire_privileged_at']).to eq nil
-          expect(Audit.count).to eq 1
+          expect(response).to have_http_status(403)
+          expect(@token.reload.groups).to eq original_groups
+          expect(Audit.count).to eq 0
         end
       end
 

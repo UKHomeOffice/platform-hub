@@ -98,7 +98,7 @@
           <br />
 
           <p
-            ng-if="!$ctrl.processing && $ctrl.token.project.id && $ctrl.token.cluster.name && !$ctrl.allowedGroups.length == 0"
+            ng-if="!$ctrl.processing && $ctrl.token.project.id && $ctrl.token.cluster.name && _.isEmpty($ctrl.allowedGroups)"
             class="md-body-2"
             md-colors="{background: 'accent-50'}"
             layout-padding>
@@ -112,7 +112,7 @@
             <md-select
               name="groups"
               ng-model="$ctrl.token.groups"
-              md-selected-text="$ctrl.token.groups.length ? $ctrl.token.groups.join(', ') : 'Select RBAC group(s) *'"
+              md-selected-text="$ctrl.token.groups.length ? $ctrl.token.groups.join(', ') : 'Select RBAC group(s):'"
               ng-disabled="$ctrl.processing || _.isEmpty($ctrl.allowedGroups) || !$ctrl.token.project.id || !$ctrl.token.cluster.name"
               multiple>
               <md-optgroup

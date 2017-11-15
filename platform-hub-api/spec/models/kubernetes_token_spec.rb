@@ -170,6 +170,19 @@ RSpec.describe KubernetesToken, type: :model do
         end
       end
 
+      context 'for a group that hasn\'t been allocated' do
+        let(:group) { create(:kubernetes_group, :privileged) }
+
+        it 'should set an error on the token and not change any groups' do
+          result = @t.escalate(group.name, 2000)
+          expect(result).to be false
+          expect(@t.errors.size).to eq 1
+          expect(@t.errors.messages).to eq({
+            base: ["group '#{group.name}' cannot be used to escalate privilege for this token"]
+          })
+        end
+      end
+
       context 'for invalid token' do
         before do
           @t.uid = nil

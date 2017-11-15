@@ -1,6 +1,11 @@
 <md-dialog aria-label="Escalate privilege for a kubernetes token">
   <md-toolbar class="md-toolbar-tools md-accent">
-    <h2>Temporarily escalate privilege for user '{{$ctrl.user.name}}' on cluster '{{$ctrl.cluster}}'</h2>
+    <h2>
+      Temporarily escalate privilege for user:
+      {{$ctrl.token.user.name}}
+      - on cluster:
+      {{$ctrl.token.cluster.name}}
+    </h2>
     <span flex></span>
     <md-button
       class="close-button md-icon-button"
@@ -14,19 +19,34 @@
 
   <md-dialog-content class="md-dialog-content" layout="column" layout-padding>
 
-    <form name="$ctrl.form" ng-if="!$ctrl.loading && $ctrl.groups.length > 0">
+    <p
+      ng-if="!$ctrl.loading && _.isEmpty($ctrl.groups)"
+      class="md-body-2"
+      md-colors="{background: 'default-accent-50'}"
+      layout-padding>
+      No privileged RBAC groups have been allocated to the project (or any of it's services), so escalation of privileges for this token is not possible just yet.
+    </p>
+
+    <form name="$ctrl.form" ng-if="!$ctrl.loading && !_.isEmpty($ctrl.groups)">
       <md-input-container class="md-block">
         <label for="group">Escalation group to set:</label>
         <md-select
           name="group"
           ng-model="$ctrl.data.group"
+          md-selected-text="$ctrl.data.group ? $ctrl.data.group : 'Escalation group to set:'"
           required
           aria-label="The escalation group (a.k.a. role) to set for the time limited period">
-          <md-option
-            ng-repeat="g in $ctrl.groups"
-            ng-value="g.id">
-            {{g.id}}
-          </md-option>
+          <md-optgroup
+            ng-repeat="(label, groups) in $ctrl.groups track by label"
+            label="{{label}}">
+            <md-option
+              ng-repeat="g in groups track by g.name"
+              ng-value="g.name">
+              {{g.name}}
+              <br />
+              <small>{{g.description}}</small>
+            </md-option>
+          </md-optgroup>
         </md-select>
       </md-input-container>
       <md-input-container class="md-block">
@@ -56,6 +76,7 @@
     <md-button
       class="md-primary"
       ng-click="$ctrl.escalate()"
+      ng-if="!_.isEmpty($ctrl.groups)"
       ng-disabled="$ctrl.processing || !$ctrl.form || $ctrl.form.$invalid"
       ng-class="{'md-raised': ($ctrl.form.$dirty && $ctrl.form.$valid) }"
       aria-label="Perform escalation">

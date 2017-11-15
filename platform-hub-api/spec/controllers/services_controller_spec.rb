@@ -605,13 +605,16 @@ RSpec.describe ServicesController, type: :controller do
     let :service_user_groups do
       [
         @service_group_namespace_user_not_privileged,
-        @service_group_clusterwide_user_not_privileged
+        @service_group_namespace_user_privileged,
+        @service_group_clusterwide_user_not_privileged,
+        @service_group_clusterwide_user_privileged
       ].sort_by(&:name)
     end
 
     let :service_robot_groups do
       [
-        @service_group_namespace_robot_not_privileged
+        @service_group_namespace_robot_not_privileged,
+        @service_group_namespace_robot_privileged
       ]
     end
 
@@ -621,7 +624,8 @@ RSpec.describe ServicesController, type: :controller do
 
     let :other_service_user_groups do
       [
-        @other_service_group_namespace_user_not_privileged
+        @other_service_group_namespace_user_not_privileged,
+        @other_service_group_namespace_user_privileged
       ]
     end
 

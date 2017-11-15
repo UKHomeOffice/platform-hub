@@ -4,7 +4,7 @@ class Kubernetes::TokensController < ApiJsonController
 
   before_action :find_token, only: [ :show, :update, :destroy, :escalate, :deescalate ]
 
-  authorize_resource class: KubernetesToken
+  authorize_resource class: KubernetesToken, except: [ :escalate, :deescalate ]
 
   # GET /kubernetes/tokens
   def index
@@ -47,6 +47,8 @@ class Kubernetes::TokensController < ApiJsonController
 
   # PATCH /kubernetes/tokens/:id/escalate
   def escalate
+    authorize! :administer_projects, @token.project
+
     privileged_group, expires_in_secs = params.require([:privileged_group, :expires_in_secs])
 
     if @token.escalate(privileged_group, expires_in_secs)
@@ -68,6 +70,8 @@ class Kubernetes::TokensController < ApiJsonController
 
   # PATCH /kubernetes/tokens/:id/deescalate
   def deescalate
+    authorize! :administer_projects, @token.project
+
     if @token.deescalate
       AuditService.log(
         context: audit_context,

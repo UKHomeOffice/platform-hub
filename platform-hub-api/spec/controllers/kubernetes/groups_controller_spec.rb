@@ -281,44 +281,6 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
     end
   end
 
-  describe 'GET #privileged' do
-    it_behaves_like 'unauthenticated not allowed' do
-      before do
-        get :privileged
-      end
-    end
-
-    it_behaves_like 'authenticated' do
-
-      it_behaves_like 'not a hub admin so forbidden'  do
-        before do
-          get :privileged
-        end
-      end
-
-      it_behaves_like 'a hub admin' do
-        let!(:not_privileged_group) { create :kubernetes_group, is_privileged: false }
-        let!(:privileged_group) { create :kubernetes_group, is_privileged: true }
-        let!(:default_privileged_group) { create :kubernetes_group }
-
-        it 'returns the list of privileged kubernetes groups' do
-          get :privileged
-          expect(response).to be_success
-          expect(json_response).to eq([{
-            'id' => privileged_group.friendly_id,
-            'name' => privileged_group.name,
-            'kind' => privileged_group.kind,
-            'target' => privileged_group.target,
-            'description' => privileged_group.description,
-            'is_privileged' => privileged_group.is_privileged,
-            'restricted_to_clusters' => privileged_group.restricted_to_clusters
-          }])
-        end
-
-      end
-    end
-  end
-
   describe 'POST #allocate' do
     before do
       @group = create :kubernetes_group

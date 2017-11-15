@@ -3,7 +3,7 @@ module KubernetesGroupsSubCollection
 
   # `resource` is expected to have a `#kubernetes_groups` association
   def kubernetes_groups_sub_collection resource, target = nil
-    scope = resource.kubernetes_groups.not_privileged
+    scope = resource.kubernetes_groups
     groups = if target.present?
       unless KubernetesGroup.targets.keys.include?(target)
         bad_request_error('Invalid `target` param specified') and return

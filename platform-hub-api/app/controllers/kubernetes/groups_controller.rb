@@ -64,12 +64,6 @@ class Kubernetes::GroupsController < ApiJsonController
     head :no_content
   end
 
-  # GET /kubernetes/groups/privileged
-  def privileged
-    groups = KubernetesGroup.privileged.order(:name)
-    render json: groups
-  end
-
   # POST /kubernetes/groups/:id/allocate
   def allocate
     project = Project.friendly.find(params.require(:project_id))
