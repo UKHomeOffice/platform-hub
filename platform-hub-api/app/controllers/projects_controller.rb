@@ -118,7 +118,8 @@ class ProjectsController < ApiJsonController
 
   # GET /projects/:id/memberships
   def memberships
-    render json: @project.memberships, each_serializer: ProjectMembershipSerializer
+    memberships = @project.memberships_ordered_by_users_name
+    render json: memberships, each_serializer: ProjectMembershipSerializer
   end
 
   # PUT /projects/:id/memberships/:user_id
