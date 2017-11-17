@@ -12,6 +12,8 @@ class KubernetesGroup < ApplicationRecord
 
   allocatable
 
+  after_update :handle_name_rename
+
   validates :name,
     presence: true,
     uniqueness: true,
@@ -40,6 +42,24 @@ class KubernetesGroup < ApplicationRecord
 
   def self.privileged_names
     privileged.pluck(:name)
+  end
+
+  private
+
+  def handle_name_rename
+    if self.name_changed?
+      connection = ActiveRecord::Base.connection
+      sql = <<-SQL
+        UPDATE kubernetes_tokens
+        SET groups =
+          array_replace(
+            groups,
+            #{connection.quote(self.name_was)},
+            #{connection.quote(self.name)}
+          )
+      SQL
+      connection.execute(sql)
+    end
   end
 
 end
