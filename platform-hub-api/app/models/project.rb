@@ -47,4 +47,10 @@ class Project < ApplicationRecord
     -> { where kind: 'user' },
     class_name: 'KubernetesToken'
 
+  def memberships_ordered_by_users_name
+    memberships
+      .includes(:user)  # Eager load users for performance
+      .joins(:user).order("users.name")  # Order by user name
+  end
+
 end

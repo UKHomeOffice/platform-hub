@@ -313,24 +313,27 @@ RSpec.describe ProjectsController, type: :controller do
         # Important: we shouldn't be able to see the user's identities here
         # (since we're not a hub admin)
 
-        @memberships.map do |m|
-          user = m.user
+        @memberships
+          .sort { |a,b|
+            a.user.name <=> b.user.name
+          }.map do |m|
+            user = m.user
 
-          {
-            'user' => {
-              'id' => user.id,
-              'name' => user.name,
-              'email' => user.email,
-              'role' =>  user.role,
-              'last_seen_at' => now_json_value,
-              'enabled_identities' => [],
-              'is_active' => true,
-              'is_managerial' => true,
-              'is_technical' => true
-            },
-            'role' => nil
-          }
-        end
+            {
+              'user' => {
+                'id' => user.id,
+                'name' => user.name,
+                'email' => user.email,
+                'role' =>  user.role,
+                'last_seen_at' => now_json_value,
+                'enabled_identities' => [],
+                'is_active' => true,
+                'is_managerial' => true,
+                'is_technical' => true
+              },
+              'role' => nil
+            }
+          end
       end
 
       it 'should return a list of memberships' do
