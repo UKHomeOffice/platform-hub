@@ -51,4 +51,25 @@ RSpec.describe KubernetesGroup, type: :model do
     end
   end
 
+  describe 'after_destroy :handle_destroy' do
+    let!(:project) { create :project }
+    let!(:group) { create :kubernetes_group, :for_user, allocate_to: project }
+
+    let!(:other_group) { create :kubernetes_group, :for_user, allocate_to: project }
+
+    let(:assigned_groups) do
+      [
+        group.name,
+        other_group.name
+      ]
+    end
+
+    let!(:token) { create :user_kubernetes_token, project: project, groups: assigned_groups }
+
+    it 'should remove the group from token\'s groups' do
+      group.destroy!
+      expect(token.reload.groups).to eq [other_group.name]
+    end
+  end
+
 end
