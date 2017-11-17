@@ -13,6 +13,7 @@ class KubernetesGroup < ApplicationRecord
   allocatable
 
   after_update :handle_name_rename
+  after_destroy :handle_destroy
 
   validates :name,
     presence: true,
@@ -60,6 +61,19 @@ class KubernetesGroup < ApplicationRecord
       SQL
       connection.execute(sql)
     end
+  end
+
+  def handle_destroy
+    connection = ActiveRecord::Base.connection
+    sql = <<-SQL
+      UPDATE kubernetes_tokens
+      SET groups =
+        array_remove(
+          groups,
+          #{connection.quote(self.name)}
+        )
+    SQL
+    connection.execute(sql)
   end
 
 end
