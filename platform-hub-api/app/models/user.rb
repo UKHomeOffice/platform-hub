@@ -20,11 +20,11 @@ class User < ApplicationRecord
     uniqueness: { case_sensitive: false }
 
   has_many :identities,
-    dependent: :delete_all
+    dependent: :destroy
 
   has_many :memberships,
     class_name: 'ProjectMembership',
-    dependent: :delete_all
+    dependent: :destroy
 
   has_many :projects, through: :memberships
 

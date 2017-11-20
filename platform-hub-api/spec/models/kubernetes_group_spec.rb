@@ -49,4 +49,39 @@ RSpec.describe KubernetesGroup, type: :model do
     end
   end
 
+  describe 'scopes' do
+
+    describe 'with_restricted_cluster' do
+      let!(:cluster) { create :kubernetes_cluster }
+
+      subject { KubernetesGroup.with_restricted_cluster(cluster) }
+
+      context 'when no restricted clusters are set' do
+        let!(:group) { create :kubernetes_group, restricted_to_clusters: [] }
+
+        it 'should not find any groups' do
+          expect(subject.count).to be 0
+        end
+      end
+
+      context 'when the cluster is set in the restricted list' do
+        let!(:group) { create :kubernetes_group, restricted_to_clusters: [ cluster.name ] }
+
+        it 'should find the group' do
+          expect(subject.entries).to eq [ group ]
+        end
+      end
+
+      context 'when a diffrent cluster is set in the restricted list' do
+        let!(:other_cluster) { create :kubernetes_cluster }
+        let!(:group) { create :kubernetes_group, restricted_to_clusters: [ other_cluster.name ] }
+
+        it 'should not find any groups' do
+          expect(subject.count).to be 0
+        end
+      end
+    end
+
+  end
+
 end

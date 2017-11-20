@@ -62,8 +62,18 @@ class KubernetesToken < ApplicationRecord
     connection.execute(sql)
   end
 
-  def self.update_all_group_removal name
-    sql = <<-SQL
+  def self.update_all_group_removal name, kind: nil, project_id: nil, service_id: nil
+    if (project_id.present? || service_id.present?) && kind.blank?
+      raise ArgumentError, "`project_id` or `service_id` can only be provided if `kind` is provided"
+    end
+
+    if project_id.present? && service_id.present?
+      raise ArgumentError, "only one of `project_id` or `service_id` can be provided"
+    end
+
+    lines = []
+
+    lines << <<-SQL
       UPDATE kubernetes_tokens
       SET groups =
         array_remove(
@@ -71,7 +81,18 @@ class KubernetesToken < ApplicationRecord
           #{connection.quote(name)}
         )
     SQL
-    connection.execute(sql)
+
+    if kind
+      lines << "WHERE kind = #{connection.quote(kind)}"
+    end
+    if project_id
+      lines << "AND project_id = #{connection.quote(project_id)}"
+    end
+    if service_id
+      lines << "AND tokenable_type = #{connection.quote(Service.name)} AND tokenable_id = #{connection.quote(service_id)}"
+    end
+
+    connection.execute(lines.join("\n"))
   end
 
   def token=(val)

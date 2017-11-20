@@ -6,7 +6,7 @@ module AllocationReceivable
     def allocation_receivable
       has_many :allocations,
         as: :allocation_receivable,
-        dependent: :delete_all
+        dependent: :destroy
     end
 
   end

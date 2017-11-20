@@ -43,7 +43,7 @@ FactoryGirl.define do
 
       trait :user_is_not_member_of_project do
         after(:build) do |token, _|
-          ProjectMembership.where(project_id: token.project_id, user_id: token.tokenable.user_id).delete_all
+          ProjectMembership.where(project_id: token.project_id, user_id: token.tokenable.user_id).map(&:destroy)
         end
       end
     end

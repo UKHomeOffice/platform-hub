@@ -41,8 +41,25 @@ class KubernetesGroup < ApplicationRecord
   scope :privileged, -> { where(is_privileged: true) }
   scope :not_privileged, -> { where.not(is_privileged: true) }
 
+  scope :with_restricted_cluster, -> (c) { where("? = ANY (restricted_to_clusters)", c.name) }
+
   def self.privileged_names
     privileged.pluck(:name)
+  end
+
+  def self.update_all_cluster_removal cluster
+    # Note: we assume we are running in a db transaction when this is called
+    KubernetesGroup.with_restricted_cluster(cluster).each do |group|
+      group.restricted_to_clusters.delete(cluster.name)
+
+      if group.restricted_to_clusters.empty?
+        # If we've just emptied this group out then we need to delete it!
+        # (Since now it will be allwowed for all clusters)
+        group.destroy
+      else
+        group.save!
+      end
+    end
   end
 
   private
