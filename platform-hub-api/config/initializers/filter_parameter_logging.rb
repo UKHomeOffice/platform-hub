@@ -16,5 +16,6 @@ Rails.application.config.filter_parameters += [
   :s3_bucket_name,
   :s3_access_key_id,
   :s3_secret_access_key,
-  :object_key
+  :object_key,
+  :ca_cert_encoded
 ]
