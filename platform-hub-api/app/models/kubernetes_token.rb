@@ -49,6 +49,31 @@ class KubernetesToken < ApplicationRecord
   validate :allowed_clusters_only
   validate :allowed_groups_only
 
+  def self.update_all_group_rename old_name, new_name
+    sql = <<-SQL
+      UPDATE kubernetes_tokens
+      SET groups =
+        array_replace(
+          groups,
+          #{connection.quote(old_name)},
+          #{connection.quote(new_name)}
+        )
+    SQL
+    connection.execute(sql)
+  end
+
+  def self.update_all_group_removal name
+    sql = <<-SQL
+      UPDATE kubernetes_tokens
+      SET groups =
+        array_remove(
+          groups,
+          #{connection.quote(name)}
+        )
+    SQL
+    connection.execute(sql)
+  end
+
   def token=(val)
     self['token'] = ENCRYPTOR.encrypt(val)
   end

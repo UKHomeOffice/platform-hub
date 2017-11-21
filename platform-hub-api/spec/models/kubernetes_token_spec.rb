@@ -786,4 +786,40 @@ RSpec.describe KubernetesToken, type: :model do
 
   end
 
+  describe 'class methods' do
+
+    describe '.update_all_group_rename' do
+      let!(:token) { create :user_kubernetes_token, groups_count: 2 }
+
+      let!(:old_name) { token.groups.first }
+      let!(:new_name) { 'updated-group-name' }
+
+      let! :expected_groups do
+        [
+          new_name,
+          token.groups.second
+        ]
+      end
+
+      it 'should amend the token\'s groups' do
+        KubernetesToken.update_all_group_rename old_name, new_name
+        expect(token.reload.groups).to eq expected_groups
+      end
+    end
+
+    describe '.update_all_group_removal' do
+      let!(:token) { create :user_kubernetes_token, groups_count: 2 }
+
+      let!(:group_to_remove) { token.groups.first }
+
+      let!(:expected_groups) { [ token.groups.second ] }
+
+      it 'should remove the group from token\'s groups' do
+        KubernetesToken.update_all_group_removal group_to_remove
+        expect(token.reload.groups).to eq expected_groups
+      end
+    end
+
+  end
+
 end

@@ -49,31 +49,12 @@ class KubernetesGroup < ApplicationRecord
 
   def handle_name_rename
     if self.name_changed?
-      connection = ActiveRecord::Base.connection
-      sql = <<-SQL
-        UPDATE kubernetes_tokens
-        SET groups =
-          array_replace(
-            groups,
-            #{connection.quote(self.name_was)},
-            #{connection.quote(self.name)}
-          )
-      SQL
-      connection.execute(sql)
+      KubernetesToken.update_all_group_rename self.name_was, self.name
     end
   end
 
   def handle_destroy
-    connection = ActiveRecord::Base.connection
-    sql = <<-SQL
-      UPDATE kubernetes_tokens
-      SET groups =
-        array_remove(
-          groups,
-          #{connection.quote(self.name)}
-        )
-    SQL
-    connection.execute(sql)
+    KubernetesToken.update_all_group_removal self.name
   end
 
 end
