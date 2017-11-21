@@ -20,7 +20,8 @@ class KubernetesCluster < ApplicationRecord
   validates :name, presence: true, uniqueness: true
 
   validates :description, :s3_region, :s3_bucket_name, :s3_object_key,
-            :s3_access_key_id, :s3_secret_access_key, presence: true
+            :s3_access_key_id, :s3_secret_access_key,
+            :api_url, :ca_cert_encoded, presence: true
 
   has_many :tokens, class_name: KubernetesToken, foreign_key: :cluster_id
 

@@ -43,7 +43,7 @@
           </md-input-container>
 
           <fieldset>
-            <legend>S3 bucket config for tokens sync</legend>
+            <legend>Additional configuration for S3 token sync and kubeconfig generation</legend>
 
             <p
               "md-body-1"
@@ -54,6 +54,30 @@
             </p>
 
             <br />
+
+            <md-input-container class="md-block">
+              <label for="api_url">Cluster API URL:</label>
+              <input
+                name="api_url"
+                ng-model="$ctrl.cluster.api_url"
+                placeholder="e.g.: https://cluster-api.environment.example.com:8443"
+                required>
+              <div ng-messages="$ctrl.clusterForm.api_url.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="ca_cert_encoded">CA Cert Content (base64 encoded):</label>
+              <input
+                name="ca_cert_encoded"
+                ng-model="$ctrl.cluster.ca_cert_encoded"
+                placeholder="CACertBase64EncodedString"
+                required>
+              <div ng-messages="$ctrl.clusterForm.ca_cert_encoded.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
 
             <md-input-container class="md-block">
               <label for="s3_region">AWS region:</label>
@@ -101,7 +125,7 @@
             </md-input-container>
 
             <md-input-container class="md-block">
-              <label for="s3_object_key">Object key:</label>
+              <label for="s3_object_key">Tokens file object key:</label>
               <input
                 name="s3_object_key"
                 ng-model="$ctrl.cluster.s3_object_key"

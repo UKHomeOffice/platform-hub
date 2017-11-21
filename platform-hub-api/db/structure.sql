@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 9.6.1
--- Dumped by pg_dump version 9.6.2
+-- Dumped by pg_dump version 10.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -265,7 +265,9 @@ CREATE TABLE kubernetes_clusters (
     s3_secret_access_key character varying NOT NULL,
     s3_object_key character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    api_url character varying NOT NULL,
+    ca_cert_encoded character varying NOT NULL
 );
 
 
@@ -1045,6 +1047,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171010111440'),
 ('20171012110416'),
 ('20171031164247'),
-('20171114100517');
+('20171114100517'),
+('20171121125850');
 
 

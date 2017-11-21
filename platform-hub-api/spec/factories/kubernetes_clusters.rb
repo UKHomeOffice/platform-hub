@@ -11,6 +11,8 @@ FactoryGirl.define do
     s3_access_key_id { ENCRYPTOR.encrypt('s3_access_key_id') }
     s3_secret_access_key { ENCRYPTOR.encrypt('s3_secret_access_key') }
     s3_object_key { 's3/object/key.csv' }
+    api_url { 'https://cluster-api.environment.example.com:8443' }
+    ca_cert_encoded { 'CACertBase64EncodedString' }
 
     transient do
       allocate_to nil
