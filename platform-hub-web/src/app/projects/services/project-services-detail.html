@@ -7,14 +7,14 @@
       </h3>
       <span flex></span>
       <md-button
-        ng-if="$ctrl.service"
+        ng-if="$ctrl.service && ($ctrl.isAdmin || $ctrl.isProjectAdmin)"
         aria-label="Edit this project service"
         ui-sref="projects.services.edit({projectId: $ctrl.projectId, id: $ctrl.service.id})">
         <md-icon>edit</md-icon>
         Edit
       </md-button>
       <md-button
-        ng-if="$ctrl.service"
+        ng-if="$ctrl.service && ($ctrl.isAdmin || $ctrl.isProjectAdmin)"
         aria-label="Delete this project service"
         ng-click="$ctrl.deleteService($event)">
         <md-icon>delete</md-icon>
@@ -119,7 +119,7 @@
               </p>
             </md-card-content>
 
-            <md-card-actions layout="row" layout-align="start center">
+            <md-card-actions layout="row" layout-align="start center" ng-if="$ctrl.isAdmin || $ctrl.isProjectAdmin">
               <md-button
                 class="md-primary"
                 aria-label="View and edit details for this token"
