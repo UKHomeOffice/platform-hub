@@ -126,8 +126,9 @@
                 ui-sref="kubernetes.robot-tokens.edit({cluster: t.cluster.name, tokenId: t.id, fromProject: $ctrl.projectId, fromService: $ctrl.service.id})">
                 View and edit
               </md-button>
+              <span flex></span>
               <md-button
-                class="md-primary"
+                class="md-accent"
                 ng-click="$ctrl.deleteKubernetesRobotToken(t.id, $event)"
                 ng-disabled="$ctrl.processingKubernetesRobotTokens"
                 aria-label="Delete kubernetes robot token">
@@ -140,7 +141,8 @@
 
     </md-tabs>
 
-  </md-content>
+    <br /><br />
+    <br /><br />
 
-  <br /><br /><br /><br />
+  </md-content>
 </div>

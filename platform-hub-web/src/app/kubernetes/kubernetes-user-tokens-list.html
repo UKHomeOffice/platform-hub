@@ -148,7 +148,9 @@
             Grant a short lived escalation of privilege for this token. Opens a popup where you can configure and apply this escalation.
           </md-tooltip>
         </md-button>
+        <span flex></span>
         <md-button
+          class="md-accent"
           ng-click="$ctrl.deleteToken(t.id, $event)"
           aria-label="Remove kubernetes token">
           Delete
@@ -173,6 +175,8 @@
         </p>
       </md-card-content>
     </md-card>
+
+    <br /><br />
 
   </md-content>
 </div>
