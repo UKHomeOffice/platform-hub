@@ -105,6 +105,9 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
   end
 
   describe 'POST #create' do
+    let(:cluster1) { create :kubernetes_cluster }
+    let(:cluster2) { create :kubernetes_cluster }
+
     let :post_data do
       {
         group: {
@@ -113,7 +116,7 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
           target: 'robot',
           description: 'foobar desc',
           is_privileged: true,
-          restricted_to_clusters: ['cluster1', 'cluster2']
+          restricted_to_clusters: [ cluster1.name, cluster2.name ]
         }
       }
     end
@@ -184,6 +187,8 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
   end
 
   describe 'PUT #update' do
+    let(:cluster) { create :kubernetes_cluster }
+
     let :put_data do
       {
         id: @group.friendly_id,
@@ -197,7 +202,7 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
     end
 
     before do
-      @group = create :kubernetes_group, restricted_to_clusters: [ 'foo' ]
+      @group = create :kubernetes_group, restricted_to_clusters: [ cluster.name ]
     end
 
     it_behaves_like 'unauthenticated not allowed'  do

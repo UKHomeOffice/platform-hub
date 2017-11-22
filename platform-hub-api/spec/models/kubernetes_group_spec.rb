@@ -84,4 +84,35 @@ RSpec.describe KubernetesGroup, type: :model do
 
   end
 
+  describe 'custom validations' do
+
+    describe '#cluster_names_exists' do
+      let(:existing_cluster_name) { create(:kubernetes_cluster).name }
+      let(:not_existing_cluster_name) { 'not-existent-cluster' }
+
+      context 'when restricted_to_clusters is empty' do
+        it 'does nothing' do
+          expect(KubernetesCluster).to receive(:exists?).never
+          group = build :kubernetes_group, restricted_to_clusters: []
+          expect(group).to be_valid
+        end
+      end
+
+      context 'when restricted_to_clusters is not empty' do
+        it 'allows setting an existing cluster' do
+          group = build :kubernetes_group, restricted_to_clusters: [ existing_cluster_name ]
+          expect(group).to be_valid
+        end
+
+        it 'raises error when trying to set a cluster that does not exist' do
+          expect { create :kubernetes_group, restricted_to_clusters: [ not_existing_cluster_name ] }.to raise_error(
+            ActiveRecord::RecordInvalid,
+            "Validation failed: Restricted to clusters contain an invalid cluster - 'not-existent-cluster' does not exist"
+          )
+        end
+      end
+    end
+
+  end
+
 end
