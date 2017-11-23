@@ -301,8 +301,8 @@
                 </p>
                 <p class="md-body-1">
                   <strong>Groups:</strong>
-                  <span ng-if="t.groups && t.groups.length > 0">
-                    {{t.groups.join(', ')}}
+                  <span ng-if="t.groups.length > 0">
+                    <span ng-repeat="g in t.groups" class="badge" md-colors="{background: 'green-100'}">{{g}}</span>
                   </span>
                   <span ng-if="!t.groups.length" class="none-text">
                     no RBAC groups assigned to this token

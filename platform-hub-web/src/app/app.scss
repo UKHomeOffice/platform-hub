@@ -48,6 +48,10 @@ fieldset {
   float: right;
 }
 
+.inline-block {
+  display: inline-block;;
+}
+
 .none-text {
   font-style: italic;
   color: #777;
@@ -60,6 +64,12 @@ fieldset {
 
 .separator {
   margin: 0 0.66em;
+}
+
+.separated-top {
+  margin-top: 0.75em;
+  border-top: 1px dotted #CCC;
+  padding-top: 0.75em;
 }
 
 .indented {

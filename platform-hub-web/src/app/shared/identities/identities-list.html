@@ -64,7 +64,7 @@
         <div ng-if="$ctrl.showKubeTokens">
           <br />
 
-          <div ng-repeat="(label, tokens) in $ctrl.kubernetesTokensByProject track by label">
+          <div ng-repeat="(label, tokens) in $ctrl.kubernetesTokensByProject track by label" class="separated-top">
             <h5>{{label}}</h5>
             <ul class="md-body-1">
               <li ng-repeat="t in tokens">
@@ -73,17 +73,20 @@
                   <kubernetes-token-value item="t"></kubernetes-token-value>
                 </p>
 
-                <ul style="margin-bottom: 0.75em">
+                <ul>
                   <li>
                     <p>
                       Groups:
-                      <span ng-if="t.groups && t.groups.length > 0">
-                        {{t.groups.join(', ')}}
-                      </span>
                       <span ng-if="!t.groups.length" class="none-text">
                         no RBAC groups assigned to this token
                       </span>
                     </p>
+
+                    <ul ng-if="t.groups.length > 0">
+                      <li ng-repeat="g in t.groups" style="margin-bottom: 0.33em">
+                        <span class="inline-block badge" md-colors="{background: 'green-100'}">{{g}}</span>
+                      </li>
+                    </ul>
                   </li>
                   <li ng-if="t.expire_privileged_at">
                     <p
