@@ -49,40 +49,35 @@
             </div>
           </md-input-container>
 
-          <md-input-container class="md-block">
+          <md-input-container class="md-block md-input-has-value">
             <label for="kind">Kind:</label>
-            <md-select
+            <br />
+            <md-radio-group
               name="kind"
               required
               ng-model="$ctrl.group.kind"
               aria-label="Set the kind of group">
-              <md-option
+              <md-radio-button
                 ng-repeat="k in $ctrl.KubernetesGroups.kinds"
                 ng-value="k">
                 {{k}}
-              </md-option>
-            </md-select>
-            <div ng-messages="$ctrl.groupForm.kind.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
+              </md-radio-button>
+            </md-radio-group>
           </md-input-container>
 
-          <md-input-container class="md-block">
+          <md-input-container class="md-block md-input-has-value">
             <label for="target">Target:</label>
-            <md-select
-              name="target"
+            <br />
+            <md-radio-group
               required
               ng-model="$ctrl.group.target"
               aria-label="Set the target of this group">
-              <md-option
+              <md-radio-button
                 ng-repeat="t in $ctrl.KubernetesGroups.targets"
                 ng-value="t">
                 {{t}}
-              </md-option>
-            </md-select>
-            <div ng-messages="$ctrl.groupForm.target.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
+              </md-radio-button>
+            </md-radio-group>
           </md-input-container>
 
           <md-input-container class="md-block">
