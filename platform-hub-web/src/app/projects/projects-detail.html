@@ -106,7 +106,7 @@
                   <md-list ng-if="$ctrl.memberships.length > 0">
                     <md-list-item
                       class="md-2-line"
-                      ng-repeat="m in $ctrl.memberships track by m.user.id">
+                      ng-repeat="m in $ctrl.memberships | orderBy:'role' track by m.user.id">
 
                       <div class="md-list-item-text">
                         <h3>
