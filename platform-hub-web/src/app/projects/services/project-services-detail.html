@@ -86,6 +86,13 @@
               <md-card-title-text>
                 <span class="md-headline">
                   {{t.name}}
+                  <span
+                    flex="none"
+                    class="badge"
+                    md-colors="{background: 'accent-100'}"
+                    style="margin-left: 0">
+                    {{t.cluster.name}} cluster
+                  </span>
                 </span>
               </md-card-title-text>
             </md-card-title>
@@ -99,9 +106,6 @@
                 layout-padding>
               </p>
               <br />
-              <p class="md-body-1">
-                <strong>Cluster:</strong> {{t.cluster.name}}
-              </p>
               <p class="md-body-1">
                 <strong>Token:</strong> <kubernetes-token-value item="t"></kubernetes-token-value>
               </p>

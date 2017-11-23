@@ -92,8 +92,12 @@
       ng-if="!$ctrl.loading && $ctrl.tokens.length > 0"
       ng-repeat="t in $ctrl.tokens | orderBy: 'cluster.name' track by t.id">
       <md-card-title>
-        <md-card-title-text>
-          <span class="md-headline">
+        <md-card-title-text layout="row">
+          <span
+            flex="none"
+            class="md-headline badge"
+            md-colors="{background: 'accent-100'}"
+            style="margin-left: 0">
             {{t.cluster.name}} cluster
           </span>
         </md-card-title-text>
@@ -102,9 +106,6 @@
       <md-card-content>
         <p class="md-body-1">
           <strong>Project:</strong> {{t.project.name}} ({{t.project.shortname}})
-        </p>
-        <p class="md-body-1">
-          <strong>Cluster:</strong> {{t.cluster.name}}
         </p>
         <p class="md-body-1">
           <strong>Token:</strong> <kubernetes-token-value item="t"></kubernetes-token-value>
