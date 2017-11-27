@@ -24,14 +24,14 @@ class Project < ApplicationRecord
 
   has_many :memberships,
     class_name: 'ProjectMembership',
-    dependent: :delete_all
+    dependent: :destroy
 
   has_many :members,
     through: :memberships,
     source: :user
 
   has_many :services,
-    dependent: :delete_all
+    dependent: :destroy
 
   has_many :kubernetes_clusters,
     through: :allocations,
@@ -45,7 +45,8 @@ class Project < ApplicationRecord
 
   has_many :kubernetes_user_tokens,
     -> { where kind: 'user' },
-    class_name: 'KubernetesToken'
+    class_name: 'KubernetesToken',
+    dependent: :destroy
 
   def memberships_ordered_by_users_name
     memberships

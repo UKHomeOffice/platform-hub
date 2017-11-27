@@ -12,10 +12,10 @@ FactoryGirl.define do
       name { "user_#{SecureRandom.uuid}@example.com" }
 
       transient do
-        groups_count 2
+        groups_count 0
       end
 
-      after(:build) do |token, _|
+      after(:build) do |token, evaluator|
         if token.cluster.blank? && token.project.present?
           token.cluster = create :kubernetes_cluster, allocate_to: token.project
         end
@@ -24,10 +24,14 @@ FactoryGirl.define do
           create :project_membership, project: token.project, user: token.tokenable.user
         end
 
-        if token.groups.nil? && !evaluator.groups_count.zero?
-          token.groups = evaluator.groups_count.map do |i|
-            create :kubernetes_group, :not_privileged, :for_user, allocate_to: token.project
-          end
+        if token.groups.blank? && !evaluator.groups_count.zero?
+          token.groups = create_list(
+            :kubernetes_group,
+            evaluator.groups_count,
+            :not_privileged,
+            :for_user,
+            allocate_to: token.project
+          ).map(&:name)
         end
       end
 
@@ -39,7 +43,7 @@ FactoryGirl.define do
 
       trait :user_is_not_member_of_project do
         after(:build) do |token, _|
-          ProjectMembership.where(project_id: token.project_id, user_id: token.tokenable.user_id).delete_all
+          ProjectMembership.where(project_id: token.project_id, user_id: token.tokenable.user_id).map(&:destroy)
         end
       end
     end
@@ -53,7 +57,7 @@ FactoryGirl.define do
       description { "Mr Robot" }
 
       transient do
-        groups_count 2
+        groups_count 0
       end
 
       after(:build) do |token, evaluator|
@@ -61,10 +65,14 @@ FactoryGirl.define do
           token.cluster = create :kubernetes_cluster, allocate_to: token.tokenable.project
         end
 
-        if token.groups.nil? && !evaluator.groups_count.zero?
-          token.groups = evaluator.groups_count.map do |i|
-            create :kubernetes_group, :not_privileged, :for_robot, allocate_to: token.tokenable
-          end
+        if token.groups.blank? && !evaluator.groups_count.zero?
+          token.groups = create_list(
+            :kubernetes_group,
+            evaluator.groups_count,
+            :not_privileged,
+            :for_robot,
+            allocate_to: token.project
+          ).map(&:name)
         end
       end
     end

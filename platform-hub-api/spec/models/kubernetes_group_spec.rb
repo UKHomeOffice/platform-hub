@@ -21,23 +21,12 @@ RSpec.describe KubernetesGroup, type: :model do
   end
 
   describe 'after_update :handle_name_rename' do
-    let!(:project) { create :project }
-    let!(:group) { create :kubernetes_group, :for_user, allocate_to: project }
-    let!(:other_group) { create :kubernetes_group, :for_user, allocate_to: project }
+    let!(:group) { create :kubernetes_group, :for_user }
 
-    let(:assigned_groups) do
-      [
-        group.name,
-        other_group.name
-      ]
-    end
-
-    let!(:token) { create :user_kubernetes_token, project: project, groups: assigned_groups }
-
-    context 'when name has not chaned' do
+    context 'when name has not changed' do
       it 'should not amend the token\'s groups' do
+        expect(KubernetesToken).to receive(:update_all_group_rename).never
         group.update! description: 'new description'
-        expect(token.reload.groups).to eq assigned_groups
       end
     end
 
@@ -45,31 +34,54 @@ RSpec.describe KubernetesGroup, type: :model do
       let(:updated_name) { 'updated-group-name' }
 
       it 'should amend the token\'s groups' do
+        expect(KubernetesToken).to receive(:update_all_group_rename).with(group.name, updated_name).once
         group.update! name: updated_name
-        expect(token.reload.groups).to eq [updated_name, other_group.name]
       end
     end
   end
 
   describe 'after_destroy :handle_destroy' do
-    let!(:project) { create :project }
-    let!(:group) { create :kubernetes_group, :for_user, allocate_to: project }
-
-    let!(:other_group) { create :kubernetes_group, :for_user, allocate_to: project }
-
-    let(:assigned_groups) do
-      [
-        group.name,
-        other_group.name
-      ]
-    end
-
-    let!(:token) { create :user_kubernetes_token, project: project, groups: assigned_groups }
+    let!(:group) { create :kubernetes_group, :for_user }
 
     it 'should remove the group from token\'s groups' do
+      expect(KubernetesToken).to receive(:update_all_group_removal).with(group.name).once
       group.destroy!
-      expect(token.reload.groups).to eq [other_group.name]
     end
+  end
+
+  describe 'scopes' do
+
+    describe 'with_restricted_cluster' do
+      let!(:cluster) { create :kubernetes_cluster }
+
+      subject { KubernetesGroup.with_restricted_cluster(cluster) }
+
+      context 'when no restricted clusters are set' do
+        let!(:group) { create :kubernetes_group, restricted_to_clusters: [] }
+
+        it 'should not find any groups' do
+          expect(subject.count).to be 0
+        end
+      end
+
+      context 'when the cluster is set in the restricted list' do
+        let!(:group) { create :kubernetes_group, restricted_to_clusters: [ cluster.name ] }
+
+        it 'should find the group' do
+          expect(subject.entries).to eq [ group ]
+        end
+      end
+
+      context 'when a diffrent cluster is set in the restricted list' do
+        let!(:other_cluster) { create :kubernetes_cluster }
+        let!(:group) { create :kubernetes_group, restricted_to_clusters: [ other_cluster.name ] }
+
+        it 'should not find any groups' do
+          expect(subject.count).to be 0
+        end
+      end
+    end
+
   end
 
 end

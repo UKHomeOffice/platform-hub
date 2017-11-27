@@ -49,6 +49,52 @@ class KubernetesToken < ApplicationRecord
   validate :allowed_clusters_only
   validate :allowed_groups_only
 
+  def self.update_all_group_rename old_name, new_name
+    sql = <<-SQL
+      UPDATE kubernetes_tokens
+      SET groups =
+        array_replace(
+          groups,
+          #{connection.quote(old_name)},
+          #{connection.quote(new_name)}
+        )
+    SQL
+    connection.execute(sql)
+  end
+
+  def self.update_all_group_removal name, kind: nil, project_id: nil, service_id: nil
+    if (project_id.present? || service_id.present?) && kind.blank?
+      raise ArgumentError, "`project_id` or `service_id` can only be provided if `kind` is provided"
+    end
+
+    if project_id.present? && service_id.present?
+      raise ArgumentError, "only one of `project_id` or `service_id` can be provided"
+    end
+
+    lines = []
+
+    lines << <<-SQL
+      UPDATE kubernetes_tokens
+      SET groups =
+        array_remove(
+          groups,
+          #{connection.quote(name)}
+        )
+    SQL
+
+    if kind
+      lines << "WHERE kind = #{connection.quote(kind)}"
+    end
+    if project_id
+      lines << "AND project_id = #{connection.quote(project_id)}"
+    end
+    if service_id
+      lines << "AND tokenable_type = #{connection.quote(Service.name)} AND tokenable_id = #{connection.quote(service_id)}"
+    end
+
+    connection.execute(lines.join("\n"))
+  end
+
   def token=(val)
     self['token'] = ENCRYPTOR.encrypt(val)
   end

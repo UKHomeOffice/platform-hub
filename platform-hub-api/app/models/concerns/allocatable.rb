@@ -6,7 +6,7 @@ module Allocatable
     def allocatable
       has_many :allocations,
         as: :allocatable,
-        dependent: :delete_all
+        dependent: :destroy
     end
 
   end
