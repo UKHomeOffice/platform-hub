@@ -15,6 +15,7 @@ export const icons = function () {
     internalLink: 'input',
     kubernetesClusters: 'cloud_circle',
     kubernetesGroups: 'groups',
+    kubernetesNamespaces: 'picture_in_picture_alt',
     kubernetesTokens: 'vpn_key',
     markAllRead: 'drafts',
     menu: 'menu',

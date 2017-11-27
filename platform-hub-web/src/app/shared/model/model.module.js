@@ -10,6 +10,7 @@ import {FeatureFlags} from './feature-flags';
 import {Identities} from './identities';
 import {KubernetesClusters} from './kubernetes-clusters';
 import {KubernetesGroups} from './kubernetes-groups';
+import {KubernetesNamespaces} from './kubernetes-namespaces';
 import {KubernetesTokens} from './kubernetes-tokens';
 import {Me} from './me';
 import {PlatformThemes} from './platform-themes';
@@ -32,6 +33,7 @@ export const ModelModule = angular
   .service('Identities', Identities)
   .service('KubernetesClusters', KubernetesClusters)
   .service('KubernetesGroups', KubernetesGroups)
+  .service('KubernetesNamespaces', KubernetesNamespaces)
   .service('KubernetesTokens', KubernetesTokens)
   .service('Me', Me)
   .service('PlatformThemes', PlatformThemes)

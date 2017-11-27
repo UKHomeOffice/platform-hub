@@ -32,6 +32,8 @@ import {
   KubernetesGroupsDetail,
   KubernetesGroupsForm,
   KubernetesGroupsList,
+  KubernetesNamespacesForm,
+  KubernetesNamespacesList,
   KubernetesRobotTokensForm,
   KubernetesRobotTokensList,
   KubernetesTokensSync,
@@ -223,6 +225,59 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
             rolePermitted: 'admin'
+          }
+        })
+      .state('kubernetes.namespaces', {
+        abstract: true,
+        url: '/namespaces',
+        template: '<ui-view></ui-view>'
+      })
+        .state('kubernetes.namespaces.list', {
+          url: '/list/:cluster',
+          component: KubernetesNamespacesList,
+          data: {
+            authenticate: true,
+            featureFlags: [featureFlagKeys.kubernetesTokens],
+            rolePermitted: 'admin'
+          },
+          resolve: {
+            transition: '$transition$'
+          },
+          params: {
+            cluster: ''
+          }
+        })
+        .state('kubernetes.namespaces.new', {
+          url: '/new/:cluster?fromProject&fromService',
+          component: KubernetesNamespacesForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlags: [featureFlagKeys.kubernetesTokens],
+            rolePermitted: 'admin'
+          },
+          params: {
+            cluster: '',
+            fromProject: null,
+            fromService: null
+          }
+        })
+        .state('kubernetes.namespaces.edit', {
+          url: '/edit/:cluster/:namespaceId?fromProject&fromService',
+          component: KubernetesNamespacesForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlags: [featureFlagKeys.kubernetesTokens],
+            rolePermitted: 'admin'
+          },
+          params: {
+            fromProject: null,
+            fromService: null
           }
         })
       .state('kubernetes.user-tokens', {

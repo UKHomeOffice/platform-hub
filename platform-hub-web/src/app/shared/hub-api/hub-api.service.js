@@ -128,6 +128,12 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.revokeKubernetesToken = revokeKubernetesToken;
   service.escalatePrivilegeForKubernetesTokens = escalatePrivilegeForKubernetesTokens;
 
+  service.getKubernetesNamespaces = getKubernetesNamespaces;
+  service.getKubernetesNamespace = buildResourceFetcher('kubernetes/namespaces');
+  service.createKubernetesNamespace = buildResourceCreator('kubernetes/namespaces');
+  service.updateKubernetesNamespace = buildResourceUpdater('kubernetes/namespaces');
+  service.deleteKubernetesNamespace = buildResourceDeletor('kubernetes/namespaces');
+
   service.getFeatureFlags = buildSimpleFetcher('feature_flags', 'feature flags');
   service.updateFeatureFlag = buildResourceUpdater('feature_flags');
 
@@ -1153,6 +1159,16 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .then(handle4xxError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to escalate privilege on Kube token', response));
+        return $q.reject(response);
+      });
+  }
+
+  function getKubernetesNamespaces(params) {
+    return $http
+      .get(`${apiEndpoint}/kubernetes/namespaces`, {params: params})
+      .then(response => response.data)
+      .catch(response => {
+        logger.error('Failed to fetch kubernetes namespaces – the API might be down. Try again later.');
         return $q.reject(response);
       });
   }

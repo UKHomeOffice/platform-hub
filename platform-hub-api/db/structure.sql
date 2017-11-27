@@ -287,6 +287,21 @@ CREATE TABLE kubernetes_groups (
 
 
 --
+-- Name: kubernetes_namespaces; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE kubernetes_namespaces (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    service_id uuid NOT NULL,
+    cluster_id uuid NOT NULL,
+    name character varying NOT NULL,
+    description text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: kubernetes_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -571,6 +586,14 @@ ALTER TABLE ONLY kubernetes_groups
 
 
 --
+-- Name: kubernetes_namespaces kubernetes_namespaces_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kubernetes_namespaces
+    ADD CONSTRAINT kubernetes_namespaces_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: kubernetes_tokens kubernetes_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -840,6 +863,27 @@ CREATE INDEX index_kubernetes_groups_on_target ON kubernetes_groups USING btree 
 
 
 --
+-- Name: index_kubernetes_namespaces_on_cluster_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_namespaces_on_cluster_id ON kubernetes_namespaces USING btree (cluster_id);
+
+
+--
+-- Name: index_kubernetes_namespaces_on_name_and_cluster_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_kubernetes_namespaces_on_name_and_cluster_id ON kubernetes_namespaces USING btree (name, cluster_id);
+
+
+--
+-- Name: index_kubernetes_namespaces_on_service_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_namespaces_on_service_id ON kubernetes_namespaces USING btree (service_id);
+
+
+--
 -- Name: index_kubernetes_tokens_on_cluster_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1045,6 +1089,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171010111440'),
 ('20171012110416'),
 ('20171031164247'),
-('20171114100517');
+('20171114100517'),
+('20171127115843');
 
 

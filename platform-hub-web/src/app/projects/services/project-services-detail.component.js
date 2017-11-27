@@ -6,7 +6,7 @@ export const ProjectServicesDetailComponent = {
   controller: ProjectServicesDetailController
 };
 
-function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerService, FeatureFlags, featureFlagKeys, Projects, logger) {
+function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerService, FeatureFlags, featureFlagKeys, Projects, KubernetesNamespaces, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -24,11 +24,14 @@ function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerServi
   ctrl.service = null;
   ctrl.kubernetesRobotTokens = [];
   ctrl.processingKubernetesRobotTokens = false;
+  ctrl.processingKubernetesNamespaces = false;
 
   ctrl.deleteService = deleteService;
   ctrl.shouldShowCreateKubernetesRobotTokenButton = shouldShowCreateKubernetesRobotTokenButton;
   ctrl.loadKubernetesRobotTokens = loadKubernetesRobotTokens;
   ctrl.deleteKubernetesRobotToken = deleteKubernetesRobotToken;
+  ctrl.loadKubernetesNamespaces = loadKubernetesNamespaces;
+  ctrl.deleteKubernetesNamespace = deleteKubernetesNamespace;
 
   init();
 
@@ -134,6 +137,46 @@ function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerServi
           })
           .finally(() => {
             ctrl.processingKubernetesRobotTokens = false;
+          });
+      });
+  }
+
+  function loadKubernetesNamespaces() {
+    ctrl.processingKubernetesNamespaces = true;
+    ctrl.kubernetesNamespaces = [];
+
+    KubernetesNamespaces
+      .getAllByService(ctrl.service.id)
+      .then(namespaces => {
+        angular.copy(namespaces, ctrl.kubernetesNamespaces);
+      })
+      .finally(() => {
+        ctrl.processingKubernetesNamespaces = false;
+      });
+  }
+
+  function deleteKubernetesNamespace(id, targetEvent) {
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent('This will delete this kubernetes namespace from the hub. NOTE: this doesn\'t actually delete the namespace from the cluster - it just deletes the registration with this service.')
+      .ariaLabel('Confirm unregistration of a kubernetes namespace for this project service')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(() => {
+        ctrl.processingKubernetesNamespaces = true;
+
+        KubernetesNamespaces
+          .delete(id)
+          .then(() => {
+            logger.success('Namespace deleted');
+            return loadKubernetesNamespaces();
+          })
+          .finally(() => {
+            ctrl.processingKubernetesNamespaces = false;
           });
       });
   }
