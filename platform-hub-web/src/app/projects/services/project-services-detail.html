@@ -7,14 +7,14 @@
       </h3>
       <span flex></span>
       <md-button
-        ng-if="$ctrl.service"
+        ng-if="$ctrl.service && ($ctrl.isAdmin || $ctrl.isProjectAdmin)"
         aria-label="Edit this project service"
         ui-sref="projects.services.edit({projectId: $ctrl.projectId, id: $ctrl.service.id})">
         <md-icon>edit</md-icon>
         Edit
       </md-button>
       <md-button
-        ng-if="$ctrl.service"
+        ng-if="$ctrl.service && ($ctrl.isAdmin || $ctrl.isProjectAdmin)"
         aria-label="Delete this project service"
         ng-click="$ctrl.deleteService($event)">
         <md-icon>delete</md-icon>
@@ -41,7 +41,7 @@
         <md-tab-label>Overview</md-tab-label>
         <md-tab-body>
           <div layout-padding>
-            <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+            <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50">
               <md-content layout-padding>
 
                 <h3 class="md-title" layout="row">
@@ -86,6 +86,13 @@
               <md-card-title-text>
                 <span class="md-headline">
                   {{t.name}}
+                  <span
+                    flex="none"
+                    class="badge"
+                    md-colors="{background: 'accent-100'}"
+                    style="margin-left: 0">
+                    {{t.cluster.name}} cluster
+                  </span>
                 </span>
               </md-card-title-text>
             </md-card-title>
@@ -100,9 +107,6 @@
               </p>
               <br />
               <p class="md-body-1">
-                <strong>Cluster:</strong> {{t.cluster.name}}
-              </p>
-              <p class="md-body-1">
                 <strong>Token:</strong> <kubernetes-token-value item="t"></kubernetes-token-value>
               </p>
               <p class="md-body-1">
@@ -110,8 +114,8 @@
               </p>
               <p class="md-body-1">
                 <strong>Groups:</strong>
-                <span ng-if="t.groups && t.groups.length > 0">
-                  {{t.groups.join(', ')}}
+                <span ng-if="t.groups.length > 0">
+                  <span ng-repeat="g in t.groups" class="badge" md-colors="{background: 'green-100'}">{{g}}</span>
                 </span>
                 <span ng-if="!t.groups.length" class="none-text">
                   no RBAC groups assigned to this token
@@ -119,15 +123,16 @@
               </p>
             </md-card-content>
 
-            <md-card-actions layout="row" layout-align="start center">
+            <md-card-actions layout="row" layout-align="start center" ng-if="$ctrl.isAdmin || $ctrl.isProjectAdmin">
               <md-button
                 class="md-primary"
                 aria-label="View and edit details for this token"
                 ui-sref="kubernetes.robot-tokens.edit({cluster: t.cluster.name, tokenId: t.id, fromProject: $ctrl.projectId, fromService: $ctrl.service.id})">
                 View and edit
               </md-button>
+              <span flex></span>
               <md-button
-                class="md-primary"
+                class="md-accent"
                 ng-click="$ctrl.deleteKubernetesRobotToken(t.id, $event)"
                 ng-disabled="$ctrl.processingKubernetesRobotTokens"
                 aria-label="Delete kubernetes robot token">
@@ -140,7 +145,8 @@
 
     </md-tabs>
 
-  </md-content>
+    <br /><br />
+    <br /><br />
 
-  <br /><br /><br /><br />
+  </md-content>
 </div>

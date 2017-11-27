@@ -196,7 +196,9 @@
           ng-click="$ctrl.unmarkSticky(a)">
           Unmark sticky
         </md-button>
+        <span flex></span>
         <md-button
+          class="md-accent"
           ng-disabled="$ctrl.processing"
           aria-label="Delete this announcement"
           ng-click="$ctrl.deleteAnnouncement(a, $event)">

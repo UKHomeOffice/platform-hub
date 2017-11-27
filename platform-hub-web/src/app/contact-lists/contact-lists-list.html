@@ -41,11 +41,14 @@
 
       <md-card-actions layout="row" layout-align="start center">
         <md-button
+          class="md-primary"
           aria-label="Edit this contact list"
           ui-sref="contact-lists.edit({id: l.id})">
-          Edit
+          View and edit
         </md-button>
+        <span flex></span>
         <md-button
+          class="md-accent"
           aria-label="Delete this contact list"
           ng-click="$ctrl.deleteList(l, $event)">
           Delete

@@ -28,7 +28,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.services = [];
   ctrl.loadingServices = false;
   ctrl.kubernetesUserTokens = [];
-  ctrl.kubernetesUserTokensSelectedUser = null;
+  ctrl.kubernetesUserTokensSelectedUser = undefined;
   ctrl.processingKubernetesUserTokens = false;
 
   ctrl.deleteProject = deleteProject;

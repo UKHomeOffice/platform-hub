@@ -35,7 +35,7 @@
         <md-tab-label>Overview</md-tab-label>
         <md-tab-body>
           <div layout-padding>
-            <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z2">
+            <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50">
               <md-content layout-padding>
 
                 <h3 class="md-title">
@@ -68,16 +68,18 @@
                   ng-bind-html='$ctrl.group.description | simpleFormat'>
                 </p>
 
-                <p class="md-body-1">
+                <br />
+
+                <p class="md-body-1" ng-if="$ctrl.group.restricted_to_clusters.length > 0">
                   <span md-colors="{color: 'blue-grey-700'}">
                     Restricted to particular clusters:
                   </span>
-                  <span ng-if="$ctrl.group.restricted_to_clusters.length > 0">
+                  <span>
                     {{$ctrl.group.restricted_to_clusters.join(', ')}}
                   </span>
-                  <span class="none-text" ng-if="!$ctrl.group.restricted_to_clusters.length">
-                    --
-                  </span>
+                </p>
+                <p class="md-body-1 none-text" ng-if="!$ctrl.group.restricted_to_clusters.length">
+                  No cluster restrictions for this group
                 </p>
 
               </md-content>

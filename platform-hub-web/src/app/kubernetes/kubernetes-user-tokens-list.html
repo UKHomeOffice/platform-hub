@@ -92,8 +92,12 @@
       ng-if="!$ctrl.loading && $ctrl.tokens.length > 0"
       ng-repeat="t in $ctrl.tokens | orderBy: 'cluster.name' track by t.id">
       <md-card-title>
-        <md-card-title-text>
-          <span class="md-headline">
+        <md-card-title-text layout="row">
+          <span
+            flex="none"
+            class="md-headline badge"
+            md-colors="{background: 'accent-100'}"
+            style="margin-left: 0">
             {{t.cluster.name}} cluster
           </span>
         </md-card-title-text>
@@ -104,9 +108,6 @@
           <strong>Project:</strong> {{t.project.name}} ({{t.project.shortname}})
         </p>
         <p class="md-body-1">
-          <strong>Cluster:</strong> {{t.cluster.name}}
-        </p>
-        <p class="md-body-1">
           <strong>Token:</strong> <kubernetes-token-value item="t"></kubernetes-token-value>
         </p>
         <p class="md-body-1">
@@ -114,8 +115,8 @@
         </p>
         <p class="md-body-1">
           <strong>Groups:</strong>
-          <span ng-if="t.groups && t.groups.length > 0">
-            {{t.groups.join(', ')}}
+          <span ng-if="t.groups.length > 0">
+            <span ng-repeat="g in t.groups" class="badge" md-colors="{background: 'green-100'}">{{g}}</span>
           </span>
           <span ng-if="!t.groups.length" class="none-text">
             no RBAC groups assigned to this token
@@ -148,7 +149,9 @@
             Grant a short lived escalation of privilege for this token. Opens a popup where you can configure and apply this escalation.
           </md-tooltip>
         </md-button>
+        <span flex></span>
         <md-button
+          class="md-accent"
           ng-click="$ctrl.deleteToken(t.id, $event)"
           aria-label="Remove kubernetes token">
           Delete
@@ -173,6 +176,8 @@
         </p>
       </md-card-content>
     </md-card>
+
+    <br /><br />
 
   </md-content>
 </div>

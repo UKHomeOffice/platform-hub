@@ -38,6 +38,8 @@ class KubernetesGroup < ApplicationRecord
   }
   validates :target, presence: true
 
+  validate :cluster_names_exists
+
   scope :privileged, -> { where(is_privileged: true) }
   scope :not_privileged, -> { where.not(is_privileged: true) }
 
@@ -72,6 +74,14 @@ class KubernetesGroup < ApplicationRecord
 
   def handle_destroy
     KubernetesToken.update_all_group_removal self.name
+  end
+
+  def cluster_names_exists
+    Array(self.restricted_to_clusters).each do |name|
+      unless KubernetesCluster.exists? name: name
+        errors.add(:restricted_to_clusters, "contain an invalid cluster - '#{name}' does not exist")
+      end
+    end
   end
 
 end

@@ -55,16 +55,18 @@
           layout-padding>
         </p>
 
-        <p class="md-body-1">
+        <br />
+
+        <p class="md-body-1" ng-if="g.restricted_to_clusters.length > 0">
           <span md-colors="{color: 'blue-grey-700'}">
             Restricted to particular clusters:
           </span>
-          <span ng-if="g.restricted_to_clusters.length > 0">
+          <span>
             {{g.restricted_to_clusters.join(', ')}}
           </span>
-          <span class="none-text" ng-if="!g.restricted_to_clusters.length">
-            --
-          </span>
+        </p>
+        <p class="md-body-1 none-text" ng-if="!g.restricted_to_clusters.length">
+          No cluster restrictions for this group
         </p>
       </md-card-content>
 
