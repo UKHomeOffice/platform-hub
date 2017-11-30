@@ -143,6 +143,72 @@
         </md-tab-body>
       </md-tab>
 
+      <md-tab
+        id="kube-namespaces-tab"
+        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)"
+        md-on-select="$ctrl.loadKubernetesNamespaces()">
+        <md-tab-label>Kube Namespaces</md-tab-label>
+        <md-tab-body>
+          <loading-indicator loading="$ctrl.processingKubernetesNamespaces"></loading-indicator>
+
+          <div
+            ng-if="$ctrl.isAdmin"
+            layout="row"
+            layout-align="center center">
+            <md-button
+              class="md-primary md-raised"
+              aria-label="Register a Kubernetes namespace with this project service"
+              ui-sref="kubernetes.namespaces.new({fromProject: $ctrl.projectId, fromService: $ctrl.service.id})">
+              Register a Kubernetes namespace with this service
+            </md-button>
+          </div>
+
+          <md-card ng-repeat="n in $ctrl.kubernetesNamespaces track by n.id">
+            <md-card-title>
+              <md-card-title-text>
+                <span class="md-headline">
+                  {{n.name}}
+                  <span
+                    flex="none"
+                    class="badge"
+                    md-colors="{background: 'accent-100'}"
+                    style="margin-left: 0">
+                    {{n.cluster.name}} cluster
+                  </span>
+                </span>
+              </md-card-title-text>
+            </md-card-title>
+
+            <md-card-content>
+              <p
+                class="md-body-1"
+                md-colors="{background: 'blue-grey-50'}"
+                ng-if="n.description"
+                ng-bind-html='n.description | simpleFormat'
+                layout-padding>
+              </p>
+            </md-card-content>
+
+            <md-card-actions layout="row" layout-align="start center" ng-if="$ctrl.isAdmin">
+              <md-button
+                class="md-primary"
+                aria-label="View and edit details for this namespace"
+                ui-sref="kubernetes.namespaces.edit({cluster: n.cluster.name, namespaceId: n.id, fromProject: $ctrl.projectId, fromService: $ctrl.service.id})">
+                View and edit
+              </md-button>
+              <span flex></span>
+              <md-button
+                class="md-accent"
+                ng-click="$ctrl.deleteKubernetesNamespace(n.id, $event)"
+                ng-disabled="$ctrl.processingKubernetesNamespaces"
+                aria-label="Delete kubernetes namespace">
+                Delete
+              </md-button>
+            </md-card-actions>
+          </md-card>
+        </md-tab-body>
+      </md-tab>
+
     </md-tabs>
 
     <br /><br />

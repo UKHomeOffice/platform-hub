@@ -1,9 +1,9 @@
-<div class="kubernetes-robot-tokens-form">
+<div class="kubernetes-namespaces-form">
   <md-toolbar md-scroll-shrink>
     <div class="md-toolbar-tools">
       <h3>
-        <span ng-if="$ctrl.isNew">New Kubernetes Robot Token</span>
-        <span ng-if="!$ctrl.isNew">Edit Kubernetes Robot Token</span>
+        <span ng-if="$ctrl.isNew">New Kubernetes Namespace</span>
+        <span ng-if="!$ctrl.isNew">Edit Kubernetes Namespace</span>
       </h3>
     </div>
   </md-toolbar>
@@ -12,9 +12,16 @@
 
   <md-content layout-padding ng-if="!$ctrl.loading">
 
+    <p
+      class="md-body-1"
+      md-colors="{background: 'yellow-50'}">
+      NOTE: No namespaces are actually created/modified on the clusters by this – this is just to
+      register a namespace in the hub so it can be used and referred to later.
+    </p>
+
     <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z1">
       <md-content layout-padding>
-        <form name="$ctrl.kubernetesTokenForm" role="form" ng-submit="$ctrl.createOrUpdate()">
+        <form name="$ctrl.kubernetesNamespaceForm" role="form" ng-submit="$ctrl.createOrUpdate()">
 
           <div layout="row" flex>
             <md-input-container
@@ -25,10 +32,10 @@
               <input
                 name="service"
                 ng-value="$ctrl.service.name"
-                ng-class="{'pointer': $ctrl.isAdmin && !$ctrl.fromService}"
+                ng-class="{'pointer': $ctrl.isNew}"
                 disabled="true"
                 required>
-              <div ng-messages="$ctrl.kubernetesTokenForm.service.$error">
+              <div ng-messages="$ctrl.kubernetesNamespaceForm.service.$error">
                 <div ng-message="required">This is required.</div>
               </div>
               <p
@@ -72,92 +79,36 @@
           <md-input-container class="md-block">
             <label for="cluster">Cluster:</label>
             <md-select
-              ng-model="$ctrl.token.cluster.name"
+              ng-model="$ctrl.namespace.cluster.name"
               ng-change="$ctrl.handleClusterChange()"
               name="cluster"
               required
               placeholder="Select the cluster"
-              ng-disabled="$ctrl.processing || !$ctrl.service || (!$ctrl.isNew && $ctrl.token.cluster) || !$ctrl.allowedClusters.length">
+              ng-disabled="$ctrl.processing || !$ctrl.service || (!$ctrl.isNew && $ctrl.namespace.cluster) || !$ctrl.allowedClusters.length">
               <md-option
                 ng-repeat="c in $ctrl.allowedClusters track by c.name"
                 ng-value="c.name">
                 {{c.name}} ({{c.description}})
               </md-option>
             </md-select>
-            <div ng-messages="$ctrl.kubernetesTokenForm.cluster.$error">
+            <div ng-messages="$ctrl.kubernetesNamespaceForm.cluster.$error">
               <div ng-message="required">This is required.</div>
             </div>
           </md-input-container>
 
           <br />
 
-          <p
-            ng-if="!$ctrl.processing && $ctrl.service && $ctrl.token.cluster.name && $ctrl.allowedGroups.length == 0"
-            class="md-body-2"
-            md-colors="{background: 'accent-50'}"
-            layout-padding>
-            No RBAC groups (for robot tokens) have been allocated yet to the selected service or project, or they may not be accessible to the selected cluster.
-            <br />
-            You can still create this token and add in the groups later (by editing the token once you have a group allocated).
-          </p>
-
           <md-input-container class="md-block">
-            <label for="groups">RBAC groups</label>
-            <md-select
-              name="groups"
-              ng-model="$ctrl.token.groups"
-              md-selected-text="$ctrl.token.groups.length ? $ctrl.token.groups.join(', ') : 'Select RBAC group(s):'"
-              ng-disabled="$ctrl.processing || !$ctrl.allowedGroups.length || !$ctrl.service || !$ctrl.token.cluster.name"
-              multiple>
-              <md-option
-                ng-repeat="g in $ctrl.allowedGroups track by g.name"
-                ng-value="g.name">
-                {{g.name}}
-                <br />
-                <small>{{g.description}}</small>
-              </md-option>
-            </md-select>
-          </md-input-container>
-
-          <br />
-
-          <md-input-container class="md-block" ng-if="!$ctrl.isNew">
-            <label for="token">Token:</label>
-            <input
-              name="token"
-              ng-model="$ctrl.token.obfuscated_token"
-              ng-disabled="!$ctrl.service || $ctrl.token.obfuscated_token"
-              required
-              placeholder="Kubernetes access token">
-            <div ng-messages="$ctrl.kubernetesTokenForm.token.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
-
-          <md-input-container class="md-block" ng-if="!$ctrl.isNew">
-            <label for="uid">UID:</label>
-            <input
-              name="uid"
-              ng-model="$ctrl.token.uid"
-              ng-disabled="!$ctrl.service || $ctrl.token.uid"
-              required
-              placeholder="Kubernetes user UID">
-            <div ng-messages="$ctrl.kubernetesTokenForm.uid.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
-
-          <md-input-container class="md-block">
-            <label for="name">Name (Only letters, numbers, underscores, dashes, dots and @. Must start with a letter)</label>
+            <label for="name">Name (Only lowercase letters, numbers and dashes, and must start and end with an alphanumeric character)</label>
             <input
               name="name"
-              ng-model="$ctrl.token.name"
+              ng-model="$ctrl.namespace.name"
               ng-disabled="!$ctrl.service || !$ctrl.isNew"
               required
-              ng-pattern="/^[a-zA-Z][\@\.\w-]*$/">
-            <div ng-messages="$ctrl.kubernetesTokenForm.name.$error">
+              ng-pattern="/^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/">
+            <div ng-messages="$ctrl.kubernetesNamespaceForm.name.$error">
               <div ng-message="required">This is required.</div>
-              <div ng-message="pattern">Only letters, numbers, underscores, dashes, dots and @. Must start with a letter.</div>
+              <div ng-message="pattern">Only lowercase letters, numbers and dashes, and must start and end with an alphanumeric character.</div>
             </div>
           </md-input-container>
 
@@ -165,31 +116,27 @@
             <label for="description">Description</label>
             <textarea
               name="description"
-              ng-model="$ctrl.token.description"
+              ng-model="$ctrl.namespace.description"
               ng-disabled="!$ctrl.service"
-              required
               rows="2"
-              aria-label="Set a description for this robot token"
+              aria-label="Set a description for this namespace"
               md-select-on-focus>
             </textarea>
-            <div ng-messages="$ctrl.kubernetesTokenForm.description.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
           </md-input-container>
 
           <div>
             <md-button
               type="submit"
               class="md-primary"
-              ng-disabled="!$ctrl.service || $ctrl.processing || $ctrl.saving || !$ctrl.kubernetesTokenForm.$valid"
-              ng-class="{'md-raised': ($ctrl.kubernetesTokenForm.$dirty && $ctrl.kubernetesTokenForm.$valid) }"
-              aria-label="Save Token">
+              ng-disabled="!$ctrl.service || $ctrl.processing || $ctrl.saving || !$ctrl.kubernetesNamespaceForm.$valid"
+              ng-class="{'md-raised': ($ctrl.kubernetesNamespaceForm.$dirty && $ctrl.kubernetesNamespaceForm.$valid) }"
+              aria-label="Save Namespace">
               <span ng-if="$ctrl.isNew">Create</span>
               <span ng-if="!$ctrl.isNew">Update</span>
             </md-button>
             <md-button
               ng-if="!$ctrl.fromService"
-              ui-sref="kubernetes.robot-tokens.list({cluster: $ctrl.token.cluster.name})"
+              ui-sref="kubernetes.namespaces.list({cluster: $ctrl.namespace.cluster.name})"
               ng-disabled="$ctrl.processing || $ctrl.saving">
               Cancel
             </md-button>

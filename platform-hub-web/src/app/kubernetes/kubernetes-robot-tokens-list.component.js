@@ -6,7 +6,7 @@ export const KubernetesRobotTokensListComponent = {
   controller: KubernetesRobotTokensListController
 };
 
-function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, icons, KubernetesClusters, KubernetesTokens) {
+function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, icons, KubernetesClusters, KubernetesTokens, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -71,9 +71,17 @@ function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, icons
     $mdDialog
       .show(confirm)
       .then(() => {
+        ctrl.busy = true;
+
         KubernetesTokens
           .deleteToken(tokenId)
-          .then(fetchTokens);
+          .then(() => {
+            logger.success('Token deleted');
+            return fetchTokens();
+          })
+          .finally(() => {
+            ctrl.busy = false;
+          });
       });
   }
 }

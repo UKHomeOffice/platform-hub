@@ -142,6 +142,12 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       featureFlags: [featureFlagKeys.kubernetesTokens]
     },
     {
+      title: 'Kubernetes Namespaces',
+      state: 'kubernetes.namespaces.list',
+      icon: icons.kubernetesNamespaces,
+      featureFlags: [featureFlagKeys.kubernetesTokens]
+    },
+    {
       title: 'Kubernetes User Tokens',
       state: 'kubernetes.user-tokens.list',
       icon: icons.kubernetesTokens,
