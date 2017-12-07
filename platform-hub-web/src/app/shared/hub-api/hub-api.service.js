@@ -1119,6 +1119,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
     return $http
       .post(`${apiEndpoint}/kubernetes/sync`, data)
+      .then(handle4xxError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Sync error', response));
