@@ -40,6 +40,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.createProjectKubernetesUserToken = createProjectKubernetesUserToken;
   service.updateProjectKubernetesUserToken = updateProjectKubernetesUserToken;
   service.deleteProjectKubernetesUserToken = buildSubResourceDeletor('projects', 'kubernetes_user_tokens');
+  service.getProjectBills = buildSubCollectionFetcher('projects', 'bills');
+
   service.getProjectServices = buildSubCollectionFetcher('projects', 'services');
   service.getProjectService = buildSubResourceFetcher('projects', 'services');
   service.createProjectService = buildSubResourceCreator('projects', 'services');

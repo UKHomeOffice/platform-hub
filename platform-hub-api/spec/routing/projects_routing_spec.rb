@@ -89,6 +89,10 @@ RSpec.describe ProjectsController, type: :routing do
         expect(:delete => '/projects/1/kubernetes_user_tokens/123').to route_to('projects#destroy_kubernetes_user_token', :id => '1', :token_id => '123')
       end
 
+      it 'routes to #bills' do
+        expect(:get => '/projects/1/bills').to route_to('projects#bills', :id => '1')
+      end
+
     end
 
     context 'with projects feature flag disabled' do
@@ -171,6 +175,10 @@ RSpec.describe ProjectsController, type: :routing do
 
       it 'route to #destroy_kubernetes_user_token is not routable' do
         expect(:delete => '/projects/1/kubernetes_user_tokens/123').to_not be_routable
+      end
+
+      it 'route to #bills is not routable' do
+        expect(:get => '/projects/1/bills').to_not be_routable
       end
 
     end

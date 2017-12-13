@@ -66,6 +66,8 @@ Rails.application.routes.draw do
       patch '/kubernetes_user_tokens/:token_id', to: 'projects#update_kubernetes_user_token', on: :member
       delete '/kubernetes_user_tokens/:token_id', to: 'projects#destroy_kubernetes_user_token', on: :member
 
+      get :bills, on: :member
+
       resources :services do
         get :kubernetes_groups, on: :member
         get :kubernetes_robot_tokens, on: :member

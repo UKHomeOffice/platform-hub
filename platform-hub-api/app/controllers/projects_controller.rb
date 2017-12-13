@@ -19,7 +19,8 @@ class ProjectsController < ApiJsonController
     :show_kubernetes_user_token,
     :create_kubernetes_user_token,
     :update_kubernetes_user_token,
-    :destroy_kubernetes_user_token
+    :destroy_kubernetes_user_token,
+    :bills
   ]
 
   before_action :find_user, only: [
@@ -235,6 +236,12 @@ class ProjectsController < ApiJsonController
     authorize! :administer_projects, @project
 
     destroy_kubernetes_token @token
+  end
+
+  # GET /projects/:id/bills
+  def bills
+    bills = ProjectBillsQueryService.fetch @project.id
+    render json: bills
   end
 
   private
