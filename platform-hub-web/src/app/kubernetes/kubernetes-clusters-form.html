@@ -42,6 +42,17 @@
             </div>
           </md-input-container>
 
+          <md-input-container class="md-block">
+            <label for="aws_account_id">AWS account ID:</label>
+            <input
+              name="aws_account_id"
+              ng-model="$ctrl.cluster.aws_account_id"
+              ng-pattern="$ctrl.awsAccountIdRegex">
+            <div ng-messages="$ctrl.clusterForm.aws_account_id.$error">
+              <div ng-message="pattern">Must be 12 digits</div>
+            </div>
+          </md-input-container>
+
           <fieldset>
             <legend>S3 bucket config for tokens sync</legend>
 
@@ -61,7 +72,7 @@
                 name="s3_region"
                 ng-model="$ctrl.cluster.s3_region"
                 placeholder="e.g.: eu-west-2"
-                required>
+                ng-required="$ctrl.isNew">
               <div ng-messages="$ctrl.clusterForm.s3_region.$error">
                 <div ng-message="required">This is required.</div>
               </div>
@@ -72,7 +83,7 @@
               <input
                 name="s3_bucket_name"
                 ng-model="$ctrl.cluster.s3_bucket_name"
-                required>
+                ng-required="$ctrl.isNew">
               <div ng-messages="$ctrl.clusterForm.s3_bucket_name.$error">
                 <div ng-message="required">This is required.</div>
               </div>
@@ -83,7 +94,7 @@
               <input
                 name="s3_access_key_id"
                 ng-model="$ctrl.cluster.s3_access_key_id"
-                required>
+                ng-required="$ctrl.isNew">
               <div ng-messages="$ctrl.clusterForm.s3_access_key_id.$error">
                 <div ng-message="required">This is required.</div>
               </div>
@@ -94,7 +105,7 @@
               <input
                 name="s3_secret_access_key"
                 ng-model="$ctrl.cluster.s3_secret_access_key"
-                required>
+                ng-required="$ctrl.isNew">
               <div ng-messages="$ctrl.clusterForm.s3_secret_access_key.$error">
                 <div ng-message="required">This is required.</div>
               </div>
@@ -106,7 +117,7 @@
                 name="s3_object_key"
                 ng-model="$ctrl.cluster.s3_object_key"
                 placeholder="path/to/tokens-file.csv"
-                required>
+                ng-required="$ctrl.isNew">
               <div ng-messages="$ctrl.clusterForm.s3_object_key.$error">
                 <div ng-message="required">This is required.</div>
               </div>

@@ -11,7 +11,14 @@ import {
   ContactListsForm,
   ContactListsList
 } from './contact-lists/contact-lists.module';
-import {FeatureFlagsForm} from './feature-flags/feature-flags.module';
+import {
+  CostsReportsDetail,
+  CostsReportsForm,
+  CostsReportsList
+} from './costs-reports/costs-reports.module';
+import {
+  FeatureFlagsForm
+} from './feature-flags/feature-flags.module';
 import {
   Faq,
   SupportRequestsForm,
@@ -740,5 +747,37 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             authenticate: true,
             rolePermitted: 'admin'
           }
-        });
+        })
+    .state('costs-reports', {
+      abstract: true,
+      url: '/costs-reports',
+      template: '<ui-view></ui-view>'
+    })
+      .state('costs-reports.list', {
+        url: '/list',
+        component: CostsReportsList,
+        data: {
+          authenticate: true,
+          rolePermitted: 'admin'
+        }
+      })
+      .state('costs-reports.detail', {
+        url: '/detail/:id',
+        component: CostsReportsDetail,
+        resolve: {
+          transition: '$transition$'
+        },
+        data: {
+          authenticate: true,
+          rolePermitted: 'admin'
+        }
+      })
+      .state('costs-reports.new', {
+        url: '/new',
+        component: CostsReportsForm,
+        data: {
+          authenticate: true,
+          rolePermitted: 'admin'
+        }
+      });
 };

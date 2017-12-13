@@ -25,8 +25,19 @@
         </span>
       </md-card-title>
       <md-card-content>
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-bind-html='c.description | simpleFormat'
+          layout-padding>
+        </p>
+        <br />
         <p class="md-body-1">
-          {{c.description}}
+          <span md-colors="{color: 'blue-grey-700'}">
+            AWS account ID:
+          </span>
+          <span ng-if="c.aws_account_id">{{c.aws_account_id}}</span>
+          <span ng-if="!c.aws_account_id" class="none-text">not set yet</span>
         </p>
       </md-card-content>
       <md-card-actions layout="row" layout-align="start center">

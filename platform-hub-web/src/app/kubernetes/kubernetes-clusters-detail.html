@@ -42,6 +42,14 @@
                   ng-bind-html='$ctrl.cluster.description | simpleFormat'>
                 </p>
 
+                <p class="md-body-1">
+                  <span md-colors="{color: 'blue-grey-700'}">
+                    AWS account ID:
+                  </span>
+                  <span ng-if="$ctrl.cluster.aws_account_id">{{$ctrl.cluster.aws_account_id}}</span>
+                  <span ng-if="!$ctrl.cluster.aws_account_id" class="none-text">not set yet</span>
+                </p>
+
               </md-content>
             </div>
           </div>

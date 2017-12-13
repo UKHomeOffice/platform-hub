@@ -1,0 +1,356 @@
+<div class="costs-reports-form">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        New Monthly Project Costs Report
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z1" layout-padding>
+      <md-content>
+        <form name="$ctrl.costsForm" role="form" ng-submit="$ctrl.create()">
+          <div layout="row">
+            <md-input-container>
+              <label>Year</label>
+              <md-select ng-model="$ctrl.report.year" required>
+                <md-option ng-repeat="y in $ctrl.years" ng-value="y">
+                  {{y}}
+                </md-option>
+              </md-select>
+            </md-input-container>
+
+            <md-input-container>
+              <label>Month</label>
+              <md-select ng-model="$ctrl.report.month" required>
+                <md-option ng-repeat="m in $ctrl.months" ng-value="m">
+                  {{m}}
+                </md-option>
+              </md-select>
+            </md-input-container>
+          </div>
+
+          <md-input-container class="md-block">
+            <label>Billing source data</label>
+            <md-select
+              name="billing_file"
+              ng-model="$ctrl.report.billing_file"
+              required>
+              <md-option ng-repeat="f in $ctrl.availableBillingFiles" ng-value="f">
+                {{f}}
+              </md-option>
+            </md-select>
+            <div ng-messages="$ctrl.costsForm.billing_file.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <md-input-container class="md-block">
+            <label>Metrics source data</label>
+            <md-select
+              name="metrics_file"
+              ng-model="$ctrl.report.metrics_file"
+              required>
+              <md-option ng-repeat="f in $ctrl.availableMetricsFiles" ng-value="f">
+                {{f}}
+              </md-option>
+            </md-select>
+            <div ng-messages="$ctrl.costsForm.metrics_file.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <div layout="row" layout-align="center center">
+            <md-button
+              class="md-primary md-raised"
+              ng-click="$ctrl.prepare()"
+              ng-if="!$ctrl.prepareResults"
+              ng-disabled="$ctrl.preparing || !$ctrl.isReadyToPrepare()"
+              aria-label="Prepare the next step of the report generation based on the data specified">
+              Inspect data and prepare next step of report generation
+              <md-tooltip md-direction="bottom">
+                To generate a costs report, we first need to know what billing and metrics data you want to use. We then inspect this data to ensure everything is mapped as expected, and we provide you with the config you need to fill in to finish the report generation.
+              </md-tooltip>
+            </md-button>
+          </div>
+
+          <br />
+
+          <fieldset ng-if="$ctrl.prepareResults" ng-init="r = $ctrl.prepareResults">
+            <legend>
+              Results from inspecting the data
+            </legend>
+
+            <p
+              ng-if="!r.exists"
+              class="md-body-1"
+              md-colors="{background: 'green-50', color: 'green'}"
+              layout-padding>
+              Report does not yet exist for this year and month - a new report will be created.
+            </p>
+            <p
+              ng-if="r.exists"
+              class="md-body-2"
+              md-colors="{background: 'accent-50', color: 'accent'}"
+              layout-padding>
+              Report already exists for this year and month – by continuing, you will overwrite this report.
+            </p>
+
+            <p
+              class="md-body-1"
+              md-colors="{background: 'blue-grey-50'}"
+              layout-padding>
+              <span md-colors="{color: 'green'}">
+                Mapped AWS accounts: <strong>{{r.accounts.mapped.length}}</strong><br />
+              </span>
+              <span md-colors="{color: 'accent'}">
+                Unmapped AWS accounts: <strong>{{r.accounts.unmapped.length}}</strong><br />
+              </span>
+              <span md-colors="{color: 'green'}">
+                Mapped namespaces: <strong>{{r.namespaces.mapped.length}}</strong><br />
+              </span>
+              <span md-colors="{color: 'orange'}">
+                Unmapped namespaces: <strong>{{r.namespaces.unmapped.length}}</strong><br />
+              </span>
+            </p>
+
+            <div style="max-height: 500px; overflow-y: scroll;">
+              <md-list flex>
+
+                <md-subheader
+                  class="md-sticky"
+                  ng-if="r.accounts.mapped.length">
+                  Mapped AWS accounts
+                </md-subheader>
+                <md-list-item
+                  class="md-3-line"
+                  ng-repeat="a in r.accounts.mapped track by a.account_id">
+                  <div class="md-list-item-text" layout="column">
+                    <h3>
+                      Name: <strong>{{a.account_name}}</strong>
+                      |
+                      Bill: <strong>{{a.total_bill | currency:'$'}}</strong>
+                    </h3>
+                    <h4>AWS account ID: {{a.account_id}}</h4>
+                    <p class="md-body-2">
+                      Mapped to cluster:
+                      <span md-colors="{color: 'green'}">{{a.cluster_name}}</span>
+                    </p>
+                  </div>
+                </md-list-item>
+
+                <md-divider ng-if="r.accounts.mapped.length"></md-divider>
+
+                <md-subheader
+                  class="md-sticky"
+                  ng-if="r.accounts.unmapped.length"
+                  md-colors="{color: 'accent'}">
+                  Unmapped AWS accounts
+                  <br />
+                  <em>You cannot generate a costs report if unmapped accounts are present in the billing data</em>
+                </md-subheader>
+                <md-list-item
+                  class="md-3-line"
+                  ng-repeat="a in r.accounts.unmapped track by a.account_id">
+                  <div class="md-list-item-text" layout="column">
+                    <h3>
+                      Name: <strong>{{a.account_name}}</strong>
+                      |
+                      Bill: <strong>{{a.total_bill | currency:'$'}}</strong>
+                    </h3>
+                    <h4>AWS account ID: {{a.account_id}}</h4>
+                    <p class="md-body-2" md-colors="{color: 'accent'}">
+                      No mapped cluster found - assign this AWS account ID to a
+                      <a ui-sref="kubernetes.clusters.list">cluster</a>
+                    </p>
+                  </div>
+                </md-list-item>
+
+                <md-divider ng-if="r.accounts.unmapped.length"></md-divider>
+
+                <md-subheader
+                  class="md-sticky"
+                  ng-if="r.namespaces.mapped.length">
+                  Mapped namespaces
+                </md-subheader>
+                <md-list-item
+                  class="md-3-line"
+                  ng-repeat="n in r.namespaces.mapped track by n.namespace_id">
+                  <div class="md-list-item-text" layout="column">
+                    <h3>Namespace: <strong>{{n.namespace_name}}</strong></h3>
+                    <h4>
+                      Cluster: <strong>{{n.cluster_name}}</strong>
+                    </h4>
+                    <p class="md-body-2">
+                      Project:
+                      <span md-colors="{color: 'green'}">{{n.project_shortname}}</span>
+                      |
+                      Service:
+                      <span md-colors="{color: 'green'}">{{n.service_name}}</span>
+                    </p>
+                  </div>
+                </md-list-item>
+
+                <md-divider ng-if="r.namespaces.mapped.length"></md-divider>
+
+                <md-subheader
+                  class="md-sticky"
+                  ng-if="r.namespaces.unmapped.length"
+                  md-colors="{color: 'orange'}">
+                  Unmapped namespaces
+                  <br />
+                  <em>Usage metrics for these will be ignored and not taken into account for any projects!</em>
+                </md-subheader>
+                <md-list-item
+                  class="md-2-line"
+                  ng-repeat="n in r.namespaces.unmapped track by n.account_id+n.namespace_name">
+                  <div class="md-list-item-text" layout="column">
+                    <h3>Namespace: <strong>{{n.namespace_name}}</strong></h3>
+                    <h4>
+                      AWS account ID: {{n.account_id}}
+                      <span ng-if="n.cluster_name">| Cluster: {{n.cluster_name}}</span>
+                    </h4>
+                  </div>
+                </md-list-item>
+
+              </md-list>
+            </div>
+          </fieldset>
+
+          <br ng-if="$ctrl.prepareResults" />
+          <br ng-if="$ctrl.prepareResults" />
+
+          <fieldset ng-if="$ctrl.hasSufficientMappingsToContinue()">
+            <legend>
+              Config for the report
+            </legend>
+
+            <h4>Shared costs</h4>
+
+            <md-input-container class="md-block">
+              <label for="shared_clusters">Choose the accounts/clusters that are for shared costs (to be split across projects)</label>
+              <md-select
+                ng-model="$ctrl.report.config.shared_costs.clusters"
+                name="shared_clusters"
+                required
+                multiple>
+                <md-option
+                  ng-repeat="a in $ctrl.prepareResults.accounts.mapped track by a.account_id"
+                  value="{{a.cluster_name}}">
+                  {{a.cluster_name}}
+                </md-option>
+              </md-select>
+              <div ng-messages="$ctrl.costsForm.shared_clusters.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+
+            <h5 style="font-weight: normal">Shared costs allocation to projects (%):</h5>
+            <md-slider-container>
+              <md-slider
+                id="shared_allocation_percentage_slider"
+                aria-label="How much of the shared services costs should be passed on to projects (as a percentage)"
+                ng-model="$ctrl.report.config.shared_costs.allocation_percentage"
+                min="0" max="100"
+                md-discrete>
+              </md-slider>
+              <md-input-container>
+                <input
+                  flex
+                  type="number"
+                  ng-model="$ctrl.report.config.shared_costs.allocation_percentage"
+                  min="0" max="100"
+                  aria-label="Shared allocation percentage" aria-controls="shared_allocation_percentage_slider">
+              </md-input-container>
+            </md-slider-container>
+
+            <br />
+
+            <h4>Distribution of metrics (%)</h4>
+
+            <table>
+              <tr ng-repeat="m in $ctrl.prepareResults.metrics track by m.name">
+                <td style="text-align: right">
+                  {{m.name}}
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    ng-model="$ctrl.report.config.metric_weights[m.name]"
+                    min="0" max="100">
+                </td>
+              </tr>
+            </table>
+            <p
+              ng-if="!$ctrl.doMetricWeightsAddUp()"
+              class="md-body-2"
+              md-colors="{background: 'accent-100'}"
+              layout-padding>
+              All need to add up to 100
+            </p>
+
+            <br />
+            <br />
+
+            <h4 ng-if="$ctrl.projectsForExclusionsList.length">
+              Projects config
+            </h4>
+
+            <md-input-container class="md-block" ng-if="$ctrl.projectsForExclusionsList.length">
+              <label for="excluded_projects">Choose any projects to exclude from metrics and thus billing</label>
+              <md-select
+                ng-model="$ctrl.report.config.excluded_projects"
+                name="excluded_projects"
+                multiple>
+                <md-option
+                  ng-repeat="p in $ctrl.projectsForExclusionsList track by p.id"
+                  value="{{p.id}}">
+                  {{p.name}}
+                </md-option>
+              </md-select>
+            </md-input-container>
+          </fieldset>
+
+          <br ng-if="$ctrl.hasSufficientMappingsToContinue()" />
+
+          <md-input-container class="md-block">
+            <label for="notes">Notes for this report (only visible to hub admins):</label>
+            <textarea
+              name="notes"
+              ng-model="$ctrl.report.notes"
+              rows="4"
+              aria-label="Add some optional notes for this report"
+              md-select-on-focus>
+            </textarea>
+          </md-input-container>
+
+          <br />
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="!$ctrl.prepareResults || !$ctrl.hasSufficientMappingsToContinue() || !$ctrl.doMetricWeightsAddUp() || $ctrl.preparing || $ctrl.saving || !$ctrl.costsForm.$valid"
+              ng-class="{'md-raised': ($ctrl.prepareResults && $ctrl.hasSufficientMappingsToContinue() && $ctrl.doMetricWeightsAddUp() && $ctrl.costsForm.$dirty && $ctrl.costsForm.$valid) }"
+              aria-label="Create costs report">
+              Create
+            </md-button>
+            <md-button
+              ui-sref="costs-reports.list"
+              ng-disabled="$ctrl.saving">
+              Cancel
+            </md-button>
+          </div>
+        </form>
+      </md-content>
+    </div>
+
+    <br />
+    <br />
+
+  </md-content>
+</div>

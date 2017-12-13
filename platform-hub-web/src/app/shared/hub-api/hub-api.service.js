@@ -139,6 +139,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
 
   service.deleteAllocation = buildResourceDeletor('allocations');
 
+  service.getCostsReportsAvailableDataFiles = buildSimpleFetcher('costs_reports/available_data_files');
+  service.getCostsReports = buildCollectionFetcher('costs_reports');
+  service.getCostsReport = buildResourceFetcher('costs_reports');
+  service.prepareCostsReport = buildSimplePoster('costs_reports/prepare', 'prepare costs report');
+  service.createCostsReport = buildResourceCreator('costs_reports');
+  service.deleteCostsReport = buildResourceDeletor('costs_reports');
+
   return service;
 
   function getMe() {
@@ -656,6 +663,25 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
         })
         .catch(response => {
           logger.error(buildErrorMessageFromResponse(`Failed to fetch ${errorDescriptor}`, response));
+          return $q.reject(response);
+        });
+    };
+  }
+
+  function buildSimplePoster(path, errorDescriptor) {
+    return function (data) {
+      if (_.isNull(data) || _.isEmpty(data)) {
+        throw new Error('"data" argument not specified or empty');
+      }
+
+      return $http
+        .post(`${apiEndpoint}/${path}`, data)
+        .then(handle4xxError)
+        .then(response => {
+          return response.data;
+        })
+        .catch(response => {
+          logger.error(buildErrorMessageFromResponse(`Failed to ${errorDescriptor}`, response));
           return $q.reject(response);
         });
     };
