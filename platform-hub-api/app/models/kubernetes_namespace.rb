@@ -11,6 +11,7 @@ class KubernetesNamespace < ApplicationRecord
 
   scope :by_service, ->(s) { where(service: s) }
   scope :by_cluster, ->(c) { where(cluster: c) }
+  scope :by_name, ->(n) { where(name: n) }
 
   validates :name,
     format: {

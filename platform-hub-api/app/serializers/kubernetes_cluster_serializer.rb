@@ -4,4 +4,6 @@ class KubernetesClusterSerializer < BaseSerializer
 
   attributes :name, :description
 
+  attribute :aws_account_id, if: :is_admin?
+
 end

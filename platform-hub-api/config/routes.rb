@@ -134,6 +134,13 @@ Rails.application.routes.draw do
 
     resources :allocations, only: [ :destroy ]
 
+    resources :costs_reports,
+      only: [ :index, :show, :create, :destroy ],
+      constraints: { id: CostsReport::ID_REGEX_FOR_ROUTES } do
+      get :available_data_files, on: :collection
+      post :prepare, on: :collection
+    end
+
   end
 
 end

@@ -89,6 +89,7 @@ class Kubernetes::ClustersController < ApiJsonController
     params.require(:cluster).permit(
       :name,
       :description,
+      :aws_account_id,
       :s3_region,
       :s3_bucket_name,
       :s3_access_key_id,

@@ -1096,9 +1096,17 @@ RSpec.describe ProjectsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      def expect_token project, token, user
+      def expect_token project, token, user, is_admin: false
         get :show_kubernetes_user_token, params: { id: project.id, token_id: token.id }
         expect(response).to be_success
+
+        cluster = {
+          'id' => token.cluster.friendly_id,
+          'name' => token.cluster.name,
+          'description' => token.cluster.description
+        }
+        cluster['aws_account_id'] = token.cluster.aws_account_id if is_admin
+
         expect(json_response).to eq({
           'id' => token.id,
           'kind' => 'user',
@@ -1106,11 +1114,7 @@ RSpec.describe ProjectsController, type: :controller do
           'name' => token.name,
           'uid' => token.uid,
           'groups' => token.groups,
-          'cluster' => {
-            'id' => token.cluster.friendly_id,
-            'name' => token.cluster.name,
-            'description' => token.cluster.description
-          },
+          'cluster' => cluster,
           'user' => {
             'id' => user.id,
             'name' => user.name,
@@ -1130,11 +1134,11 @@ RSpec.describe ProjectsController, type: :controller do
       it_behaves_like 'a hub admin' do
 
         it 'can fetch a user token for the project as expected' do
-          expect_token @project, @token, @user
+          expect_token @project, @token, @user, is_admin: true
         end
 
         it 'can fetch a user token for the other project as expected' do
-          expect_token @other_project, @other_token, @other_user
+          expect_token @other_project, @other_token, @other_user, is_admin: true
         end
 
         it 'should return a 404 for a non-existent token' do

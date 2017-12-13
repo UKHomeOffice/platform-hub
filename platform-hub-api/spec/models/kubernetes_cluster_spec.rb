@@ -18,4 +18,16 @@ RSpec.describe KubernetesCluster, type: :model do
     it { is_expected.not_to allow_value('_foo').for(:name) }
   end
 
+  describe '#aws_account_id' do
+    it { is_expected.to allow_value('123456789012').for(:aws_account_id) }
+    it { is_expected.to allow_value(nil).for(:aws_account_id) }
+    it { is_expected.to allow_value('').for(:aws_account_id) }
+
+    it { is_expected.not_to allow_value('123').for(:aws_account_id) }
+    it { is_expected.not_to allow_value('1234567890').for(:aws_account_id) }
+    it { is_expected.not_to allow_value('1234567890123').for(:aws_account_id) }
+    it { is_expected.not_to allow_value('A12345678901').for(:aws_account_id) }
+    it { is_expected.not_to allow_value('A').for(:aws_account_id) }
+  end
+
 end

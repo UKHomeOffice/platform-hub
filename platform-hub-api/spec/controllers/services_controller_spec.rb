@@ -902,9 +902,17 @@ RSpec.describe ServicesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      def expect_token project, service, token
+      def expect_token project, service, token, is_admin: false
         get :show_kubernetes_robot_token, params: { project_id: project.friendly_id, id: service.id, token_id: token.id }
         expect(response).to be_success
+
+        cluster = {
+          'id' => token.cluster.friendly_id,
+          'name' => token.cluster.name,
+          'description' => token.cluster.description
+        }
+        cluster['aws_account_id'] = token.cluster.aws_account_id if is_admin
+
         expect(json_response).to eq({
           'id' => token.id,
           'kind' => 'robot',
@@ -913,11 +921,7 @@ RSpec.describe ServicesController, type: :controller do
           'name' => token.name,
           'uid' => token.uid,
           'groups' => token.groups,
-          'cluster' => {
-            'id' => token.cluster.friendly_id,
-            'name' => token.cluster.name,
-            'description' => token.cluster.description
-          },
+          'cluster' => cluster,
           'description' => token.description,
           'service' => {
             'id' => service.id,
@@ -940,11 +944,11 @@ RSpec.describe ServicesController, type: :controller do
       it_behaves_like 'a hub admin' do
 
         it 'can fetch a robot token for the service in the project as expected' do
-          expect_token project, @service, @token
+          expect_token project, @service, @token, is_admin: true
         end
 
         it 'can fetch a robot token for the service in the other project as expected' do
-          expect_token other_project, @other_service, @other_token
+          expect_token other_project, @other_service, @other_token, is_admin: true
         end
 
         it 'should return a 404 for a non-existent token' do
@@ -1246,10 +1250,18 @@ RSpec.describe ServicesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      def expect_update project, service, token
+      def expect_update project, service, token, is_admin: false
         expect(Audit.count).to eq 0
         patch :update_kubernetes_robot_token, params: patch_data.merge({ project_id: project.friendly_id, id: service.id, token_id: token.id })
         expect(response).to be_success
+
+        cluster = {
+          'id' => token.cluster.friendly_id,
+          'name' => token.cluster.name,
+          'description' => token.cluster.description
+        }
+        cluster['aws_account_id'] = token.cluster.aws_account_id if is_admin
+
         expect(json_response).to include({
           'id' => token.id,
           'kind' => 'robot',
@@ -1258,11 +1270,7 @@ RSpec.describe ServicesController, type: :controller do
           'name' => token.name,
           'uid' => token.uid,
           'groups' => patch_data[:robot_token][:groups],
-          'cluster' => {
-            'id' => token.cluster.friendly_id,
-            'name' => token.cluster.name,
-            'description' => token.cluster.description
-          },
+          'cluster' => cluster,
           'description' => patch_data[:robot_token][:description],
           'service' => {
             'id' => service.id,
@@ -1287,11 +1295,11 @@ RSpec.describe ServicesController, type: :controller do
       it_behaves_like 'a hub admin' do
 
         it 'can update a robot token for the service in the project as expected' do
-          expect_update project, @service, @token
+          expect_update project, @service, @token, is_admin: true
         end
 
         it 'can update a robot token for the service in the other project as expected' do
-          expect_update other_project, @other_service, @other_token
+          expect_update other_project, @other_service, @other_token, is_admin: true
         end
 
         it 'should return a 404 for a non-existent token' do

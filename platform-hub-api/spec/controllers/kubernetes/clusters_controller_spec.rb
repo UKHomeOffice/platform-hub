@@ -89,6 +89,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
               'id' => @cluster.friendly_id,
               'name' => @cluster.name,
               'description' => @cluster.description,
+              'aws_account_id' => nil
             })
           end
         end
@@ -142,6 +143,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
             'id' => new_cluster_external_id,
             'name' => post_data[:cluster][:name],
             'description' => post_data[:cluster][:description],
+            'aws_account_id' => nil
           });
           expect(Audit.count).to eq 1
           audit = Audit.first
@@ -178,18 +180,14 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
     let :put_data do
       {
         id: @cluster.friendly_id,
-        cluster: {
-          s3_region: 'new_s3_region'
-        }
+        description: 'foooooooooooooooo',
+        aws_account_id: '123456789012',
+        s3_region: 'new_s3_region'
       }
     end
 
-    let :existing_description do
-      'so much foobar'
-    end
-
     before do
-      @cluster = create :kubernetes_cluster, description: existing_description
+      @cluster = create :kubernetes_cluster
     end
 
     it_behaves_like 'unauthenticated not allowed'  do
@@ -216,8 +214,10 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
           expect(KubernetesCluster.count).to eq 1
           updated = KubernetesCluster.first
           expect(updated.name).to eq @cluster.name
-          expect(updated.description).to eq existing_description
-          expect(updated.s3_region).to eq put_data[:cluster][:s3_region]
+          expect(updated.description).to eq put_data[:description]
+          expect(updated.aws_account_id).to eq put_data[:aws_account_id].to_i
+          expect(updated.s3_region).to eq put_data[:s3_region]
+          expect(updated.s3_bucket_name).to eq @cluster.s3_bucket_name
           expect(Audit.count).to eq 1
           audit = Audit.first
           expect(audit.action).to eq 'update'
