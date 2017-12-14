@@ -18,6 +18,34 @@ RSpec.describe CostsReport, type: :model do
     end
   end
 
+  describe '.already_published?' do
+    context 'when it doesn\'t exist' do
+      it 'should return false' do
+        expect(CostsReport.already_published?(2017, 'Jan')).to be false
+      end
+    end
+
+    context 'when it does exist' do
+      subject { create :costs_report, published_at: nil }
+
+      context 'when not published yet' do
+        it 'should return false' do
+          expect(CostsReport.already_published?(2017, 'Jan')).to be false
+        end
+      end
+
+      context 'after being published' do
+        before do
+          subject.publish!
+        end
+
+        it 'should return true' do
+          expect(CostsReport.already_published?(subject.year, subject.month)).to be true
+        end
+      end
+    end
+  end
+
   describe '.generate_id_for' do
     it 'should generate an ID value as expected' do
       expect(CostsReport.generate_id_for(2017, 'Jan')).to eq '2017-01'
@@ -69,6 +97,24 @@ RSpec.describe CostsReport, type: :model do
 
     it 'should set the id field accordingly' do
       expect(subject.id).to eq expected_id
+    end
+  end
+
+  describe 'readonly? check' do
+    it 'reports should not be updateable after publishing' do
+      r = create :costs_report
+
+      # Updateable
+      r.update! notes: 'foo bar'
+      expect(r.reload.notes).to eq 'foo bar'
+
+      # Now publish...
+      r.publish!
+
+      # ... not updateable anymore!
+      expect {
+        r.update! notes: 'foo bar 2'
+      }.to raise_error(ActiveRecord::ReadOnlyRecord)
     end
   end
 

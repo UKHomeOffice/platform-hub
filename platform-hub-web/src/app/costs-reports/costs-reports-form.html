@@ -7,7 +7,7 @@
     </div>
   </md-toolbar>
 
-  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+  <loading-indicator loading="$ctrl.loading || $ctrl.preparing || $ctrl.saving"></loading-indicator>
 
   <md-content layout-padding ng-if="!$ctrl.loading">
 
@@ -17,7 +17,10 @@
           <div layout="row">
             <md-input-container>
               <label>Year</label>
-              <md-select ng-model="$ctrl.report.year" required>
+              <md-select
+                ng-model="$ctrl.report.year"
+                required
+                ng-disabled="$ctrl.prepareResults">
                 <md-option ng-repeat="y in $ctrl.years" ng-value="y">
                   {{y}}
                 </md-option>
@@ -26,7 +29,10 @@
 
             <md-input-container>
               <label>Month</label>
-              <md-select ng-model="$ctrl.report.month" required>
+              <md-select
+                ng-model="$ctrl.report.month"
+                required
+                ng-disabled="$ctrl.prepareResults">
                 <md-option ng-repeat="m in $ctrl.months" ng-value="m">
                   {{m}}
                 </md-option>
@@ -39,7 +45,8 @@
             <md-select
               name="billing_file"
               ng-model="$ctrl.report.billing_file"
-              required>
+              required
+              ng-disabled="$ctrl.prepareResults">
               <md-option ng-repeat="f in $ctrl.availableBillingFiles" ng-value="f">
                 {{f}}
               </md-option>
@@ -54,7 +61,8 @@
             <md-select
               name="metrics_file"
               ng-model="$ctrl.report.metrics_file"
-              required>
+              required
+              ng-disabled="$ctrl.prepareResults">
               <md-option ng-repeat="f in $ctrl.availableMetricsFiles" ng-value="f">
                 {{f}}
               </md-option>
@@ -68,8 +76,7 @@
             <md-button
               class="md-primary md-raised"
               ng-click="$ctrl.prepare()"
-              ng-if="!$ctrl.prepareResults"
-              ng-disabled="$ctrl.preparing || !$ctrl.isReadyToPrepare()"
+              ng-disabled="$ctrl.preparing || !$ctrl.isReadyToPrepare() || $ctrl.prepareResults"
               aria-label="Prepare the next step of the report generation based on the data specified">
               Inspect data and prepare next step of report generation
               <md-tooltip md-direction="bottom">
@@ -86,18 +93,32 @@
             </legend>
 
             <p
-              ng-if="!r.exists"
+              ng-if="r.already_published"
+              class="md-body-2"
+              md-colors="{background: 'accent-50', color: 'accent'}"
+              layout-padding>
+              <span>
+                Report has already been published! Cannot overwrite it.
+              </span>
+              <br />
+              <span>
+                (If you <em>really</em> want to recreate it you can delete it from the listings view and then recreate it – but note that projects may have already seen the bill)
+              </span>
+            </p>
+
+            <p
+              ng-if="!r.already_published && r.exists"
+              class="md-body-1"
+              md-colors="{background: 'accent-50', color: 'accent'}"
+              layout-padding>
+              Report already exists for this year and month – by continuing, you will overwrite this report.
+            </p>
+            <p
+              ng-if="!r.already_published && !r.exists"
               class="md-body-1"
               md-colors="{background: 'green-50', color: 'green'}"
               layout-padding>
               Report does not yet exist for this year and month - a new report will be created.
-            </p>
-            <p
-              ng-if="r.exists"
-              class="md-body-2"
-              md-colors="{background: 'accent-50', color: 'accent'}"
-              layout-padding>
-              Report already exists for this year and month – by continuing, you will overwrite this report.
             </p>
 
             <p
@@ -224,7 +245,7 @@
           <br ng-if="$ctrl.prepareResults" />
           <br ng-if="$ctrl.prepareResults" />
 
-          <fieldset ng-if="$ctrl.hasSufficientMappingsToContinue()">
+          <fieldset ng-if="!$ctrl.prepareResults.already_published && $ctrl.hasSufficientMappingsToContinue()">
             <legend>
               Config for the report
             </legend>
@@ -315,7 +336,7 @@
             </md-input-container>
           </fieldset>
 
-          <br ng-if="$ctrl.hasSufficientMappingsToContinue()" />
+          <br ng-if="!$ctrl.prepareResults.already_published && $ctrl.hasSufficientMappingsToContinue()" />
 
           <md-input-container class="md-block">
             <label for="notes">Notes for this report (only visible to hub admins):</label>
@@ -334,8 +355,8 @@
             <md-button
               type="submit"
               class="md-primary"
-              ng-disabled="!$ctrl.prepareResults || !$ctrl.hasSufficientMappingsToContinue() || !$ctrl.doMetricWeightsAddUp() || $ctrl.preparing || $ctrl.saving || !$ctrl.costsForm.$valid"
-              ng-class="{'md-raised': ($ctrl.prepareResults && $ctrl.hasSufficientMappingsToContinue() && $ctrl.doMetricWeightsAddUp() && $ctrl.costsForm.$dirty && $ctrl.costsForm.$valid) }"
+              ng-disabled="!$ctrl.prepareResults || $ctrl.prepareResults.already_published || !$ctrl.hasSufficientMappingsToContinue() || !$ctrl.doMetricWeightsAddUp() || $ctrl.preparing || $ctrl.saving || !$ctrl.costsForm.$valid"
+              ng-class="{'md-raised': ($ctrl.prepareResults && !$ctrl.prepareResults.already_published && $ctrl.hasSufficientMappingsToContinue() && $ctrl.doMetricWeightsAddUp() && $ctrl.costsForm.$dirty && $ctrl.costsForm.$valid) }"
               aria-label="Create costs report">
               Create
             </md-button>

@@ -48,6 +48,19 @@
           {{$ctrl.report.created_at | date:'medium'}}
         </p>
 
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Published at:
+          </span>
+          <span ng-if="!$ctrl.report.published_at" class="none-text">not published yet</span>
+          <span ng-if="$ctrl.report.published_at">
+            <span>
+              {{$ctrl.report.published_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+            </span>
+            (<strong><span am-time-ago="$ctrl.report.published_at" md-colors="{color: 'accent'}"></span></strong>)
+          </span>
+        </p>
+
         <p
           class="md-body-1"
           md-colors="{background: 'blue-grey-50'}"

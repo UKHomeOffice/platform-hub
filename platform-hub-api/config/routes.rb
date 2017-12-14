@@ -141,6 +141,7 @@ Rails.application.routes.draw do
       constraints: { id: CostsReport::ID_REGEX_FOR_ROUTES } do
       get :available_data_files, on: :collection
       post :prepare, on: :collection
+      post :publish, on: :member
     end
 
   end

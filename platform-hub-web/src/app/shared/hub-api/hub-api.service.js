@@ -147,6 +147,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
   service.prepareCostsReport = buildSimplePoster('costs_reports/prepare', 'prepare costs report');
   service.createCostsReport = buildResourceCreator('costs_reports');
   service.deleteCostsReport = buildResourceDeletor('costs_reports');
+  service.publishCostsReport = publishCostsReport;
 
   return service;
 
@@ -1198,6 +1199,20 @@ export const hubApiService = function ($rootScope, $http, $q, logger, events, ap
       .then(response => response.data)
       .catch(response => {
         logger.error('Failed to fetch kubernetes namespaces – the API might be down. Try again later.');
+        return $q.reject(response);
+      });
+  }
+
+  function publishCostsReport(id) {
+    if (_.isNull(id) || _.isEmpty(id)) {
+      throw new Error('"id" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/costs_reports/${id}/publish`, {})
+      .then(handle4xxError)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to publish report', response));
         return $q.reject(response);
       });
   }

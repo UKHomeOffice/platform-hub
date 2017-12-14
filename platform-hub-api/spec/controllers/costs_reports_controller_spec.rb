@@ -132,6 +132,7 @@ RSpec.describe CostsReportsController, type: :controller do
               'metrics_file' => @report.metrics_file,
               'notes' => @report.notes,
               'created_at' => @report.created_at.iso8601,
+              'published_at' => nil,
               'config' => @report.config,
               'results' => @report.results
             })
@@ -207,6 +208,7 @@ RSpec.describe CostsReportsController, type: :controller do
 
           expected_results = results.dup
           expected_results['exists'] = false
+          expected_results['already_published'] = false
 
           post :prepare, params: post_data
           expect(response).to be_success
@@ -292,7 +294,8 @@ RSpec.describe CostsReportsController, type: :controller do
             'notes' => post_data[:notes],
             'config' => post_data[:config],
             'results' => results,
-            'created_at' => now_json_value
+            'created_at' => now_json_value,
+            'published_at' => nil
           })
           expect(Audit.count).to eq 1
           audit = Audit.first
@@ -342,6 +345,50 @@ RSpec.describe CostsReportsController, type: :controller do
           expect(audit.auditable_id).to eq nil
           expect(audit.data).to eq({ 'id' => @report.id })
           expect(audit.user.id).to eq current_user_id
+        end
+
+      end
+
+    end
+  end
+
+  describe 'POST #publish' do
+    before do
+      @report = create :costs_report
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :publish, params: { id: @report.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not a hub admin so forbidden'  do
+        before do
+          post :publish, params: { id: @report.id }
+        end
+      end
+
+      it_behaves_like 'a hub admin' do
+
+        it 'should publish the specified report' do
+          expect(CostsReport.exists?(@report.id)).to be true
+          expect(Audit.count).to eq 0
+          post :publish, params: { id: @report.id }
+          expect(response).to be_success
+          expect(json_response['published_at']).to eq now_json_value
+          expect(CostsReport.exists?(@report.id)).to be true
+          report = CostsReport.first
+          expect(report.published_at.to_i).to eq now.to_i
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'publish'
+          expect(audit.auditable_type).to eq CostsReport.name
+          expect(audit.auditable_id).to eq nil
+          expect(audit.data).to eq({ 'id' => report.id })
+          expect(audit.user).to eq current_user
         end
 
       end

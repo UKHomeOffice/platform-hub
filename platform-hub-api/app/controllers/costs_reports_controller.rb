@@ -2,7 +2,7 @@ class CostsReportsController < ApiJsonController
 
   S3_OBJECT_PREFIX = 'costs'
 
-  before_action :find_report, only: [ :show, :destroy ]
+  before_action :find_report, only: [ :show, :destroy, :publish ]
 
   authorize_resource
 
@@ -15,7 +15,7 @@ class CostsReportsController < ApiJsonController
   # GET /costs_reports
   def index
     reports = CostsReport.order(id: :desc)
-    render json: reports, fields: [ :id, :year, :month, :billing_file, :metrics_file, :notes, :created_at ]
+    render json: reports, fields: [ :id, :year, :month, :billing_file, :metrics_file, :notes, :created_at, :published_at ]
   end
 
   # GET /costs_reports/:id
@@ -46,6 +46,7 @@ class CostsReportsController < ApiJsonController
     )
 
     results[:exists] = CostsReport.exists_for? year, month
+    results[:already_published] = CostsReport.already_published? year, month
 
     render json: results
   end
@@ -106,6 +107,20 @@ class CostsReportsController < ApiJsonController
     )
 
     head :no_content
+  end
+
+  # POST /costs_reports/:id/publish
+  def publish
+    @report.publish!
+
+    AuditService.log(
+      context: audit_context,
+      action: 'publish',
+      auditable: @report,
+      data: { id: @report.id }
+    )
+
+    render json: @report
   end
 
   private
