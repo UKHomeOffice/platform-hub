@@ -9,7 +9,7 @@ RUN apk update && apk upgrade \
     bash curl ruby ruby-irb ruby-rake ruby-io-console ruby-json ruby-bigdecimal libstdc++ tzdata \
     postgresql-client \
     && echo 'gem: --no-document' > /etc/gemrc \
-    && gem install bundler -v 1.14.6
+    && gem install bundler -v 1.16.0
 
 # Create app user and directory, set permissions
 WORKDIR /app

@@ -249,7 +249,7 @@ DEPENDENCIES
   with_model (~> 2.0)
 
 RUBY VERSION
-   ruby 2.3.5p376
+   ruby 2.3.6p384
 
 BUNDLED WITH
-   1.14.6
+   1.16.0
