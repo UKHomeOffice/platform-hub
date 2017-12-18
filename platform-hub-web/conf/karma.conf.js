@@ -12,6 +12,7 @@ module.exports = function (config) {
     browsers: [
       'PhantomJS'
     ],
+    browserNoActivityTimeout: 60000,
     frameworks: [
       'jasmine-jquery',
       'jasmine'
