@@ -84,6 +84,10 @@ pipeline:
       - EMAIL_FROM_ADDRESS="test@example.org"
       - EMAIL_MAX_TO_ADDRESSES=10
       - SLACK_WEBHOOK=noop
+      - FILESTORE_S3_REGION=eu-west-2
+      - FILESTORE_S3_BUCKET_NAME=noop
+      - FILESTORE_S3_ACCESS_KEY_ID=noop
+      - FILESTORE_S3_SECRET_ACCESS_KEY=noop
     commands:
       - apk update && apk upgrade
       - apk --update add ca-certificates openssl
@@ -133,6 +137,10 @@ pipeline:
       - EMAIL_FROM_ADDRESS="test@example.org"
       - EMAIL_MAX_TO_ADDRESSES=10
       - SLACK_WEBHOOK=noop
+      - FILESTORE_S3_REGION=eu-west-2
+      - FILESTORE_S3_BUCKET_NAME=noop
+      - FILESTORE_S3_ACCESS_KEY_ID=noop
+      - FILESTORE_S3_SECRET_ACCESS_KEY=noop
     commands:
       - cd /app
       - bin/rails server &

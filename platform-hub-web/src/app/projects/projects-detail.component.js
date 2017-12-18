@@ -30,6 +30,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.kubernetesUserTokens = [];
   ctrl.kubernetesUserTokensSelectedUser = undefined;
   ctrl.processingKubernetesUserTokens = false;
+  ctrl.bills = [];
+  ctrl.loadingBills = false;
 
   ctrl.deleteProject = deleteProject;
   ctrl.searchUsers = searchUsers;
@@ -48,6 +50,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.loadKubernetesUserTokens = loadKubernetesUserTokens;
   ctrl.escalatePrivilegeForKubernetesUserToken = escalatePrivilegeForKubernetesUserToken;
   ctrl.deleteKubernetesUserToken = deleteKubernetesUserToken;
+  ctrl.shouldShowBillsTab = shouldShowBillsTab;
+  ctrl.loadBills = loadBills;
 
   init();
 
@@ -406,6 +410,48 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
           .finally(() => {
             ctrl.processingKubernetesUserTokens = false;
           });
+      });
+  }
+
+  function shouldShowBillsTab() {
+    return ctrl.isAdmin || ctrl.isProjectAdmin;
+  }
+
+  function loadBills() {
+    ctrl.loadingBills = true;
+    ctrl.bills = [];
+
+    Projects
+      .getBills(ctrl.project.id)
+      .then(bills => {
+        const mapped = bills.map(b => {
+          const clusters = _.keys(b.totals.clusters);
+
+          const headers = [''].concat(clusters).concat(['Shared services']);
+
+          const totalsRow = ['Total']
+            .concat(clusters.map(c => b.totals.clusters[c]))
+            .concat([b.totals.shared_services]);
+
+          const serviceRows = _.values(b.services).map(s => {
+            return [`Service: ${s.name}`]
+              .concat(clusters.map(c => s.totals.clusters[c]))
+              .concat([s.totals.shared_services]);
+          });
+
+          const rows = [totalsRow].concat(serviceRows);
+
+          return {
+            year: b.year,
+            month: b.month,
+            headers,
+            rows
+          };
+        });
+        angular.copy(mapped, ctrl.bills);
+      })
+      .finally(() => {
+        ctrl.loadingBills = false;
       });
   }
 }

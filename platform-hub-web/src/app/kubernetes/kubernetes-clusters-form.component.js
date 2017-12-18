@@ -13,6 +13,8 @@ function KubernetesClustersFormController($state, KubernetesClusters, logger) {
 
   const id = ctrl.transition && ctrl.transition.params().id;
 
+  ctrl.awsAccountIdRegex = '^[0-9]{12}$';
+
   ctrl.loading = true;
   ctrl.saving = false;
   ctrl.isNew = true;

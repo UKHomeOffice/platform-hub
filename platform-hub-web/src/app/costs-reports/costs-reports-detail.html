@@ -1,0 +1,77 @@
+<div class="announcement-reports-detail">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3 ng-if="$ctrl.report">
+        <span>Costs Report: </span>
+        <span>{{$ctrl.report.year}} {{$ctrl.report.month}}</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        ng-if="$ctrl.report"
+        aria-label="Delete this costs report"
+        ng-click="$ctrl.deleteReport($event)">
+        <md-icon>delete</md-icon>
+        Delete
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.report">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50">
+      <md-content layout-padding>
+
+        <h3 class="md-title" layout="row">
+          {{$ctrl.report.year}}
+          {{$ctrl.report.month}}
+        </h3>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Billing data file:
+          </span>
+          {{$ctrl.report.billing_file}}
+        </p>
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Metrics data file:
+          </span>
+          {{$ctrl.report.metrics_file}}
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Created at:
+          </span>
+          {{$ctrl.report.created_at | date:'medium'}}
+        </p>
+
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-if="$ctrl.report.notes"
+          ng-bind-html='$ctrl.report.notes | simpleFormat'
+          layout-padding>
+        </p>
+
+        <br />
+
+        <md-divider></md-divider>
+
+        <h4 class="md-subhead">Config used to generate report</h4>
+        <pre>{{$ctrl.report.config | json}}</pre>
+
+        <br />
+
+        <md-divider></md-divider>
+
+        <h4 class="md-subhead">Costs report results</h4>
+        <pre>{{$ctrl.report.results | json}}</pre>
+
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

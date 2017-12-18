@@ -24,6 +24,9 @@ class Ability
     can :read_resources_in_project, Project do |project|
       can_participate_in_project project, user
     end
+    can :bills, Project do |project|
+      can_administer_project project, user
+    end
 
 
     # Services in projects

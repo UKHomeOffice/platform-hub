@@ -155,7 +155,8 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
               'cluster' => {
                 'id' => @token.cluster.friendly_id,
                 'name' => @token.cluster.name,
-                'description' => @token.cluster.description
+                'description' => @token.cluster.description,
+                'aws_account_id' => @token.cluster.aws_account_id
               },
               'user' => {
                 'id' => current_user.id,
@@ -188,7 +189,8 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
               'cluster' => {
                 'id' => @token.cluster.friendly_id,
                 'name' => @token.cluster.name,
-                'description' => @token.cluster.description
+                'description' => @token.cluster.description,
+                'aws_account_id' => @token.cluster.aws_account_id
               },
               'user' => {
                 'id' => @user.id,
@@ -227,7 +229,8 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
               'cluster' => {
                 'id' => @token.cluster.friendly_id,
                 'name' => @token.cluster.name,
-                'description' => @token.cluster.description
+                'description' => @token.cluster.description,
+                'aws_account_id' => @token.cluster.aws_account_id
               },
               'description' => @token.description,
               'service' => {

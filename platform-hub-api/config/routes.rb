@@ -66,6 +66,8 @@ Rails.application.routes.draw do
       patch '/kubernetes_user_tokens/:token_id', to: 'projects#update_kubernetes_user_token', on: :member
       delete '/kubernetes_user_tokens/:token_id', to: 'projects#destroy_kubernetes_user_token', on: :member
 
+      get :bills, on: :member
+
       resources :services do
         get :kubernetes_groups, on: :member
         get :kubernetes_robot_tokens, on: :member
@@ -133,6 +135,13 @@ Rails.application.routes.draw do
     end
 
     resources :allocations, only: [ :destroy ]
+
+    resources :costs_reports,
+      only: [ :index, :show, :create, :destroy ],
+      constraints: { id: CostsReport::ID_REGEX_FOR_ROUTES } do
+      get :available_data_files, on: :collection
+      post :prepare, on: :collection
+    end
 
   end
 

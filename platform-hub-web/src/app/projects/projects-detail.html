@@ -349,6 +349,56 @@
         </md-tab-body>
       </md-tab>
 
+      <md-tab
+        id="bills-tab"
+        ng-if="$ctrl.shouldShowBillsTab()"
+        md-on-select="$ctrl.loadBills()">
+        <md-tab-label>Bills</md-tab-label>
+        <md-tab-body>
+          <loading-indicator loading="$ctrl.loadingBills"></loading-indicator>
+
+          <md-card
+            ng-if="$ctrl.bills.length"
+            ng-repeat="b in $ctrl.bills track by b.year+b.month">
+            <md-card-title>
+              <md-card-title-text>
+                <span class="md-title">
+                  {{b.year}}
+                  {{b.month}}
+                </span>
+              </md-card-title-text>
+            </md-card-title>
+
+            <md-card-content>
+              <table>
+                <thead>
+                  <th
+                    ng-repeat="h in b.headers track by h"
+                    style="text-align: center;">
+                    {{h}}
+                  </th>
+                </thead>
+                <tbody>
+                  <tr
+                    ng-repeat="r in b.rows track by r[0]"
+                    ng-style="r[0] == 'Total' ? {'font-weight': 'bold'} : {}">
+                    <td
+                      ng-repeat="d in r track by $index"
+                      ng-style="$index == 0 ? {'text-align': 'right'} : {'text-align': 'center'}">
+                      <span ng-if="$index == 0">{{d}}</span>
+                      <span ng-if="$index != 0">{{d | currency:'$' || '--'}}</span>
+                    </td>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </md-card-content>
+          </md-card>
+
+          <br /><br />
+        </md-tab-body>
+      </md-tab>
+
     </md-tabs>
 
     <br /><br />

@@ -182,6 +182,24 @@ CREATE TABLE contact_lists (
 
 
 --
+-- Name: costs_reports; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE costs_reports (
+    id character varying NOT NULL,
+    year integer NOT NULL,
+    month character varying NOT NULL,
+    billing_file character varying NOT NULL,
+    metrics_file character varying NOT NULL,
+    notes text,
+    config json NOT NULL,
+    results json NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: delayed_jobs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -265,7 +283,8 @@ CREATE TABLE kubernetes_clusters (
     s3_secret_access_key character varying NOT NULL,
     s3_object_key character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    aws_account_id bigint
 );
 
 
@@ -543,6 +562,14 @@ ALTER TABLE ONLY audits
 
 ALTER TABLE ONLY contact_lists
     ADD CONSTRAINT contact_lists_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: costs_reports costs_reports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costs_reports
+    ADD CONSTRAINT costs_reports_pkey PRIMARY KEY (id);
 
 
 --
@@ -870,13 +897,6 @@ CREATE INDEX index_kubernetes_namespaces_on_cluster_id ON kubernetes_namespaces 
 
 
 --
--- Name: index_kubernetes_namespaces_on_name_and_cluster_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_kubernetes_namespaces_on_name_and_cluster_id ON kubernetes_namespaces USING btree (name, cluster_id);
-
-
---
 -- Name: index_kubernetes_namespaces_on_service_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1090,6 +1110,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171012110416'),
 ('20171031164247'),
 ('20171114100517'),
-('20171127115843');
+('20171127115843'),
+('20171130163603'),
+('20171201113437');
 
 

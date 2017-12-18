@@ -1096,9 +1096,17 @@ RSpec.describe ProjectsController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      def expect_token project, token, user
+      def expect_token project, token, user, is_admin: false
         get :show_kubernetes_user_token, params: { id: project.id, token_id: token.id }
         expect(response).to be_success
+
+        cluster = {
+          'id' => token.cluster.friendly_id,
+          'name' => token.cluster.name,
+          'description' => token.cluster.description
+        }
+        cluster['aws_account_id'] = token.cluster.aws_account_id if is_admin
+
         expect(json_response).to eq({
           'id' => token.id,
           'kind' => 'user',
@@ -1106,11 +1114,7 @@ RSpec.describe ProjectsController, type: :controller do
           'name' => token.name,
           'uid' => token.uid,
           'groups' => token.groups,
-          'cluster' => {
-            'id' => token.cluster.friendly_id,
-            'name' => token.cluster.name,
-            'description' => token.cluster.description
-          },
+          'cluster' => cluster,
           'user' => {
             'id' => user.id,
             'name' => user.name,
@@ -1130,11 +1134,11 @@ RSpec.describe ProjectsController, type: :controller do
       it_behaves_like 'a hub admin' do
 
         it 'can fetch a user token for the project as expected' do
-          expect_token @project, @token, @user
+          expect_token @project, @token, @user, is_admin: true
         end
 
         it 'can fetch a user token for the other project as expected' do
-          expect_token @other_project, @other_token, @other_user
+          expect_token @other_project, @other_token, @other_user, is_admin: true
         end
 
         it 'should return a 404 for a non-existent token' do
@@ -1405,6 +1409,122 @@ RSpec.describe ProjectsController, type: :controller do
           post :create_kubernetes_user_token, params: { id: @other_project.id, user_token: user_token_data.merge({ user_id: @other_user.id }) }
           expect(response).to have_http_status(403)
           expect(KubernetesToken.count).to eq 0
+        end
+
+      end
+
+    end
+  end
+
+  describe 'GET #bills' do
+    before do
+      @project = create :project
+      @other_project = create :project
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :bills, params: { id: @project.friendly_id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      let(:bills) do
+        [
+          'foo',
+          'bar'
+        ]
+      end
+
+      before do
+        allow(ProjectBillsQueryService).to receive(:fetch).and_return(bills)
+      end
+
+      def expect_bills project
+        get :bills, params: { id: project.friendly_id }
+        expect(response).to be_success
+        expect(json_response).to eq bills
+      end
+
+      it_behaves_like 'a hub admin' do
+
+        it 'can fetch bills for the project as expected' do
+          expect_bills @project
+        end
+
+        it 'can fetch bills for the other project as expected' do
+          expect_bills @other_project
+        end
+
+      end
+
+      context 'not a hub admin but is an admin of the project' do
+
+        before do
+          create :project_membership_as_admin, project: @project, user: current_user
+        end
+
+        it 'can fetch bills for the project as expected' do
+          expect_bills @project
+        end
+
+        it 'cannot fetch bills for the other project - returning 403 Forbidden' do
+          get :bills, params: { id: @other_project.friendly_id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+      context 'not a hub or project admin but is a member of the project' do
+
+        before do
+          create :project_membership, project: @project, user: current_user
+        end
+
+        it 'cannot fetch bills for the project - returning 403 Forbidden' do
+          get :bills, params: { id: @project.friendly_id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'cannot fetch bills for the other project - returning 403 Forbidden' do
+          get :bills, params: { id: @other_project.friendly_id }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+      context 'not a hub admin but is an admin of the other project' do
+
+        before do
+          create :project_membership_as_admin, project: @other_project, user: current_user
+        end
+
+        it 'cannot fetch bills for the project - returning 403 Forbidden' do
+          get :bills, params: { id: @project.friendly_id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'can fetch bills for the other project as expected' do
+          expect_bills @other_project
+        end
+
+      end
+
+      context 'not a hub or other project admin but is a member of the other project' do
+
+        before do
+          create :project_membership, project: @other_project, user: current_user
+        end
+
+        it 'cannot fetch bills for the project - returning 403 Forbidden' do
+          get :bills, params: { id: @project.friendly_id }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'cannot fetch bills for the other project - returning 403 Forbidden' do
+          get :bills, params: { id: @other_project.friendly_id }
+          expect(response).to have_http_status(403)
         end
 
       end

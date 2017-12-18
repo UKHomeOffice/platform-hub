@@ -6,6 +6,7 @@ export const icons = function () {
     announcements: 'announcement',
     appSettings: 'settings',
     contactList: 'contacts',
+    costsReports: 'attach_money',
     externalLink: 'link',
     faq: 'question_answer',
     featureFlags: 'flag',

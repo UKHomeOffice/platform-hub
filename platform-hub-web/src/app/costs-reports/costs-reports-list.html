@@ -1,0 +1,74 @@
+<div class="costs-reports-list">
+  <md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+      <h3>
+        Costs Reports
+      </h3>
+      <span flex></span>
+      <md-button
+        aria-label="Generate a new costs report"
+        ui-sref="costs-reports.new">
+        <md-icon>add_box</md-icon>
+        New
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content ng-if="!$ctrl.loading && $ctrl.reports.length > 0" layout-padding>
+
+    <md-card
+
+      ng-repeat="r in $ctrl.reports track by r.id">
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            {{r.year}}
+            {{r.month}}
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content>
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Billing data file:
+          </span>
+          {{r.billing_file}}
+        </p>
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Metrics data file:
+          </span>
+          {{r.metrics_file}}
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Created at:
+          </span>
+          {{r.created_at | date:'medium'}}
+        </p>
+
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-if="r.notes"
+          ng-bind-html='r.notes | simpleFormat'
+          layout-padding>
+        </p>
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          class="md-primary"
+          aria-label="View details for this report"
+          ui-sref="costs-reports.detail({id: r.id})">
+          Details
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+</div>

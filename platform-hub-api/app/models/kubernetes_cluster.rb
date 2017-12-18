@@ -1,6 +1,7 @@
 class KubernetesCluster < ApplicationRecord
 
   NAME_REGEX = /\A[a-zA-Z][\w-]*\z/
+  AWS_ACCOUNT_ID_REGEX = /\A[0-9]{12}\z/
 
   include Audited
   include FriendlyId
@@ -25,6 +26,13 @@ class KubernetesCluster < ApplicationRecord
 
   validates :description, :s3_region, :s3_bucket_name, :s3_object_key,
             :s3_access_key_id, :s3_secret_access_key, presence: true
+
+  validates :aws_account_id,
+    allow_nil: true,
+    format: {
+      with: AWS_ACCOUNT_ID_REGEX,
+      message: "should be a number with 12 digits (ref: http://docs.aws.amazon.com/general/latest/gr/acct-identifiers.html)"
+    }
 
   has_many :tokens,
     class_name: KubernetesToken,

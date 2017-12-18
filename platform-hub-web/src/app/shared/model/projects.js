@@ -44,6 +44,8 @@ export const Projects = function ($window, $q, apiBackoffTimeMs, hubApiService, 
 
   model.getAllKubernetesGroupsGrouped = getAllKubernetesGroupsGrouped;
 
+  model.getBills = hubApiService.getProjectBills;
+
   return model;
 
   function refresh(force) {
