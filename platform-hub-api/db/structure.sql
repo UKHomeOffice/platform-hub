@@ -195,7 +195,8 @@ CREATE TABLE costs_reports (
     config json NOT NULL,
     results json NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    published_at timestamp without time zone
 );
 
 
@@ -1112,6 +1113,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171114100517'),
 ('20171127115843'),
 ('20171130163603'),
-('20171201113437');
+('20171201113437'),
+('20171214165427');
 
 

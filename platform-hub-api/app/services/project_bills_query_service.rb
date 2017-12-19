@@ -6,6 +6,7 @@ module ProjectBillsQueryService
     raise ArgumentError if project_id.count("}'") > 0
 
     entries = CostsReport
+      .published
       .select("costs_reports.year, costs_reports.month, costs_reports.results #> '{project_bills,#{project_id}}' as project_bill")
       .order(id: :desc)
       .entries

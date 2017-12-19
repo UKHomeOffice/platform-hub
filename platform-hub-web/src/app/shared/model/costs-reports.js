@@ -9,6 +9,7 @@ export const CostsReports = function (hubApiService) {
   model.prepare = hubApiService.prepareCostsReport;
   model.create = hubApiService.createCostsReport;
   model.delete = hubApiService.deleteCostsReport;
+  model.publish = hubApiService.publishCostsReport;
 
   return model;
 };

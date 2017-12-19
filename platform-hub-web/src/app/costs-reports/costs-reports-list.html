@@ -19,11 +19,18 @@
   <md-content ng-if="!$ctrl.loading && $ctrl.reports.length > 0" layout-padding>
 
     <md-card
-
-      ng-repeat="r in $ctrl.reports track by r.id">
+      ng-repeat="r in $ctrl.reports track by r.id"
+      md-colors="r.published_at ? {background: 'blue-grey-50'} : {}">
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">
+            <small
+              class="badge float-right"
+              ng-if="r.published_at"
+              md-colors="{background: 'blue-grey'}">
+              Published
+            </small>
+
             {{r.year}}
             {{r.month}}
           </span>
@@ -31,6 +38,13 @@
       </md-card-title>
 
       <md-card-content>
+        <p
+          class="md-body-2"
+          md-colors="{color: 'accent'}"
+          ng-if="!r.published_at">
+          Not yet published - projects can't currently see their costs from this report
+        </p>
+
         <p class="md-body-1">
           <span md-colors="{color: 'blue-grey-700'}">
             Billing data file:
@@ -51,6 +65,14 @@
           {{r.created_at | date:'medium'}}
         </p>
 
+        <p class="md-body-1" ng-if="r.published_at">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Published at:
+          </span>
+          <span>{{r.published_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
+          (<strong><span am-time-ago="r.published_at" md-colors="{color: 'accent'}"></span></strong>)
+        </p>
+
         <p
           class="md-body-1"
           md-colors="{background: 'blue-grey-50'}"
@@ -66,6 +88,13 @@
           aria-label="View details for this report"
           ui-sref="costs-reports.detail({id: r.id})">
           Details
+        </md-button>
+        <md-button
+          ng-disabled="$ctrl.processing"
+          ng-if="!r.published_at"
+          aria-label="Publish this report now to projects"
+          ng-click="$ctrl.publish(r, $event)">
+          Publish
         </md-button>
       </md-card-actions>
     </md-card>

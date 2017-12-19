@@ -6,5 +6,6 @@ FactoryGirl.define do
     metrics_file 'metrics.csv'
     config { {} }
     results { {} }
+    published_at nil
   end
 end

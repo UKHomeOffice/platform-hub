@@ -6,7 +6,8 @@ class CostsReportSerializer < BaseSerializer
     :billing_file,
     :metrics_file,
     :notes,
-    :created_at
+    :created_at,
+    :published_at
   )
 
   attribute :config do
