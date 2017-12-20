@@ -145,7 +145,7 @@
 
       <md-tab
         id="kube-namespaces-tab"
-        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)"
+        ng-if="$ctrl.isAdmin && $ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)"
         md-on-select="$ctrl.loadKubernetesNamespaces()">
         <md-tab-label>Kube Namespaces</md-tab-label>
         <md-tab-body>
