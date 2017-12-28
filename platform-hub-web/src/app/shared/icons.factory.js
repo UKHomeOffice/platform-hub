@@ -19,6 +19,7 @@ export const icons = function () {
     kubernetesGroups: 'groups',
     kubernetesNamespaces: 'picture_in_picture_alt',
     kubernetesTokens: 'vpn_key',
+    link: 'link',
     markAllRead: 'drafts',
     menu: 'menu',
     platformThemes: 'lens',

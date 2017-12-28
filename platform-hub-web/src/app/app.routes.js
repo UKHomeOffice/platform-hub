@@ -70,6 +70,8 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
   'ngInject';
 
   $locationProvider.html5Mode(true);
+  $locationProvider.hashPrefix('!');
+
   $urlRouterProvider.otherwise('/');
 
   $stateProvider

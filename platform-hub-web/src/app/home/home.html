@@ -23,34 +23,46 @@
       <br />
     </div>
 
-    <div
-      layout="row" layout-wrap layout-align="center center"
-      ng-if="$ctrl.isAuthenticated() && $ctrl.PlatformThemes.visible.length > 0">
-      <md-card
-        ng-repeat="t in $ctrl.PlatformThemes.visible track by t.id"
-        ui-sref="platform-themes.page({id: t.id})"
-        style="width: 250px; cursor: pointer;">
-        <div class="tinted-bar" md-colors="{background: '{{t.colour}}'}"></div>
-        <img
-          ng-src="{{t.image_url}}"
-          class="md-card-image"
-          alt="{{t.title}} icon" />
-        <md-card-title>
-          <md-card-title-text>
-            <span class="md-headline">{{t.title}}</span>
-          </md-card-title-text>
-        </md-card-title>
-        <md-card-content>
-          <p
-            class="md-body-1"
-            ng-bind-html='t.description | simpleFormat'>
-          </p>
-        </md-card-content>
-      </md-card>
-    </div>
+    <div ng-if="$ctrl.isAuthenticated()">
+      <div layout="row" layout-align="center center">
+        <md-button ui-sref="help.faq" class="md-primary md-raised">
+          View Frequently Asked Questions
+        </md-button>
+      </div>
 
-    <div ng-if="$ctrl.isAuthenticated()" layout="row" layout-align="center center">
-      <md-button ui-sref="help.faq" class="md-primary md-raised">View Frequently Asked Questions</md-button>
+      <br />
+      <md-divider></md-divider>
+      <br />
+
+      <div ng-if="$ctrl.PlatformThemes.visible.length > 0">
+
+        <h2 class="md-title text-center">Platform Themes</h2>
+
+        <div layout-wrap layout="row" layout-align="center center">
+          <md-card
+            ng-repeat="t in $ctrl.PlatformThemes.visible track by t.id"
+            ui-sref="platform-themes.page({id: t.id})"
+            style="width: 250px; cursor: pointer;">
+            <div class="tinted-bar" md-colors="{background: '{{t.colour}}'}"></div>
+            <img
+              ng-src="{{t.image_url}}"
+              class="md-card-image"
+              alt="{{t.title}} icon" />
+            <md-card-title>
+              <md-card-title-text>
+                <span class="md-headline">{{t.title}}</span>
+              </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+              <p
+                class="md-body-1"
+                ng-bind-html='t.description | simpleFormat'>
+              </p>
+            </md-card-content>
+          </md-card>
+        </div>
+
+      </div>
     </div>
 
   </md-content>
