@@ -156,7 +156,9 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'id' => @token.cluster.friendly_id,
                 'name' => @token.cluster.name,
                 'description' => @token.cluster.description,
-                'aws_account_id' => @token.cluster.aws_account_id
+                'aws_account_id' => @token.cluster.aws_account_id,
+                'api_url' => @token.cluster.api_url,
+                'ca_cert_encoded' => @token.cluster.ca_cert_encoded
               },
               'user' => {
                 'id' => current_user.id,
@@ -190,7 +192,9 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'id' => @token.cluster.friendly_id,
                 'name' => @token.cluster.name,
                 'description' => @token.cluster.description,
-                'aws_account_id' => @token.cluster.aws_account_id
+                'aws_account_id' => @token.cluster.aws_account_id,
+                'api_url' => @token.cluster.api_url,
+                'ca_cert_encoded' => @token.cluster.ca_cert_encoded
               },
               'user' => {
                 'id' => @user.id,
@@ -230,7 +234,9 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'id' => @token.cluster.friendly_id,
                 'name' => @token.cluster.name,
                 'description' => @token.cluster.description,
-                'aws_account_id' => @token.cluster.aws_account_id
+                'aws_account_id' => @token.cluster.aws_account_id,
+                'api_url' => @token.cluster.api_url,
+                'ca_cert_encoded' => @token.cluster.ca_cert_encoded
               },
               'description' => @token.description,
               'service' => {

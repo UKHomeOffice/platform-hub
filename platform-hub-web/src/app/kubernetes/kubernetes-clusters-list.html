@@ -39,6 +39,13 @@
           <span ng-if="c.aws_account_id">{{c.aws_account_id}}</span>
           <span ng-if="!c.aws_account_id" class="none-text">not set yet</span>
         </p>
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Kube API URL:
+          </span>
+          <span ng-if="c.api_url">{{c.api_url}}</span>
+          <span ng-if="!c.api_url" class="none-text">not set yet</span>
+        </p>
       </md-card-content>
       <md-card-actions layout="row" layout-align="start center">
         <md-button

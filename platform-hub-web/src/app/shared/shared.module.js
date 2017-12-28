@@ -11,6 +11,8 @@ import {AllocationsListingComponent} from './allocations-listing.component';
 import {apiInterceptorService} from './api-interceptor.service';
 import {events} from './events.factory';
 import {homeEndpoints} from './home-endpoints.factory';
+import {KubeConfigHelperPopupController} from './kube-config-helper-popup.controller';
+import {kubeConfigHelperPopupService} from './kube-config-helper-popup.service';
 import {icons} from './icons.factory';
 import {KubernetesTokenValueComponent} from './kubernetes-token-value.component';
 import {onboardingTrigger} from './onboarding-trigger.factory';
@@ -31,6 +33,8 @@ export const SharedModule = angular
   .factory('events', events)
   .factory('homeEndpoints', homeEndpoints)
   .factory('icons', icons)
+  .controller('KubeConfigHelperPopupController', KubeConfigHelperPopupController)
+  .service('kubeConfigHelperPopupService', kubeConfigHelperPopupService)
   .factory('onboardingTrigger', onboardingTrigger)
   .service('roleCheckerService', roleCheckerService)
   .name;

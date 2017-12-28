@@ -1103,7 +1103,9 @@ RSpec.describe ProjectsController, type: :controller do
         cluster = {
           'id' => token.cluster.friendly_id,
           'name' => token.cluster.name,
-          'description' => token.cluster.description
+          'description' => token.cluster.description,
+          'api_url' => token.cluster.api_url,
+          'ca_cert_encoded' => token.cluster.ca_cert_encoded
         }
         cluster['aws_account_id'] = token.cluster.aws_account_id if is_admin
 

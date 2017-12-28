@@ -8,7 +8,7 @@ export const IdentitiesListComponent = {
   controller: IdentitiesListController
 };
 
-function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiService, FeatureFlags, featureFlagKeys) {
+function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiService, FeatureFlags, featureFlagKeys, kubeConfigHelperPopupService) {
   'ngInject';
 
   const ctrl = this;
@@ -19,11 +19,12 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
 
   ctrl.currentUserId = null;
   ctrl.userIdentities = {};
+  ctrl.showKubeTokens = false;
   ctrl.kubernetesTokensByProject = {};
 
   ctrl.connect = connect;
   ctrl.disconnect = disconnect;
-  ctrl.showKubeTokens = false;
+  ctrl.openKubeConfigHelperPopup = openKubeConfigHelperPopup;
 
   init();
 
@@ -106,5 +107,9 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
             ctrl.busy = false;
           });
       });
+  }
+
+  function openKubeConfigHelperPopup(kubeId, token, targetEvent) {
+    return kubeConfigHelperPopupService.open(kubeId, token, targetEvent);
   }
 }

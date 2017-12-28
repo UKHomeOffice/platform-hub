@@ -285,7 +285,9 @@ CREATE TABLE kubernetes_clusters (
     s3_object_key character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    aws_account_id bigint
+    aws_account_id bigint,
+    api_url character varying,
+    ca_cert_encoded character varying
 );
 
 
@@ -1114,6 +1116,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171127115843'),
 ('20171130163603'),
 ('20171201113437'),
-('20171214165427');
+('20171214165427'),
+('20171221143451');
 
 

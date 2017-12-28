@@ -6,4 +6,6 @@ class KubernetesClusterSerializer < BaseSerializer
 
   attribute :aws_account_id, if: :is_admin?
 
+  attributes :api_url, :ca_cert_encoded
+
 end

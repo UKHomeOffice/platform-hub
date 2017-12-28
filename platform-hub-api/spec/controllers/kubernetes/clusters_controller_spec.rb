@@ -89,7 +89,9 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
               'id' => @cluster.friendly_id,
               'name' => @cluster.name,
               'description' => @cluster.description,
-              'aws_account_id' => nil
+              'aws_account_id' => nil,
+              'api_url' => nil,
+              'ca_cert_encoded' => nil
             })
           end
         end
@@ -102,15 +104,16 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
   describe 'POST #create' do
     let :post_data do
       {
-        cluster: {
-          name: 'foobar',
-          description: 'foobar desc',
-          s3_region: 's3_region',
-          s3_bucket_name: 's3_bucket_name',
-          s3_access_key_id: 's3_access_key_id',
-          s3_secret_access_key: 's3_secret_access_key',
-          s3_object_key: 's3_object_key'
-        }
+        name: 'foobar',
+        description: 'foobar desc',
+        aws_account_id: '123456789012',
+        s3_region: 's3_region',
+        s3_bucket_name: 's3_bucket_name',
+        s3_access_key_id: 's3_access_key_id',
+        s3_secret_access_key: 's3_secret_access_key',
+        s3_object_key: 's3_object_key',
+        api_url: 'api_url',
+        ca_cert_encoded: 'ca_cert_encoded'
       }
     end
 
@@ -141,9 +144,11 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
           new_cluster_internal_id = cluster.id
           expect(json_response).to eq({
             'id' => new_cluster_external_id,
-            'name' => post_data[:cluster][:name],
-            'description' => post_data[:cluster][:description],
-            'aws_account_id' => nil
+            'name' => post_data[:name],
+            'description' => post_data[:description],
+            'aws_account_id' => post_data[:aws_account_id].to_i,
+            'api_url' => post_data[:api_url],
+            'ca_cert_encoded' => post_data[:ca_cert_encoded]
           });
           expect(Audit.count).to eq 1
           audit = Audit.first
@@ -159,7 +164,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
 
           it 'fails to create a new cluster with a name that\'s already taken' do
             post_data_with_same_name = {
-              cluster: post_data[:cluster].clone.tap { |h| h[:name] = @existing_cluster.name }
+              cluster: post_data.clone.tap { |h| h[:name] = @existing_cluster.name }
             }
             expect(KubernetesCluster.count).to eq 1
             expect(Audit.count).to eq 0
@@ -182,7 +187,8 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
         id: @cluster.friendly_id,
         description: 'foooooooooooooooo',
         aws_account_id: '123456789012',
-        s3_region: 'new_s3_region'
+        s3_region: 'new_s3_region',
+        api_url: 'new_api_url'
       }
     end
 
@@ -218,6 +224,8 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
           expect(updated.aws_account_id).to eq put_data[:aws_account_id].to_i
           expect(updated.s3_region).to eq put_data[:s3_region]
           expect(updated.s3_bucket_name).to eq @cluster.s3_bucket_name
+          expect(updated.api_url).to eq put_data[:api_url]
+          expect(updated.ca_cert_encoded).to eq @cluster.ca_cert_encoded
           expect(Audit.count).to eq 1
           audit = Audit.first
           expect(audit.action).to eq 'update'

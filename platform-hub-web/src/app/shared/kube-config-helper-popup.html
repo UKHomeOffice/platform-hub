@@ -1,0 +1,81 @@
+<md-dialog aria-label="Instructions to set up your kube config">
+  <md-toolbar class="md-toolbar-tools md-accent">
+    <h2>Set up Kube config to access {{$ctrl.clusterName}} cluster</h2>
+    <span flex></span>
+    <md-button
+      class="close-button md-icon-button"
+      ng-click="$ctrl.close()"
+      aria-label="Close dialog">
+      <md-icon>clear</md-icon>
+    </md-button>
+  </md-toolbar>
+
+  <md-dialog-content class="md-dialog-content" layout="column">
+
+    <p class="md-body-1">
+      Type the following in your terminal/shell...
+    </p>
+
+    <br />
+
+    <h5>Set up the cluster settings:</h5>
+    <div layout="row" layout="start center">
+      <md-button
+        class="md-icon-button"
+        ngclipboard
+        data-clipboard-target="#cluster-commands">
+        <md-icon ng-bind="$ctrl.copyIcon"></md-icon>
+        <md-tooltip md-direction="bottom">
+          Copy to clipboard
+        </md-tooltip>
+      </md-button>
+      <pre flex id="cluster-commands">{{$ctrl.clusterCommands}}</pre>
+    </div>
+    <br />
+
+    <h5>Set up the credentials:</h5>
+    <div layout="row" layout="start center">
+      <md-button
+        class="md-icon-button"
+        ngclipboard
+        data-clipboard-target="#credentials-commands">
+        <md-icon ng-bind="$ctrl.copyIcon"></md-icon>
+        <md-tooltip md-direction="bottom">
+          Copy to clipboard
+        </md-tooltip>
+      </md-button>
+      <pre flex id="credentials-commands">{{$ctrl.credentialsCommands}}</pre>
+    </div>
+    <br />
+
+    <h5>Set up the context:</h5>
+    <div layout="row" layout="start center">
+      <md-button
+        class="md-icon-button"
+        ngclipboard
+        data-clipboard-target="#context-commands">
+        <md-icon ng-bind="$ctrl.copyIcon"></md-icon>
+        <md-tooltip md-direction="bottom">
+          Copy to clipboard
+        </md-tooltip>
+      </md-button>
+      <pre flex id="context-commands">{{$ctrl.contextCommands}}</pre>
+    </div>
+    <br />
+
+    <h5>Now you can access the cluster:</h5>
+    <div layout="row" layout="start center">
+      <md-button
+        class="md-icon-button"
+        ngclipboard
+        data-clipboard-target="#example-kubectl-command">
+        <md-icon ng-bind="$ctrl.copyIcon"></md-icon>
+        <md-tooltip md-direction="bottom">
+          Copy to clipboard
+        </md-tooltip>
+      </md-button>
+      <pre flex id="example-kubectl-command">{{$ctrl.exampleKubectlCommand}}</pre>
+    </div>
+
+  </md-dialog-content>
+</md-dialog>

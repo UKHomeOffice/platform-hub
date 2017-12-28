@@ -16,6 +16,7 @@ import 'angular-sanitize';
 import 'angular-sortable-view';
 import 'angular-ui-router';
 import 'angular-url-encode';
+import 'ngclipboard';
 import 'ng-material-datetimepicker';
 
 import moment from 'moment';
@@ -84,6 +85,7 @@ angular
     'bc.AngularUrlEncode',
     'ngAnimate',
     'ngAria',
+    'ngclipboard',
     'ngCookies',
     'ngMaterial',
     'ngMaterialDatePicker',
