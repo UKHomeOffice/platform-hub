@@ -98,6 +98,14 @@
                       (<span am-time-ago="t.expire_privileged_at"></span>)
                     </p>
                   </li>
+                  <li ng-if="t.cluster.api_url && t.cluster.ca_cert_encoded">
+                    <md-button
+                      class="md-raised"
+                      ng-click="$ctrl.openKubeConfigHelperPopup(i.external_id, t, $event)"
+                      aria-label="Help me set up my kube config to use this token">
+                      Set up Kube Config
+                    </md-button>
+                  </li>
                 </ul>
               </li>
             </ul>

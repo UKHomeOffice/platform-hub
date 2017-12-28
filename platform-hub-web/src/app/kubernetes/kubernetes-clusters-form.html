@@ -54,6 +54,32 @@
           </md-input-container>
 
           <fieldset>
+            <legend>For Kube config</legend>
+
+            <md-input-container class="md-block">
+              <label for="api_url">Kube API URL:</label>
+              <input
+                type="url"
+                name="api_url"
+                ng-model="$ctrl.cluster.api_url">
+              <div ng-messages="$ctrl.clusterForm.api_url.$error">
+                <div ng-message="url">Not a valid URL.</div>
+              </div>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label for="ca_cert_encoded">Kube CA cert (base64 encoded):</label>
+              <input
+                name="ca_cert_encoded"
+                ng-model="$ctrl.cluster.ca_cert_encoded">
+              </textarea>
+            </md-input-container>
+          </fieldset>
+
+          <br />
+          <br />
+
+          <fieldset>
             <legend>S3 bucket config for tokens sync</legend>
 
             <p
@@ -61,7 +87,7 @@
               md-colors="{background: 'green-50'}"
               ng-if="!$ctrl.isNew"
               layout-padding>
-              Note: existing config values are not made visible – you can only set new values here.
+              Note: existing config values are not made visible – you can only set new values here (to update).
             </p>
 
             <br />

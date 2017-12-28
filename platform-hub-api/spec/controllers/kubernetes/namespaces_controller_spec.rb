@@ -109,7 +109,9 @@ RSpec.describe Kubernetes::NamespacesController, type: :controller do
                 'id' => @namespace.cluster.friendly_id,
                 'name' => @namespace.cluster.name,
                 'description' => @namespace.cluster.description,
-                'aws_account_id' => @namespace.cluster.aws_account_id
+                'aws_account_id' => @namespace.cluster.aws_account_id,
+                'api_url' => @namespace.cluster.api_url,
+                'ca_cert_encoded' => @namespace.cluster.ca_cert_encoded
               },
               'service' => {
                 'id' => @namespace.service.id,
@@ -176,7 +178,9 @@ RSpec.describe Kubernetes::NamespacesController, type: :controller do
               'id' => namespace.cluster.friendly_id,
               'name' => post_data[:namespace][:cluster_name],
               'description' => namespace.cluster.description,
-              'aws_account_id' => namespace.cluster.aws_account_id
+              'aws_account_id' => namespace.cluster.aws_account_id,
+              'api_url' => namespace.cluster.api_url,
+              'ca_cert_encoded' => namespace.cluster.ca_cert_encoded
             },
             'service' => {
               'id' => post_data[:namespace][:service_id],

@@ -50,6 +50,24 @@
                   <span ng-if="!$ctrl.cluster.aws_account_id" class="none-text">not set yet</span>
                 </p>
 
+                <md-divider></md-divider>
+
+                <p class="md-body-1">
+                  <span md-colors="{color: 'blue-grey-700'}">
+                    Kube API URL:
+                  </span>
+                  <span ng-if="$ctrl.cluster.api_url">{{$ctrl.cluster.api_url}}</span>
+                  <span ng-if="!$ctrl.cluster.api_url" class="none-text">not set yet</span>
+                </p>
+
+                <p class="md-body-1" style="overflow-wrap: break-word;">
+                  <span md-colors="{color: 'blue-grey-700'}">
+                    Kube CA cert (base64 encoded):
+                  </span>
+                  <span ng-if="$ctrl.cluster.ca_cert_encoded">{{$ctrl.cluster.ca_cert_encoded}}</span>
+                  <span ng-if="!$ctrl.cluster.ca_cert_encoded" class="none-text">not set yet</span>
+                </p>
+
               </md-content>
             </div>
           </div>

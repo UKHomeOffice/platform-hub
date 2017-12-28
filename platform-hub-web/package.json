@@ -37,6 +37,7 @@
     "medium-editor": "^5.23.2",
     "moment": "^2.18.1",
     "ng-material-datetimepicker": "^1.6.3",
+    "ngclipboard": "^1.1.2",
     "normalize.css": "^7.0.0"
   },
   "devDependencies": {
