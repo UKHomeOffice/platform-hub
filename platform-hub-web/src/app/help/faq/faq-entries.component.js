@@ -3,7 +3,7 @@ export const FaqEntriesComponent = {
   controller: FaqEntriesController
 };
 
-function FaqEntriesController(AppSettings, FeatureFlags, featureFlagKeys) {
+function FaqEntriesController(AppSettings, FeatureFlags, featureFlagKeys, icons) {
   'ngInject';
 
   const ctrl = this;
@@ -11,4 +11,5 @@ function FaqEntriesController(AppSettings, FeatureFlags, featureFlagKeys) {
   ctrl.AppSettings = AppSettings;
   ctrl.FeatureFlags = FeatureFlags;
   ctrl.featureFlagKeys = featureFlagKeys;
+  ctrl.linkIcon = icons.link;
 }
