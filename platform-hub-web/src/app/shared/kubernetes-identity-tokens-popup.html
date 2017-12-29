@@ -1,0 +1,81 @@
+<md-dialog aria-label="Kubernetes tokens" class="kubernetes-identity-tokens">
+  <md-toolbar class="md-toolbar-tools md-accent">
+    <h2>Kubernetes tokens for {{$ctrl.identity.external_id}}</h2>
+    <span flex></span>
+    <md-button
+      class="close-button md-icon-button"
+      ng-click="$ctrl.close()"
+      aria-label="Close dialog">
+      <md-icon>clear</md-icon>
+    </md-button>
+  </md-toolbar>
+
+  <md-dialog-content>
+    <md-list flex ng-repeat="(label, tokens) in $ctrl.tokensByProject track by label">
+      <md-subheader class="md-sticky">
+        {{label}}
+      </md-subheader>
+
+      <md-list-item
+        class="md-3-line md-long-text"
+        ng-repeat="t in tokens track by $index">
+        <md-icon
+          ng-if="t.expire_privileged_at"
+          md-colors="{color: 'default-accent'}"
+          ng-bind="$ctrl.escalatedIcon"
+          aria-label="This token has escalated privileges for a certain period of time">
+        </md-icon>
+
+        <div
+          class="md-list-item-text"
+          ng-class="{'md-offset': !t.expire_privileged_at}">
+
+          <h3
+            class="badge"
+            md-colors="{background: 'default-accent-100'}"
+            style="display: inline-block; margin-left: 0; margin-top: 1em;">
+            {{t.cluster.name}} cluster
+          </h3>
+
+          <h4>
+            <kubernetes-token-value item="t"></kubernetes-token-value>
+          </h4>
+
+          <p style="margin-bottom: 2em">
+            <span ng-if="t.expire_privileged_at" md-colors="{color: 'default-accent'}">
+              <strong>Escalated privilege ends at:</strong>
+              {{t.expire_privileged_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+              (<span am-time-ago="t.expire_privileged_at"></span>)
+            </span>
+            <br ng-if="t.expire_privileged_at" />
+
+            <span ng-if="!t.groups.length" class="none-text">
+              No RBAC groups assigned to this token yet
+            </span>
+            <span class="md-body-1" ng-if="t.groups.length">
+              RBAC groups:
+              <br />
+              <span class="indented" ng-repeat="g in t.groups track by g">
+                {{g}}
+                <br ng-if="!$last"/>
+              </span>
+            </span>
+          </p>
+
+          <md-button
+            class="md-raised md-secondary"
+            ng-if="t.cluster.api_url && t.cluster.ca_cert_encoded"
+            ng-click="$ctrl.openKubeConfigHelperPopup($ctrl.identity.external_id, t, $event)"
+            aria-label="Help me set up my kube config to use this token">
+            Set up Kube Config
+          </md-button>
+
+          <md-divider></md-divider>
+
+        </div>
+      </md-list-item>
+
+      <br />
+    </md-list>
+  </md-dialog-content>
+</md-dialog>

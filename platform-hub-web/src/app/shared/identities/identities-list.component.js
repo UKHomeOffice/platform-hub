@@ -8,7 +8,7 @@ export const IdentitiesListComponent = {
   controller: IdentitiesListController
 };
 
-function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiService, FeatureFlags, featureFlagKeys, kubeConfigHelperPopupService) {
+function IdentitiesListController($mdDialog, Identities, Me, _, FeatureFlags, featureFlagKeys, kubernetesIdentityTokensPopupService) {
   'ngInject';
 
   const ctrl = this;
@@ -19,12 +19,10 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
 
   ctrl.currentUserId = null;
   ctrl.userIdentities = {};
-  ctrl.showKubeTokens = false;
-  ctrl.kubernetesTokensByProject = {};
 
   ctrl.connect = connect;
   ctrl.disconnect = disconnect;
-  ctrl.openKubeConfigHelperPopup = openKubeConfigHelperPopup;
+  ctrl.showKubernetesTokens = showKubernetesTokens;
 
   init();
 
@@ -63,11 +61,6 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
               {connected: !_.isEmpty(match)}
             );
           });
-
-          const kubernetesIdentity = _.find(identities, ['provider', 'kubernetes']);
-          if (kubernetesIdentity && !_.isEmpty(kubernetesIdentity.kubernetes_tokens)) {
-            ctrl.kubernetesTokensByProject = _.groupBy(kubernetesIdentity.kubernetes_tokens, t => `Project: ${t.project.name} (${t.project.shortname})`);
-          }
         }
       })
       .finally(() => {
@@ -109,7 +102,7 @@ function IdentitiesListController($mdDialog, Identities, Me, _, logger, hubApiSe
       });
   }
 
-  function openKubeConfigHelperPopup(kubeId, token, targetEvent) {
-    return kubeConfigHelperPopupService.open(kubeId, token, targetEvent);
+  function showKubernetesTokens(identity, targetEvent) {
+    return kubernetesIdentityTokensPopupService.open(identity, targetEvent);
   }
 }
