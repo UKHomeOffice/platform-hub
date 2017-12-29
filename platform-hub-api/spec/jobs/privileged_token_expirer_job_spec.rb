@@ -3,13 +3,13 @@ require 'rails_helper'
 RSpec.describe PrivilegedTokenExpirerJob, type: :job do
   include_context 'time helpers'
 
-  describe '.is_already_queued' do
+  describe '.is_already_queued?' do
     it 'should recognise when the job is already queued' do
-      expect(PrivilegedTokenExpirerJob.is_already_queued).to be false
+      expect(PrivilegedTokenExpirerJob.is_already_queued?).to be false
 
       PrivilegedTokenExpirerJob.perform_later
 
-      expect(PrivilegedTokenExpirerJob.is_already_queued).to be true
+      expect(PrivilegedTokenExpirerJob.is_already_queued?).to be true
     end
   end
 
