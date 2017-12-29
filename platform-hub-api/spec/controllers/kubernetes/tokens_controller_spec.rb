@@ -589,6 +589,8 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
           }
         ).and_call_original
 
+        expect(Kubernetes::TokensSyncJobTriggerService).to receive(:trigger)
+
         patch :escalate, params: params
 
         expect(response).to be_success
@@ -693,6 +695,8 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             cluster: token.cluster.name
           }
         ).and_call_original
+
+        expect(Kubernetes::TokensSyncJobTriggerService).to receive(:trigger)
 
         patch :deescalate, params: { id: token.id }
 
