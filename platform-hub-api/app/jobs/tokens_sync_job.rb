@@ -1,7 +1,7 @@
 class TokensSyncJob < ApplicationJob
   queue_as :tokens_sync
 
-  def self.is_already_queued
+  def self.is_already_queued?
     Delayed::Job.where(queue: :tokens_sync).count > 0
   end
 

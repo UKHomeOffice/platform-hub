@@ -2,13 +2,13 @@ require 'rails_helper'
 
 RSpec.describe TokensSyncJob, type: :job do
 
-  describe '.is_already_queued' do
+  describe '.is_already_queued?' do
     it 'should recognise when the job is already queued' do
-      expect(TokensSyncJob.is_already_queued).to be false
+      expect(TokensSyncJob.is_already_queued?).to be false
 
       TokensSyncJob.perform_later
 
-      expect(TokensSyncJob.is_already_queued).to be true
+      expect(TokensSyncJob.is_already_queued?).to be true
     end
   end
 

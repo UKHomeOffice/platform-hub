@@ -62,6 +62,8 @@ class Kubernetes::TokensController < ApiJsonController
         }
       )
 
+      Kubernetes::TokensSyncJobTriggerService.trigger
+
       render json: @token
     else
       render_model_errors @token.errors
@@ -81,6 +83,8 @@ class Kubernetes::TokensController < ApiJsonController
           cluster: @token.cluster.name
         }
       )
+
+      Kubernetes::TokensSyncJobTriggerService.trigger
 
       render json: @token
     else
