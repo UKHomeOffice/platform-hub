@@ -46,7 +46,7 @@
     <md-list-item
       ng-switch-when="kubernetes"
       ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)"
-      class="md-3-line md-long-text">
+      class="md-3-line">
 
       <md-icon ng-if="i.connected" md-colors="{color: 'teal'}">check_circle</md-icon>
 
@@ -57,70 +57,23 @@
           ID: {{i.external_id}}
         </p>
 
-        <p ng-if="i.kubernetes_tokens.length == 0">
-          No tokens currently available for you
+        <p ng-if="i.connected">
+          <ng-pluralize
+            count="i.kubernetes_tokens.length"
+            when="{
+              '0': 'No tokens available yet',
+              '1': '1 token ',
+              'other': '{} tokens'
+            }">
+          </ng-pluralize>
         </p>
-
-        <div ng-if="$ctrl.showKubeTokens">
-          <br />
-
-          <div ng-repeat="(label, tokens) in $ctrl.kubernetesTokensByProject track by label" class="separated-top">
-            <h5>{{label}}</h5>
-            <ul class="md-body-1">
-              <li ng-repeat="t in tokens">
-                <p>
-                  <span class="badge" md-colors="{background: 'accent-100'}" style="margin-left: 0">{{t.cluster.name}} cluster</span>
-                  <br />
-                  <kubernetes-token-value item="t"></kubernetes-token-value>
-                </p>
-
-                <ul>
-                  <li>
-                    <p>
-                      Groups:
-                      <span ng-if="!t.groups.length" class="none-text">
-                        no RBAC groups assigned to this token
-                      </span>
-                    </p>
-
-                    <ul ng-if="t.groups.length > 0">
-                      <li ng-repeat="g in t.groups" style="margin-bottom: 0.33em">
-                        <span class="inline-block badge" md-colors="{background: 'green-100'}" style="margin-left: 0">{{g}}</span>
-                      </li>
-                    </ul>
-                  </li>
-                  <li ng-if="t.expire_privileged_at">
-                    <p
-                      md-colors="{color: 'accent'}">
-                      <strong>Escalated privilege ends at:</strong>
-                      <br />
-                      {{t.expire_privileged_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
-                      (<span am-time-ago="t.expire_privileged_at"></span>)
-                    </p>
-                  </li>
-                  <li ng-if="t.cluster.api_url && t.cluster.ca_cert_encoded">
-                    <md-button
-                      class="md-raised"
-                      ng-click="$ctrl.openKubeConfigHelperPopup(i.external_id, t, $event)"
-                      aria-label="Help me set up my kube config to use this token">
-                      Set up Kube Config
-                    </md-button>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-
-        </div>
 
         <md-button class="md-secondary md-raised"
           ng-if="i.kubernetes_tokens.length > 0"
-          ng-click="$ctrl.showKubeTokens = !$ctrl.showKubeTokens"
-          aria-label="Show/Hide tokens">
-          <span ng-if="!$ctrl.showKubeTokens">Show tokens</span>
-          <span ng-if="$ctrl.showKubeTokens">Hide tokens</span>
+          ng-click="$ctrl.showKubernetesTokens(i, $event)"
+          aria-label="Show tokens for this Kubernetes identity">
+          Show tokens
         </md-button>
-
       </div>
 
     </md-list-item>

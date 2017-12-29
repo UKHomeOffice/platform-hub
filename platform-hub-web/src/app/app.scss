@@ -147,3 +147,9 @@ md-card,
     display: none;
   }
 }
+
+.kubernetes-identity-tokens {
+  md-list-item .md-secondary-container {
+    margin: inherit;
+  }
+}

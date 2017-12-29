@@ -11,9 +11,11 @@ import {AllocationsListingComponent} from './allocations-listing.component';
 import {apiInterceptorService} from './api-interceptor.service';
 import {events} from './events.factory';
 import {homeEndpoints} from './home-endpoints.factory';
+import {icons} from './icons.factory';
 import {KubeConfigHelperPopupController} from './kube-config-helper-popup.controller';
 import {kubeConfigHelperPopupService} from './kube-config-helper-popup.service';
-import {icons} from './icons.factory';
+import {KubernetesIdentityTokensPopupController} from './kubernetes-identity-tokens-popup.controller';
+import {kubernetesIdentityTokensPopupService} from './kubernetes-identity-tokens-popup.service';
 import {KubernetesTokenValueComponent} from './kubernetes-token-value.component';
 import {onboardingTrigger} from './onboarding-trigger.factory';
 import {roleCheckerService} from './role-checker.service';
@@ -35,6 +37,8 @@ export const SharedModule = angular
   .factory('icons', icons)
   .controller('KubeConfigHelperPopupController', KubeConfigHelperPopupController)
   .service('kubeConfigHelperPopupService', kubeConfigHelperPopupService)
+  .controller('KubernetesIdentityTokensPopupController', KubernetesIdentityTokensPopupController)
+  .service('kubernetesIdentityTokensPopupService', kubernetesIdentityTokensPopupService)
   .factory('onboardingTrigger', onboardingTrigger)
   .service('roleCheckerService', roleCheckerService)
   .name;

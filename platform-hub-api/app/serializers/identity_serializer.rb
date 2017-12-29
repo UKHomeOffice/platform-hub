@@ -9,9 +9,10 @@ class IdentitySerializer < BaseSerializer
     :updated_at
   )
 
-  attribute :kubernetes_tokens, if: -> { object.kubernetes? && FeatureFlagService.is_enabled?(:kubernetes_tokens) } do
-    ActiveModel::Serializer::CollectionSerializer.new(
-      object.tokens, each_serializer: KubernetesTokenSerializer, scope: scope
-    )
+  has_many :kubernetes_tokens, if: -> { object.kubernetes? && FeatureFlagService.is_enabled?(:kubernetes_tokens) } do
+    object
+      .tokens
+      .includes(:project, :cluster)  # Eager load projects and clusters for performance
+      .joins(:project, :cluster).order('"projects"."name" ASC, "kubernetes_clusters"."name" ASC')  # Order by project and cluster names
   end
 end
