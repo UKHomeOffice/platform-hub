@@ -34,6 +34,12 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
     }
   });
 
+  // Listen for API resource not found event
+  const apiResourceNotFoundHandler = $rootScope.$on(events.api.resourceNotFound, () => {
+    logger.error('Not found');
+    $state.go('home');
+  });
+
   // Listen for auth unauthorized event
   const authUnauthorizedHandler = $rootScope.$on(events.auth.unauthorized, () => {
     logger.error('User unauthorized.');
@@ -56,6 +62,7 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
       });
   });
 
+  $rootScope.$on('$destroy', apiResourceNotFoundHandler);
   $rootScope.$on('$destroy', authDataHandler);
   $rootScope.$on('$destroy', authUnauthorizedHandler);
   $rootScope.$on('$destroy', authForbiddenHandler);

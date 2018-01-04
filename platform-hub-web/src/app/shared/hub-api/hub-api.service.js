@@ -1,6 +1,6 @@
 /* eslint camelcase: 0, object-shorthand: 0 */
 
-export const hubApiService = function ($rootScope, $http, $q, logger, events, apiEndpoint, _) {
+export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoint, _) {
   'ngInject';
 
   const service = {};
