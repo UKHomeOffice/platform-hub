@@ -18,6 +18,7 @@ import {KubernetesIdentityTokensPopupController} from './kubernetes-identity-tok
 import {kubernetesIdentityTokensPopupService} from './kubernetes-identity-tokens-popup.service';
 import {KubernetesTokenValueComponent} from './kubernetes-token-value.component';
 import {onboardingTrigger} from './onboarding-trigger.factory';
+import {ProjectBillBreakdownTableComponent} from './project-bill-breakdown-table.component';
 import {roleCheckerService} from './role-checker.service';
 
 export const SharedModule = angular
@@ -40,5 +41,6 @@ export const SharedModule = angular
   .controller('KubernetesIdentityTokensPopupController', KubernetesIdentityTokensPopupController)
   .service('kubernetesIdentityTokensPopupService', kubernetesIdentityTokensPopupService)
   .factory('onboardingTrigger', onboardingTrigger)
+  .component('projectBillBreakdownTable', ProjectBillBreakdownTableComponent)
   .service('roleCheckerService', roleCheckerService)
   .name;

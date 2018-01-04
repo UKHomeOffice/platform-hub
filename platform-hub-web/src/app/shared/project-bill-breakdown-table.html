@@ -1,0 +1,22 @@
+<table class="project-bill-breakdown-table md-body-1">
+  <thead>
+    <th
+      ng-repeat="h in $ctrl.headers track by h"
+      style="text-align: center;">
+      {{h}}
+    </th>
+  </thead>
+  <tbody>
+    <tr
+      ng-repeat="r in $ctrl.rows track by r[0]"
+      ng-style="r[0] == 'Total' ? {'font-weight': 'bold'} : {}">
+      <td
+        ng-repeat="d in r track by $index"
+        ng-style="$index == 0 ? {'text-align': 'right'} : {'text-align': 'center'}">
+        <span ng-if="$index == 0">{{d}}</span>
+        <span ng-if="$index != 0">{{d | currency:'$'}}</span>
+      </td>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -73,15 +73,143 @@
 
         <md-divider></md-divider>
 
-        <h4 class="md-subhead">Config used to generate report</h4>
-        <pre>{{$ctrl.report.config | json}}</pre>
+        <h4 class="md-subhead">
+          Config used to generate report
+        </h4>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Clusters that are considered shared costs (bills for these are split across projects):
+          </span>
+          <br />
+          <span>{{$ctrl.report.config.shared_costs.clusters.join(', ')}}</span>
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Percentage of the shared clusters bills (above) that have been allocated to projects:
+          </span>
+          <br />
+          <span>{{$ctrl.report.config.shared_costs.allocation_percentage}}%</span>
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Metrics weightings used:
+          </span>
+        </p>
+        <table class="md-body-1">
+          <tr ng-repeat="(m, v) in $ctrl.report.config.metric_weights track by m">
+            <td style="text-align: right">
+              {{m}}
+            </td>
+            <td>
+              {{v}}%
+            </td>
+          </tr>
+        </table>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Projects that were excluded from this costs report (i.e. none of their namespaces were taken into account in the metrics and thus didn't influence the distributions of the bill and didn't receive a bill):
+          </span>
+          <br />
+          <span class="none-text" ng-if="!$ctrl.excludedProjects.length">none</span>
+          <span class="indented" ng-repeat="p in $ctrl.excludedProjects track by p.id">
+            {{p.name}}
+            ({{p.shortname}})
+            <br ng-if="!$last"/>
+          </span>
+        </p>
 
         <br />
 
         <md-divider></md-divider>
 
-        <h4 class="md-subhead">Costs report results</h4>
-        <pre>{{$ctrl.report.results | json}}</pre>
+        <h4 class="md-subhead">
+          Project bills generated
+        </h4>
+
+        <md-card ng-repeat="(id, b) in $ctrl.report.results.project_bills track by id">
+          <md-card-title>
+            <md-card-title-text>
+              <span class="md-title">
+                {{b.name}}
+                ({{b.shortname}})
+              </span>
+            </md-card-title-text>
+          </md-card-title>
+
+          <md-card-content>
+            <p class="md-body-1">
+              <span md-colors="{color: 'blue-grey-700'}">
+                Cost centre code:
+              </span>
+              <span>{{b.cost_centre_code || 'none'}}</span>
+            </p>
+
+            <project-bill-breakdown-table totals="b.totals" services="b.services"></project-bill-breakdown-table>
+          </md-card-content>
+        </md-card>
+
+        <br />
+
+        <md-divider></md-divider>
+
+        <h4 class="md-subhead">
+          AWS accounts used
+          ({{$ctrl.report.results.accounts.length}})
+        </h4>
+
+        <md-list flex>
+          <md-list-item
+            class="md-3-line"
+            ng-repeat="a in $ctrl.report.results.accounts track by a.account_id">
+            <div class="md-list-item-text" layout="column">
+              <h3>
+                Name: <strong>{{a.account_name}}</strong>
+                |
+                Bill: <strong>{{a.total_bill | currency:'$'}}</strong>
+              </h3>
+              <h4>AWS account ID: {{a.account_id}}</h4>
+              <p class="md-body-2">
+                Mapped to cluster:
+                <span md-colors="{color: 'green'}">{{a.cluster_name}}</span>
+              </p>
+            </div>
+          </md-list-item>
+        </md-list>
+
+        <br />
+
+        <md-divider></md-divider>
+
+        <h4 class="md-subhead">
+          Namespaces ignored
+          ({{$ctrl.report.results.ignored_namespaces.length}})
+
+        </h4>
+
+        <p
+          class="md-body-1"
+          md-colors="{background: 'orange-50'}"
+          layout-padding>
+          The following namespaces were ignored when taking into account the usage metrics to calculate the project weightings, because they have not been mapped to any project services.
+        </p>
+
+        <md-list flex>
+          <md-list-item
+            class="md-2-line"
+            ng-repeat="n in $ctrl.report.results.ignored_namespaces track by n.account_id+n.namespace_name">
+            <div class="md-list-item-text" layout="column">
+              <h3>Namespace: <strong>{{n.namespace_name}}</strong></h3>
+              <h4>
+                AWS account ID: {{n.account_id}}
+                <span ng-if="n.cluster_name">| Cluster: {{n.cluster_name}}</span>
+              </h4>
+            </div>
+          </md-list-item>
+        </md-list>
 
       </md-content>
     </div>
