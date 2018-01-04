@@ -14,6 +14,9 @@ export const apiInterceptorService = function ($rootScope, events) {
     if (response.status === 403) {
       $rootScope.$broadcast(events.auth.forbidden, 'Access forbidden');
     }
+    if (response.status === 404) {
+      $rootScope.$broadcast(events.api.resourceNotFound, 'Not found');
+    }
     if (response.status === 418) {
       $rootScope.$broadcast(events.auth.deactivated, 'User deactivated');
     }

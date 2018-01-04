@@ -2,11 +2,14 @@ export const events = function () {
   'ngInject';
 
   return {
+    api: {
+      resourceNotFound: 'api:resourceNotFound'
+    },
     auth: {
-      updated: 'auth:updated',
-      unauthorized: 'auth:unauthorized',
+      deactivated: 'auth:deactivated',
       forbidden: 'auth:forbidden',
-      deactivated: 'auth:deactivated'
+      unauthorized: 'auth:unauthorized',
+      updated: 'auth:updated'
     }
   };
 };
