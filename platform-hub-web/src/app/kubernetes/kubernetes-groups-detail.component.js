@@ -45,7 +45,7 @@ function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, p
   function deleteGroup(targetEvent) {
     const confirm = $mdDialog.confirm()
       .title('Are you sure?')
-      .textContent('This will delete the RBAC group from the hub, BUT it won\'t remove it from the cluster and will not affect any existing tokens that have this group.')
+      .textContent('This will delete the RBAC group from the hub and remove it from all tokens that use it (the tokens will still continue to exist).')
       .ariaLabel('Confirm deletion of RBAC group from the hub')
       .targetEvent(targetEvent)
       .ok('Do it')
