@@ -122,33 +122,29 @@
                           Actions
                         </md-button>
                         <md-menu-content width="4">
-                          <md-menu-item ng-if="$ctrl.allowOnboardOrOffboardGitHub(m)">
+                          <md-menu-item ng-if="m.user.is_active && $ctrl.allowOnboardOrOffboardGitHub(m)">
                             <md-button
-                              ng-if="m.user.is_active"
                               ng-click="$ctrl.userOnboardGitHub(m.user.id, $event)"
                               aria-label="Onboard this user to the GitHub org and team">
                               Onboard GitHub
                             </md-button>
                           </md-menu-item>
-                          <md-menu-item ng-if="$ctrl.allowOnboardOrOffboardGitHub(m)">
+                          <md-menu-item ng-if="m.user.is_active && $ctrl.allowOnboardOrOffboardGitHub(m)">
                             <md-button
-                              ng-if="m.user.is_active"
                               ng-click="$ctrl.userOffboardGitHub(m.user.id, $event)"
-                              aria-label="Offboard this user to the GitHub org and team">
+                              aria-label="Offboard this user from the GitHub org and team">
                               Offboard GitHub
                             </md-button>
                           </md-menu-item>
-                          <md-menu-item ng-if="$ctrl.isAdmin && m.role != 'admin'">
+                          <md-menu-item ng-if="m.user.is_active && $ctrl.isAdmin && m.role != 'admin'">
                             <md-button
-                              ng-if="m.user.is_active"
                               ng-click="$ctrl.makeAdmin(m, $event)"
                               aria-label="Make this person a project admin">
                               Make admin
                             </md-button>
                           </md-menu-item>
-                          <md-menu-item ng-if="$ctrl.isAdmin && m.role == 'admin'">
+                          <md-menu-item ng-if="m.user.is_active && $ctrl.isAdmin && m.role == 'admin'">
                             <md-button
-                              ng-if="m.user.is_active"
                               ng-click="$ctrl.demoteAdmin(m, $event)"
                               aria-label="Demote this person from their project admin role">
                               Demote admin
