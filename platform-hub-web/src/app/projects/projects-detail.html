@@ -377,28 +377,7 @@
             </md-card-title>
 
             <md-card-content>
-              <table>
-                <thead>
-                  <th
-                    ng-repeat="h in b.headers track by h"
-                    style="text-align: center;">
-                    {{h}}
-                  </th>
-                </thead>
-                <tbody>
-                  <tr
-                    ng-repeat="r in b.rows track by r[0]"
-                    ng-style="r[0] == 'Total' ? {'font-weight': 'bold'} : {}">
-                    <td
-                      ng-repeat="d in r track by $index"
-                      ng-style="$index == 0 ? {'text-align': 'right'} : {'text-align': 'center'}">
-                      <span ng-if="$index == 0">{{d}}</span>
-                      <span ng-if="$index != 0">{{d | currency:'$' || '--'}}</span>
-                    </td>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <project-bill-breakdown-table totals="b.totals" services="b.services"></project-bill-breakdown-table>
             </md-card-content>
           </md-card>
 

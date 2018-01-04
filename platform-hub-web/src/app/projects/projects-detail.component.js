@@ -424,31 +424,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
     Projects
       .getBills(ctrl.project.id)
       .then(bills => {
-        const mapped = bills.map(b => {
-          const clusters = _.keys(b.totals.clusters);
-
-          const headers = [''].concat(clusters).concat(['Shared services']);
-
-          const totalsRow = ['Total']
-            .concat(clusters.map(c => b.totals.clusters[c]))
-            .concat([b.totals.shared_services]);
-
-          const serviceRows = _.values(b.services).map(s => {
-            return [`Service: ${s.name}`]
-              .concat(clusters.map(c => s.totals.clusters[c]))
-              .concat([s.totals.shared_services]);
-          });
-
-          const rows = [totalsRow].concat(serviceRows);
-
-          return {
-            year: b.year,
-            month: b.month,
-            headers,
-            rows
-          };
-        });
-        angular.copy(mapped, ctrl.bills);
+        angular.copy(bills, ctrl.bills);
       })
       .finally(() => {
         ctrl.loadingBills = false;
