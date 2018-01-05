@@ -139,7 +139,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             featureFlagKeys.kubernetesTokensSync,
             featureFlagKeys.kubernetesTokens
           ],
-          rolePermitted: 'admin'
+          rolesPermitted: ['admin']
         }
       })
       .state('kubernetes.clusters', {
@@ -153,7 +153,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('kubernetes.clusters.detail', {
@@ -165,7 +165,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.projects],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('kubernetes.clusters.new', {
@@ -174,7 +174,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('kubernetes.clusters.edit', {
@@ -186,7 +186,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
       .state('kubernetes.groups', {
@@ -200,7 +200,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('kubernetes.groups.detail', {
@@ -212,7 +212,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.projects],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('kubernetes.groups.new', {
@@ -221,7 +221,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('kubernetes.groups.edit', {
@@ -233,7 +233,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
       .state('kubernetes.namespaces', {
@@ -247,7 +247,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           },
           resolve: {
             transition: '$transition$'
@@ -265,7 +265,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           },
           params: {
             cluster: '',
@@ -282,7 +282,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           },
           params: {
             fromProject: null,
@@ -300,7 +300,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           },
           resolve: {
             transition: '$transition$'
@@ -349,7 +349,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.kubernetesTokens],
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           },
           resolve: {
             transition: '$transition$'
@@ -419,7 +419,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         data: {
           authenticate: true,
           featureFlags: [featureFlagKeys.projects],
-          rolePermitted: 'admin'
+          rolesPermitted: ['admin']
         }
       })
       .state('projects.edit', {
@@ -431,7 +431,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         data: {
           authenticate: true,
           featureFlags: [featureFlagKeys.projects],
-          rolePermitted: 'admin'
+          rolesPermitted: ['admin']
         }
       })
       .state('projects.services', {
@@ -477,7 +477,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
       component: UsersList,
       data: {
         authenticate: true,
-        rolePermitted: 'admin'
+        rolesPermitted: ['admin']
       }
     })
     .state('help', {
@@ -529,7 +529,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             component: SupportRequestTemplatesList,
             data: {
               authenticate: true,
-              rolePermitted: 'admin'
+              rolesPermitted: ['admin']
             }
           })
           .state('help.support.request-templates.detail', {
@@ -540,7 +540,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             },
             data: {
               authenticate: true,
-              rolePermitted: 'admin'
+              rolesPermitted: ['admin']
             }
           })
           .state('help.support.request-templates.new', {
@@ -548,7 +548,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             component: SupportRequestTemplatesForm,
             data: {
               authenticate: true,
-              rolePermitted: 'admin'
+              rolesPermitted: ['admin']
             }
           })
           .state('help.support.request-templates.edit', {
@@ -559,7 +559,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             },
             data: {
               authenticate: true,
-              rolePermitted: 'admin'
+              rolesPermitted: ['admin']
             }
           })
     .state('platform-themes', {
@@ -577,7 +577,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: PlatformThemesEditorList,
           data: {
             authenticate: true,
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('platform-themes.editor.new', {
@@ -585,7 +585,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: PlatformThemesEditorForm,
           data: {
             authenticate: true,
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('platform-themes.editor.edit', {
@@ -596,7 +596,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
       .state('platform-themes.page', {
@@ -614,7 +614,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
       component: AppSettingsForm,
       data: {
         authenticate: true,
-        rolePermitted: 'admin'
+        rolesPermitted: ['admin']
       }
     })
     .state('feature-flags', {
@@ -622,7 +622,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
       component: FeatureFlagsForm,
       data: {
         authenticate: true,
-        rolePermitted: 'admin'
+        rolesPermitted: ['admin']
       }
     })
     .state('contact-lists', {
@@ -635,7 +635,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         component: ContactListsList,
         data: {
           authenticate: true,
-          rolePermitted: 'admin'
+          rolesPermitted: ['admin']
         }
       })
       .state('contact-lists.new', {
@@ -643,7 +643,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         component: ContactListsForm,
         data: {
           authenticate: true,
-          rolePermitted: 'admin'
+          rolesPermitted: ['admin']
         }
       })
       .state('contact-lists.edit', {
@@ -654,7 +654,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         },
         data: {
           authenticate: true,
-          rolePermitted: 'admin'
+          rolesPermitted: ['admin']
         }
       })
     .state('announcements', {
@@ -672,7 +672,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: AnnouncementsEditorList,
           data: {
             authenticate: true,
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('announcements.editor.new', {
@@ -683,7 +683,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           },
           params: {
             templateId: ''
@@ -697,7 +697,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
       .state('announcements.global', {
@@ -717,7 +717,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: AnnouncementTemplatesList,
           data: {
             authenticate: true,
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('announcements.templates.detail', {
@@ -728,7 +728,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('announcements.templates.new', {
@@ -736,7 +736,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: AnnouncementTemplatesForm,
           data: {
             authenticate: true,
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
         .state('announcements.templates.edit', {
@@ -747,7 +747,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
-            rolePermitted: 'admin'
+            rolesPermitted: ['admin']
           }
         })
     .state('costs-reports', {
@@ -760,7 +760,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         component: CostsReportsList,
         data: {
           authenticate: true,
-          rolePermitted: 'admin'
+          rolesPermitted: ['admin', 'limited_admin']
         }
       })
       .state('costs-reports.detail', {
@@ -771,7 +771,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         },
         data: {
           authenticate: true,
-          rolePermitted: 'admin'
+          rolesPermitted: ['admin', 'limited_admin']
         }
       })
       .state('costs-reports.new', {
@@ -779,7 +779,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         component: CostsReportsForm,
         data: {
           authenticate: true,
-          rolePermitted: 'admin'
+          rolesPermitted: ['admin']
         }
       });
 };

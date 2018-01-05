@@ -19,6 +19,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.getUserIdentities = buildSubCollectionFetcher('users', 'identities');
   service.makeAdmin = makeAdmin;
   service.revokeAdmin = revokeAdmin;
+  service.makeLimitedAdmin = makeLimitedAdmin;
+  service.revokeLimitedAdmin = revokeLimitedAdmin;
   service.activateUser = activateUser;
   service.deactivateUser = deactivateUser;
 
@@ -247,7 +249,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
     return $http
       .post(`${apiEndpoint}/users/${userId}/make_admin`)
       .catch(response => {
-        logger.error(buildErrorMessageFromResponse('Failed to make the user an admin', response));
+        logger.error(buildErrorMessageFromResponse('Failed to make the user a hub admin', response));
         return $q.reject(response);
       });
   }
@@ -261,7 +263,34 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .post(`${apiEndpoint}/users/${userId}/revoke_admin`)
       .then(handle4xxError)
       .catch(response => {
-        logger.error(buildErrorMessageFromResponse('Failed to revoke admin status', response));
+        logger.error(buildErrorMessageFromResponse('Failed to revoke hub admin status', response));
+        return $q.reject(response);
+      });
+  }
+
+  function makeLimitedAdmin(userId) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/users/${userId}/make_limited_admin`)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to make the user a hub limited admin', response));
+        return $q.reject(response);
+      });
+  }
+
+  function revokeLimitedAdmin(userId) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/users/${userId}/revoke_limited_admin`)
+      .then(handle4xxError)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to revoke hub limited admin status', response));
         return $q.reject(response);
       });
   }

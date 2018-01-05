@@ -17,12 +17,20 @@
           <span class="md-headline">
             {{u.name}}
             <small class="badge float-right" ng-if="u.role == 'admin'" md-colors="{background: 'accent'}">Admin</small>
+            <small class="badge float-right" ng-if="u.role == 'limited_admin'" md-colors="{background: 'accent-100'}">Limited Admin</small>
             <small class="badge float-right" ng-if="!u.is_active" md-colors="{background: 'blue-grey'}">Deactivated</small>
           </span>
         </md-card-title-text>
       </md-card-title>
 
       <md-card-content>
+        <p
+          ng-if="$ctrl.isCurrentUser(u)"
+          class="md-body-2"
+          md-colors="{color: 'accent'}">
+          This is your account!
+        </p>
+
         <p>
           {{u.email}}
         </p>
@@ -38,34 +46,65 @@
       </md-card-content>
 
       <md-card-actions layout="row" layout-align="start center">
+        <md-menu ng-if="!$ctrl.isCurrentUser(u)">
+          <md-button
+            class="md-primary"
+            ng-click="$mdMenu.open($event)"
+            ng-disabled="!u.is_active"
+            aria-label="Open user hub role menu">
+            Hub Role
+            <md-icon>arrow_drop_down</md-icon>
+          </md-button>
+          <md-menu-content width="4">
+            <md-menu-item>
+              <md-button
+                ng-click="$ctrl.toggleAdmin(u)"
+                aria-label="Toggle hub admin role">
+                <md-icon
+                  ng-if="u.role === 'admin'"
+                  aria-label="User is currently a hub admin">
+                  check
+                </md-icon>
+                <md-icon
+                  ng-if="u.role !== 'admin'"
+                  aria-label="User is currently not a hub admin">
+                </md-icon>
+                Hub Admin
+              </md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button
+                ng-click="$ctrl.toggleLimitedAdmin(u)"
+                aria-label="Toggle hub limited admin role">
+                <md-icon
+                  ng-if="u.role === 'limited_admin'"
+                  aria-label="User is currently a hub limited admin">
+                  check
+                </md-icon>
+                <md-icon
+                  ng-if="u.role !== 'limited_admin'"
+                  aria-label="User is currently not a hub limited admin">
+                </md-icon>
+                Hub Limited Admin
+              </md-button>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
+
+        <span flex></span>
+
         <md-button
-          ng-if="$ctrl.isNotCurrentUser(u) && u.role != 'admin'"
-          ng-disabled="!u.is_active"
-          class="md-primary"
-          aria-label="Make user an admin"
-          ng-click="$ctrl.makeAdmin(u)">
-          Make admin
-        </md-button>
-        <md-button
-          ng-if="$ctrl.isNotCurrentUser(u) && u.role == 'admin'"
-          ng-disabled="!u.is_active"
-          class="md-primary"
-          aria-label="Revoke admin status for user"
-          ng-click="$ctrl.revokeAdmin(u)">
-          Revoke admin
-        </md-button>
-        <md-button
-          ng-if="$ctrl.isNotCurrentUser(u) && u.is_active"
+          ng-if="!$ctrl.isCurrentUser(u) && u.is_active"
           ng-disabled="$ctrl.saving"
-          class="md-primary"
+          class="md-accent"
           aria-label="Deactivate user"
           ng-click="$ctrl.deactivateUser(u)">
           Deactivate
         </md-button>
         <md-button
-          ng-if="$ctrl.isNotCurrentUser(u) && !u.is_active"
+          ng-if="!$ctrl.isCurrentUser(u) && !u.is_active"
           ng-disabled="$ctrl.saving"
-          class="md-primary"
+          class="md-accent"
           aria-label="Activate user"
           ng-click="$ctrl.activateUser(u)">
           Activate

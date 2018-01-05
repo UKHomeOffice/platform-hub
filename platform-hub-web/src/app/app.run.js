@@ -104,9 +104,9 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
       .catch(reject);
   }
 
-  function roleChecker(role) {
+  function roleChecker(roles) {
     return roleCheckerService
-      .hasHubRole(role)
+      .hasHubRole(roles)
       .then(hasRole => {
         if (hasRole) {
           return $q.resolve(true);
@@ -124,8 +124,8 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
     const shouldCheckFeatureFlags = _.has(config, 'featureFlags');
     const featureFlags = config.featureFlags;
 
-    const shouldCheckRole = _.has(config, 'rolePermitted');
-    const rolePermitted = config.rolePermitted;
+    const shouldCheckRole = _.has(config, 'rolesPermitted');
+    const rolesPermitted = config.rolesPermitted;
 
     // Assumption: if the route doesn't need authentication, then no other
     // config option is supported and checked.
@@ -140,7 +140,7 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
         })
         .then(() => {
           if (shouldCheckRole) {
-            return roleChecker(rolePermitted);
+            return roleChecker(rolesPermitted);
           }
           return true;
         })

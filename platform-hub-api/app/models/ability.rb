@@ -6,8 +6,16 @@ class Ability
     # IMPORTANT: to understand the caveats when using blocks to specify
     # abilities, see: https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities-with-Blocks
 
-    # This will take precedence over everything below!
+
+    # Hub admin role
+    # Note: this will take precedence over everything below!
     can :manage, :all if user.admin?
+
+
+    #  Special hub limited_admin role
+    if user.limited_admin?
+      can :read, CostsReport
+    end
 
 
     # Projects

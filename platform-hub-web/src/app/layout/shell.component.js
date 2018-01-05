@@ -19,6 +19,7 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
   ctrl.platformThemeIcon = icons.platformThemes;
 
   ctrl.isAdmin = false;
+  ctrl.isLimitedAdmin = false;
 
   ctrl.flagMessages = [
     {
@@ -82,6 +83,15 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       state: 'help.support.requests.overview',
       activeState: 'help.support.requests',
       icon: icons.supportRequests
+    }
+  ];
+
+  ctrl.limitedAdminNavStates = [
+    {
+      title: 'Costs Reports',
+      state: 'costs-reports.list',
+      activeState: 'costs-reports',
+      icon: icons.costsReports
     }
   ];
 
@@ -207,6 +217,14 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       .hasHubRole('admin')
       .then(hasRole => {
         ctrl.isAdmin = hasRole;
+
+        if (!hasRole) {
+          roleCheckerService
+            .hasHubRole('limited_admin')
+            .then(hasRole => {
+              ctrl.isLimitedAdmin = hasRole;
+            });
+        }
       });
   }
 

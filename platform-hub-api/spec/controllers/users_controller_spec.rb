@@ -364,6 +364,88 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
+  describe 'POST #make_limited_admin' do
+    before do
+      @user = create :user
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :make_limited_admin, params: { id: @user.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not a hub admin so forbidden'  do
+        before do
+          post :make_limited_admin, params: { id: @user.id }
+        end
+      end
+
+      it_behaves_like 'a hub admin' do
+
+        it 'should make the specified user a limited hub admin' do
+          expect(@user.admin?).to be false
+          expect(@user.limited_admin?).to be false
+          expect(Audit.count).to eq 0
+          post :make_limited_admin, params: { id: @user.id }
+          expect(response).to be_success
+          expect(@user.reload.admin?).to be false
+          expect(@user.reload.limited_admin?).to be true
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'make_limited_admin'
+          expect(audit.auditable).to eq @user
+          expect(audit.user.id).to eq current_user_id
+        end
+
+      end
+
+    end
+  end
+
+  describe 'POST #revoke_limited_admin' do
+    before do
+      @user = create :limited_admin_user
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :revoke_limited_admin, params: { id: @user.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not a hub admin so forbidden'  do
+        before do
+          post :revoke_limited_admin, params: { id: @user.id }
+        end
+      end
+
+      it_behaves_like 'a hub admin' do
+
+        it 'should revoke the limited hub admin role for the specified user' do
+          expect(@user.admin?).to be false
+          expect(@user.limited_admin?).to be true
+          expect(Audit.count).to eq 0
+          post :revoke_limited_admin, params: { id: @user.id }
+          expect(response).to be_success
+          expect(@user.reload.admin?).to be false
+          expect(@user.reload.limited_admin?).to be false
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'revoke_limited_admin'
+          expect(audit.auditable).to eq @user
+          expect(audit.user.id).to eq current_user_id
+        end
+
+      end
+
+    end
+  end
+
   describe 'POST #onboard_github' do
 
     before do

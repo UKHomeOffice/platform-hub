@@ -11,7 +11,8 @@ class User < ApplicationRecord
   before_create :build_flags
 
   enum role: {
-    admin: 'admin'
+    admin: 'admin',
+    limited_admin: 'limited_admin'
   }
 
   validates :name, presence: true
@@ -57,8 +58,21 @@ class User < ApplicationRecord
   end
 
   def revoke_admin!
-    self.role = nil
-    self.save!
+    if admin?
+      self.role = nil
+      self.save!
+    end
+  end
+
+  def make_limited_admin!
+    self.limited_admin!
+  end
+
+  def revoke_limited_admin!
+    if limited_admin?
+      self.role = nil
+      self.save!
+    end
   end
 
   def deactivate!

@@ -66,13 +66,9 @@ RSpec.configure do |config|
 
 
   # Support and shared stuff
-  config.include JsonResponseHelper, type: :request
   config.include JsonResponseHelper, type: :controller
   config.include UserActivationHelpers, type: :controller
-  config.include_context 'authentication helpers', type: :request
   config.include_context 'authentication helpers', type: :controller
-  config.include_context 'admin authorization helpers', type: :request
-  config.include_context 'admin authorization helpers', type: :controller
 
 
   config.before :example, type: :controller do

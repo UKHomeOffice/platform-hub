@@ -121,6 +121,19 @@
             </md-sidemenu-button>
           </md-sidemenu-group>
 
+          <md-sidemenu-group ng-if="$ctrl.isLimitedAdmin && $ctrl.shouldShowSection($ctrl.limitedAdminNavStates)">
+            <md-subheader class="md-no-sticky">Limited Admin</md-subheader>
+
+            <md-sidemenu-button
+              ng-repeat="item in $ctrl.limitedAdminNavStates"
+              ng-if="!_.has(item, 'featureFlags') || $ctrl.FeatureFlags.allEnabled(item.featureFlags)"
+              ui-sref="{{item.state}}"
+              ui-sref-active="{ 'active': item.activeState || item.state }">
+              <md-icon ng-if="item.icon">{{item.icon}}</md-icon>
+              <span>{{item.title}}</span>
+            </md-sidemenu-button>
+          </md-sidemenu-group>
+
           <md-sidemenu-group ng-if="$ctrl.isAdmin && $ctrl.shouldShowSection($ctrl.adminNavStates)">
             <md-subheader class="md-no-sticky">Admin</md-subheader>
 

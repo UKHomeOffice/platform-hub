@@ -8,6 +8,8 @@ class UsersController < ApiJsonController
     :identities,
     :make_admin,
     :revoke_admin,
+    :make_limited_admin,
+    :revoke_limited_admin,
     :activate,
     :deactivate,
     :onboard_github,
@@ -59,6 +61,32 @@ class UsersController < ApiJsonController
     AuditService.log(
       context: audit_context,
       action: 'revoke_admin',
+      auditable: @user
+    )
+
+    head :no_content
+  end
+
+  # POST /users/:id/make_limited_admin
+  def make_limited_admin
+    @user.make_limited_admin!
+
+    AuditService.log(
+      context: audit_context,
+      action: 'make_limited_admin',
+      auditable: @user
+    )
+
+    head :no_content
+  end
+
+  # POST /users/:id/revoke_limited_admin
+  def revoke_limited_admin
+    @user.revoke_limited_admin!
+
+    AuditService.log(
+      context: audit_context,
+      action: 'revoke_limited_admin',
       auditable: @user
     )
 
