@@ -28,7 +28,7 @@ module Agents
     private
 
     def with_identity user
-      identity = user.identity 'github'
+      identity = user.github_identity
 
       if identity.blank?
         raise Errors::IdentityMissing

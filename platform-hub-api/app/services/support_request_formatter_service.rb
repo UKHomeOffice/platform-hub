@@ -1,7 +1,7 @@
 module SupportRequestFormatterService
 
   def self.format template, data, user
-    identity = user.identity 'github'
+    identity = user.github_identity
 
     submitter_text = if identity
       "@#{identity.external_username}"
