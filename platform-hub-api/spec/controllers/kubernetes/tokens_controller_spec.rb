@@ -536,7 +536,8 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
             action: 'destroy',
             auditable: @token,
             data: {
-              cluster: @token.cluster.name
+              cluster: @token.cluster.name,
+              obfuscated_token: @token.obfuscated_token
             },
             comment: "User '#{current_user.email}' deleted #{@token.kind} token (cluster: #{@token.cluster.name}, name: #{@token.name})"
           ).and_call_original
