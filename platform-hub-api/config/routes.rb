@@ -39,6 +39,8 @@ Rails.application.routes.draw do
 
       post :make_admin, on: :member
       post :revoke_admin, on: :member
+      post :make_limited_admin, on: :member
+      post :revoke_limited_admin, on: :member
 
       post :activate, on: :member
       post :deactivate, on: :member

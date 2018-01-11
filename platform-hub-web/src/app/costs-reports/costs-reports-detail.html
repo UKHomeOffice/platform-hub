@@ -7,7 +7,7 @@
       </h3>
       <span flex></span>
       <md-button
-        ng-if="$ctrl.report"
+        ng-if="$ctrl.report && $ctrl.isAdmin"
         aria-label="Delete this costs report"
         ng-click="$ctrl.deleteReport($event)">
         <md-icon>delete</md-icon>

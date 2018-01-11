@@ -89,6 +89,45 @@ RSpec.describe CostsReportsController, type: :controller do
 
       end
 
+      it_behaves_like 'not a hub limited admin so forbidden'  do
+        before do
+          get :index
+        end
+      end
+
+      it_behaves_like 'a hub limited admin' do
+
+        context 'when no costs reports exist' do
+          it 'returns an empty list' do
+            get :index
+            expect(response).to be_success
+            expect(json_response).to be_empty
+          end
+        end
+
+        context 'when costs reports exist' do
+          before do
+            @reports = create_list :costs_report, 3
+          end
+
+          let :total_reports do
+            @reports.length
+          end
+
+          let :all_report_ids do
+            @reports.map(&:id).reverse
+          end
+
+          it 'returns the existing costs reports ordered by id descending' do
+            get :index
+            expect(response).to be_success
+            expect(json_response.length).to eq total_reports
+            expect(pluck_from_json_response('id')).to match_array all_report_ids
+          end
+        end
+
+      end
+
     end
   end
 
@@ -104,6 +143,23 @@ RSpec.describe CostsReportsController, type: :controller do
     end
 
     it_behaves_like 'authenticated' do
+
+      def expect_report report
+        get :show, params: { id: report.id }
+        expect(response).to be_success
+        expect(json_response).to eq({
+          'id' => report.id,
+          'year' => report.year,
+          'month' => report.month,
+          'billing_file' => report.billing_file,
+          'metrics_file' => report.metrics_file,
+          'notes' => report.notes,
+          'created_at' => report.created_at.iso8601,
+          'published_at' => nil,
+          'config' => report.config,
+          'results' => report.results
+        })
+      end
 
       it_behaves_like 'not a hub admin so forbidden'  do
         before do
@@ -122,20 +178,23 @@ RSpec.describe CostsReportsController, type: :controller do
 
         context 'for a report that exists' do
           it 'should return the specified report resource' do
-            get :show, params: { id: @report.id }
-            expect(response).to be_success
-            expect(json_response).to eq({
-              'id' => @report.id,
-              'year' => @report.year,
-              'month' => @report.month,
-              'billing_file' => @report.billing_file,
-              'metrics_file' => @report.metrics_file,
-              'notes' => @report.notes,
-              'created_at' => @report.created_at.iso8601,
-              'published_at' => nil,
-              'config' => @report.config,
-              'results' => @report.results
-            })
+            expect_report @report
+          end
+        end
+
+      end
+
+      it_behaves_like 'not a hub limited admin so forbidden'  do
+        before do
+          get :show, params: { id: @report.id }
+        end
+      end
+
+      it_behaves_like 'a hub limited admin' do
+
+        context 'for a report that exists' do
+          it 'should return the specified report resource' do
+            expect_report @report
           end
         end
 
@@ -214,6 +273,13 @@ RSpec.describe CostsReportsController, type: :controller do
           expect(response).to be_success
           expect(CostsReport.count).to eq 0
           expect(json_response).to eq expected_results
+        end
+      end
+
+      it_behaves_like 'a hub limited admin' do
+        it 'should be forbidden' do
+          post :prepare, params: post_data
+          expect(response).to have_http_status(403)
         end
       end
 
@@ -308,6 +374,13 @@ RSpec.describe CostsReportsController, type: :controller do
 
       end
 
+      it_behaves_like 'a hub limited admin' do
+        it 'should be forbidden' do
+          post :create, params: post_data
+          expect(response).to have_http_status(403)
+        end
+      end
+
     end
   end
 
@@ -347,6 +420,13 @@ RSpec.describe CostsReportsController, type: :controller do
           expect(audit.user.id).to eq current_user_id
         end
 
+      end
+
+      it_behaves_like 'a hub limited admin' do
+        it 'should be forbidden' do
+          delete :destroy, params: { id: @report.id }
+          expect(response).to have_http_status(403)
+        end
       end
 
     end
@@ -391,6 +471,13 @@ RSpec.describe CostsReportsController, type: :controller do
           expect(audit.user).to eq current_user
         end
 
+      end
+
+      it_behaves_like 'a hub limited admin' do
+        it 'should be forbidden' do
+          post :publish, params: { id: @report.id }
+          expect(response).to have_http_status(403)
+        end
       end
 
     end

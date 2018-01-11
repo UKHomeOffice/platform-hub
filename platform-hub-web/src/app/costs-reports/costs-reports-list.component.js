@@ -3,12 +3,13 @@ export const CostsReportsListComponent = {
   controller: CostsReportsListController
 };
 
-function CostsReportsListController($mdDialog, CostsReports, logger) {
+function CostsReportsListController($mdDialog, CostsReports, roleCheckerService, logger) {
   'ngInject';
 
   const ctrl = this;
 
   ctrl.loading = true;
+  ctrl.isAdmin = false;
   ctrl.processing = false;
   ctrl.reports = [];
 
@@ -17,7 +18,16 @@ function CostsReportsListController($mdDialog, CostsReports, logger) {
   init();
 
   function init() {
-    fetchReports();
+    loadAdminStatus()
+      .then(fetchReports);
+  }
+
+  function loadAdminStatus() {
+    return roleCheckerService
+      .hasHubRole('admin')
+      .then(hasRole => {
+        ctrl.isAdmin = hasRole;
+      });
   }
 
   function fetchReports() {
@@ -34,6 +44,10 @@ function CostsReportsListController($mdDialog, CostsReports, logger) {
   }
 
   function publish(report, targetEvent) {
+    if (!ctrl.isAdmin) {
+      return;
+    }
+
     const confirm = $mdDialog.confirm()
       .title('Are you sure?')
       .textContent(`This will publish the costs report '${report.id}' to projects and allow them see their bill for that month. It's still possible to delete and recreate this report afterwards, but it is highly advised to not do this.`)

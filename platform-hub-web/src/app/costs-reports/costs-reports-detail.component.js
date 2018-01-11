@@ -6,7 +6,7 @@ export const CostsReportsDetailComponent = {
   controller: CostsReportsDetailController
 };
 
-function CostsReportsDetailController($mdDialog, $state, $q, CostsReports, Projects, logger) {
+function CostsReportsDetailController($mdDialog, $state, $q, CostsReports, Projects, roleCheckerService, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -14,6 +14,7 @@ function CostsReportsDetailController($mdDialog, $state, $q, CostsReports, Proje
   const id = ctrl.transition.params().id;
 
   ctrl.loading = true;
+  ctrl.isAdmin = false;
   ctrl.report = null;
   ctrl.excludedProjects = [];
 
@@ -22,7 +23,20 @@ function CostsReportsDetailController($mdDialog, $state, $q, CostsReports, Proje
   init();
 
   function init() {
-    CostsReports
+    loadAdminStatus()
+      .then(loadCostReport);
+  }
+
+  function loadAdminStatus() {
+    return roleCheckerService
+      .hasHubRole('admin')
+      .then(hasRole => {
+        ctrl.isAdmin = hasRole;
+      });
+  }
+
+  function loadCostReport() {
+    return CostsReports
       .get(id)
       .then(report => {
         ctrl.report = report;
@@ -47,6 +61,10 @@ function CostsReportsDetailController($mdDialog, $state, $q, CostsReports, Proje
   }
 
   function deleteReport(id, targetEvent) {
+    if (!ctrl.isAdmin) {
+      return;
+    }
+
     const confirm = $mdDialog.confirm()
       .title('Are you sure?')
       .textContent(`This will delete the costs report '${id}'. You can still recreate it later as long as the source data is still available.`)

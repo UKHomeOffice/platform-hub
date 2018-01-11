@@ -14,7 +14,7 @@ describe('routes', () => {
 
   const ALLOWED_DATA_CONFIG_FIELDS = [
     'authenticate',
-    'rolePermitted',
+    'rolesPermitted',
     'featureFlags'
   ];
 
@@ -388,8 +388,8 @@ describe('routes', () => {
   }
 
   function requiresAdmin(state) {
-    return lodash.has(state.data, 'rolePermitted') &&
-      state.data.rolePermitted === 'admin';
+    return lodash.has(state.data, 'rolesPermitted') &&
+      lodash.includes(state.data.rolesPermitted, 'admin');
   }
 
   function findParentUrlSegmentsFor(stateName) {

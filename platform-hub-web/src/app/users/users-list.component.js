@@ -14,11 +14,11 @@ function UsersListController(hubApiService, Me, logger) {
   ctrl.saving = false;
   ctrl.users = [];
 
-  ctrl.makeAdmin = makeAdmin;
-  ctrl.revokeAdmin = revokeAdmin;
+  ctrl.toggleAdmin = toggleAdmin;
+  ctrl.toggleLimitedAdmin = toggleLimitedAdmin;
   ctrl.activateUser = activateUser;
   ctrl.deactivateUser = deactivateUser;
-  ctrl.isNotCurrentUser = isNotCurrentUser;
+  ctrl.isCurrentUser = isCurrentUser;
 
   init();
 
@@ -40,22 +40,40 @@ function UsersListController(hubApiService, Me, logger) {
       });
   }
 
-  function makeAdmin(user) {
-    hubApiService
-      .makeAdmin(user.id)
-      .then(() => {
-        user.role = 'admin';
-        logger.success('Made a new admin');
-      });
+  function toggleAdmin(user) {
+    if (user.role === 'admin') {
+      hubApiService
+        .revokeAdmin(user.id)
+        .then(() => {
+          user.role = null;
+          logger.success('Revoked hub admin role');
+        });
+    } else {
+      hubApiService
+        .makeAdmin(user.id)
+        .then(() => {
+          user.role = 'admin';
+          logger.success('Made the user a hub admin');
+        });
+    }
   }
 
-  function revokeAdmin(user) {
-    hubApiService
-      .revokeAdmin(user.id)
-      .then(() => {
-        user.role = null;
-        logger.success('Removed an admin');
-      });
+  function toggleLimitedAdmin(user) {
+    if (user.role === 'limited_admin') {
+      hubApiService
+        .revokeLimitedAdmin(user.id)
+        .then(() => {
+          user.role = null;
+          logger.success('Revoked hub limited admin role');
+        });
+    } else {
+      hubApiService
+        .makeLimitedAdmin(user.id)
+        .then(() => {
+          user.role = 'limited_admin';
+          logger.success('Made the user a hub limited admin');
+        });
+    }
   }
 
   function activateUser(user) {
@@ -86,7 +104,7 @@ function UsersListController(hubApiService, Me, logger) {
       });
   }
 
-  function isNotCurrentUser(user) {
-    return Me.data.id !== user.id;
+  function isCurrentUser(user) {
+    return Me.data.id === user.id;
   }
 }
