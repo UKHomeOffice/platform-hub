@@ -25,6 +25,26 @@ module UserActivation
     when :deactivate
       @user.with_lock do
         UserActivationService.deactivate! @user
+
+        # We handle Kube tokens deletion here and not in the UserActivationService
+        # because this is about internal data/resource clean up and not about
+        # onboarding/offboarding from services.
+        if @user.kubernetes_identity
+          @user.kubernetes_identity.tokens.each do |token|
+            token.destroy
+
+            AuditService.log(
+              context: audit_context,
+              action: 'destroy',
+              auditable: token,
+              data: {
+                cluster: token.cluster.name,
+                obfuscated_token: token.obfuscated_token
+              },
+              comment: "Token deleted whilst deactivating (user: #{@user.email})"
+            )
+          end
+        end
       end
     end
 

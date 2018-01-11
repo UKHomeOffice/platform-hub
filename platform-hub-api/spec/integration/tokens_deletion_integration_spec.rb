@@ -64,6 +64,41 @@ RSpec.describe 'Tokens deletion integration' do
     expect(model.exists?(id: id)).to be false
   end
 
+  describe 'on user deactivation' do
+
+    class UserActivationTestHarness
+      include UserActivation
+
+      def initialize user
+        @user = user
+      end
+
+      def audit_context
+        {}
+      end
+
+      def head status
+      end
+    end
+
+    before do
+      expect(UserActivationService).to receive(:deactivate!).with(user)
+      UserActivationTestHarness.new(user).handle_user_deactivation_request
+    end
+
+    it 'should delete all the user\'s tokens' do
+      deleted KubernetesToken, user_token.id
+      exists KubernetesToken, robot_token.id
+
+      exists KubernetesToken, other_user_token.id
+      exists KubernetesToken, other_robot_token.id
+
+      exists KubernetesToken, other_other_user_token.id
+      exists KubernetesToken, other_other_robot_token.id
+    end
+
+  end
+
   describe 'on project deletion' do
     before { project.destroy }
 
