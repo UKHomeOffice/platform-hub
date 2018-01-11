@@ -28,7 +28,7 @@ describe Agents::GitHubAgentService, type: :service do
   describe '#onboard_user' do
     context 'when user does not have a connected GitHub identity' do
       before do
-        expect(user).to receive(:identity).with('github').and_return(nil)
+        expect(user).to receive(:github_identity).and_return(nil)
       end
 
       it 'should throw an IdentityMissing error' do
@@ -40,7 +40,7 @@ describe Agents::GitHubAgentService, type: :service do
 
     context 'when user has a connected GitHub identity' do
       before do
-        expect(user).to receive(:identity).with('github').and_return(github_identity)
+        expect(user).to receive(:github_identity).and_return(github_identity)
       end
 
       it 'should make the appropriate API client call' do
@@ -53,7 +53,7 @@ describe Agents::GitHubAgentService, type: :service do
   describe '#offboard_user' do
     context 'when user does not have a connected GitHub identity' do
       before do
-        expect(user).to receive(:identity).with('github').and_return(nil)
+        expect(user).to receive(:github_identity).and_return(nil)
       end
 
       it 'should throw an IdentityMissing error' do
@@ -65,7 +65,7 @@ describe Agents::GitHubAgentService, type: :service do
 
     context 'when user has a connected GitHub identity' do
       before do
-        expect(user).to receive(:identity).with('github').and_return(github_identity)
+        expect(user).to receive(:github_identity).and_return(github_identity)
       end
 
       it 'should make the appropriate API client call' do

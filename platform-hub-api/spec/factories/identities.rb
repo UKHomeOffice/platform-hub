@@ -6,6 +6,9 @@ FactoryGirl.define do
       "github_#{n}"
     end
 
+    factory :github_identity do
+    end
+
     factory :kubernetes_identity do
       provider 'kubernetes'
     end

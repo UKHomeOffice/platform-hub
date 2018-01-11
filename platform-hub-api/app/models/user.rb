@@ -45,6 +45,10 @@ class User < ApplicationRecord
     identity :keycloak
   end
 
+  def github_identity
+    identity :github
+  end
+
   def kubernetes_identity
     identity :kubernetes
   end
