@@ -294,7 +294,7 @@ function KubernetesUserTokensFormController($scope, $q, $state, $mdSelect, Proje
 
       promise = promise
         .then(() => {
-          logger.success('New kubernetes robot token created');
+          logger.success('New kubernetes user token created');
         });
     } else {
       if (fromProject) {
@@ -305,7 +305,7 @@ function KubernetesUserTokensFormController($scope, $q, $state, $mdSelect, Proje
 
       promise = promise
         .then(() => {
-          logger.success('Kubernetes robot token updated');
+          logger.success('Kubernetes user token updated');
         });
     }
 
