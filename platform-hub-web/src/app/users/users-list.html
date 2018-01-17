@@ -9,7 +9,10 @@
 
   <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.users.length > 0">
+  <md-content
+    paginated-list
+    page-items="$ctrl.users"
+    page-fetch="$ctrl.fetchUsers(page)">
 
     <md-card ng-repeat="u in $ctrl.users track by u.id">
       <md-card-title>

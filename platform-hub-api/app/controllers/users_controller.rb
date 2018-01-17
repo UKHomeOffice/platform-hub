@@ -22,7 +22,7 @@ class UsersController < ApiJsonController
   def index
     @users = User.order(:name)
 
-    render json: @users
+    paginate json: @users
   end
 
   # GET /users/:id

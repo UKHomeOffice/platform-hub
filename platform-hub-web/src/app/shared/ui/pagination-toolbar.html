@@ -1,0 +1,30 @@
+<nav
+  layout="row"
+  layout-align="center center"
+  layout-wrap
+  style="padding: 0.66em 1em"
+  ng-if="$ctrl.totalPages > 0">
+
+  <md-button
+    ng-disabled="$ctrl.currentPage <= 1"
+    class="md-raised"
+    ng-click="$ctrl.onPageChange({page: $ctrl.currentPage - 1})">
+    « Previous
+  </md-button>
+
+  <md-button
+    ng-repeat="i in _.times($ctrl.totalPages) track by i"
+    ng-init="p = i + 1"
+    class="md-raised md-icon-button"
+    ng-class="{'md-primary': p == $ctrl.currentPage}"
+    ng-click="$ctrl.onPageChange({page: p})">
+    {{p}}
+  </md-button>
+
+  <md-button
+    ng-disabled="$ctrl.currentPage == $ctrl.totalPages"
+    class="md-raised"
+    ng-click="$ctrl.onPageChange({page: $ctrl.currentPage + 1})">
+    Next »
+  </md-button>
+</nav>

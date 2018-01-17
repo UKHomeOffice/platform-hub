@@ -14,6 +14,7 @@ function UsersListController(hubApiService, Me, logger) {
   ctrl.saving = false;
   ctrl.users = [];
 
+  ctrl.fetchUsers = fetchUsers;
   ctrl.toggleAdmin = toggleAdmin;
   ctrl.toggleLimitedAdmin = toggleLimitedAdmin;
   ctrl.activateUser = activateUser;
@@ -23,15 +24,14 @@ function UsersListController(hubApiService, Me, logger) {
   init();
 
   function init() {
-    loadUsers();
+    fetchUsers();
   }
 
-  function loadUsers() {
+  function fetchUsers(page = 1) {
     ctrl.loading = true;
-    ctrl.users = [];
 
-    hubApiService
-      .getUsers()
+    return hubApiService
+      .getUsers(page)
       .then(users => {
         ctrl.users = users;
       })
