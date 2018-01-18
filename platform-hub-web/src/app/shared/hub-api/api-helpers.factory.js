@@ -28,13 +28,17 @@ export const apiHelpers = function ($q, apiDefaultPerPage, _) {
   }
 
   function withPaginationParams(params, page) {
-    return _.merge(
-      params,
-      {
-        per_page: apiDefaultPerPage,
-        page: page
-      }
-    );
+    if (page) {
+      return _.merge(
+        params,
+        {
+          per_page: apiDefaultPerPage,
+          page: page
+        }
+      );
+    }
+
+    return params;
   }
 
   function handlePaginatedResponse(response) {

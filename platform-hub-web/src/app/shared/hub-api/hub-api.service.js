@@ -34,7 +34,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.agreeTermsOfService = agreeTermsOfService;
   service.globalAnnouncementsMarkAllRead = globalAnnouncementsMarkAllRead;
 
-  service.getUsers = buildCollectionFetcher('users');
+  service.getUsers = buildCollectionFetcher('users', true);
   service.getUser = buildResourceFetcher('users');
   service.searchUsers = searchUsers;
   service.getUserIdentities = buildSubCollectionFetcher('users', 'identities');
