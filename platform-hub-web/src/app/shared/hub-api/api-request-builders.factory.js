@@ -75,11 +75,11 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
     };
   }
 
-  function buildCollectionFetcher(name) {
+  function buildCollectionFetcher(name, isPaginated = false) {
     return function (page = 1) {
       return $http
         .get(`${apiEndpoint}/${name}`, {
-          params: withPaginationParams({}, page)
+          params: withPaginationParams({}, isPaginated ? page : null)
         })
         .then(handlePaginatedResponse)
         .catch(response => {
@@ -89,7 +89,7 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
     };
   }
 
-  function buildSubCollectionFetcher(parent, name) {
+  function buildSubCollectionFetcher(parent, name, isPaginated = false) {
     return function (parentId, page = 1) {
       if (_.isNull(parentId) || _.isEmpty(parentId)) {
         throw new Error('"parentId" argument not specified or empty');
@@ -97,7 +97,7 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
 
       return $http
         .get(`${apiEndpoint}/${parent}/${parentId}/${name}`, {
-          params: withPaginationParams({}, page)
+          params: withPaginationParams({}, isPaginated ? page : null)
         })
         .then(handlePaginatedResponse)
         .catch(response => {
@@ -107,7 +107,7 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
     };
   }
 
-  function buildSubSubCollectionFetcher(parent, sub, subSub) {
+  function buildSubSubCollectionFetcher(parent, sub, subSub, isPaginated = false) {
     return function (parentId, subId, page = 1) {
       if (_.isNull(parentId) || _.isEmpty(parentId)) {
         throw new Error('"parentId" argument not specified or empty');
@@ -119,7 +119,7 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
       return $http
         .get(
           `${apiEndpoint}/${parent}/${parentId}/${sub}/${subId}/${subSub}`, {
-            params: withPaginationParams({}, page)
+            params: withPaginationParams({}, isPaginated ? page : null)
           }
         )
         .then(handlePaginatedResponse)
