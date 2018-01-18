@@ -25,29 +25,66 @@ RSpec.describe UsersController, type: :controller do
           it 'should return a list with only the authenticated user' do
             get :index
             expect(response).to be_success
+            expect(response.headers['Total'].to_i).to eq 1
+            expect(json_response.length).to eq 1
             expect(pluck_from_json_response('id')).to eq [current_user_id]
           end
         end
 
         context 'when multiple users exist' do
+          let(:per_page) { 2 }
+
           before do
             @users = create_list :user, 3
           end
+
+          # Remember, the currently authenticated user should also be in the list
 
           let :total_users do
             @users.length + 1
           end
 
-          let :all_user_ids do
-            @users.map(&:id) + [current_user_id]
+          let :all_users_sorted do
+            (@users + [current_user]).sort_by(&:name)
           end
 
-          it 'should return a list of all the users' do
-            # Remember, the currently authenticated user should also be in the list
-            get :index
+          let :first_page_of_users do
+            all_users_sorted[0...per_page]
+          end
+
+          let :second_page_of_users do
+            all_users_sorted[per_page..total_users]
+          end
+
+          it 'should return the first page of users' do
+            get :index, params: { per_page: per_page }
             expect(response).to be_success
-            expect(json_response.length).to eq total_users
-            expect(pluck_from_json_response('id')).to match_array all_user_ids
+            expect(response.headers['Total'].to_i).to eq total_users
+            expect(json_response.length).to eq per_page
+            expect(pluck_from_json_response('id')).to match_array first_page_of_users.map(&:id)
+          end
+
+          it 'should return the second page of users' do
+            get :index, params: { per_page: per_page, page: 2 }
+            expect(response).to be_success
+            expect(response.headers['Total'].to_i).to eq total_users
+            expect(json_response.length).to eq per_page
+            expect(pluck_from_json_response('id')).to match_array second_page_of_users.map(&:id)
+          end
+
+          it 'should return an empty list for the not applicable third page' do
+            get :index, params: { per_page: per_page, page: 3 }
+            expect(response).to be_success
+            expect(response.headers['Total'].to_i).to eq total_users
+            expect(json_response.length).to eq 0
+          end
+
+          it 'cannot return all users' do
+            get :index, params: { per_page: per_page, page: nil }
+            expect(response).to be_success
+            expect(response.headers['Total'].to_i).to eq total_users
+            expect(json_response.length).to eq per_page
+            expect(pluck_from_json_response('id')).to match_array first_page_of_users.map(&:id)
           end
         end
 

@@ -3,6 +3,8 @@
 export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoint, _) {
   'ngInject';
 
+  const DEFAULT_PER_PAGE = 10;
+
   const service = {};
 
   service.getMe = getMe;
@@ -738,12 +740,15 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   }
 
   function buildCollectionFetcher(name) {
-    return function () {
+    return function (page = 1) {
       return $http
-        .get(`${apiEndpoint}/${name}`)
-        .then(response => {
-          return response.data;
+        .get(`${apiEndpoint}/${name}`, {
+          params: {
+            per_page: DEFAULT_PER_PAGE,
+            page
+          }
         })
+        .then(handlePaginatedResponse)
         .catch(response => {
           logger.error(buildErrorMessageFromResponse('Failed to fetch items', response));
           return $q.reject(response);
@@ -752,16 +757,19 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   }
 
   function buildSubCollectionFetcher(parent, name) {
-    return function (parentId) {
+    return function (parentId, page = 1) {
       if (_.isNull(parentId) || _.isEmpty(parentId)) {
         throw new Error('"parentId" argument not specified or empty');
       }
 
       return $http
-        .get(`${apiEndpoint}/${parent}/${parentId}/${name}`)
-        .then(response => {
-          return response.data;
+        .get(`${apiEndpoint}/${parent}/${parentId}/${name}`, {
+          params: {
+            per_page: DEFAULT_PER_PAGE,
+            page
+          }
         })
+        .then(handlePaginatedResponse)
         .catch(response => {
           logger.error(buildErrorMessageFromResponse(`Failed to fetch items`, response));
           return $q.reject(response);
@@ -770,7 +778,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   }
 
   function buildSubSubCollectionFetcher(parent, sub, subSub) {
-    return function (parentId, subId) {
+    return function (parentId, subId, page = 1) {
       if (_.isNull(parentId) || _.isEmpty(parentId)) {
         throw new Error('"parentId" argument not specified or empty');
       }
@@ -779,10 +787,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       }
 
       return $http
-        .get(`${apiEndpoint}/${parent}/${parentId}/${sub}/${subId}/${subSub}`)
-        .then(response => {
-          return response.data;
+        .get(`${apiEndpoint}/${parent}/${parentId}/${sub}/${subId}/${subSub}`, {
+          params: {
+            per_page: DEFAULT_PER_PAGE,
+            page
+          }
         })
+        .then(handlePaginatedResponse)
         .catch(response => {
           logger.error(buildErrorMessageFromResponse(`Failed to fetch items`, response));
           return $q.reject(response);
@@ -989,6 +1000,21 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
     return response;
   }
 
+  function handlePaginatedResponse(response) {
+    const items = response.data;
+
+    const headers = response.headers();
+
+    if (headers.total && headers['per-page']) {
+      items.pagination = {
+        total: parseInt(headers.total, 10),
+        perPage: parseInt(headers['per-page'], 10)
+      };
+    }
+
+    return items;
+  }
+
   function allocateKubernetesCluster(clusterId, projectId) {
     if (_.isNull(clusterId) || _.isEmpty(clusterId)) {
       throw new Error('"clusterId" argument not specified or empty');
@@ -1030,7 +1056,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       });
   }
 
-  function getKubernetesUserTokens(userId) {
+  function getKubernetesUserTokens(userId, page = 1) {
     if (_.isNull(userId) || _.isEmpty(userId)) {
       throw new Error('"userId" argument not specified or empty');
     }
@@ -1039,10 +1065,12 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .get(`${apiEndpoint}/kubernetes/tokens`, {
         params: {
           kind: 'user',
-          user_id: userId
+          user_id: userId,
+          per_page: DEFAULT_PER_PAGE,
+          page
         }
       })
-      .then(response => response.data)
+      .then(handlePaginatedResponse)
       .catch(response => {
         logger.error('Failed to fetch user kubernetes tokens – the API might be down. Try again later.');
         return $q.reject(response);
@@ -1092,7 +1120,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       });
   }
 
-  function getKubernetesRobotTokens(cluster) {
+  function getKubernetesRobotTokens(cluster, page = 1) {
     if (_.isNull(cluster) || _.isEmpty(cluster)) {
       throw new Error('"cluster" argument not specified or empty');
     }
@@ -1101,10 +1129,12 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .get(`${apiEndpoint}/kubernetes/tokens`, {
         params: {
           kind: 'robot',
-          cluster_name: cluster
+          cluster_name: cluster,
+          per_page: DEFAULT_PER_PAGE,
+          page
         }
       })
-      .then(response => response.data)
+      .then(handlePaginatedResponse)
       .catch(response => {
         logger.error('Failed to fetch robot kubernetes tokens – the API might be down. Try again later.');
         return $q.reject(response);
@@ -1222,10 +1252,15 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       });
   }
 
-  function getKubernetesNamespaces(params) {
+  function getKubernetesNamespaces(params, page = 1) {
     return $http
-      .get(`${apiEndpoint}/kubernetes/namespaces`, {params: params})
-      .then(response => response.data)
+      .get(`${apiEndpoint}/kubernetes/namespaces`, {
+        params: _.merge(params, {
+          per_page: DEFAULT_PER_PAGE,
+          page
+        })
+      })
+      .then(handlePaginatedResponse)
       .catch(response => {
         logger.error('Failed to fetch kubernetes namespaces – the API might be down. Try again later.');
         return $q.reject(response);
