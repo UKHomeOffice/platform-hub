@@ -1,9 +1,28 @@
 /* eslint camelcase: 0, object-shorthand: 0 */
 
-export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoint, _) {
+export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoint, apiHelpers, apiRequestBuilders, _) {
   'ngInject';
 
-  const DEFAULT_PER_PAGE = 10;
+  const buildErrorMessageFromResponse = apiHelpers.buildErrorMessageFromResponse;
+  const handle4xxError = apiHelpers.handle4xxError;
+  const withPaginationParams = apiHelpers.withPaginationParams;
+  const handlePaginatedResponse = apiHelpers.handlePaginatedResponse;
+
+  const buildSimpleFetcher = apiRequestBuilders.buildSimpleFetcher;
+  const buildSimplePoster = apiRequestBuilders.buildSimplePoster;
+  const buildSimpleUpdater = apiRequestBuilders.buildSimpleUpdater;
+  const buildCollectionFetcher = apiRequestBuilders.buildCollectionFetcher;
+  const buildSubCollectionFetcher = apiRequestBuilders.buildSubCollectionFetcher;
+  const buildSubSubCollectionFetcher = apiRequestBuilders.buildSubSubCollectionFetcher;
+  const buildResourceFetcher = apiRequestBuilders.buildResourceFetcher;
+  const buildSubResourceFetcher = apiRequestBuilders.buildSubResourceFetcher;
+  const buildSubSubResourceFetcher = apiRequestBuilders.buildSubSubResourceFetcher;
+  const buildResourceCreator = apiRequestBuilders.buildResourceCreator;
+  const buildSubResourceCreator = apiRequestBuilders.buildSubResourceCreator;
+  const buildResourceUpdater = apiRequestBuilders.buildResourceUpdater;
+  const buildSubResourceUpdater = apiRequestBuilders.buildSubResourceUpdater;
+  const buildResourceDeletor = apiRequestBuilders.buildResourceDeletor;
+  const buildSubResourceDeletor = apiRequestBuilders.buildSubResourceDeletor;
 
   const service = {};
 
@@ -688,333 +707,6 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       });
   }
 
-  function buildSimpleFetcher(path, errorDescriptor) {
-    return function () {
-      return $http
-        .get(`${apiEndpoint}/${path}`)
-        .then(response => {
-          return response.data;
-        })
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse(`Failed to fetch ${errorDescriptor}`, response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildSimplePoster(path, errorDescriptor) {
-    return function (data) {
-      if (_.isNull(data) || _.isEmpty(data)) {
-        throw new Error('"data" argument not specified or empty');
-      }
-
-      return $http
-        .post(`${apiEndpoint}/${path}`, data)
-        .then(handle4xxError)
-        .then(response => {
-          return response.data;
-        })
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse(`Failed to ${errorDescriptor}`, response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildSimpleUpdater(path, errorDescriptor) {
-    return function (data) {
-      if (_.isNull(data) || _.isEmpty(data)) {
-        throw new Error('"data" argument not specified or empty');
-      }
-
-      return $http
-        .put(`${apiEndpoint}/${path}`, data)
-        .then(response => {
-          return response.data;
-        })
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse(`Failed to update ${errorDescriptor}`, response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildCollectionFetcher(name) {
-    return function (page = 1) {
-      return $http
-        .get(`${apiEndpoint}/${name}`, {
-          params: {
-            per_page: DEFAULT_PER_PAGE,
-            page
-          }
-        })
-        .then(handlePaginatedResponse)
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse('Failed to fetch items', response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildSubCollectionFetcher(parent, name) {
-    return function (parentId, page = 1) {
-      if (_.isNull(parentId) || _.isEmpty(parentId)) {
-        throw new Error('"parentId" argument not specified or empty');
-      }
-
-      return $http
-        .get(`${apiEndpoint}/${parent}/${parentId}/${name}`, {
-          params: {
-            per_page: DEFAULT_PER_PAGE,
-            page
-          }
-        })
-        .then(handlePaginatedResponse)
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse(`Failed to fetch items`, response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildSubSubCollectionFetcher(parent, sub, subSub) {
-    return function (parentId, subId, page = 1) {
-      if (_.isNull(parentId) || _.isEmpty(parentId)) {
-        throw new Error('"parentId" argument not specified or empty');
-      }
-      if (_.isNull(subId) || _.isEmpty(subId)) {
-        throw new Error('"subId" argument not specified or empty');
-      }
-
-      return $http
-        .get(`${apiEndpoint}/${parent}/${parentId}/${sub}/${subId}/${subSub}`, {
-          params: {
-            per_page: DEFAULT_PER_PAGE,
-            page
-          }
-        })
-        .then(handlePaginatedResponse)
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse(`Failed to fetch items`, response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildSubSubResourceFetcher(parent, sub, subSub) {
-    return function (parentId, subId, subSubId) {
-      if (_.isNull(parentId) || _.isEmpty(parentId)) {
-        throw new Error('"parentId" argument not specified or empty');
-      }
-      if (_.isNull(subId) || _.isEmpty(subId)) {
-        throw new Error('"subId" argument not specified or empty');
-      }
-      if (_.isNull(subSubId) || _.isEmpty(subSubId)) {
-        throw new Error('"subSubId" argument not specified or empty');
-      }
-
-      return $http
-        .get(`${apiEndpoint}/${parent}/${parentId}/${sub}/${subId}/${subSub}/${subSubId}`)
-        .then(response => {
-          return response.data;
-        })
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse(`Failed to fetch item`, response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildResourceFetcher(resource) {
-    return function (id) {
-      if (_.isNull(id) || _.isEmpty(id)) {
-        throw new Error('"id" argument not specified or empty');
-      }
-
-      return $http
-        .get(`${apiEndpoint}/${resource}/${id}`)
-        .then(response => {
-          return response.data;
-        })
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse('Failed to fetch item', response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildSubResourceFetcher(parent, resource) {
-    return function (parentId, id) {
-      if (_.isNull(parentId) || _.isEmpty(parentId)) {
-        throw new Error('"parentId" argument not specified or empty');
-      }
-      if (_.isNull(id) || _.isEmpty(id)) {
-        throw new Error('"id" argument not specified or empty');
-      }
-
-      return $http
-        .get(`${apiEndpoint}/${parent}/${parentId}/${resource}/${id}`)
-        .then(response => {
-          return response.data;
-        })
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse('Failed to fetch item', response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildResourceCreator(resource) {
-    return function (data) {
-      if (_.isNull(data) || _.isEmpty(data)) {
-        throw new Error('"data" argument not specified or empty');
-      }
-
-      return $http
-        .post(`${apiEndpoint}/${resource}`, data)
-        .then(handle4xxError)
-        .then(response => {
-          return response.data;
-        })
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse('Failed to create item', response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildSubResourceCreator(parent, resource) {
-    return function (parentId, data) {
-      if (_.isNull(parentId) || _.isEmpty(parentId)) {
-        throw new Error('"parentId" argument not specified or empty');
-      }
-      if (_.isNull(data) || _.isEmpty(data)) {
-        throw new Error('"data" argument not specified or empty');
-      }
-
-      return $http
-        .post(`${apiEndpoint}/${parent}/${parentId}/${resource}`, data)
-        .then(handle4xxError)
-        .then(response => {
-          return response.data;
-        })
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse('Failed to create item', response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildResourceUpdater(resource) {
-    return function (id, data) {
-      if (_.isNull(id) || _.isEmpty(id)) {
-        throw new Error('"id" argument not specified or empty');
-      }
-      if (_.isNull(data) || _.isEmpty(data)) {
-        throw new Error('"data" argument not specified or empty');
-      }
-
-      return $http
-        .put(`${apiEndpoint}/${resource}/${id}`, data)
-        .then(response => {
-          return response.data;
-        })
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse('Failed to update item', response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildSubResourceUpdater(parent, resource) {
-    return function (parentId, id, data) {
-      if (_.isNull(parentId) || _.isEmpty(parentId)) {
-        throw new Error('"parentId" argument not specified or empty');
-      }
-      if (_.isNull(id) || _.isEmpty(id)) {
-        throw new Error('"id" argument not specified or empty');
-      }
-      if (_.isNull(data) || _.isEmpty(data)) {
-        throw new Error('"data" argument not specified or empty');
-      }
-
-      return $http
-        .put(`${apiEndpoint}/${parent}/${parentId}/${resource}/${id}`, data)
-        .then(response => {
-          return response.data;
-        })
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse('Failed to update item', response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildResourceDeletor(resource) {
-    return function (id) {
-      if (_.isNull(id) || _.isEmpty(id)) {
-        throw new Error('"id" argument not specified or empty');
-      }
-
-      return $http
-        .delete(`${apiEndpoint}/${resource}/${id}`)
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse('Failed to delete item', response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildSubResourceDeletor(parent, resource) {
-    return function (parentId, id) {
-      if (_.isNull(parentId) || _.isEmpty(parentId)) {
-        throw new Error('"parentId" argument not specified or empty');
-      }
-      if (_.isNull(id) || _.isEmpty(id)) {
-        throw new Error('"id" argument not specified or empty');
-      }
-
-      return $http
-        .delete(`${apiEndpoint}/${parent}/${parentId}/${resource}/${id}`)
-        .catch(response => {
-          logger.error(buildErrorMessageFromResponse('Failed to delete item', response));
-          return $q.reject(response);
-        });
-    };
-  }
-
-  function buildErrorMessageFromResponse(prefix, response) {
-    const errorDetails = _.get(response.data, 'error.message');
-    let msg = prefix;
-    if (errorDetails) {
-      msg += `: ${errorDetails}`;
-    }
-    return msg;
-  }
-
-  function handle4xxError(response) {
-    // handle 4xx errors which are not handled by $http.post
-    if (response.status.toString().match(/4../)) {
-      return $q.reject(response);
-    }
-    return response;
-  }
-
-  function handlePaginatedResponse(response) {
-    const items = response.data;
-
-    const headers = response.headers();
-
-    if (headers.total && headers['per-page']) {
-      items.pagination = {
-        total: parseInt(headers.total, 10),
-        perPage: parseInt(headers['per-page'], 10)
-      };
-    }
-
-    return items;
-  }
-
   function allocateKubernetesCluster(clusterId, projectId) {
     if (_.isNull(clusterId) || _.isEmpty(clusterId)) {
       throw new Error('"clusterId" argument not specified or empty');
@@ -1063,12 +755,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .get(`${apiEndpoint}/kubernetes/tokens`, {
-        params: {
-          kind: 'user',
-          user_id: userId,
-          per_page: DEFAULT_PER_PAGE,
+        params: withPaginationParams(
+          {
+            kind: 'user',
+            user_id: userId
+          },
           page
-        }
+        )
       })
       .then(handlePaginatedResponse)
       .catch(response => {
@@ -1127,12 +820,13 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .get(`${apiEndpoint}/kubernetes/tokens`, {
-        params: {
-          kind: 'robot',
-          cluster_name: cluster,
-          per_page: DEFAULT_PER_PAGE,
+        params: withPaginationParams(
+          {
+            kind: 'robot',
+            cluster_name: cluster
+          },
           page
-        }
+        )
       })
       .then(handlePaginatedResponse)
       .catch(response => {
@@ -1255,10 +949,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   function getKubernetesNamespaces(params, page = 1) {
     return $http
       .get(`${apiEndpoint}/kubernetes/namespaces`, {
-        params: _.merge(params, {
-          per_page: DEFAULT_PER_PAGE,
-          page
-        })
+        params: withPaginationParams({}, page)
       })
       .then(handlePaginatedResponse)
       .catch(response => {
