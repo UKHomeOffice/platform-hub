@@ -21,7 +21,8 @@
   <md-toolbar md-colors="{background: 'primary-50'}">
     <div class="md-toolbar-tools">
       <md-select
-        ng-if="!$ctrl.loading && $ctrl.KubernetesClusters.all.length > 0"
+        ng-if="$ctrl.KubernetesClusters.all.length > 0"
+        ng-disabled="$ctrl.busy"
         placeholder="Select a cluster"
         ng-model="$ctrl.cluster"
         ng-change="$ctrl.handleClusterChange()">
@@ -34,11 +35,13 @@
     </div>
   </md-toolbar>
 
-  <md-content layout-padding>
+  <md-content
+    paginated-list
+    paginated-list-per-page="$ctrl.tokens.pagination.perPage"
+    paginated-list-total="$ctrl.tokens.pagination.total"
+    paginated-list-fetch="$ctrl.fetchTokens(page)">
 
-    <md-card
-      ng-if="!$ctrl.loading && $ctrl.tokens.length > 0"
-      ng-repeat="t in $ctrl.tokens track by t.name">
+    <md-card ng-repeat="t in $ctrl.tokens track by t.name">
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">
@@ -102,8 +105,6 @@
         </md-button>
       </md-card-actions>
     </md-card>
-
-    <br /><br />
 
   </md-content>
 </div>

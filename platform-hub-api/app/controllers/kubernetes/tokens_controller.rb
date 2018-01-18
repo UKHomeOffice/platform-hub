@@ -17,7 +17,7 @@ class Kubernetes::TokensController < ApiJsonController
         KubernetesToken.robot.by_cluster(cluster)
       end
 
-    render json: tokens
+    paginate json: tokens
   end
 
   # GET /kubernetes/tokens/:id

@@ -6,7 +6,7 @@ export const KubernetesRobotTokensListComponent = {
   controller: KubernetesRobotTokensListController
 };
 
-function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, icons, KubernetesClusters, KubernetesTokens, logger) {
+function KubernetesRobotTokensListController($q, $state, $mdSelect, $mdDialog, icons, KubernetesClusters, KubernetesTokens, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -19,6 +19,7 @@ function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, icons
   ctrl.cluster = ctrl.transition && ctrl.transition.params().cluster;
   ctrl.tokens = [];
 
+  ctrl.fetchTokens = fetchTokens;
   ctrl.handleClusterChange = handleClusterChange;
   ctrl.deleteToken = deleteToken;
 
@@ -29,27 +30,26 @@ function KubernetesRobotTokensListController($state, $mdSelect, $mdDialog, icons
 
     KubernetesClusters
       .refresh()
-      .then(fetchTokens)
+      .then(() => fetchTokens())
       .finally(() => {
         ctrl.loading = false;
       });
   }
 
-  function fetchTokens() {
-    ctrl.tokens = [];
-
+  function fetchTokens(page = 1) {
     if (ctrl.cluster) {
       ctrl.busy = true;
 
       return KubernetesTokens
-        .getRobotTokens(ctrl.cluster)
+        .getRobotTokens(ctrl.cluster, page)
         .then(tokens => {
-          angular.copy(tokens, ctrl.tokens);
+          ctrl.tokens = tokens;
         })
         .finally(() => {
           ctrl.busy = false;
         });
     }
+    return $q.when();
   }
 
   function handleClusterChange() {
