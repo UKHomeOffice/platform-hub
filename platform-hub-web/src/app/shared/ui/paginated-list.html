@@ -1,8 +1,8 @@
 <pagination-toolbar
   ng-if="$ctrl.total > 0"
   current-page="$ctrl.currentPage"
-  per-page="$ctrl.items.pagination.perPage"
-  total="$ctrl.items.pagination.total"
+  per-page="$ctrl.perPage"
+  total="$ctrl.total"
   on-page-change="$ctrl.onPageChange(page)">
 </pagination-toolbar>
 
@@ -11,7 +11,7 @@
 <pagination-toolbar
   ng-if="$ctrl.total > 0"
   current-page="$ctrl.currentPage"
-  per-page="$ctrl.items.pagination.perPage"
-  total="$ctrl.items.pagination.total"
+  per-page="$ctrl.perPage"
+  total="$ctrl.total"
   on-page-change="$ctrl.onPageChange(page)">
 </pagination-toolbar>

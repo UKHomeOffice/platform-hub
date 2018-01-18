@@ -3,8 +3,9 @@ export const PaginatedListDirective = function () {
     restrict: 'AE',
     transclude: true,
     scope: {
-      items: '=pageItems',
-      fetch: '&pageFetch'
+      perPage: '=paginatedListPerPage',
+      total: '=paginatedListTotal',
+      fetch: '&paginatedListFetch'
     },
     template: require('./paginated-list.html'),
     controller: PaginatedListController,

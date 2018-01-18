@@ -11,8 +11,9 @@
 
   <md-content
     paginated-list
-    page-items="$ctrl.users"
-    page-fetch="$ctrl.fetchUsers(page)">
+    paginated-list-per-page="$ctrl.users.pagination.perPage"
+    paginated-list-total="$ctrl.users.pagination.total"
+    paginated-list-fetch="$ctrl.fetchUsers(page)">
 
     <md-card ng-repeat="u in $ctrl.users track by u.id">
       <md-card-title>
