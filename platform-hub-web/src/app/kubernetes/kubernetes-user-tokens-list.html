@@ -80,14 +80,6 @@
 
   <md-content layout-padding>
 
-    <p
-      class="md-body-1"
-      md-colors="{background: 'yellow-50'}">
-      After making any changes make sure you
-      <a ui-sref="kubernetes.tokens-sync">sync the relevant cluster(s)</a>
-      to push your changes live
-    </p>
-
     <md-card
       ng-if="!$ctrl.loading && $ctrl.tokens.length > 0"
       ng-repeat="t in $ctrl.tokens | orderBy: 'cluster.name' track by t.id">
