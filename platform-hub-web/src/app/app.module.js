@@ -109,6 +109,7 @@ angular
   .module(name)
   .constant('apiEndpoint', apiEndpoint)
   .constant('apiBackoffTimeMs', 2000)
+  .constant('apiDefaultPerPage', 10)
   .constant('featureFlagKeys', {
     kubernetesTokens: 'kubernetes_tokens',
     kubernetesTokensEscalatePrivilege: 'kubernetes_tokens_escalate_privilege',
