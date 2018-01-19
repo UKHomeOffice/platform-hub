@@ -16,7 +16,7 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.AnnouncementTemplates.all.length > 0">
+  <md-content>
 
     <md-card ng-repeat="t in $ctrl.AnnouncementTemplates.all track by t.id">
       <md-card-title>

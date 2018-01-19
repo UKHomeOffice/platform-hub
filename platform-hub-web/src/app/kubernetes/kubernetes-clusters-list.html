@@ -16,7 +16,7 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.KubernetesClusters.all.length > 0">
+  <md-content>
 
     <md-card ng-repeat="c in $ctrl.KubernetesClusters.all track by c.name">
       <md-card-title>

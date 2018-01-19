@@ -16,7 +16,7 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.lists.length > 0">
+  <md-content>
 
     <md-card ng-repeat="l in $ctrl.lists track by l.id">
       <md-card-title>
