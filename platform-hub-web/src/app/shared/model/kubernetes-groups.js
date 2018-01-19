@@ -1,11 +1,7 @@
-import angular from 'angular';
-
-export const KubernetesGroups = function ($window, hubApiService, apiBackoffTimeMs, _) {
+export const KubernetesGroups = function (hubApiService, _) {
   'ngInject';
 
   const model = {};
-
-  let fetcherPromise = null;
 
   model.kinds = [
     'clusterwide',
@@ -17,9 +13,7 @@ export const KubernetesGroups = function ($window, hubApiService, apiBackoffTime
     'robot'
   ];
 
-  model.all = [];
-
-  model.refresh = refresh;
+  model.list = hubApiService.getKubernetesGroups;
   model.get = hubApiService.getKubernetesGroup;
   model.create = hubApiService.createKubernetesGroup;
   model.update = hubApiService.updateKubernetesGroup;
@@ -31,24 +25,6 @@ export const KubernetesGroups = function ($window, hubApiService, apiBackoffTime
   model.filterGroupsForCluster = filterGroupsForCluster;
 
   return model;
-
-  function refresh(force) {
-    if (force || _.isNull(fetcherPromise)) {
-      fetcherPromise = hubApiService
-        .getKubernetesGroups()
-        .then(groups => {
-          angular.copy(groups, model.all);
-          return model.all;
-        })
-        .finally(() => {
-          // Reuse the same promise for some time, to prevent smashing the API
-          $window.setTimeout(() => {
-            fetcherPromise = null;
-          }, apiBackoffTimeMs);
-        });
-    }
-    return fetcherPromise;
-  }
 
   function allocateToProject(groupId, projectId) {
     return hubApiService.allocateKubernetesGroup(groupId, projectId);

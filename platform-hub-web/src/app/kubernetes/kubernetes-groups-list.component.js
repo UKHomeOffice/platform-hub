@@ -8,14 +8,25 @@ function KubernetesGroupsListController(KubernetesGroups) {
 
   const ctrl = this;
 
-  ctrl.KubernetesGroups = KubernetesGroups;
   ctrl.loading = true;
+  ctrl.groups = [];
+
+  ctrl.fetchGroups = fetchGroups;
 
   init();
 
   function init() {
-    KubernetesGroups
-      .refresh()
+    fetchGroups();
+  }
+
+  function fetchGroups(page = 1) {
+    ctrl.loading = true;
+
+    return KubernetesGroups
+      .list(page)
+      .then(groups => {
+        ctrl.groups = groups;
+      })
       .finally(() => {
         ctrl.loading = false;
       });

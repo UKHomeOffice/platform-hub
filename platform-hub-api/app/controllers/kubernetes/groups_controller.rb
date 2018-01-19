@@ -7,7 +7,8 @@ class Kubernetes::GroupsController < ApiJsonController
   # GET /kubernetes/groups
   def index
     groups = KubernetesGroup.order(:name)
-    render json: groups
+
+    paginate json: groups
   end
 
   # GET /kubernetes/groups/:id

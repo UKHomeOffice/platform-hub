@@ -16,9 +16,13 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content>
+  <md-content
+    paginated-list
+    paginated-list-per-page="$ctrl.groups.pagination.perPage"
+    paginated-list-total="$ctrl.groups.pagination.total"
+    paginated-list-fetch="$ctrl.fetchGroups(page)">
 
-    <md-card ng-repeat="g in $ctrl.KubernetesGroups.all track by g.id">
+    <md-card ng-repeat="g in $ctrl.groups track by g.id">
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">

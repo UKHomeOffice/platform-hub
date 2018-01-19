@@ -129,7 +129,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.allocateKubernetesCluster = allocateKubernetesCluster;
   service.getKubernetesClusterAllocations = buildSubCollectionFetcher('kubernetes/clusters', 'allocations');
 
-  service.getKubernetesGroups = buildCollectionFetcher('kubernetes/groups');
+  service.getKubernetesGroups = buildCollectionFetcher('kubernetes/groups', true);
   service.getKubernetesGroup = buildResourceFetcher('kubernetes/groups');
   service.createKubernetesGroup = buildResourceCreator('kubernetes/groups');
   service.updateKubernetesGroup = buildResourceUpdater('kubernetes/groups');
