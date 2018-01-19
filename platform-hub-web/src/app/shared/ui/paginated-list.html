@@ -1,4 +1,5 @@
 <pagination-toolbar
+  ng-if="$ctrl.total > 0"
   current-page="$ctrl.currentPage"
   per-page="$ctrl.items.pagination.perPage"
   total="$ctrl.items.pagination.total"
@@ -8,6 +9,7 @@
 <div ng-transclude></div>
 
 <pagination-toolbar
+  ng-if="$ctrl.total > 0"
   current-page="$ctrl.currentPage"
   per-page="$ctrl.items.pagination.perPage"
   total="$ctrl.items.pagination.total"
