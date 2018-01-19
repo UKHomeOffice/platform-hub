@@ -24,6 +24,7 @@ function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerServi
   ctrl.service = null;
   ctrl.kubernetesRobotTokens = [];
   ctrl.processingKubernetesRobotTokens = false;
+  ctrl.kubernetesNamespaces = [];
   ctrl.processingKubernetesNamespaces = false;
 
   ctrl.deleteService = deleteService;
@@ -141,14 +142,13 @@ function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerServi
       });
   }
 
-  function loadKubernetesNamespaces() {
+  function loadKubernetesNamespaces(page = 1) {
     ctrl.processingKubernetesNamespaces = true;
-    ctrl.kubernetesNamespaces = [];
 
-    KubernetesNamespaces
-      .getAllByService(ctrl.service.id)
+    return KubernetesNamespaces
+      .listByService(ctrl.service.id, page)
       .then(namespaces => {
-        angular.copy(namespaces, ctrl.kubernetesNamespaces);
+        ctrl.kubernetesNamespaces = namespaces;
       })
       .finally(() => {
         ctrl.processingKubernetesNamespaces = false;

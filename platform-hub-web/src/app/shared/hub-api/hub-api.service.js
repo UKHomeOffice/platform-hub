@@ -949,7 +949,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   function getKubernetesNamespaces(params, page = 1) {
     return $http
       .get(`${apiEndpoint}/kubernetes/namespaces`, {
-        params: withPaginationParams({}, page)
+        params: withPaginationParams(params, page)
       })
       .then(handlePaginatedResponse)
       .catch(response => {
