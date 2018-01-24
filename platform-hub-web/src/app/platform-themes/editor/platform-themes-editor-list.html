@@ -1,5 +1,5 @@
 <div class="platform-themes-editor-list">
-  <md-toolbar md-scroll-shrink>
+  <md-toolbar>
     <div class="md-toolbar-tools">
       <h3>
         <span>All Platform Themes</span>
@@ -16,7 +16,7 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.PlatformThemes.all.length > 0">
+  <md-content>
 
     <md-card ng-repeat="t in $ctrl.PlatformThemes.all track by t.id">
       <div class="tinted-bar" md-colors="{background: '{{t.colour}}'}"></div>

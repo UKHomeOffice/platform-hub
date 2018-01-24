@@ -20,7 +20,7 @@ class Kubernetes::NamespacesController < ApiJsonController
 
     namespaces = scope.order(:name)
 
-    render json: namespaces
+    paginate json: namespaces
   end
 
   # GET /kubernetes/namespaces/:id

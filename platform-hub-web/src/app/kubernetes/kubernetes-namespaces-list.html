@@ -1,5 +1,5 @@
 <div class="kubernetes-namespaces-list">
-  <md-toolbar md-scroll-shrink>
+  <md-toolbar>
     <div class="md-toolbar-tools">
       <h3>
         <span>Kubernetes Namespaces By Cluster</span>
@@ -21,7 +21,8 @@
   <md-toolbar md-colors="{background: 'primary-50'}">
     <div class="md-toolbar-tools">
       <md-select
-        ng-if="!$ctrl.loading && $ctrl.KubernetesClusters.all.length > 0"
+        ng-if="$ctrl.KubernetesClusters.all.length > 0"
+        ng-disabled="$ctrl.busy"
         placeholder="Select a cluster"
         ng-model="$ctrl.cluster"
         ng-change="$ctrl.handleClusterChange()">
@@ -34,11 +35,13 @@
     </div>
   </md-toolbar>
 
-  <md-content layout-padding>
+  <md-content
+    paginated-list
+    paginated-list-per-page="$ctrl.namespaces.pagination.perPage"
+    paginated-list-total="$ctrl.namespaces.pagination.total"
+    paginated-list-fetch="$ctrl.fetchNamespaces(page)">
 
-    <md-card
-      ng-if="!$ctrl.loading && $ctrl.namespaces.length > 0"
-      ng-repeat="n in $ctrl.namespaces track by n.name">
+    <md-card ng-repeat="n in $ctrl.namespaces track by n.name">
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">

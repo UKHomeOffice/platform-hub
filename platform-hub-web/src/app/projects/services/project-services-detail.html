@@ -1,5 +1,5 @@
 <div class="project-services-detail">
-  <md-toolbar md-scroll-shrink>
+  <md-toolbar>
     <div class="md-toolbar-tools">
       <h3 ng-if="$ctrl.service">
         <span>Project Service: </span>
@@ -163,56 +163,62 @@
             </md-button>
           </div>
 
-          <md-card ng-repeat="n in $ctrl.kubernetesNamespaces track by n.id">
-            <md-card-title>
-              <md-card-title-text>
-                <span class="md-headline">
-                  {{n.name}}
-                  <span
-                    flex="none"
-                    class="badge"
-                    md-colors="{background: 'accent-100'}"
-                    style="margin-left: 0">
-                    {{n.cluster.name}} cluster
+          <div
+            paginated-list
+            paginated-list-per-page="$ctrl.kubernetesNamespaces.pagination.perPage"
+            paginated-list-total="$ctrl.kubernetesNamespaces.pagination.total"
+            paginated-list-fetch="$ctrl.loadKubernetesNamespaces(page)">
+
+            <md-card ng-repeat="n in $ctrl.kubernetesNamespaces track by n.id">
+              <md-card-title>
+                <md-card-title-text>
+                  <span class="md-headline">
+                    {{n.name}}
+                    <span
+                      flex="none"
+                      class="badge"
+                      md-colors="{background: 'accent-100'}"
+                      style="margin-left: 0">
+                      {{n.cluster.name}} cluster
+                    </span>
                   </span>
-                </span>
-              </md-card-title-text>
-            </md-card-title>
+                </md-card-title-text>
+              </md-card-title>
 
-            <md-card-content>
-              <p
-                class="md-body-1"
-                md-colors="{background: 'blue-grey-50'}"
-                ng-if="n.description"
-                ng-bind-html='n.description | simpleFormat'
-                layout-padding>
-              </p>
-            </md-card-content>
+              <md-card-content>
+                <p
+                  class="md-body-1"
+                  md-colors="{background: 'blue-grey-50'}"
+                  ng-if="n.description"
+                  ng-bind-html='n.description | simpleFormat'
+                  layout-padding>
+                </p>
+              </md-card-content>
 
-            <md-card-actions layout="row" layout-align="start center" ng-if="$ctrl.isAdmin">
-              <md-button
-                class="md-primary"
-                aria-label="View and edit details for this namespace"
-                ui-sref="kubernetes.namespaces.edit({cluster: n.cluster.name, namespaceId: n.id, fromProject: $ctrl.projectId, fromService: $ctrl.service.id})">
-                View and edit
-              </md-button>
-              <span flex></span>
-              <md-button
-                class="md-accent"
-                ng-click="$ctrl.deleteKubernetesNamespace(n.id, $event)"
-                ng-disabled="$ctrl.processingKubernetesNamespaces"
-                aria-label="Delete kubernetes namespace">
-                Delete
-              </md-button>
-            </md-card-actions>
-          </md-card>
+              <md-card-actions layout="row" layout-align="start center" ng-if="$ctrl.isAdmin">
+                <md-button
+                  class="md-primary"
+                  aria-label="View and edit details for this namespace"
+                  ui-sref="kubernetes.namespaces.edit({cluster: n.cluster.name, namespaceId: n.id, fromProject: $ctrl.projectId, fromService: $ctrl.service.id})">
+                  View and edit
+                </md-button>
+                <span flex></span>
+                <md-button
+                  class="md-accent"
+                  ng-click="$ctrl.deleteKubernetesNamespace(n.id, $event)"
+                  ng-disabled="$ctrl.processingKubernetesNamespaces"
+                  aria-label="Delete kubernetes namespace">
+                  Delete
+                </md-button>
+              </md-card-actions>
+            </md-card>
+
+          </div>
+
         </md-tab-body>
       </md-tab>
 
     </md-tabs>
-
-    <br /><br />
-    <br /><br />
 
   </md-content>
 </div>

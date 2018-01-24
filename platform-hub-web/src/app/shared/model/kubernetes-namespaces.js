@@ -5,8 +5,8 @@ export const KubernetesNamespaces = function (hubApiService) {
 
   const model = {};
 
-  model.getAllByService = getAllByService;
-  model.getAllByCluster = getAllByCluster;
+  model.listByService = listByService;
+  model.listByCluster = listByCluster;
   model.get = hubApiService.getKubernetesNamespace;
   model.create = hubApiService.createKubernetesNamespace;
   model.update = hubApiService.updateKubernetesNamespace;
@@ -14,11 +14,11 @@ export const KubernetesNamespaces = function (hubApiService) {
 
   return model;
 
-  function getAllByService(serviceId) {
-    return hubApiService.getKubernetesNamespaces({service_id: serviceId});
+  function listByService(serviceId, page = 1) {
+    return hubApiService.getKubernetesNamespaces({service_id: serviceId}, page);
   }
 
-  function getAllByCluster(clusterName) {
-    return hubApiService.getKubernetesNamespaces({cluster_name: clusterName});
+  function listByCluster(clusterName, page = 1) {
+    return hubApiService.getKubernetesNamespaces({cluster_name: clusterName}, page);
   }
 };

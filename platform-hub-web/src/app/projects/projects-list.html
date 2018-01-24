@@ -1,5 +1,5 @@
 <div class="projects-list">
-  <md-toolbar md-scroll-shrink>
+  <md-toolbar>
     <div class="md-toolbar-tools">
       <h3>
         <span>All Projects</span>
@@ -17,7 +17,7 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.Projects.all.length > 0">
+  <md-content>
 
     <md-card ng-repeat="p in $ctrl.Projects.all track by p.id">
       <md-card-title>

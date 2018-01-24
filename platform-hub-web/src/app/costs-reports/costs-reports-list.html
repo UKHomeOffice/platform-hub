@@ -1,5 +1,5 @@
 <div class="costs-reports-list">
-  <md-toolbar md-scroll-shrink>
+  <md-toolbar>
     <div class="md-toolbar-tools">
       <h3>
         Costs Reports
@@ -17,7 +17,7 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content ng-if="!$ctrl.loading && $ctrl.reports.length > 0" layout-padding>
+  <md-content>
 
     <md-card
       ng-repeat="r in $ctrl.reports track by r.id"

@@ -1,5 +1,5 @@
 <div class="kubernetes-clusters-list">
-  <md-toolbar md-scroll-shrink>
+  <md-toolbar>
     <div class="md-toolbar-tools">
       <h3>
         <span>All Kubernetes Clusters</span>
@@ -16,7 +16,7 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.KubernetesClusters.all.length > 0">
+  <md-content>
 
     <md-card ng-repeat="c in $ctrl.KubernetesClusters.all track by c.name">
       <md-card-title>

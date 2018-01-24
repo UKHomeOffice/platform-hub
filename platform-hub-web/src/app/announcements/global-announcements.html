@@ -1,5 +1,5 @@
 <div class="global-announcements">
-  <md-toolbar md-scroll-shrink>
+  <md-toolbar>
     <div class="md-toolbar-tools">
       <h3>
         <span>Global Announcements</span>
@@ -22,7 +22,7 @@
     </p>
   </md-content>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.Announcements.global.length > 0">
+  <md-content>
 
     <md-card
       ng-repeat="a in $ctrl.Announcements.global track by a.id"

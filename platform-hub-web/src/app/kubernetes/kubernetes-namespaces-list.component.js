@@ -6,7 +6,7 @@ export const KubernetesNamespacesListComponent = {
   controller: KubernetesNamespacesListController
 };
 
-function KubernetesNamespacesListController($state, $mdSelect, $mdDialog, KubernetesClusters, KubernetesNamespaces, logger) {
+function KubernetesNamespacesListController($q, $state, $mdSelect, $mdDialog, KubernetesClusters, KubernetesNamespaces, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -19,6 +19,7 @@ function KubernetesNamespacesListController($state, $mdSelect, $mdDialog, Kubern
   ctrl.cluster = ctrl.transition && ctrl.transition.params().cluster;
   ctrl.namespaces = [];
 
+  ctrl.fetchNamespaces = fetchNamespaces;
   ctrl.handleClusterChange = handleClusterChange;
   ctrl.deleteNamespace = deleteNamespace;
 
@@ -29,27 +30,26 @@ function KubernetesNamespacesListController($state, $mdSelect, $mdDialog, Kubern
 
     KubernetesClusters
       .refresh()
-      .then(fetchNamespaces)
+      .then(() => fetchNamespaces())
       .finally(() => {
         ctrl.loading = false;
       });
   }
 
-  function fetchNamespaces() {
-    ctrl.namespaces = [];
-
+  function fetchNamespaces(page = 1) {
     if (ctrl.cluster) {
       ctrl.busy = true;
 
       return KubernetesNamespaces
-        .getAllByCluster(ctrl.cluster)
+        .listByCluster(ctrl.cluster, page)
         .then(namespaces => {
-          angular.copy(namespaces, ctrl.namespaces);
+          ctrl.namespaces = namespaces;
         })
         .finally(() => {
           ctrl.busy = false;
         });
     }
+    return $q.when();
   }
 
   function handleClusterChange() {

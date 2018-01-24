@@ -129,7 +129,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.allocateKubernetesCluster = allocateKubernetesCluster;
   service.getKubernetesClusterAllocations = buildSubCollectionFetcher('kubernetes/clusters', 'allocations');
 
-  service.getKubernetesGroups = buildCollectionFetcher('kubernetes/groups');
+  service.getKubernetesGroups = buildCollectionFetcher('kubernetes/groups', true);
   service.getKubernetesGroup = buildResourceFetcher('kubernetes/groups');
   service.createKubernetesGroup = buildResourceCreator('kubernetes/groups');
   service.updateKubernetesGroup = buildResourceUpdater('kubernetes/groups');
@@ -949,7 +949,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   function getKubernetesNamespaces(params, page = 1) {
     return $http
       .get(`${apiEndpoint}/kubernetes/namespaces`, {
-        params: withPaginationParams({}, page)
+        params: withPaginationParams(params, page)
       })
       .then(handlePaginatedResponse)
       .catch(response => {
