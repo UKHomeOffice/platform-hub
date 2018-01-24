@@ -5,7 +5,7 @@ export const UsersListComponent = {
   controller: UsersListController
 };
 
-function UsersListController(hubApiService, Me, logger) {
+function UsersListController($mdDialog, hubApiService, Me, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -40,40 +40,84 @@ function UsersListController(hubApiService, Me, logger) {
       });
   }
 
-  function toggleAdmin(user) {
+  function toggleAdmin(user, targetEvent) {
+    let promptMessage = 'This will make the user a hub admin and give them privileged access to all parts of the hub – DO THIS WITH CAUTION PLEASE.';
     if (user.role === 'admin') {
-      hubApiService
-        .revokeAdmin(user.id)
-        .then(() => {
-          user.role = null;
-          logger.success('Revoked hub admin role');
-        });
-    } else {
-      hubApiService
-        .makeAdmin(user.id)
-        .then(() => {
-          user.role = 'admin';
-          logger.success('Made the user a hub admin');
-        });
+      promptMessage = 'This will remove hub admin privileges for the user.';
     }
+
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent(promptMessage)
+      .ariaLabel('Confirm admin role toggle')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    ctrl.saving = true;
+
+    return $mdDialog
+      .show(confirm)
+      .then(() => {
+        if (user.role === 'admin') {
+          return hubApiService
+            .revokeAdmin(user.id)
+            .then(() => {
+              user.role = null;
+              logger.success('Revoked hub admin role');
+            });
+        }
+
+        return hubApiService
+          .makeAdmin(user.id)
+          .then(() => {
+            user.role = 'admin';
+            logger.success('Made the user a hub admin');
+          });
+      })
+      .finally(() => {
+        ctrl.saving = false;
+      });
   }
 
-  function toggleLimitedAdmin(user) {
+  function toggleLimitedAdmin(user, targetEvent) {
+    let promptMessage = 'This will make the user a limited hub admin and give them some privileged access to the hub.';
     if (user.role === 'limited_admin') {
-      hubApiService
-        .revokeLimitedAdmin(user.id)
-        .then(() => {
-          user.role = null;
-          logger.success('Revoked hub limited admin role');
-        });
-    } else {
-      hubApiService
-        .makeLimitedAdmin(user.id)
-        .then(() => {
-          user.role = 'limited_admin';
-          logger.success('Made the user a hub limited admin');
-        });
+      promptMessage = 'This will remove limited hub admin privileges for the user.';
     }
+
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent(promptMessage)
+      .ariaLabel('Confirm limited admin role toggle')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    ctrl.saving = true;
+
+    return $mdDialog
+      .show(confirm)
+      .then(() => {
+        if (user.role === 'limited_admin') {
+          return hubApiService
+            .revokeLimitedAdmin(user.id)
+            .then(() => {
+              user.role = null;
+              logger.success('Revoked hub limited admin role');
+            });
+        }
+
+        return hubApiService
+          .makeLimitedAdmin(user.id)
+          .then(() => {
+            user.role = 'limited_admin';
+            logger.success('Made the user a hub limited admin');
+          });
+      })
+      .finally(() => {
+        ctrl.saving = false;
+      });
   }
 
   function activateUser(user) {

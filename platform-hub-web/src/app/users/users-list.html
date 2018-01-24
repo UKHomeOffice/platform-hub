@@ -61,7 +61,8 @@
           <md-menu-content width="4">
             <md-menu-item>
               <md-button
-                ng-click="$ctrl.toggleAdmin(u)"
+                ng-click="$ctrl.toggleAdmin(u, $event)"
+                ng-disabled="$ctrl.saving"
                 aria-label="Toggle hub admin role">
                 <md-icon
                   ng-if="u.role === 'admin'"
@@ -77,7 +78,8 @@
             </md-menu-item>
             <md-menu-item>
               <md-button
-                ng-click="$ctrl.toggleLimitedAdmin(u)"
+                ng-click="$ctrl.toggleLimitedAdmin(u, $event)"
+                ng-disabled="$ctrl.saving"
                 aria-label="Toggle hub limited admin role">
                 <md-icon
                   ng-if="u.role === 'limited_admin'"
