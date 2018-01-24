@@ -435,4 +435,78 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
     end
   end
 
+  describe 'GET #tokens' do
+    before do
+      @group = create :kubernetes_group, :for_robot, :not_privileged
+    end
+
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :tokens, params: { id: @group.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not a hub admin so forbidden'  do
+        before do
+          get :tokens, params: { id: @group.id }
+        end
+      end
+
+      it_behaves_like 'a hub admin' do
+
+        context 'when no tokens exist' do
+          it 'returns an empty list' do
+            get :tokens, params: { id: @group.id }
+            expect(response).to be_success
+            expect(json_response).to be_empty
+          end
+        end
+
+        context 'when tokens exist' do
+          let!(:service_1) { create :service }
+          let!(:service_2) { create :service }
+
+          let!(:other_group) { create :kubernetes_group, :for_robot, :not_privileged }
+
+          before do
+            # Make sure groups are allocated so we can create tokens for them
+            create(:allocation, allocatable: @group, allocation_receivable: service_1)
+            create(:allocation, allocatable: @group, allocation_receivable: service_2)
+            create(:allocation, allocatable: other_group, allocation_receivable: service_1)
+            create(:allocation, allocatable: other_group, allocation_receivable: service_2)
+
+            @tokens = [
+              create(:robot_kubernetes_token, tokenable: service_1, groups: [@group.name]),
+              create(:robot_kubernetes_token, tokenable: service_2, groups: [@group.name]),
+              create(:robot_kubernetes_token, tokenable: service_2, groups: [@group.name, other_group.name]),
+            ]
+            create :robot_kubernetes_token, tokenable: service_1, groups: [other_group.name]
+            create :robot_kubernetes_token, tokenable: service_1, groups: []
+            create :robot_kubernetes_token
+            create :user_kubernetes_token
+          end
+
+          let :total_tokens do
+            @tokens.length
+          end
+
+          let :all_token_ids do
+            @tokens.sort_by(&:updated_at).reverse.map(&:id)
+          end
+
+          it 'returns the existing kubernetes tokens ordered by last updated descending' do
+            get :tokens, params: { id: @group.id }
+            expect(response).to be_success
+            expect(json_response.length).to eq total_tokens
+            expect(pluck_from_json_response('id')).to match_array all_token_ids
+          end
+        end
+
+      end
+
+    end
+  end
+
 end

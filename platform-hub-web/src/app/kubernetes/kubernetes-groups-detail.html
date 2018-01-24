@@ -109,6 +109,39 @@
           </allocations-listing>
         </md-tab-body>
       </md-tab>
+
+      <md-tab id="kube-tokens-tab" md-on-select="$ctrl.loadKubernetesTokens()">
+        <md-tab-label>Kube Tokens</md-tab-label>
+        <md-tab-body>
+          <loading-indicator loading="$ctrl.processingKubernetesTokens"></loading-indicator>
+
+          <p
+            ng-if="!$ctrl.processingKubernetesTokens && $ctrl.kubernetesTokens.length == 0"
+            class="md-body-1 none-text"
+            layout="row"
+            layout-align="center center"
+            layout-padding>
+            This RBAC group has not been assigned to any tokens yet
+          </p>
+
+          <div
+            ng-if="$ctrl.kubernetesTokens.length"
+            paginated-list
+            paginated-list-per-page="$ctrl.kubernetesTokens.pagination.perPage"
+            paginated-list-total="$ctrl.kubernetesTokens.pagination.total"
+            paginated-list-fetch="$ctrl.loadKubernetesTokens(page)">
+
+            <kubernetes-token-card
+              ng-repeat="t in $ctrl.kubernetesTokens track by t.id"
+              token="t"
+              show-actions="true"
+              busy="$ctrl.processingKubernetesTokens"
+              after-update="$ctrl.loadKubernetesTokens()">
+            </kubernetes-token-card>
+
+          </div>
+        </md-tab-body>
+      </md-tab>
     </md-tabs>
   </md-content>
 </div>

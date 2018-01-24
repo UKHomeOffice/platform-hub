@@ -132,6 +132,7 @@ Rails.application.routes.draw do
         resources :groups do
           post :allocate, on: :member
           get :allocations, on: :member
+          get :tokens, on: :member
         end
 
         resources :namespaces

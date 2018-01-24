@@ -822,4 +822,28 @@ RSpec.describe KubernetesToken, type: :model do
 
   end
 
+  describe 'scopes' do
+
+    describe '.by_group' do
+      let!(:service) { create :service }
+      let!(:group_1) { create :kubernetes_group, :for_robot, :not_privileged, allocate_to: service }
+      let!(:group_2) { create :kubernetes_group, :for_robot, :not_privileged, allocate_to: service }
+
+      let!(:token_1) { create :robot_kubernetes_token, tokenable: service, groups: [group_1.name, group_2.name] }
+      let!(:token_2) { create :robot_kubernetes_token, tokenable: service, groups: [group_2.name] }
+      let!(:token_3) { create :robot_kubernetes_token, tokenable: service, groups: [group_1.name] }
+      let!(:token_4) { create :robot_kubernetes_token, tokenable: service, groups: [] }
+
+      before do
+        # Create some more tokens so we have a bigger pool to pick from
+        create :robot_kubernetes_token
+        create :user_kubernetes_token
+      end
+
+      it 'finds only those tokens that have the group specified' do
+        expect(KubernetesToken.by_group(group_1.name).entries).to contain_exactly(token_1, token_3)
+      end
+    end
+
+  end
 end
