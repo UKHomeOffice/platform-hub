@@ -346,7 +346,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
             @allocations.map(&:id)
           end
 
-          it 'returns the existing kubernetes allocations ordered by name descending' do
+          it 'returns the existing kubernetes allocations' do
             get :allocations, params: { id: @cluster.id }
             expect(response).to be_success
             expect(json_response.length).to eq total_allocations
@@ -357,6 +357,145 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
       end
 
     end
+  end
+
+  describe 'tokens actions' do
+    before do
+      @cluster = create :kubernetes_cluster
+    end
+
+    def create_tokens_pool cluster
+      project_1 = create :project
+      service_1 = create :service, project: project_1
+      project_2 = create :project
+      service_2 = create :service, project: project_2
+
+      other_cluster = create :kubernetes_cluster
+
+      # Make sure clusters are allocated so we can create tokens for them
+      create(:allocation, allocatable: cluster, allocation_receivable: project_1)
+      create(:allocation, allocatable: cluster, allocation_receivable: project_2)
+      create(:allocation, allocatable: other_cluster, allocation_receivable: project_1)
+      create(:allocation, allocatable: other_cluster, allocation_receivable: project_2)
+
+      cluster_robot_tokens = [
+        create(:robot_kubernetes_token, cluster: cluster, tokenable: service_1),
+        create(:robot_kubernetes_token, cluster: cluster, tokenable: service_2),
+      ]
+
+      cluster_user_tokens = [
+        create(:user_kubernetes_token, cluster: cluster, project: project_1),
+        create(:user_kubernetes_token, cluster: cluster, project: project_2),
+      ]
+
+      create :user_kubernetes_token, cluster: other_cluster, project: project_1
+      create :robot_kubernetes_token, cluster: other_cluster, tokenable: service_1
+
+      [ cluster_robot_tokens, cluster_user_tokens ]
+    end
+
+    describe 'GET #robot_tokens' do
+      it_behaves_like 'unauthenticated not allowed' do
+        before do
+          get :robot_tokens, params: { id: @cluster.id }
+        end
+      end
+
+      it_behaves_like 'authenticated' do
+
+        it_behaves_like 'not a hub admin so forbidden'  do
+          before do
+            get :robot_tokens, params: { id: @cluster.id }
+          end
+        end
+
+        it_behaves_like 'a hub admin' do
+
+          context 'when no tokens exist' do
+            it 'returns an empty list' do
+              get :robot_tokens, params: { id: @cluster.id }
+              expect(response).to be_success
+              expect(json_response).to be_empty
+            end
+          end
+
+          context 'when tokens exist' do
+            before do
+              @tokens, _ = create_tokens_pool @cluster
+            end
+
+            let :total_tokens do
+              @tokens.length
+            end
+
+            let :all_token_ids do
+              @tokens.sort_by(&:updated_at).reverse.map(&:id)
+            end
+
+            it 'returns the existing kubernetes robot tokens for the cluster ordered by last updated descending' do
+              get :robot_tokens, params: { id: @cluster.id }
+              expect(response).to be_success
+              expect(json_response.length).to eq total_tokens
+              expect(pluck_from_json_response('id')).to match_array all_token_ids
+            end
+          end
+
+        end
+
+      end
+    end
+
+    describe 'GET #user_tokens' do
+      it_behaves_like 'unauthenticated not allowed' do
+        before do
+          get :user_tokens, params: { id: @cluster.id }
+        end
+      end
+
+      it_behaves_like 'authenticated' do
+
+        it_behaves_like 'not a hub admin so forbidden'  do
+          before do
+            get :user_tokens, params: { id: @cluster.id }
+          end
+        end
+
+        it_behaves_like 'a hub admin' do
+
+          context 'when no tokens exist' do
+            it 'returns an empty list' do
+              get :user_tokens, params: { id: @cluster.id }
+              expect(response).to be_success
+              expect(json_response).to be_empty
+            end
+          end
+
+          context 'when tokens exist' do
+            before do
+              _, @tokens = create_tokens_pool @cluster
+            end
+
+            let :total_tokens do
+              @tokens.length
+            end
+
+            let :all_token_ids do
+              @tokens.sort_by(&:updated_at).reverse.map(&:id)
+            end
+
+            it 'returns the existing kubernetes user tokens for the cluster ordered by last updated descending' do
+              get :user_tokens, params: { id: @cluster.id }
+              expect(response).to be_success
+              expect(json_response.length).to eq total_tokens
+              expect(pluck_from_json_response('id')).to match_array all_token_ids
+            end
+          end
+
+        end
+
+      end
+    end
+
   end
 
 end

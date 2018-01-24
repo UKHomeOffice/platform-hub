@@ -120,6 +120,8 @@ Rails.application.routes.draw do
         resources :clusters, except: :destroy do
           post :allocate, on: :member
           get :allocations, on: :member
+          get :robot_tokens, on: :member
+          get :user_tokens, on: :member
         end
 
         get '/changeset/:cluster', to: 'changeset#index'

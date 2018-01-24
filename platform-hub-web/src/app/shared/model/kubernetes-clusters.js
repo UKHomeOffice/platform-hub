@@ -15,6 +15,8 @@ export const KubernetesClusters = function ($window, hubApiService, apiBackoffTi
   model.update = hubApiService.updateKubernetesCluster;
   model.allocate = hubApiService.allocateKubernetesCluster;
   model.getAllocations = hubApiService.getKubernetesClusterAllocations;
+  model.getRobotTokens = hubApiService.getKubernetesClusterRobotTokens;
+  model.getUserTokens = hubApiService.getKubernetesClusterUserTokens;
 
   return model;
 
