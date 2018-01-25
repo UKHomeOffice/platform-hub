@@ -248,6 +248,7 @@
           </p>
 
           <div ng-if="$ctrl.memberships.length > 0">
+
             <md-toolbar md-colors="{background: 'primary-50'}">
               <div class="md-toolbar-tools">
                 <md-select
@@ -275,73 +276,15 @@
               </md-button>
             </div>
 
-            <md-card ng-repeat="t in $ctrl.kubernetesUserTokens | orderBy: 'cluster.name' | filter: $ctrl.kubernetesUserTokensSelectedUser && { user: { id: $ctrl.kubernetesUserTokensSelectedUser } } track by t.id">
-              <md-card-title>
-                <md-card-title-text layout="row">
-                  <span class="md-headline">
-                    {{t.user.name}}
-                    <span
-                      flex="none"
-                      class="badge"
-                      md-colors="{background: 'accent-100'}">
-                      {{t.cluster.name}} cluster
-                    </span>
-                  </span>
-                </md-card-title-text>
-              </md-card-title>
+            <kubernetes-token-card
+              ng-repeat="t in $ctrl.kubernetesUserTokens | orderBy: 'cluster.name' | filter: $ctrl.kubernetesUserTokensSelectedUser && { user: { id: $ctrl.kubernetesUserTokensSelectedUser } } track by t.id"
+              token="t"
+              show-actions="true"
+              busy="$ctrl.processingKubernetesUserTokens"
+              after-update="$ctrl.loadKubernetesUserTokens()"
+              from-project="$ctrl.project.id">
+            </kubernetes-token-card>
 
-              <md-card-content>
-                <p class="md-body-1">
-                  <strong>Token:</strong> <kubernetes-token-value item="t"></kubernetes-token-value>
-                </p>
-                <p class="md-body-1">
-                  <strong>UID:</strong> {{t.uid}}
-                </p>
-                <p class="md-body-1">
-                  <strong>Groups:</strong>
-                  <span ng-if="t.groups.length > 0">
-                    <span ng-repeat="g in t.groups" class="badge" md-colors="{background: 'green-100'}">{{g}}</span>
-                  </span>
-                  <span ng-if="!t.groups.length" class="none-text">
-                    no RBAC groups assigned to this token
-                  </span>
-                </p>
-                <p
-                  class="md-body-1"
-                  ng-if="t.expire_privileged_at"
-                  md-colors="{color: 'accent'}">
-                  <strong>Escalated privilege ends at:</strong>
-                  {{t.expire_privileged_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
-                  (<span am-time-ago="t.expire_privileged_at"></span>)
-                </p>
-              </md-card-content>
-
-              <md-card-actions layout="row" layout-align="start center">
-                <md-button
-                  ng-if="t.user.is_active"
-                  class="md-primary"
-                  aria-label="View and edit details for this token"
-                  ui-sref="kubernetes.user-tokens.edit({userId: t.user.id, tokenId: t.id, fromProject: $ctrl.project.id})">
-                  View and edit
-                </md-button>
-                <md-button
-                  ng-if="t.user.is_active && $ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokensEscalatePrivilege)"
-                  aria-label="Escalate privilege for this particular token. Opens up a popup where you can choose details for the escalation."
-                  ng-click="$ctrl.escalatePrivilegeForKubernetesUserToken(t, $event)">
-                  Escalate privilege
-                  <md-tooltip md-direction="bottom">
-                    Grant a short lived escalation of privilege for this token. Opens a popup where you can configure and apply this escalation.
-                  </md-tooltip>
-                </md-button>
-                <span flex></span>
-                <md-button
-                  class="md-accent"
-                  ng-click="$ctrl.deleteKubernetesUserToken(t.id, $event)"
-                  aria-label="Remove kubernetes user token">
-                  Delete
-                </md-button>
-              </md-card-actions>
-            </md-card>
           </div>
         </md-tab-body>
       </md-tab>
@@ -378,14 +321,10 @@
             </md-card-content>
           </md-card>
 
-          <br /><br />
         </md-tab-body>
       </md-tab>
 
     </md-tabs>
-
-    <br /><br />
-    <br /><br />
 
   </md-content>
 </div>

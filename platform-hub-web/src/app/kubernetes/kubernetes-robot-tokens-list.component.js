@@ -6,7 +6,7 @@ export const KubernetesRobotTokensListComponent = {
   controller: KubernetesRobotTokensListController
 };
 
-function KubernetesRobotTokensListController($q, $state, $mdSelect, $mdDialog, icons, KubernetesClusters, KubernetesTokens, logger) {
+function KubernetesRobotTokensListController($q, $state, $mdSelect, icons, KubernetesClusters, KubernetesTokens) {
   'ngInject';
 
   const ctrl = this;
@@ -21,7 +21,6 @@ function KubernetesRobotTokensListController($q, $state, $mdSelect, $mdDialog, i
 
   ctrl.fetchTokens = fetchTokens;
   ctrl.handleClusterChange = handleClusterChange;
-  ctrl.deleteToken = deleteToken;
 
   init();
 
@@ -57,31 +56,5 @@ function KubernetesRobotTokensListController($q, $state, $mdSelect, $mdDialog, i
     $mdSelect.hide().then(() => {
       $state.go('kubernetes.robot-tokens.list', {cluster: ctrl.cluster});
     });
-  }
-
-  function deleteToken(tokenId, targetEvent) {
-    const confirm = $mdDialog.confirm()
-      .title(`Are you sure?`)
-      .textContent(`This will delete selected robot token.`)
-      .ariaLabel('Confirm token removal')
-      .targetEvent(targetEvent)
-      .ok('Do it')
-      .cancel('Cancel');
-
-    $mdDialog
-      .show(confirm)
-      .then(() => {
-        ctrl.busy = true;
-
-        KubernetesTokens
-          .deleteToken(tokenId)
-          .then(() => {
-            logger.success('Token deleted');
-            return fetchTokens();
-          })
-          .finally(() => {
-            ctrl.busy = false;
-          });
-      });
   }
 }

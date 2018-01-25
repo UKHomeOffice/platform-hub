@@ -6,20 +6,16 @@ export const KubernetesUserTokensListComponent = {
   controller: KubernetesUserTokensListController
 };
 
-function KubernetesUserTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, featureFlagKeys, FeatureFlags, Identities, KubernetesClusters, KubernetesTokens, icons, kubernetesTokenEscalatePrivilegePopupService) {
+function KubernetesUserTokensListController($state, roleCheckerService, hubApiService, logger, $mdDialog, _, Identities, KubernetesTokens, icons) {
   'ngInject';
 
   const ctrl = this;
   const userId = ctrl.transition && ctrl.transition.params().userId;
 
-  ctrl.featureFlagKeys = featureFlagKeys;
-  ctrl.FeatureFlags = FeatureFlags;
-  ctrl.KubernetesClusters = KubernetesClusters;
-
-  ctrl.searchSelectedUser = null;
   ctrl.loading = true;
   ctrl.busy = false;
   ctrl.tokens = [];
+  ctrl.searchSelectedUser = null;
   ctrl.searchText = '';
   ctrl.user = null;
 
@@ -28,38 +24,31 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
   ctrl.addTokenIcon = icons.addToken;
   ctrl.revokeTokenIcon = icons.revokeToken;
 
+  ctrl.fetchUserAndTokens = fetchUserAndTokens;
   ctrl.searchUsers = searchUsers;
-  ctrl.escalatePrivilege = escalatePrivilege;
-  ctrl.deleteToken = deleteToken;
-  ctrl.filterKubernetesTokensByUser = filterKubernetesTokensByUser;
   ctrl.revokeToken = revokeToken;
 
   init();
 
   function init() {
-    ctrl.loading = true;
-
-    KubernetesClusters
-      .refresh()
-      .then(() => {
-        if (userId) {
-          return loadUserAndTokens(userId);
-        }
-      })
-      .finally(() => {
-        ctrl.loading = false;
-      });
-  }
-
-  function filterKubernetesTokensByUser() {
-    if (ctrl.searchSelectedUser) {
-      loadUserAndTokens(ctrl.searchSelectedUser.id);
+    if (userId) {
+      fetchUserAndTokens();
+    } else {
+      ctrl.loading = false;
     }
   }
 
-  function loadUserAndTokens(userId) {
+  function fetchUserAndTokens() {
+    ctrl.loading = true;
+
+    let selectedUserId = userId;
+    // … but if we have a user from search then use that
+    if (ctrl.searchSelectedUser) {
+      selectedUserId = ctrl.searchSelectedUser.id;
+    }
+
     return hubApiService
-      .getUser(userId)
+      .getUser(selectedUserId)
       .then(user => {
         ctrl.user = user;
 
@@ -68,6 +57,9 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
         }
 
         return fetchKubernetesTokens();
+      })
+      .finally(() => {
+        ctrl.loading = false;
       });
   }
 
@@ -82,33 +74,6 @@ function KubernetesUserTokensListController($state, roleCheckerService, hubApiSe
         if (identity) {
           ctrl.tokens = identity.kubernetes_tokens;
         }
-      });
-  }
-
-  function escalatePrivilege(token, targetEvent) {
-    return kubernetesTokenEscalatePrivilegePopupService.open(
-      token,
-      targetEvent
-    ).then(filterKubernetesTokensByUser);
-  }
-
-  function deleteToken(tokenId, targetEvent) {
-    const confirm = $mdDialog.confirm()
-      .title(`Are you sure?`)
-      .textContent(`This will delete selected token.`)
-      .ariaLabel('Confirm token removal')
-      .targetEvent(targetEvent)
-      .ok('Do it')
-      .cancel('Cancel');
-
-    $mdDialog
-      .show(confirm)
-      .then(() => {
-        KubernetesTokens
-          .deleteToken(tokenId)
-          .then(() => {
-            loadUserAndTokens(ctrl.user.id);
-          });
       });
   }
 

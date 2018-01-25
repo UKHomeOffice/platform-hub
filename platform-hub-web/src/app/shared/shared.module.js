@@ -16,6 +16,7 @@ import {KubeConfigHelperPopupController} from './kube-config-helper-popup.contro
 import {kubeConfigHelperPopupService} from './kube-config-helper-popup.service';
 import {KubernetesIdentityTokensPopupController} from './kubernetes-identity-tokens-popup.controller';
 import {kubernetesIdentityTokensPopupService} from './kubernetes-identity-tokens-popup.service';
+import {KubernetesTokenCardComponent} from './kubernetes-token-card.component';
 import {KubernetesTokenValueComponent} from './kubernetes-token-value.component';
 import {onboardingTrigger} from './onboarding-trigger.factory';
 import {ProjectBillBreakdownTableComponent} from './project-bill-breakdown-table.component';
@@ -31,7 +32,6 @@ export const SharedModule = angular
     UtilModule
   ])
   .component('allocationsListing', AllocationsListingComponent)
-  .component('kubernetesTokenValue', KubernetesTokenValueComponent)
   .service('apiInterceptorService', apiInterceptorService)
   .factory('events', events)
   .factory('homeEndpoints', homeEndpoints)
@@ -39,6 +39,8 @@ export const SharedModule = angular
   .controller('KubeConfigHelperPopupController', KubeConfigHelperPopupController)
   .service('kubeConfigHelperPopupService', kubeConfigHelperPopupService)
   .controller('KubernetesIdentityTokensPopupController', KubernetesIdentityTokensPopupController)
+  .component('kubernetesTokenCard', KubernetesTokenCardComponent)
+  .component('kubernetesTokenValue', KubernetesTokenValueComponent)
   .service('kubernetesIdentityTokensPopupService', kubernetesIdentityTokensPopupService)
   .factory('onboardingTrigger', onboardingTrigger)
   .component('projectBillBreakdownTable', ProjectBillBreakdownTableComponent)

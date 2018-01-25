@@ -42,12 +42,12 @@
     </div>
   </md-toolbar>
 
-  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+  <loading-indicator loading="$ctrl.loading || $ctrl.busy"></loading-indicator>
 
   <md-toolbar md-colors="{background: 'primary-50'}">
     <div class="md-toolbar-tools">
       <md-autocomplete
-        md-selected-item-change="$ctrl.filterKubernetesTokensByUser()"
+        md-selected-item-change="$ctrl.fetchUserAndTokens()"
         md-no-cache="true"
         md-selected-item="$ctrl.searchSelectedUser"
         md-search-text="$ctrl.searchText"
@@ -70,86 +70,23 @@
       </md-autocomplete>
       <md-button
         class="md-primary md-raised"
-        aria-label="Filter list by user"
-        ng-click="$ctrl.filterKubernetesTokensByUser()"
+        aria-label="Find tokens for the selected user"
+        ng-click="$ctrl.fetchUserAndTokens()"
         ng-disabled="!$ctrl.searchSelectedUser">
-        Filter
+        Find
       </md-button>
     </div>
   </md-toolbar>
 
   <md-content>
 
-    <md-card
-      ng-if="!$ctrl.loading && $ctrl.tokens.length > 0"
-      ng-repeat="t in $ctrl.tokens | orderBy: 'cluster.name' track by t.id">
-      <md-card-title>
-        <md-card-title-text layout="row">
-          <span
-            flex="none"
-            class="md-headline badge"
-            md-colors="{background: 'accent-100'}"
-            style="margin-left: 0">
-            {{t.cluster.name}} cluster
-          </span>
-        </md-card-title-text>
-      </md-card-title>
-
-      <md-card-content>
-        <p class="md-body-1">
-          <strong>Project:</strong> {{t.project.name}} ({{t.project.shortname}})
-        </p>
-        <p class="md-body-1">
-          <strong>Token:</strong> <kubernetes-token-value item="t"></kubernetes-token-value>
-        </p>
-        <p class="md-body-1">
-          <strong>UID:</strong> {{t.uid}}
-        </p>
-        <p class="md-body-1">
-          <strong>Groups:</strong>
-          <span ng-if="t.groups.length > 0">
-            <span ng-repeat="g in t.groups" class="badge" md-colors="{background: 'green-100'}">{{g}}</span>
-          </span>
-          <span ng-if="!t.groups.length" class="none-text">
-            no RBAC groups assigned to this token
-          </span>
-        </p>
-        <p
-          class="md-body-1"
-          ng-if="t.expire_privileged_at"
-          md-colors="{color: 'accent'}">
-          <strong>Escalated privilege ends at:</strong>
-          {{t.expire_privileged_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
-          (<span am-time-ago="t.expire_privileged_at"></span>)
-        </p>
-      </md-card-content>
-
-      <md-card-actions layout="row" layout-align="start center">
-        <md-button
-          ng-if="$ctrl.user.is_active"
-          class="md-primary"
-          aria-label="View and edit details for this token"
-          ui-sref="kubernetes.user-tokens.edit({userId: $ctrl.user.id, tokenId: t.id})">
-          View and edit
-        </md-button>
-        <md-button
-          ng-if="$ctrl.user.is_active && $ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokensEscalatePrivilege)"
-          aria-label="Escalate privilege for this particular token. Opens up a popup where you can choose details for the escalation."
-          ng-click="$ctrl.escalatePrivilege(t, $event)">
-          Escalate privilege
-          <md-tooltip md-direction="bottom">
-            Grant a short lived escalation of privilege for this token. Opens a popup where you can configure and apply this escalation.
-          </md-tooltip>
-        </md-button>
-        <span flex></span>
-        <md-button
-          class="md-accent"
-          ng-click="$ctrl.deleteToken(t.id, $event)"
-          aria-label="Remove kubernetes token">
-          Delete
-        </md-button>
-      </md-card-actions>
-    </md-card>
+    <kubernetes-token-card
+      ng-repeat="t in $ctrl.tokens | orderBy: 'cluster.name' track by t.id"
+      token="t"
+      show-actions="true"
+      busy="$ctrl.loading"
+      after-update="$ctrl.fetchUserAndTokens()">
+    </kubernetes-token-card>
 
     <md-card ng-if="!$ctrl.loading && $ctrl.user && $ctrl.tokens.length == 0">
       <md-card-content>
