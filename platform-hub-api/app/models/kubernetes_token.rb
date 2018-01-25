@@ -134,10 +134,12 @@ class KubernetesToken < ApplicationRecord
     # This is because the `allowed_groups_only` validation check won't allow
     # privileged groups to be set (to prevent project admins from explicitly
     # setting this when creating/editing tokens from the UI/API).
-    update_columns(
-      expire_privileged_at: [ expires_in_secs, PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS ].min.seconds.from_now,
-      groups: groups << privileged_group_name
-    )
+    with_lock do
+      update_columns(
+        expire_privileged_at: [ expires_in_secs, PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS ].min.seconds.from_now,
+        groups: (groups << privileged_group_name).uniq
+      )
+    end
   end
 
   def deescalate
