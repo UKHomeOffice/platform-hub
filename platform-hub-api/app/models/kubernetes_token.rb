@@ -21,6 +21,7 @@ class KubernetesToken < ApplicationRecord
   scope :by_project, ->(project) { where(project: project) }
   scope :by_cluster, ->(c) { where(cluster: c) }
   scope :by_name, ->(n) { where(name: n.downcase) }
+  scope :by_group, ->(g) { where('? = ANY (groups)', g) }
 
   enum kind: {
     user: 'user',

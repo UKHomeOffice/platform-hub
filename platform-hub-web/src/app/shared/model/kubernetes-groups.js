@@ -21,6 +21,7 @@ export const KubernetesGroups = function (hubApiService, _) {
   model.allocateToProject = allocateToProject;
   model.allocateToService = allocateToService;
   model.getAllocations = hubApiService.getKubernetesGroupAllocations;
+  model.getTokens = hubApiService.getKubernetesGroupTokens;
 
   model.filterGroupsForCluster = filterGroupsForCluster;
 

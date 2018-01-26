@@ -1,6 +1,13 @@
 class Kubernetes::GroupsController < ApiJsonController
 
-  before_action :find_group, only: [ :show, :update, :destroy, :allocate, :allocations ]
+  before_action :find_group, only: [
+    :show,
+    :update,
+    :destroy,
+    :allocate,
+    :allocations,
+    :tokens
+  ]
 
   authorize_resource class: KubernetesGroup
 
@@ -105,6 +112,12 @@ class Kubernetes::GroupsController < ApiJsonController
   def allocations
     allocations = Allocation.by_allocatable @group
     render json: allocations
+  end
+
+  # GET /kubernetes/groups/:id/tokens
+  def tokens
+    tokens = KubernetesToken.by_group(@group.name).order(updated_at: :desc)
+    paginate json: tokens
   end
 
   private

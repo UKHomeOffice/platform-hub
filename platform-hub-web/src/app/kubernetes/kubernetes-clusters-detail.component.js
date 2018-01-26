@@ -16,10 +16,16 @@ function KubernetesClustersDetailController(KubernetesClusters, projectServiceSe
   ctrl.loading = true;
   ctrl.cluster = null;
   ctrl.allocations = [];
-  ctrl.loadingAllocations = [];
+  ctrl.loadingAllocations = false;
+  ctrl.kubernetesRobotTokens = [];
+  ctrl.processingKubernetesRobotTokens = false;
+  ctrl.kubernetesUserTokens = [];
+  ctrl.processingKubernetesUserTokens = false;
 
   ctrl.allocate = allocate;
   ctrl.loadAllocations = loadAllocations;
+  ctrl.loadKubernetesRobotTokens = loadKubernetesRobotTokens;
+  ctrl.loadKubernetesUserTokens = loadKubernetesUserTokens;
 
   init();
 
@@ -63,6 +69,32 @@ function KubernetesClustersDetailController(KubernetesClusters, projectServiceSe
       })
       .finally(() => {
         ctrl.loadingAllocations = false;
+      });
+  }
+
+  function loadKubernetesRobotTokens(page = 1) {
+    ctrl.processingKubernetesRobotTokens = true;
+
+    return KubernetesClusters
+      .getRobotTokens(ctrl.cluster.id, page)
+      .then(tokens => {
+        ctrl.kubernetesRobotTokens = tokens;
+      })
+      .finally(() => {
+        ctrl.processingKubernetesRobotTokens = false;
+      });
+  }
+
+  function loadKubernetesUserTokens(page = 1) {
+    ctrl.processingKubernetesUserTokens = true;
+
+    return KubernetesClusters
+      .getUserTokens(ctrl.cluster.id, page)
+      .then(tokens => {
+        ctrl.kubernetesUserTokens = tokens;
+      })
+      .finally(() => {
+        ctrl.processingKubernetesUserTokens = false;
       });
   }
 }

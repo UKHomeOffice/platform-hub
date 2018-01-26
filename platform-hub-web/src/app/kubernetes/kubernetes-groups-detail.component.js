@@ -17,10 +17,13 @@ function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, p
   ctrl.group = null;
   ctrl.allocations = [];
   ctrl.loadingAllocations = false;
+  ctrl.kubernetesTokens = [];
+  ctrl.processingKubernetesTokens = false;
 
   ctrl.deleteGroup = deleteGroup;
   ctrl.allocate = allocate;
   ctrl.loadAllocations = loadAllocations;
+  ctrl.loadKubernetesTokens = loadKubernetesTokens;
 
   init();
 
@@ -101,6 +104,19 @@ function KubernetesGroupsDetailController($mdDialog, $state, KubernetesGroups, p
       })
       .finally(() => {
         ctrl.loadingAllocations = false;
+      });
+  }
+
+  function loadKubernetesTokens(page = 1) {
+    ctrl.processingKubernetesTokens = true;
+
+    return KubernetesGroups
+      .getTokens(ctrl.group.id, page)
+      .then(tokens => {
+        ctrl.kubernetesTokens = tokens;
+      })
+      .finally(() => {
+        ctrl.processingKubernetesTokens = false;
       });
   }
 }

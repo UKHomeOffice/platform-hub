@@ -34,7 +34,15 @@ RSpec.describe Kubernetes::ClustersController, type: :routing do
       end
 
       it 'routes to #allocations' do
-        expect(:get => '/kubernetes/groups/foo/allocations').to route_to('kubernetes/groups#allocations', :id => 'foo')
+        expect(:get => '/kubernetes/clusters/foo/allocations').to route_to('kubernetes/clusters#allocations', :id => 'foo')
+      end
+
+      it 'routes to #robot_tokens' do
+        expect(:get => '/kubernetes/clusters/foo/robot_tokens').to route_to('kubernetes/clusters#robot_tokens', :id => 'foo')
+      end
+
+      it 'routes to #user_tokens' do
+        expect(:get => '/kubernetes/clusters/foo/user_tokens').to route_to('kubernetes/clusters#user_tokens', :id => 'foo')
       end
 
     end
@@ -71,6 +79,14 @@ RSpec.describe Kubernetes::ClustersController, type: :routing do
 
       it 'route to #allocations is not routable' do
         expect(:get => '/kubernetes/clusters/foo/allocations').to_not be_routable
+      end
+
+      it 'route to #robot_tokens is not routable' do
+        expect(:get => '/kubernetes/clusters/foo/robot_tokens').to_not be_routable
+      end
+
+      it 'route to #user_tokens is not routable' do
+        expect(:get => '/kubernetes/clusters/foo/user_tokens').to_not be_routable
       end
 
     end

@@ -128,6 +128,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.updateKubernetesCluster = buildResourceUpdater('kubernetes/clusters');
   service.allocateKubernetesCluster = allocateKubernetesCluster;
   service.getKubernetesClusterAllocations = buildSubCollectionFetcher('kubernetes/clusters', 'allocations');
+  service.getKubernetesClusterRobotTokens = buildSubCollectionFetcher('kubernetes/clusters', 'robot_tokens', true);
+  service.getKubernetesClusterUserTokens = buildSubCollectionFetcher('kubernetes/clusters', 'user_tokens', true);
 
   service.getKubernetesGroups = buildCollectionFetcher('kubernetes/groups', true);
   service.getKubernetesGroup = buildResourceFetcher('kubernetes/groups');
@@ -136,6 +138,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.deleteKubernetesGroup = buildResourceDeletor('kubernetes/groups');
   service.allocateKubernetesGroup = allocateKubernetesGroup;
   service.getKubernetesGroupAllocations = buildSubCollectionFetcher('kubernetes/groups', 'allocations');
+  service.getKubernetesGroupTokens = buildSubCollectionFetcher('kubernetes/groups', 'tokens', true);
 
   service.getKubernetesToken = buildResourceFetcher('kubernetes/tokens');
   service.deleteKubernetesToken = buildResourceDeletor('kubernetes/tokens');

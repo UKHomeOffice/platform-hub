@@ -1,6 +1,13 @@
 class Kubernetes::ClustersController < ApiJsonController
 
-  before_action :find_cluster, only: [ :show, :update, :allocate, :allocations ]
+  before_action :find_cluster, only: [
+    :show,
+    :update,
+    :allocate,
+    :allocations,
+    :robot_tokens,
+    :user_tokens
+  ]
 
   authorize_resource class: KubernetesCluster
 
@@ -77,6 +84,18 @@ class Kubernetes::ClustersController < ApiJsonController
   def allocations
     allocations = Allocation.by_allocatable @cluster
     render json: allocations
+  end
+
+  # GET /kubernetes/clusters/:id/robot_tokens
+  def robot_tokens
+    tokens = KubernetesToken.robot.by_cluster(@cluster).order(updated_at: :desc)
+    paginate json: tokens
+  end
+
+  # GET /kubernetes/clusters/:id/user_tokens
+  def user_tokens
+    tokens = KubernetesToken.user.by_cluster(@cluster).order(updated_at: :desc)
+    paginate json: tokens
   end
 
   private
