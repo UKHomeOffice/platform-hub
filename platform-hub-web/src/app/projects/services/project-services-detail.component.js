@@ -30,7 +30,6 @@ function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerServi
   ctrl.deleteService = deleteService;
   ctrl.shouldShowCreateKubernetesRobotTokenButton = shouldShowCreateKubernetesRobotTokenButton;
   ctrl.loadKubernetesRobotTokens = loadKubernetesRobotTokens;
-  ctrl.deleteKubernetesRobotToken = deleteKubernetesRobotToken;
   ctrl.loadKubernetesNamespaces = loadKubernetesNamespaces;
   ctrl.deleteKubernetesNamespace = deleteKubernetesNamespace;
 
@@ -113,32 +112,6 @@ function ProjectServicesDetailController($q, $mdDialog, $state, roleCheckerServi
       })
       .finally(() => {
         ctrl.processingKubernetesRobotTokens = false;
-      });
-  }
-
-  function deleteKubernetesRobotToken(id, targetEvent) {
-    const confirm = $mdDialog.confirm()
-      .title('Are you sure?')
-      .textContent('This will delete this kubernetes robot token permanently.')
-      .ariaLabel('Confirm deletion of a kubernetes robot token for this project service')
-      .targetEvent(targetEvent)
-      .ok('Do it')
-      .cancel('Cancel');
-
-    $mdDialog
-      .show(confirm)
-      .then(() => {
-        ctrl.processingKubernetesRobotTokens = true;
-
-        Projects
-          .deleteServiceKubernetesRobotToken(projectId, ctrl.service.id, id)
-          .then(() => {
-            logger.success('Token deleted');
-            return loadKubernetesRobotTokens();
-          })
-          .finally(() => {
-            ctrl.processingKubernetesRobotTokens = false;
-          });
       });
   }
 

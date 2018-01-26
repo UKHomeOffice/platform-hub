@@ -1,0 +1,95 @@
+<md-card>
+  <md-card-title>
+    <md-card-title-text>
+      <span class="md-headline">
+        <span>
+          {{$ctrl.token.name}}
+        </span>
+        <span
+          flex="none"
+          class="badge"
+          md-colors="{background: 'accent-100'}">
+          {{$ctrl.token.cluster.name}} cluster
+        </span>
+      </span>
+    </md-card-title-text>
+  </md-card-title>
+
+  <md-card-content>
+    <p
+      class="md-body-1"
+      md-colors="{background: 'blue-grey-50'}"
+      ng-if="$ctrl.token.description"
+      ng-bind-html='$ctrl.token.description | simpleFormat'
+      layout-padding>
+    </p>
+
+    <div ng-if="!$ctrl.fromProject">
+      <p class="md-body-1">
+        <strong>Project: </strong>
+        {{$ctrl.token.project.name}} ({{$ctrl.token.project.shortname}})
+      </p>
+      <p class="md-body-1" ng-if="$ctrl.token.service">
+        <strong>Service: </strong>
+        {{$ctrl.token.service.name}}
+      </p>
+    </div>
+
+    <p class="md-body-1">
+      <strong>Token: </strong>
+      <kubernetes-token-value item="$ctrl.token"></kubernetes-token-value>
+    </p>
+    <p class="md-body-1">
+      <strong>UID:</strong> {{$ctrl.token.uid}}
+    </p>
+
+    <p class="md-body-1">
+      <strong>Groups:</strong>
+      <span ng-if="$ctrl.token.groups.length > 0">
+        <span ng-repeat="g in $ctrl.token.groups track by g" class="badge" md-colors="{background: 'green-100'}">{{g}}</span>
+      </span>
+      <span ng-if="!$ctrl.token.groups.length" class="none-text">
+        no RBAC groups assigned to this token
+      </span>
+    </p>
+
+    <p
+      class="md-body-1"
+      ng-if="$ctrl.token.expire_privileged_at"
+      md-colors="{color: 'accent'}">
+      <strong>Escalated privilege ends at:</strong>
+      {{$ctrl.token.expire_privileged_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+      (<span am-time-ago="$ctrl.token.expire_privileged_at"></span>)
+    </p>
+  </md-card-content>
+
+  <md-card-actions
+    ng-if="$ctrl.showActions"
+    layout="row"
+    layout-align="start center">
+    <md-button
+      ng-if="!ctrl.token.user || $ctrl.token.user.is_active"
+      class="md-primary"
+      aria-label="View and edit details for this kubernetes token"
+      ui-state="$ctrl.editState"
+      ui-state-params="$ctrl.editStateParams">
+      View and edit
+    </md-button>
+    <md-button
+      ng-if="$ctrl.token.kind == 'user' && $ctrl.token.user.is_active && $ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokensEscalatePrivilege)"
+      aria-label="Escalate privilege for this particular token. Opens up a popup where you can choose details for the escalation."
+      ng-click="$ctrl.escalatePrivilege($event)">
+      Escalate privilege
+      <md-tooltip md-direction="bottom">
+        Grant a short lived escalation of privilege for this token. Opens a popup where you can configure and apply this escalation.
+      </md-tooltip>
+    </md-button>
+    <span flex></span>
+    <md-button
+      class="md-accent"
+      ng-click="$ctrl.deleteToken($event)"
+      aria-label="Delete this kubernetes token">
+      Delete
+    </md-button>
+  </md-card-actions>
+</md-card>

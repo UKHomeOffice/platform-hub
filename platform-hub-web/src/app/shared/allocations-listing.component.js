@@ -34,7 +34,10 @@ function AllocationsListingController($mdDialog, hubApiService, logger) {
           .deleteAllocation(allocation.id)
           .then(() => {
             logger.success('Allocation deleted');
-            return ctrl.afterDelete();
+
+            if (ctrl.afterDelete) {
+              return ctrl.afterDelete();
+            }
           })
           .finally(() => {
             ctrl.busy = false;

@@ -6,7 +6,7 @@ export const ProjectsDetailComponent = {
   controller: ProjectsDetailController
 };
 
-function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, kubernetesTokenEscalatePrivilegePopupService, FeatureFlags, featureFlagKeys, Me, Projects, logger, _) {
+function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, FeatureFlags, featureFlagKeys, Me, Projects, logger, _) {
   'ngInject';
 
   const ctrl = this;
@@ -48,8 +48,6 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.loadServices = loadServices;
   ctrl.shouldShowCreateServiceButton = shouldShowCreateServiceButton;
   ctrl.loadKubernetesUserTokens = loadKubernetesUserTokens;
-  ctrl.escalatePrivilegeForKubernetesUserToken = escalatePrivilegeForKubernetesUserToken;
-  ctrl.deleteKubernetesUserToken = deleteKubernetesUserToken;
   ctrl.shouldShowBillsTab = shouldShowBillsTab;
   ctrl.loadBills = loadBills;
 
@@ -377,39 +375,6 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       })
       .finally(() => {
         ctrl.processingKubernetesUserTokens = false;
-      });
-  }
-
-  function escalatePrivilegeForKubernetesUserToken(token, targetEvent) {
-    return kubernetesTokenEscalatePrivilegePopupService.open(
-      token,
-      targetEvent
-    ).then(loadKubernetesUserTokens);
-  }
-
-  function deleteKubernetesUserToken(id, targetEvent) {
-    const confirm = $mdDialog.confirm()
-      .title('Are you sure?')
-      .textContent('This will delete this kubernetes user token permanently.')
-      .ariaLabel('Confirm deletion of a kubernetes user token for this project')
-      .targetEvent(targetEvent)
-      .ok('Do it')
-      .cancel('Cancel');
-
-    $mdDialog
-      .show(confirm)
-      .then(() => {
-        ctrl.processingKubernetesUserTokens = true;
-
-        Projects
-          .deleteKubernetesUserToken(ctrl.project.id, id)
-          .then(() => {
-            logger.success('Token deleted');
-            return loadKubernetesUserTokens();
-          })
-          .finally(() => {
-            ctrl.processingKubernetesUserTokens = false;
-          });
       });
   }
 
