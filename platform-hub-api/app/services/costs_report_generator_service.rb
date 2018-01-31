@@ -36,7 +36,7 @@ module CostsReportGeneratorService
   # ...
   # ```
 
-  def prepare year:, month:, billing_csv_string:, metrics_csv_string:
+  def prepare_and_return_data billing_csv_string, metrics_csv_string
     billing_data = parse_csv(billing_csv_string)
     metrics_data = parse_csv(metrics_csv_string)
 
@@ -61,12 +61,18 @@ module CostsReportGeneratorService
     ]
   end
 
-  def build year:, month:, notes:, billing_csv_string:, metrics_csv_string:, config:
-    prepare_results, billing_data, metrics_data = prepare(
-      year: year,
-      month: month,
-      billing_csv_string: billing_csv_string,
-      metrics_csv_string: metrics_csv_string
+  def prepare billing_csv_string, metrics_csv_string
+    results, _, _ = prepare_and_return_data(
+      billing_csv_string,
+      metrics_csv_string
+    )
+    results
+  end
+
+  def build notes:, billing_csv_string:, metrics_csv_string:, config:
+    prepare_results, billing_data, metrics_data = prepare_and_return_data(
+      billing_csv_string,
+      metrics_csv_string
     )
 
     raise Error::UnmappedClusters if prepare_results[:accounts][:unmapped].any?

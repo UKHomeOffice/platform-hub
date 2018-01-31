@@ -254,16 +254,10 @@ RSpec.describe CostsReportsController, type: :controller do
 
           expect(CostsReportGeneratorService).to receive(:prepare)
             .with(
-              year: post_data[:year],
-              month: post_data[:month],
-              billing_csv_string: billing_csv_string,
-              metrics_csv_string: metrics_csv_string
+              billing_csv_string,
+              metrics_csv_string
             )
-            .and_return([
-              results,
-              double,
-              double
-            ])
+            .and_return(results)
 
           expected_results = results.dup
           expected_results['exists'] = false
@@ -338,8 +332,6 @@ RSpec.describe CostsReportsController, type: :controller do
 
           expect(CostsReportGeneratorService).to receive(:build)
             .with(
-              year: post_data[:year],
-              month: post_data[:month],
               notes: post_data[:notes],
               billing_csv_string: billing_csv_string,
               metrics_csv_string: metrics_csv_string,
