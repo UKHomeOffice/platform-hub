@@ -195,7 +195,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         template: '<ui-view></ui-view>'
       })
         .state('kubernetes.groups.list', {
-          url: '/list',
+          url: '/list?per_page',
           component: KubernetesGroupsList,
           data: {
             authenticate: true,
@@ -242,7 +242,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         template: '<ui-view></ui-view>'
       })
         .state('kubernetes.namespaces.list', {
-          url: '/list/:cluster',
+          url: '/list/:cluster?per_page',
           component: KubernetesNamespacesList,
           data: {
             authenticate: true,
@@ -344,7 +344,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         template: '<ui-view></ui-view>'
       })
         .state('kubernetes.robot-tokens.list', {
-          url: '/list/:cluster',
+          url: '/list/:cluster?per_page',
           component: KubernetesRobotTokensList,
           data: {
             authenticate: true,
@@ -473,7 +473,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           }
         })
     .state('users', {
-      url: '/users',
+      url: '/users?per_page',
       component: UsersList,
       data: {
         authenticate: true,

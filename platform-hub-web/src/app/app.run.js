@@ -1,4 +1,4 @@
-export const appRun = function ($q, $rootScope, $transitions, $state, authService, loginDialogService, roleCheckerService, events, AppSettings, Me, FeatureFlags, logger, _) {
+export const appRun = function ($q, $rootScope, $transitions, $state, authService, loginDialogService, roleCheckerService, events, apiPagination, AppSettings, Me, FeatureFlags, logger, _) {
   'ngInject';
 
   logger.debug('Starting app…');
@@ -116,7 +116,17 @@ export const appRun = function ($q, $rootScope, $transitions, $state, authServic
       .catch(reject);
   }
 
+  function handlePerPageParam(params) {
+    if (_.has(params, 'per_page')) {
+      apiPagination.setPerPage(parseInt(params.per_page, 10));
+    } else {
+      apiPagination.resetPerPage();
+    }
+  }
+
   $transitions.onStart({}, transition => {
+    handlePerPageParam(transition.params());
+
     const config = transition.$to().data;
 
     const shouldAuthenticate = Boolean(config.authenticate);

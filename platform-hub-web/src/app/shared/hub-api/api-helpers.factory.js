@@ -1,13 +1,9 @@
-/* eslint camelcase: 0, object-shorthand: 0 */
-
-export const apiHelpers = function ($q, apiDefaultPerPage, _) {
+export const apiHelpers = function ($q, _) {
   'ngInject';
 
   return {
     buildErrorMessageFromResponse,
-    handle4xxError,
-    withPaginationParams,
-    handlePaginatedResponse
+    handle4xxError
   };
 
   function buildErrorMessageFromResponse(prefix, response) {
@@ -25,34 +21,5 @@ export const apiHelpers = function ($q, apiDefaultPerPage, _) {
       return $q.reject(response);
     }
     return response;
-  }
-
-  function withPaginationParams(params, page) {
-    if (page) {
-      return _.merge(
-        params,
-        {
-          per_page: apiDefaultPerPage,
-          page: page
-        }
-      );
-    }
-
-    return params;
-  }
-
-  function handlePaginatedResponse(response) {
-    const items = response.data;
-
-    const headers = response.headers();
-
-    if (headers.total && headers['per-page']) {
-      items.pagination = {
-        total: parseInt(headers.total, 10),
-        perPage: parseInt(headers['per-page'], 10)
-      };
-    }
-
-    return items;
   }
 };

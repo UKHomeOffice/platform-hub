@@ -1,12 +1,13 @@
 /* eslint camelcase: 0, object-shorthand: 0 */
 
-export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoint, apiHelpers, apiRequestBuilders, _) {
+export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoint, apiHelpers, apiPagination, apiRequestBuilders, _) {
   'ngInject';
 
   const buildErrorMessageFromResponse = apiHelpers.buildErrorMessageFromResponse;
   const handle4xxError = apiHelpers.handle4xxError;
-  const withPaginationParams = apiHelpers.withPaginationParams;
-  const handlePaginatedResponse = apiHelpers.handlePaginatedResponse;
+
+  const withPaginationParams = apiPagination.withPaginationParams;
+  const handlePaginatedResponse = apiPagination.handlePaginatedResponse;
 
   const buildSimpleFetcher = apiRequestBuilders.buildSimpleFetcher;
   const buildSimplePoster = apiRequestBuilders.buildSimplePoster;

@@ -1,10 +1,11 @@
-export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, logger, _) {
+export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, apiPagination, logger, _) {
   'ngInject';
 
   const buildErrorMessageFromResponse = apiHelpers.buildErrorMessageFromResponse;
   const handle4xxError = apiHelpers.handle4xxError;
-  const withPaginationParams = apiHelpers.withPaginationParams;
-  const handlePaginatedResponse = apiHelpers.handlePaginatedResponse;
+
+  const withPaginationParams = apiPagination.withPaginationParams;
+  const handlePaginatedResponse = apiPagination.handlePaginatedResponse;
 
   return {
     buildSimpleFetcher,
