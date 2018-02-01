@@ -26,6 +26,10 @@ window.moment = moment;
 window.MediumEditor = require('medium-editor/dist/js/medium-editor.js');
 import 'angular-medium-editor';
 
+// For datavis
+import d3 from 'd3';
+import 'angular-nvd3';
+
 import {AnnouncementsModule} from './announcements/announcements.module';
 import {AppSettingsModule} from './app-settings/app-settings.module';
 import {ContactListsModule} from './contact-lists/contact-lists.module';
@@ -92,6 +96,7 @@ angular
     'ngMaterialSidemenu',
     'ngMessages',
     'ngSanitize',
+    'nvd3',
     'ui.router'
   ])
   .config(appConfig)
@@ -100,6 +105,7 @@ angular
 // Top level dependencies as injectable AngularJS constants
 angular
   .module(name)
+  .constant('d3', d3)
   .constant('moment', moment)
   .constant('_', lodash);
 

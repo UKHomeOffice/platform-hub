@@ -43,31 +43,35 @@ function CostsReportsFormController($state, CostsReports, logger, moment, _) {
   }
 
   function init() {
-    ctrl.availableBillingFiles = [];
-    ctrl.availableMetricsFiles = [];
     ctrl.loading = true;
 
     CostsReports
       .getAvailableDataFiles()
-      .then(processAvailableDataFiles)
-      .then(() => {
-        const lastMonth = moment().subtract(1, 'month');
-        ctrl.report = {
-          year: lastMonth.year(),
-          month: lastMonth.format('MMM'),
-          config: {
-            shared_costs: {
-              clusters: [],
-              allocation_percentage: 100
-            },
-            metric_weights: {},
-            excluded_projects: []
-          }
-        };
+      .then(([billingFiles, metricsFiles]) => {
+        ctrl.availableBillingFiles = billingFiles;
+        ctrl.availableMetricsFiles = metricsFiles;
+
+        initReport();
       })
       .finally(() => {
         ctrl.loading = false;
       });
+  }
+
+  function initReport() {
+    const lastMonth = moment().subtract(1, 'month');
+    ctrl.report = {
+      year: lastMonth.year(),
+      month: lastMonth.format('MMM'),
+      config: {
+        shared_costs: {
+          clusters: [],
+          allocation_percentage: 100
+        },
+        metric_weights: {},
+        excluded_projects: []
+      }
+    };
   }
 
   function isReadyToPrepare() {
@@ -146,15 +150,5 @@ function CostsReportsFormController($state, CostsReports, logger, moment, _) {
       .finally(() => {
         ctrl.saving = false;
       });
-  }
-
-  function processAvailableDataFiles(entries) {
-    entries.forEach(f => {
-      if (_.includes(f, 'billing')) {
-        ctrl.availableBillingFiles.push(f);
-      } else if (_.includes(f, 'metrics')) {
-        ctrl.availableMetricsFiles.push(f);
-      }
-    });
   }
 }

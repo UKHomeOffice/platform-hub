@@ -27,6 +27,7 @@
     "angular-medium-editor": "^1.2.1",
     "angular-messages": "1.5.11",
     "angular-moment": "^1.0.1",
+    "angular-nvd3": "^1.0.9",
     "angular-sanitize": "1.5.11",
     "angular-sortable-view": "jits/angular-sortable-view#754d087f079075f126c4a38eb7041c7fa69fbd55",
     "angular-toastr": "2.1.x",

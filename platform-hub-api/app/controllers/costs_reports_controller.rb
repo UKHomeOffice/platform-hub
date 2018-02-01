@@ -119,6 +119,24 @@ class CostsReportsController < ApiJsonController
     render json: @report
   end
 
+  # POST /costs_reports/analysis/prepare
+  def analysis_prepare
+    project  = Project.friendly.find(params.require('project_id'))
+    billing_file = params.require('billing_file')
+    metrics_file = params.require('metrics_file')
+
+    billing_csv_string = filestore_service.get(billing_file)
+    metrics_csv_string = filestore_service.get(metrics_file)
+
+    data = CostsAndResourcesAnalysisService.source_data(
+      project,
+      billing_csv_string,
+      metrics_csv_string
+    )
+
+    render json: data
+  end
+
   private
 
   def find_report

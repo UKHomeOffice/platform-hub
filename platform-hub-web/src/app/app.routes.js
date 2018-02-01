@@ -12,6 +12,7 @@ import {
   ContactListsList
 } from './contact-lists/contact-lists.module';
 import {
+  CostsAndResourcesAnalysis,
   CostsReportsDetail,
   CostsReportsForm,
   CostsReportsList
@@ -777,6 +778,14 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
       .state('costs-reports.new', {
         url: '/new',
         component: CostsReportsForm,
+        data: {
+          authenticate: true,
+          rolesPermitted: ['admin']
+        }
+      })
+      .state('costs-reports.analyse', {
+        url: '/analyse',
+        component: CostsAndResourcesAnalysis,
         data: {
           authenticate: true,
           rolesPermitted: ['admin']
