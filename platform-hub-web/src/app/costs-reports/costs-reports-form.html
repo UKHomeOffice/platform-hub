@@ -41,7 +41,7 @@
           </div>
 
           <md-input-container class="md-block">
-            <label>Billing source data</label>
+            <label for="billing_file">Billing source data</label>
             <md-select
               name="billing_file"
               ng-model="$ctrl.report.billing_file"
@@ -57,7 +57,7 @@
           </md-input-container>
 
           <md-input-container class="md-block">
-            <label>Metrics source data</label>
+            <label for="metrics_file">Metrics source data</label>
             <md-select
               name="metrics_file"
               ng-model="$ctrl.report.metrics_file"
@@ -293,7 +293,7 @@
 
             <h4>Distribution of metrics (%)</h4>
 
-            <table>
+            <table class="simple-table">
               <tr ng-repeat="m in $ctrl.prepareResults.metrics track by m.name">
                 <td style="text-align: right">
                   {{m.name}}

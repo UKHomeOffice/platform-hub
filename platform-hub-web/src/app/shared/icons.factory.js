@@ -3,6 +3,7 @@ export const icons = function () {
 
   return {
     addToken: 'add_box',
+    analyse: 'zoom_in',
     announcements: 'announcement',
     appSettings: 'settings',
     contactList: 'contacts',

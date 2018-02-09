@@ -38,11 +38,9 @@ class CostsReportsController < ApiJsonController
     billing_csv_string = filestore_service.get(billing_file)
     metrics_csv_string = filestore_service.get(metrics_file)
 
-    results, _, _ = CostsReportGeneratorService.prepare(
-      year: year,
-      month: month,
-      billing_csv_string: billing_csv_string,
-      metrics_csv_string: metrics_csv_string
+    results = CostsReportGeneratorService.prepare(
+      billing_csv_string,
+      metrics_csv_string
     )
 
     results[:exists] = CostsReport.exists_for? year, month
@@ -66,8 +64,6 @@ class CostsReportsController < ApiJsonController
     metrics_csv_string = filestore_service.get(params[:metrics_file])
 
     results = CostsReportGeneratorService.build(
-      year: year,
-      month: month,
       notes: params[:notes],
       billing_csv_string: billing_csv_string,
       metrics_csv_string: metrics_csv_string,
@@ -121,6 +117,24 @@ class CostsReportsController < ApiJsonController
     )
 
     render json: @report
+  end
+
+  # POST /costs_reports/analysis/prepare
+  def analysis_prepare
+    project  = Project.friendly.find(params.require('project_id'))
+    billing_file = params.require('billing_file')
+    metrics_file = params.require('metrics_file')
+
+    billing_csv_string = filestore_service.get(billing_file)
+    metrics_csv_string = filestore_service.get(metrics_file)
+
+    data = CostsAndResourcesAnalysisService.source_data(
+      project,
+      billing_csv_string,
+      metrics_csv_string
+    )
+
+    render json: data
   end
 
   private
