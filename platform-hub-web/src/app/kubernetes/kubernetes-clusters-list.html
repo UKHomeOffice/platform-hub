@@ -41,6 +41,13 @@
         </p>
         <p class="md-body-1">
           <span md-colors="{color: 'blue-grey-700'}">
+            AWS region:
+          </span>
+          <span ng-if="c.aws_region">{{c.aws_region}}</span>
+          <span ng-if="!c.aws_region" class="none-text">not set yet</span>
+        </p>
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
             Kube API URL:
           </span>
           <span ng-if="c.api_url">{{c.api_url}}</span>

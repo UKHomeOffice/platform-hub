@@ -287,7 +287,8 @@ CREATE TABLE kubernetes_clusters (
     updated_at timestamp without time zone NOT NULL,
     aws_account_id bigint,
     api_url character varying,
-    ca_cert_encoded character varying
+    ca_cert_encoded character varying,
+    aws_region character varying
 );
 
 
@@ -1117,6 +1118,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171130163603'),
 ('20171201113437'),
 ('20171214165427'),
-('20171221143451');
+('20171221143451'),
+('20180216141957');
 
 

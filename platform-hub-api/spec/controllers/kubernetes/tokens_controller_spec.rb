@@ -157,6 +157,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'name' => @token.cluster.name,
                 'description' => @token.cluster.description,
                 'aws_account_id' => @token.cluster.aws_account_id,
+                'aws_region' => @token.cluster.aws_region,
                 'api_url' => @token.cluster.api_url,
                 'ca_cert_encoded' => @token.cluster.ca_cert_encoded
               },
@@ -193,6 +194,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'name' => @token.cluster.name,
                 'description' => @token.cluster.description,
                 'aws_account_id' => @token.cluster.aws_account_id,
+                'aws_region' => @token.cluster.aws_region,
                 'api_url' => @token.cluster.api_url,
                 'ca_cert_encoded' => @token.cluster.ca_cert_encoded
               },
@@ -235,6 +237,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'name' => @token.cluster.name,
                 'description' => @token.cluster.description,
                 'aws_account_id' => @token.cluster.aws_account_id,
+                'aws_region' => @token.cluster.aws_region,
                 'api_url' => @token.cluster.api_url,
                 'ca_cert_encoded' => @token.cluster.ca_cert_encoded
               },
