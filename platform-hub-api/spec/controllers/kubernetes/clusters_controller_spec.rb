@@ -90,6 +90,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
               'name' => @cluster.name,
               'description' => @cluster.description,
               'aws_account_id' => nil,
+              'aws_region' => nil,
               'api_url' => nil,
               'ca_cert_encoded' => nil
             })
@@ -107,6 +108,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
         name: 'foobar',
         description: 'foobar desc',
         aws_account_id: '123456789012',
+        aws_region: 'aws_region',
         s3_region: 's3_region',
         s3_bucket_name: 's3_bucket_name',
         s3_access_key_id: 's3_access_key_id',
@@ -147,6 +149,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
             'name' => post_data[:name],
             'description' => post_data[:description],
             'aws_account_id' => post_data[:aws_account_id].to_i,
+            'aws_region' => post_data[:aws_region],
             'api_url' => post_data[:api_url],
             'ca_cert_encoded' => post_data[:ca_cert_encoded]
           });

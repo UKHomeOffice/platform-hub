@@ -53,6 +53,13 @@
             </div>
           </md-input-container>
 
+          <md-input-container class="md-block">
+            <label for="aws_region">AWS region:</label>
+            <input
+              name="aws_region"
+              ng-model="$ctrl.cluster.aws_region">
+          </md-input-container>
+
           <fieldset>
             <legend>For Kube config</legend>
 
