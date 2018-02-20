@@ -32,7 +32,9 @@ function KubernetesClustersFormController($state, KubernetesClusters, chipsHelpe
     ctrl.isNew = !id;
 
     if (ctrl.isNew) {
-      ctrl.cluster = {};
+      ctrl.cluster = {
+        aliases: []
+      };
       ctrl.loading = false;
     } else {
       loadCluster();

@@ -15,6 +15,11 @@ class Project < ApplicationRecord
     shortname_changed? || super
   end
 
+  scope :by_shortname, -> (value) {
+    # Important: the shortname query needs to be case insensitive
+    where('lower(shortname) = lower(?)', value)
+  }
+
   validates :shortname,
     presence: true,
     uniqueness: { case_sensitive: false }

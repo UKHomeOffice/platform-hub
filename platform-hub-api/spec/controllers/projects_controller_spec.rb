@@ -1444,7 +1444,8 @@ RSpec.describe ProjectsController, type: :controller do
       end
 
       before do
-        allow(ProjectBillsQueryService).to receive(:fetch).and_return(bills)
+        allow(Costs::ProjectBillsQueryService).to receive(:fetch)
+          .and_return(bills)
       end
 
       def expect_bills project

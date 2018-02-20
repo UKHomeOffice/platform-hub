@@ -6,6 +6,7 @@ import 'angular-animate';
 import 'angular-aria';
 import 'angular-base64';
 import 'angular-cookies';
+import 'angular-ivh-treeview';
 import 'angular-jwt';
 import 'angular-loading-bar';
 import 'angular-material';
@@ -57,6 +58,8 @@ import 'angular-material-sidemenu/dest/angular-material-sidemenu.css';
 import 'medium-editor/dist/css/medium-editor.css';
 import 'medium-editor/dist/css/themes/beagle.css';
 import 'ng-material-datetimepicker/dist/material-datetimepicker.min.css';
+import 'angular-ivh-treeview/dist/ivh-treeview.css';
+import 'angular-ivh-treeview/dist/ivh-treeview-theme-basic.css';
 import './app.scss';
 
 const name = 'app';
@@ -87,6 +90,7 @@ angular
     'angularMoment',
     'base64',
     'bc.AngularUrlEncode',
+    'ivh.treeview',
     'ngAnimate',
     'ngAria',
     'ngclipboard',

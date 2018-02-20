@@ -60,7 +60,7 @@ function CostsReportsDetailController($mdDialog, $state, $q, CostsReports, Proje
     return $q.when([]);
   }
 
-  function deleteReport(id, targetEvent) {
+  function deleteReport(targetEvent) {
     if (!ctrl.isAdmin) {
       return;
     }
@@ -79,7 +79,7 @@ function CostsReportsDetailController($mdDialog, $state, $q, CostsReports, Proje
         ctrl.loading = true;
 
         CostsReports
-          .delete(id)
+          .delete(ctrl.report.id)
           .then(() => {
             logger.success('Costs report deleted');
             $state.go('costs-reports.list');

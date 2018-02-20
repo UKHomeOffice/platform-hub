@@ -14,7 +14,12 @@
         ng-repeat="d in r track by $index"
         ng-style="$index == 0 ? {'text-align': 'right'} : {'text-align': 'center'}">
         <span ng-if="$index == 0">{{d}}</span>
-        <span ng-if="$index != 0">{{d | currency:'$'}}</span>
+        <span ng-if="$index != 0">
+          <span ng-if="d == '--'">--</span>
+          <span ng-if="d != '--'">
+            {{d | currency:'$'}}
+          </span>
+        </span>
       </td>
       </td>
     </tr>

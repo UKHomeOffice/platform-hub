@@ -26,6 +26,7 @@ gem 'faraday', '~> 0.11' # locked faraday at version matching one of octokit sub
 gem 'hash-initializer', '~> 0.1.2'
 gem 'kaminari', '~> 1.1', '>= 1.1.1'
 gem 'api-pagination', '~> 4.7'
+gem 'memoist', '~> 0.16.0'
 
 group :development, :test do
   gem 'byebug', platform: :mri

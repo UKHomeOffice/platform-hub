@@ -229,10 +229,12 @@ RSpec.describe CostsReportsController, type: :controller do
 
       it_behaves_like 'a hub admin' do
 
-        let(:filestore_service) { instance_double('FilestoreService') }
+        let(:billing_data_service) { instance_double('Costs::BillingDataService') }
+        let(:metrics_data_service) { instance_double('Costs::MetricsDataService') }
+        let(:project_lookup_cache_service) { instance_double('ProjectLookupCacheService') }
+        let(:project_service_name_lookup_cache_service) { instance_double('ProjectServiceNameLookupCacheService') }
 
-        let(:billing_csv_string) { double }
-        let(:metrics_csv_string) { double }
+        let(:generator_service) { instance_double('Costs::ReportResultsGeneratorService') }
 
         let(:results) do
           {
@@ -241,22 +243,24 @@ RSpec.describe CostsReportsController, type: :controller do
         end
 
         it 'prepares the information for the costs report' do
-          expect(controller).to receive(:filestore_service)
-            .and_return(filestore_service)
-            .twice
+          expect(controller).to receive(:billing_data_service)
+            .and_return(billing_data_service)
+          expect(controller).to receive(:metrics_data_service)
+            .and_return(metrics_data_service)
+          expect(controller).to receive(:project_lookup_cache_service)
+            .and_return(project_lookup_cache_service)
+          expect(controller).to receive(:project_service_name_lookup_cache_service)
+            .and_return(project_service_name_lookup_cache_service)
 
-          expect(filestore_service).to receive(:get)
-            .with(post_data[:billing_file])
-            .and_return(billing_csv_string)
-          expect(filestore_service).to receive(:get)
-            .with(post_data[:metrics_file])
-            .and_return(metrics_csv_string)
-
-          expect(CostsReportGeneratorService).to receive(:prepare)
+          expect(Costs::ReportResultsGeneratorService).to receive(:new)
             .with(
-              billing_csv_string,
-              metrics_csv_string
+              billing_data_service,
+              metrics_data_service,
+              project_lookup_cache_service,
+              project_service_name_lookup_cache_service
             )
+            .and_return(generator_service)
+          expect(generator_service).to receive(:prepare_results)
             .and_return(results)
 
           expected_results = results.dup
@@ -288,7 +292,7 @@ RSpec.describe CostsReportsController, type: :controller do
         notes: 'Foobar',
         billing_file: 'billing.csv',
         metrics_file: 'metrics.csv',
-        config: {}
+        config: { 'foo' => 'bar' }
       }
     end
 
@@ -308,35 +312,37 @@ RSpec.describe CostsReportsController, type: :controller do
 
       it_behaves_like 'a hub admin' do
 
-        let(:filestore_service) { instance_double('FilestoreService') }
+        let(:billing_data_service) { instance_double('Costs::BillingDataService') }
+        let(:metrics_data_service) { instance_double('Costs::MetricsDataService') }
+        let(:project_lookup_cache_service) { instance_double('ProjectLookupCacheService') }
+        let(:project_service_name_lookup_cache_service) { instance_double('ProjectServiceNameLookupCacheService') }
 
-        let(:billing_csv_string) { double }
-        let(:metrics_csv_string) { double }
+        let(:generator_service) { instance_double('Costs::ReportResultsGeneratorService') }
 
-        let(:results) { {} }
+        let(:results) { { 'something' => 'amazing' } }
 
         it 'creates a new report as expected' do
           expect(CostsReport.count).to eq 0
           expect(Audit.count).to eq 0
 
-          expect(controller).to receive(:filestore_service)
-            .and_return(filestore_service)
-            .twice
+          expect(controller).to receive(:billing_data_service)
+            .and_return(billing_data_service)
+          expect(controller).to receive(:metrics_data_service)
+            .and_return(metrics_data_service)
+          expect(controller).to receive(:project_lookup_cache_service)
+            .and_return(project_lookup_cache_service)
+          expect(controller).to receive(:project_service_name_lookup_cache_service)
+            .and_return(project_service_name_lookup_cache_service)
 
-          expect(filestore_service).to receive(:get)
-            .with(post_data[:billing_file])
-            .and_return(billing_csv_string)
-          expect(filestore_service).to receive(:get)
-            .with(post_data[:metrics_file])
-            .and_return(metrics_csv_string)
-
-          expect(CostsReportGeneratorService).to receive(:build)
+          expect(Costs::ReportResultsGeneratorService).to receive(:new)
             .with(
-              notes: post_data[:notes],
-              billing_csv_string: billing_csv_string,
-              metrics_csv_string: metrics_csv_string,
-              config: post_data[:config]
+              billing_data_service,
+              metrics_data_service,
+              project_lookup_cache_service,
+              project_service_name_lookup_cache_service
             )
+            .and_return(generator_service)
+          expect(generator_service).to receive(:report_results)
             .and_return(results)
 
           post :create, params: post_data
