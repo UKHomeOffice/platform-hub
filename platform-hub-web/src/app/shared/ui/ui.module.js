@@ -1,5 +1,6 @@
 import angular from 'angular';
 
+import {chipsHelpers} from './chips-helpers.factory';
 import {FieldsEditorComponent} from './fields-editor.component';
 import {FieldsListingsComponent} from './fields-listings.component';
 import {FormFieldComponent} from './form-field.component';
@@ -11,6 +12,7 @@ import {validateEmails} from './validate-emails.directive';
 
 export const UiModule = angular
   .module('app.shared.ui', [])
+  .factory('chipsHelpers', chipsHelpers)
   .component('fieldsEditor', FieldsEditorComponent)
   .component('fieldsListings', FieldsListingsComponent)
   .component('formField', FormFieldComponent)
