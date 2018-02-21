@@ -852,6 +852,13 @@ CREATE INDEX index_identities_on_user_id ON identities USING btree (user_id);
 
 
 --
+-- Name: index_kubernetes_clusters_on_aws_account_id_and_aws_region; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_kubernetes_clusters_on_aws_account_id_and_aws_region ON kubernetes_clusters USING btree (aws_account_id, aws_region);
+
+
+--
 -- Name: index_kubernetes_clusters_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1119,6 +1126,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171201113437'),
 ('20171214165427'),
 ('20171221143451'),
-('20180216141957');
+('20180216141957'),
+('20180220175700');
 
 

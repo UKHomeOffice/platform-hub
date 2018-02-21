@@ -32,6 +32,25 @@ class KubernetesCluster < ApplicationRecord
     format: {
       with: AWS_ACCOUNT_ID_REGEX,
       message: "should be a number with 12 digits (ref: http://docs.aws.amazon.com/general/latest/gr/acct-identifiers.html)"
+    },
+    uniqueness: {
+      allow_nil: true,
+      scope: :aws_region,
+      message: "already has a cluster within the same region"
+    }
+
+  validates :aws_account_id,
+    presence: {
+      message: "can't be blank if AWS region is set"
+    },
+    if: ->(c) { c.aws_region.present? }
+
+  validates :aws_region,
+    allow_nil: true,
+    uniqueness: {
+      allow_nil: true,
+      scope: :aws_account_id,
+      message: "already has a cluster in the same AWS account"
     }
 
   has_many :tokens,
