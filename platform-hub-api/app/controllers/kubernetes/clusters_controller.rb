@@ -116,7 +116,8 @@ class Kubernetes::ClustersController < ApiJsonController
       :s3_secret_access_key,
       :s3_object_key,
       :api_url,
-      :ca_cert_encoded
+      :ca_cert_encoded,
+      aliases: []
     )
   end
 

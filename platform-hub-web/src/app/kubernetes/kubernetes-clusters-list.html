@@ -25,6 +25,12 @@
         </span>
       </md-card-title>
       <md-card-content>
+        <p class="md-subhead" ng-if="c.aliases.length">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Aliases:
+          </span>
+          <span>{{c.aliases.join(', ')}}</span>
+        </p>
         <p
           class="md-body-1"
           md-colors="{background: 'blue-grey-50'}"

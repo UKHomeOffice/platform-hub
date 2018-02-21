@@ -14,7 +14,16 @@ class KubernetesCluster < ApplicationRecord
   allocatable
 
   before_save :downcase_name
+  before_validation :process_aliases
   after_destroy :handle_destroy
+
+  scope :by_alias, -> (value) {
+    where("aliases @> ARRAY[?]::varchar[]", Array(value.downcase))
+  }
+
+  scope :by_name_or_alias, -> (value) {
+    where(name: value.downcase).or(by_alias(value))
+  }
 
   validates :name,
     format: {
@@ -33,6 +42,8 @@ class KubernetesCluster < ApplicationRecord
       with: AWS_ACCOUNT_ID_REGEX,
       message: "should be a number with 12 digits (ref: http://docs.aws.amazon.com/general/latest/gr/acct-identifiers.html)"
     }
+
+  validate :ensure_unique_aliases_incl_names
 
   has_many :tokens,
     class_name: KubernetesToken,
@@ -59,13 +70,33 @@ class KubernetesCluster < ApplicationRecord
     all.pluck(:name).sort
   end
 
-  protected
+  private
 
   def downcase_name
     self.name.downcase!
   end
 
-  private
+  def process_aliases
+    return if self.aliases.blank?
+    self.aliases = self.aliases.compact.map(&:downcase).uniq.sort
+  end
+
+  def ensure_unique_aliases_incl_names
+    aliases_to_check =
+      if new_record?
+        # Check all as none of them should exist
+        Array(self.aliases)
+      else
+        # Only need to worry about *new* aliases that are trying to be set here
+        Array(self.aliases) - Array(self.aliases_was)
+      end
+
+    aliases_to_check.each do |a|
+      if KubernetesCluster.by_name_or_alias(a).exists?
+        errors.add(:aliases, 'contains a value that is already being used as the name, or an alias, of an existing cluster')
+      end
+    end
+  end
 
   def handle_destroy
     KubernetesGroup.update_all_cluster_removal self

@@ -288,7 +288,8 @@ CREATE TABLE kubernetes_clusters (
     aws_account_id bigint,
     api_url character varying,
     ca_cert_encoded character varying,
-    aws_region character varying
+    aws_region character varying,
+    aliases character varying[] DEFAULT '{}'::character varying[]
 );
 
 
@@ -852,6 +853,13 @@ CREATE INDEX index_identities_on_user_id ON identities USING btree (user_id);
 
 
 --
+-- Name: index_kubernetes_clusters_on_aliases; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_clusters_on_aliases ON kubernetes_clusters USING gin (aliases);
+
+
+--
 -- Name: index_kubernetes_clusters_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -898,6 +906,13 @@ CREATE INDEX index_kubernetes_groups_on_target ON kubernetes_groups USING btree 
 --
 
 CREATE INDEX index_kubernetes_namespaces_on_cluster_id ON kubernetes_namespaces USING btree (cluster_id);
+
+
+--
+-- Name: index_kubernetes_namespaces_on_name_and_cluster_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_kubernetes_namespaces_on_name_and_cluster_id ON kubernetes_namespaces USING btree (name, cluster_id);
 
 
 --
@@ -1127,6 +1142,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171214165427'),
 ('20171221143451'),
 ('20180216141957'),
-('20180221130735');
+('20180221130735'),
+('20180221145217');
 
 
