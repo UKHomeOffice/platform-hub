@@ -54,9 +54,10 @@
           </md-input-container>
 
           <md-input-container class="md-block">
-            <label for="aws_region">AWS region:</label>
+            <label for="aws_region">AWS region (can only be set if AWS account ID above is set):</label>
             <input
               name="aws_region"
+              ng-disabled="!$ctrl.cluster.aws_account_id"
               ng-model="$ctrl.cluster.aws_region">
           </md-input-container>
 
