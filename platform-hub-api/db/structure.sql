@@ -915,6 +915,13 @@ CREATE INDEX index_kubernetes_tokens_on_cluster_id ON kubernetes_tokens USING bt
 
 
 --
+-- Name: index_kubernetes_tokens_on_groups; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kubernetes_tokens_on_groups ON kubernetes_tokens USING gin (groups);
+
+
+--
 -- Name: index_kubernetes_tokens_on_kind; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1119,6 +1126,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171201113437'),
 ('20171214165427'),
 ('20171221143451'),
-('20180216141957');
+('20180216141957'),
+('20180221130735');
 
 

@@ -72,7 +72,7 @@ RSpec.describe KubernetesGroup, type: :model do
         end
       end
 
-      context 'when a diffrent cluster is set in the restricted list' do
+      context 'when a different cluster is set in the restricted list' do
         let!(:other_cluster) { create :kubernetes_cluster }
         let!(:group) { create :kubernetes_group, restricted_to_clusters: [ other_cluster.name ] }
 
