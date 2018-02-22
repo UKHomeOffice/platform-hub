@@ -87,6 +87,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
             expect(response).to be_success
             expect(json_response).to eq({
               'id' => @cluster.friendly_id,
+              'aliases' => @cluster.aliases,
               'name' => @cluster.name,
               'description' => @cluster.description,
               'aws_account_id' => nil,
@@ -106,6 +107,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
     let :post_data do
       {
         name: 'foobar',
+        aliases: ['foo'],
         description: 'foobar desc',
         aws_account_id: '123456789012',
         aws_region: 'aws_region',
@@ -146,6 +148,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
           new_cluster_internal_id = cluster.id
           expect(json_response).to eq({
             'id' => new_cluster_external_id,
+            'aliases' => post_data[:aliases],
             'name' => post_data[:name],
             'description' => post_data[:description],
             'aws_account_id' => post_data[:aws_account_id].to_i,
@@ -188,6 +191,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
     let :put_data do
       {
         id: @cluster.friendly_id,
+        aliases: ['new'],
         description: 'foooooooooooooooo',
         aws_account_id: '123456789012',
         s3_region: 'new_s3_region',
@@ -223,6 +227,7 @@ RSpec.describe Kubernetes::ClustersController, type: :controller do
           expect(KubernetesCluster.count).to eq 1
           updated = KubernetesCluster.first
           expect(updated.name).to eq @cluster.name
+          expect(updated.aliases).to eq put_data[:aliases]
           expect(updated.description).to eq put_data[:description]
           expect(updated.aws_account_id).to eq put_data[:aws_account_id].to_i
           expect(updated.s3_region).to eq put_data[:s3_region]

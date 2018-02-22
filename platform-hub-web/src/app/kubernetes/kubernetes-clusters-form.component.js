@@ -6,7 +6,7 @@ export const KubernetesClustersFormComponent = {
   controller: KubernetesClustersFormController
 };
 
-function KubernetesClustersFormController($state, KubernetesClusters, logger) {
+function KubernetesClustersFormController($state, KubernetesClusters, chipsHelpers, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -15,12 +15,16 @@ function KubernetesClustersFormController($state, KubernetesClusters, logger) {
 
   ctrl.awsAccountIdRegex = '^[0-9]{12}$';
 
+  ctrl.separatorKeys = chipsHelpers.separatorKeys;
+  ctrl.separatorKeysHelpText = chipsHelpers.separatorKeysHelpText;
+
   ctrl.loading = true;
   ctrl.saving = false;
   ctrl.isNew = true;
   ctrl.cluster = null;
 
   ctrl.createOrUpdate = createOrUpdate;
+  ctrl.processAliasesChip = processAliasesChip;
 
   init();
 
@@ -78,6 +82,13 @@ function KubernetesClustersFormController($state, KubernetesClusters, logger) {
         .finally(() => {
           ctrl.saving = false;
         });
+    }
+  }
+
+  function processAliasesChip(chip) {
+    if (chipsHelpers.hasInvalidChars(chip)) {
+      logger.warning(`Cannot add alias. ${chipsHelpers.hasInvalidCharsErrorMessage}`);
+      return null;
     }
   }
 }

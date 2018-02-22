@@ -35,6 +35,13 @@
                   {{$ctrl.cluster.name}}
                 </h3>
 
+                <h4 class="md-subhead" ng-if="$ctrl.cluster.aliases.length">
+                  <span md-colors="{color: 'blue-grey-700'}">
+                    Aliases:
+                  </span>
+                  <span>{{$ctrl.cluster.aliases.join(', ')}}</span>
+                </h4>
+
                 <p
                   class="md-body-1"
                   md-colors="{background: 'blue-grey-50'}"

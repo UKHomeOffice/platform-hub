@@ -246,6 +246,7 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
 
       return $http
         .put(`${apiEndpoint}/${resource}/${id}`, data)
+        .then(handle4xxError)
         .then(response => {
           return response.data;
         })

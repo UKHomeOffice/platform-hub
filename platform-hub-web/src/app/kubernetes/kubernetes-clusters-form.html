@@ -31,6 +31,21 @@
             </div>
           </md-input-container>
 
+          <md-input-container class="md-block hide-error-spacer">
+            <label>Aliases:</label>
+            <md-chips
+              ng-model="$ctrl.cluster.aliases"
+              md-separator-keys="$ctrl.separatorKeys"
+              md-transform-chip="$ctrl.processAliasesChip($chip)"
+              md-add-on-blur="true">
+            </md-chips>
+            <p class="md-body-2">
+              {{$ctrl.separatorKeysHelpText}}
+            </p>
+          </md-input-container>
+
+          <br />
+
           <md-input-container class="md-block">
             <label for="description">Short description:</label>
             <input

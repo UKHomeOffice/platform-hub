@@ -1102,6 +1102,7 @@ RSpec.describe ProjectsController, type: :controller do
 
         cluster = {
           'id' => token.cluster.friendly_id,
+          'aliases' => token.cluster.aliases,
           'name' => token.cluster.name,
           'description' => token.cluster.description,
           'api_url' => token.cluster.api_url,

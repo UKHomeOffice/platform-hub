@@ -8,7 +8,7 @@ export const AnnouncementsEditorFormComponent = {
   controller: AnnouncementsEditorFormController
 };
 
-function AnnouncementsEditorFormController($state, $mdConstant, $q, AnnouncementTemplates, Announcements, hubApiService, announcementTemplatePreviewPopupService, moment, logger) {
+function AnnouncementsEditorFormController($state, $q, AnnouncementTemplates, Announcements, hubApiService, announcementTemplatePreviewPopupService, chipsHelpers, moment, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -21,12 +21,8 @@ function AnnouncementsEditorFormController($state, $mdConstant, $q, Announcement
   ctrl.levels = Announcements.levels;
   ctrl.colours = Announcements.coloursForLevel;
 
-  const semicolon = 186;
-  ctrl.customKeys = [
-    $mdConstant.KEY_CODE.ENTER,
-    $mdConstant.KEY_CODE.COMMA,
-    semicolon
-  ];
+  ctrl.separatorKeys = chipsHelpers.separatorKeys;
+  ctrl.separatorKeysHelpText = chipsHelpers.separatorKeysHelpText;
 
   ctrl.ready = false;
   ctrl.loading = true;
@@ -39,7 +35,7 @@ function AnnouncementsEditorFormController($state, $mdConstant, $q, Announcement
   ctrl.templateSelectChange = templateSelectChange;
   ctrl.preview = preview;
   ctrl.createOrUpdate = createOrUpdate;
-  ctrl.processSlackChannelName = processSlackChannelName;
+  ctrl.processSlackChannelsChip = processSlackChannelsChip;
 
   init();
 
@@ -164,7 +160,11 @@ function AnnouncementsEditorFormController($state, $mdConstant, $q, Announcement
     }
   }
 
-  function processSlackChannelName(chip) {
+  function processSlackChannelsChip(chip) {
+    if (chipsHelpers.hasInvalidChars(chip)) {
+      logger.warning(`Cannot add Slack channel. ${chipsHelpers.hasInvalidCharsErrorMessage}`);
+      return null;
+    }
     if (!chip.startsWith('#')) {
       return '#' + chip;
     }

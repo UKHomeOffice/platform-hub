@@ -223,12 +223,12 @@
               <h4 class="md-body-1">Slack channels (optional):</h4>
               <md-chips
                 ng-model="$ctrl.announcement.deliver_to.slack_channels"
-                md-separator-keys="$ctrl.customKeys"
-                md-transform-chip="$ctrl.processSlackChannelName($chip)"
+                md-separator-keys="$ctrl.separatorKeys"
+                md-transform-chip="$ctrl.processSlackChannelsChip($chip)"
                 md-add-on-blur="true">
               </md-chips>
               <p class="md-body-2">
-                Make sure to press &lt;Enter&gt; or , or ; to add an entry to the list
+                {{$ctrl.separatorKeysHelpText}}
               </p>
             </md-input-container>
           </fieldset>

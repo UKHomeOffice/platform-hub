@@ -43,7 +43,9 @@ class KubernetesGroup < ApplicationRecord
   scope :privileged, -> { where(is_privileged: true) }
   scope :not_privileged, -> { where.not(is_privileged: true) }
 
-  scope :with_restricted_cluster, -> (c) { where("? = ANY (restricted_to_clusters)", c.name) }
+  scope :with_restricted_cluster, -> (c) {
+    where("restricted_to_clusters @> ARRAY[?]::varchar[]", Array(c.name))
+  }
 
   def self.privileged_names
     privileged.pluck(:name)
