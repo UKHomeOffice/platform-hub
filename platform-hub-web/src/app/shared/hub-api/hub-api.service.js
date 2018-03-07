@@ -4,7 +4,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   'ngInject';
 
   const buildErrorMessageFromResponse = apiHelpers.buildErrorMessageFromResponse;
-  const handle4xxError = apiHelpers.handle4xxError;
+  const handleHttpError = apiHelpers.handleHttpError;
 
   const withPaginationParams = apiPagination.withPaginationParams;
   const handlePaginatedResponse = apiPagination.handlePaginatedResponse;
@@ -213,7 +213,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/me/complete_hub_onboarding`, data)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to complete hub onboarding', response));
@@ -224,7 +224,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   function completeServicesOnboarding() {
     return $http
       .post(`${apiEndpoint}/me/complete_services_onboarding`)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to complete services onboarding', response));
@@ -245,7 +245,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   function globalAnnouncementsMarkAllRead() {
     return $http
       .post(`${apiEndpoint}/me/global_announcements/mark_all_read`)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to mark all global announcements as read', response));
@@ -287,7 +287,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/revoke_admin`)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to revoke hub admin status', response));
         return $q.reject(response);
@@ -314,7 +314,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/revoke_limited_admin`)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to revoke hub limited admin status', response));
         return $q.reject(response);
@@ -328,7 +328,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/activate`)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to activate user', response));
         return $q.reject(response);
@@ -342,7 +342,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/deactivate`)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to deactivate user', response));
@@ -474,7 +474,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
           user_id: data.user.id
         }
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to create new user token for project', response));
@@ -499,7 +499,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
           groups: data.groups
         }
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to update user token for project', response));
@@ -549,7 +549,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
           description: data.description
         }
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to create new token for project service', response));
@@ -578,7 +578,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
           description: data.description
         }
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to update token for project service', response));
@@ -613,7 +613,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/onboard_github`)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to onboard user to GitHub', response));
         return $q.reject(response);
@@ -627,7 +627,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/users/${userId}/offboard_github`)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to offboard user from GitHub', response));
         return $q.reject(response);
@@ -640,7 +640,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         template_id: templateId,
         data: data
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to create support request', response));
@@ -655,7 +655,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/announcements/${announcementId}/mark_sticky`)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to mark announcement as sticky', response));
         return $q.reject(response);
@@ -669,7 +669,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/announcements/${announcementId}/unmark_sticky`)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to unmark announcement as sticky', response));
         return $q.reject(response);
@@ -683,7 +683,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/announcements/${announcementId}/resend`)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to mark announcement for resending', response));
         return $q.reject(response);
@@ -704,7 +704,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         templates: templates,
         data: data
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to preview announcement template', response));
@@ -724,7 +724,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .post(`${apiEndpoint}/kubernetes/clusters/${clusterId}/allocate`, {
         project_id: projectId
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to allocate Kubernetes cluster to a project`, response));
@@ -745,7 +745,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         project_id: projectId,
         service_id: serviceId
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to allocate Kubernetes RBAC group to a project or service`, response));
@@ -791,7 +791,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         cluster_name: data.cluster.name,
         groups: data.groups
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to create kubernetes token`, response));
         return $q.reject(response);
@@ -811,7 +811,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         kind: 'user',
         groups: data.groups
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to update a "${data.cluster}" kubernetes token`, response));
         return $q.reject(response);
@@ -857,7 +857,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         name: data.name,
         description: data.description
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to create a kubernetes robot token`, response));
         return $q.reject(response);
@@ -878,7 +878,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         groups: data.groups,
         description: data.description
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to update a "${data.name}" kubernetes robot token`, response));
         return $q.reject(response);
@@ -906,7 +906,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/kubernetes/sync`, data)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Sync error', response));
@@ -921,7 +921,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/kubernetes/revoke`, data)
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Revocation error', response));
         return $q.reject(response);
@@ -944,7 +944,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         privileged_group: group,
         expires_in_secs: expiresInSecs
       })
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to escalate privilege on Kube token', response));
         return $q.reject(response);
@@ -970,7 +970,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
     return $http
       .post(`${apiEndpoint}/costs_reports/${id}/publish`, {})
-      .then(handle4xxError)
+      .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to publish report', response));
         return $q.reject(response);

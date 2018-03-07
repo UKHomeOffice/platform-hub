@@ -2,7 +2,7 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
   'ngInject';
 
   const buildErrorMessageFromResponse = apiHelpers.buildErrorMessageFromResponse;
-  const handle4xxError = apiHelpers.handle4xxError;
+  const handleHttpError = apiHelpers.handleHttpError;
 
   const withPaginationParams = apiPagination.withPaginationParams;
   const handlePaginatedResponse = apiPagination.handlePaginatedResponse;
@@ -47,7 +47,7 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
 
       return $http
         .post(`${apiEndpoint}/${path}`, data)
-        .then(handle4xxError)
+        .then(handleHttpError)
         .then(response => {
           return response.data;
         })
@@ -202,7 +202,7 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
 
       return $http
         .post(`${apiEndpoint}/${resource}`, data)
-        .then(handle4xxError)
+        .then(handleHttpError)
         .then(response => {
           return response.data;
         })
@@ -224,7 +224,7 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
 
       return $http
         .post(`${apiEndpoint}/${parent}/${parentId}/${resource}`, data)
-        .then(handle4xxError)
+        .then(handleHttpError)
         .then(response => {
           return response.data;
         })
@@ -246,7 +246,7 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
 
       return $http
         .put(`${apiEndpoint}/${resource}/${id}`, data)
-        .then(handle4xxError)
+        .then(handleHttpError)
         .then(response => {
           return response.data;
         })
