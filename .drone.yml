@@ -26,11 +26,11 @@ pipeline:
       event: [push, tag]
 
   web_test_image:
-    image: platform-hub-web:${DRONE_COMMIT_SHA}
+    image: docker:17.07.0-ce
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - cd /app
-      - ls -lah
-      - test -e index.html
+      - docker run -t --rm --name platform-hub-web-test platform-hub-web:${DRONE_COMMIT_SHA} sh -c "cd /app; ls -lah; test -e index.html"
     when:
       event: [push, tag]
 
@@ -112,40 +112,56 @@ pipeline:
       event: [push, tag]
 
   api_test_image:
-    image: platform-hub-api:${DRONE_COMMIT_SHA}
+    image: docker:17.07.0-ce
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
       - PORT=6055
-      - PHUB_DB_HOST=postgres
-      - PHUB_DB_NAME=phub_development
-      - PHUB_DB_USERNAME=phub
-      - PHUB_DB_PASSWORD=phub_password
-      - RAILS_LOG_TO_STDOUT=true
-      - SECRET_KEY_BASE=$(head -c30 < /dev/urandom | base64)
-      - GITHUB_CLIENT_ID=NA
-      - GITHUB_CLIENT_SECRET=NA
-      - AGENT_GITHUB_TOKEN=noop
-      - AGENT_GITHUB_ORG=noop
-      - AGENT_GITHUB_ORG_MAIN_TEAM_ID=noop
-      - AGENT_KEYCLOAK_CLIENT_ID=noop
-      - AGENT_KEYCLOAK_CLIENT_SECRET=noop
-      - AGENT_KEYCLOAK_USERNAME=noop
-      - AGENT_KEYCLOAK_PASSWORD=noop
-      - AGENT_KEYCLOAK_BASE_URL=noop
-      - AGENT_KEYCLOAK_REALM=noop
-      - APP_BASE_URL="http://localhost:$${PORT}"
-      - EMAIL_FROM_ADDRESS="test@example.org"
-      - EMAIL_MAX_TO_ADDRESSES=10
-      - SLACK_WEBHOOK=noop
-      - FILESTORE_S3_REGION=eu-west-2
-      - FILESTORE_S3_BUCKET_NAME=noop
-      - FILESTORE_S3_ACCESS_KEY_ID=noop
-      - FILESTORE_S3_SECRET_ACCESS_KEY=noop
+      - POSTGRES_USER=phub
+      - POSTGRES_PASSWORD=phub_password
     commands:
-      - cd /app
-      - bin/rails server &
+      - >
+          docker run
+          -d
+          --name phub-api-postgres-${DRONE_BUILD_NUMBER}
+          -e POSTGRES_USER
+          -e POSTGRES_PASSWORD
+          postgres:9.6.1
       - sleep 5
-      - curl -s -f http://127.0.0.1:$${PORT}/healthz
+      - 'until docker exec -e POSTGRES_USER -e POSTGRES_PASSWORD phub-api-postgres-${DRONE_BUILD_NUMBER} psql -U $${POSTGRES_USER} -c "select 1" > /dev/null 2>&1; do sleep 2; done'
+      - >
+          docker run
+          --name platform-hub-api-test
+          -t --rm
+          --link phub-api-postgres-${DRONE_BUILD_NUMBER}:phub-postgres
+          -e PORT
+          -e PHUB_DB_HOST=phub-postgres
+          -e PHUB_DB_NAME=phub_development
+          -e PHUB_DB_USERNAME=$${POSTGRES_USER}
+          -e PHUB_DB_PASSWORD=$${POSTGRES_PASSWORD}
+          -e RAILS_LOG_TO_STDOUT=true
+          -e SECRET_KEY_BASE=$(head -c30 < /dev/urandom | base64)
+          -e GITHUB_CLIENT_ID=NA
+          -e GITHUB_CLIENT_SECRET=NA
+          -e AGENT_GITHUB_TOKEN=noop
+          -e AGENT_GITHUB_ORG=noop
+          -e AGENT_GITHUB_ORG_MAIN_TEAM_ID=noop
+          -e AGENT_KEYCLOAK_CLIENT_ID=noop
+          -e AGENT_KEYCLOAK_CLIENT_SECRET=noop
+          -e AGENT_KEYCLOAK_USERNAME=noop
+          -e AGENT_KEYCLOAK_PASSWORD=noop
+          -e AGENT_KEYCLOAK_BASE_URL=noop
+          -e AGENT_KEYCLOAK_REALM=noop
+          -e APP_BASE_URL="http://localhost:$${PORT}"
+          -e EMAIL_FROM_ADDRESS="test@example.org"
+          -e EMAIL_MAX_TO_ADDRESSES=10
+          -e SLACK_WEBHOOK=noop
+          -e FILESTORE_S3_REGION=eu-west-2
+          -e FILESTORE_S3_BUCKET_NAME=noop
+          -e FILESTORE_S3_ACCESS_KEY_ID=noop
+          -e FILESTORE_S3_SECRET_ACCESS_KEY=noop
+          platform-hub-api:${DRONE_COMMIT_SHA}
+          /bin/bash -c "cd /app; bin/setup && bin/rails server -d; sleep 5; curl -s -f http://127.0.0.1:$${PORT}/healthz"
+      - docker kill phub-api-postgres-${DRONE_BUILD_NUMBER}
     when:
       event: [push, tag]
 
