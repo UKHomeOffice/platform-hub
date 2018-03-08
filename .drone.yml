@@ -126,6 +126,7 @@ pipeline:
           -e POSTGRES_USER
           -e POSTGRES_PASSWORD
           postgres:9.6.1
+      - sleep 10
       - >
           docker run
           --name platform-hub-api-test
