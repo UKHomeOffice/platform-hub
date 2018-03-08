@@ -3,7 +3,7 @@ export const apiHelpers = function ($q, _) {
 
   return {
     buildErrorMessageFromResponse,
-    handle4xxError
+    handleHttpError
   };
 
   function buildErrorMessageFromResponse(prefix, response) {
@@ -15,9 +15,9 @@ export const apiHelpers = function ($q, _) {
     return msg;
   }
 
-  function handle4xxError(response) {
-    // handle 4xx errors which are not handled by $http.post
-    if (response.status.toString().match(/4../)) {
+  function handleHttpError(response) {
+    // handle HTTP errors which are not handled by $http.post etc.
+    if (response.status >= 400) {
       return $q.reject(response);
     }
     return response;
