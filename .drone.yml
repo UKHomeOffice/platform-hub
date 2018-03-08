@@ -130,7 +130,7 @@ pipeline:
           docker run
           --name platform-hub-api-test
           --rm
-          --link=postgres-${DRONE_BUILD_NUMBER}:postgres
+          --add-host=postgres:127.0.0.1
           -e PORT
           -e PHUB_DB_HOST=postgres
           -e PHUB_DB_NAME=phub_development
