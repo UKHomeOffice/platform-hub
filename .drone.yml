@@ -127,11 +127,13 @@ pipeline:
           -e POSTGRES_PASSWORD
           postgres:9.6.1
       - sleep 10
+      - docker ps
+      - docker logs postgres-${DRONE_BUILD_NUMBER}
       - >
           docker run
           --name platform-hub-api-test
-          --rm
           --link=postgres-${DRONE_BUILD_NUMBER}:postgres
+          --rm
           -e PORT
           -e PHUB_DB_HOST=postgres
           -e PHUB_DB_NAME=phub_development
@@ -194,7 +196,6 @@ pipeline:
       event: tag
 
 services:
-
   postgres:
     image: postgres:9.6.1
     environment:
