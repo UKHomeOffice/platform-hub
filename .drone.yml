@@ -26,7 +26,7 @@ pipeline:
       event: [push, tag]
 
   web_test_image:
-    image: docker:17.07.0-ce
+    image: docker:17.10.0
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
@@ -102,7 +102,7 @@ pipeline:
       event: [push, tag]
 
   api_build_image:
-    image: docker:17.07.0-ce
+    image: docker:17.10.0
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
@@ -112,7 +112,7 @@ pipeline:
       event: [push, tag]
 
   api_test_image:
-    image: docker:17.07.0-ce
+    image: docker:17.10.0
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
       - PORT=6055
@@ -132,9 +132,9 @@ pipeline:
           docker run
           --name platform-hub-api-test
           -t --rm
-          --link phub-api-postgres-${DRONE_BUILD_NUMBER}:phub-postgres
+          --link phub-api-postgres-${DRONE_BUILD_NUMBER}:phub-postgres-${DRONE_BUILD_NUMBER}
           -e PORT
-          -e PHUB_DB_HOST=phub-postgres
+          -e PHUB_DB_HOST=phub-postgres-${DRONE_BUILD_NUMBER}
           -e PHUB_DB_NAME=phub_development
           -e PHUB_DB_USERNAME=$${POSTGRES_USER}
           -e PHUB_DB_PASSWORD=$${POSTGRES_PASSWORD}
@@ -162,11 +162,12 @@ pipeline:
           platform-hub-api:${DRONE_COMMIT_SHA}
           /bin/bash -c "cd /app; bin/setup && bin/rails server -d; sleep 5; curl -s -f http://127.0.0.1:$${PORT}/healthz"
       - docker kill phub-api-postgres-${DRONE_BUILD_NUMBER}
+      - docker rm -f phub-api-postgres-${DRONE_BUILD_NUMBER}
     when:
       event: [push, tag]
 
   api_latest_image_to_quay:
-    image: docker:17.07.0-ce
+    image: docker:17.10.0
     secrets:
       - docker_password
     environment:
