@@ -130,7 +130,7 @@ pipeline:
           docker run
           --name platform-hub-api-test
           --rm
-          --add-host=postgres:127.0.0.1
+          --link=postgres-${DRONE_BUILD_NUMBER}:postgres
           -e PORT
           -e PHUB_DB_HOST=postgres
           -e PHUB_DB_NAME=phub_development
@@ -158,7 +158,7 @@ pipeline:
           -e FILESTORE_S3_ACCESS_KEY_ID=noop
           -e FILESTORE_S3_SECRET_ACCESS_KEY=noop
           platform-hub-api:${DRONE_COMMIT_SHA}
-          /bin/bash -c "cd /app; bin/setup && bin/rails server -d; sleep 5; curl -s -f http://127.0.0.1:$${PORT}/healthz"
+          /bin/bash -c "cat /etc/hosts; ping -c 10 postgres; cd /app; bin/setup && bin/rails server -d; sleep 5; curl -s -f http://127.0.0.1:$${PORT}/healthz"
       - docker kill postgres-${DRONE_BUILD_NUMBER}
     when:
       event: [push, tag]
