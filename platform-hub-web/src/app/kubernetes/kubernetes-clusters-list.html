@@ -54,6 +54,13 @@
         </p>
         <p class="md-body-1">
           <span md-colors="{color: 'blue-grey-700'}">
+            Costs bucket::
+          </span>
+          <span ng-if="c.costs_bucket">{{c.costs_bucket}}</span>
+          <span ng-if="!c.costs_bucket" class="none-text">not set yet</span>
+        </p>
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
             Kube API URL:
           </span>
           <span ng-if="c.api_url">{{c.api_url}}</span>

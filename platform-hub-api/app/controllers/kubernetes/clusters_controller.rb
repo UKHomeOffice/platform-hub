@@ -110,6 +110,7 @@ class Kubernetes::ClustersController < ApiJsonController
       :description,
       :aws_account_id,
       :aws_region,
+      :costs_bucket,
       :s3_region,
       :s3_bucket_name,
       :s3_access_key_id,

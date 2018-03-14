@@ -75,6 +75,13 @@
               ng-model="$ctrl.cluster.aws_region">
           </md-input-container>
 
+          <md-input-container class="md-block">
+            <label for="costs_bucket">Costs bucket::</label>
+            <input
+              name="costs_bucket"
+              ng-model="$ctrl.cluster.costs_bucket">
+          </md-input-container>
+
           <fieldset>
             <legend>For Kube config</legend>
 
