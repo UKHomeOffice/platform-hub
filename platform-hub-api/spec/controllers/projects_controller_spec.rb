@@ -1110,6 +1110,7 @@ RSpec.describe ProjectsController, type: :controller do
         }
         cluster['aws_account_id'] = token.cluster.aws_account_id if is_admin
         cluster['aws_region'] = token.cluster.aws_region if is_admin
+        cluster['costs_bucket'] = token.cluster.costs_bucket if is_admin
 
         expect(json_response).to eq({
           'id' => token.id,

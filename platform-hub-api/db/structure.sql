@@ -289,7 +289,8 @@ CREATE TABLE kubernetes_clusters (
     api_url character varying,
     ca_cert_encoded character varying,
     aws_region character varying,
-    aliases character varying[] DEFAULT '{}'::character varying[]
+    aliases character varying[] DEFAULT '{}'::character varying[],
+    costs_bucket character varying
 );
 
 
@@ -357,7 +358,7 @@ CREATE TABLE platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying,
+    colour character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -399,9 +400,9 @@ CREATE TABLE projects (
 
 CREATE TABLE read_marks (
     id integer NOT NULL,
-    readable_type character varying NOT NULL,
+    readable_type character varying,
     readable_id uuid,
-    reader_type character varying NOT NULL,
+    reader_type character varying,
     reader_id uuid,
     "timestamp" timestamp without time zone
 );
@@ -1133,7 +1134,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171003130836'),
 ('20171005115420'),
 ('20171010111440'),
-('20171012110416'),
 ('20171031164247'),
 ('20171114100517'),
 ('20171127115843'),
@@ -1143,6 +1143,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171221143451'),
 ('20180216141957'),
 ('20180221130735'),
-('20180221145217');
+('20180221145217'),
+('20180314151141');
 
 
