@@ -15,7 +15,7 @@ RUN apk update && apk upgrade \
 WORKDIR /app
 COPY . .
 RUN addgroup -S app \
-    && adduser -S -g app app \
+    && adduser -S -g app -u 1000 app \
     && chown -R app:app /app
 
 # Install deps
@@ -25,6 +25,6 @@ RUN apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev && \
     apk del build_deps
 
 ENV HOME /app
-USER app
+USER 1000
 
 CMD bundle exec rails s
