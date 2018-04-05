@@ -266,7 +266,7 @@ DEPENDENCIES
   with_model (~> 2.0)
 
 RUBY VERSION
-   ruby 2.3.6p384
+   ruby 2.3.7p384
 
 BUNDLED WITH
    1.16.0
