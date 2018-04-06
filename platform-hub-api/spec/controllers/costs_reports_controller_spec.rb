@@ -403,19 +403,35 @@ RSpec.describe CostsReportsController, type: :controller do
 
       it_behaves_like 'a hub admin' do
 
-        it 'should delete the specified report' do
-          expect(CostsReport.exists?(@report.id)).to be true
+        def expect_deleted id
+          expect(CostsReport.exists?(id)).to be true
           expect(Audit.count).to eq 0
-          delete :destroy, params: { id: @report.id }
+          delete :destroy, params: { id: id }
           expect(response).to be_success
-          expect(CostsReport.exists?(@report.id)).to be false
+          expect(CostsReport.exists?(id)).to be false
           expect(Audit.count).to eq 1
           audit = Audit.first
           expect(audit.action).to eq 'destroy'
           expect(audit.auditable_type).to eq CostsReport.name
           expect(audit.auditable_id).to eq nil
-          expect(audit.data).to eq({ 'id' => @report.id })
+          expect(audit.data).to eq({ 'id' => id })
           expect(audit.user.id).to eq current_user_id
+        end
+
+        context 'for a non published report' do
+          it 'should delete the specified report' do
+            expect_deleted @report.id
+          end
+        end
+
+        context 'for a published report' do
+          before do
+            @report.publish!
+          end
+
+          it 'should still be able to delete the specified report' do
+            expect_deleted @report.id
+          end
         end
 
       end

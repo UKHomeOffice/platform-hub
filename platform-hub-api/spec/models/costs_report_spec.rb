@@ -116,6 +116,26 @@ RSpec.describe CostsReport, type: :model do
         r.update! notes: 'foo bar 2'
       }.to raise_error(ActiveRecord::ReadOnlyRecord)
     end
+
+    it 'reports should not be destroyable after publishing but should still be deleteable directly in the db' do
+      expect(CostsReport.count).to eq 0
+
+      # Publish it...
+      r = create :costs_report
+      r.publish!
+
+      # ... not destroyable
+      expect{
+        CostsReport.find(r.id).destroy!
+      }.to raise_error(ActiveRecord::ReadOnlyRecord)
+
+      # ... but is still deleteable
+      expect{
+        CostsReport.find(r.id).delete
+      }.not_to raise_error
+
+      expect(CostsReport.count).to eq 0
+    end
   end
 
 end

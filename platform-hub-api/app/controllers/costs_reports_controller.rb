@@ -94,7 +94,15 @@ class CostsReportsController < ApiJsonController
 
   # DELETE /costs_reports/:id
   def destroy
-    @report.destroy
+    if @report.published?
+      # IMPORTANT: for published reports, we call `.delete` here to directly
+      # delete the entry in the db, in order to bypass the readonly checks.
+      # This does mean that any callbacks and association deletions are not
+      # taken care of.
+      @report.delete
+    else
+      @report.destroy!
+    end
 
     AuditService.log(
       context: audit_context,
