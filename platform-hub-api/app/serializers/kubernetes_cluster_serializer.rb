@@ -9,6 +9,8 @@ class KubernetesClusterSerializer < BaseSerializer
 
   attribute :costs_bucket, if: :is_admin?
 
+  attribute :skip_sync, if: :is_admin?
+
   attributes :api_url, :ca_cert_encoded
 
 end

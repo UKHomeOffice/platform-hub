@@ -11,7 +11,7 @@ class TokensSyncJob < ApplicationJob
       :kubernetes_tokens
     ])
 
-    KubernetesCluster.names.each do |cluster_name|
+    KubernetesCluster.syncable.names.each do |cluster_name|
       begin
         Kubernetes::TokenSyncService.sync_tokens(cluster_name)
 

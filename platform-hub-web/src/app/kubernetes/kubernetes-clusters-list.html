@@ -54,10 +54,16 @@
         </p>
         <p class="md-body-1">
           <span md-colors="{color: 'blue-grey-700'}">
-            Costs bucket::
+            Costs bucket:
           </span>
           <span ng-if="c.costs_bucket">{{c.costs_bucket}}</span>
           <span ng-if="!c.costs_bucket" class="none-text">not set yet</span>
+        </p>
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Skip tokens sync?
+          </span>
+          <span>{{c.skip_sync}}</span>
         </p>
         <p class="md-body-1">
           <span md-colors="{color: 'blue-grey-700'}">

@@ -18,11 +18,18 @@ RSpec.describe TokensSyncJob, type: :job do
       before do
         FeatureFlagService.create_or_update(:kubernetes_tokens_sync, true)
         FeatureFlagService.create_or_update(:kubernetes_tokens, true)
-        create(:kubernetes_cluster)
+      end
+
+      let!(:syncable_clusters) do
+        create_list :kubernetes_cluster, 2, skip_sync: false
+      end
+
+      let!(:not_syncable_clusters) do
+        create_list :kubernetes_cluster, 2, skip_sync: true
       end
 
       before do
-        KubernetesCluster.names.each do |cluster_name|
+        syncable_clusters.map(&:name).each do |cluster_name|
           expect(Kubernetes::TokenSyncService).to receive(:sync_tokens).with(cluster_name)
 
           expect(AuditService).to receive(:log).with(
@@ -31,9 +38,15 @@ RSpec.describe TokensSyncJob, type: :job do
             comment: "Kubernetes tokens synced to `#{cluster_name}` cluster via background job."
           )
         end
+
+        not_syncable_clusters.map(&:name).each do |cluster_name|
+          expect(Kubernetes::TokenSyncService).not_to receive(:sync_tokens)
+
+          expect(AuditService).not_to receive(:log)
+        end
       end
 
-      it 'should call the token sync service with all the clusters and register an audit' do
+      it 'should call the token sync service for just the syncable clusters and register appropriate audits' do
         TokensSyncJob.new.perform
       end
     end

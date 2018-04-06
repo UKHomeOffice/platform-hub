@@ -12,6 +12,8 @@ module Kubernetes
       begin
         cluster = KubernetesCluster.friendly.find cluster_name
 
+        return if cluster.skip_sync
+
         body = Kubernetes::TokenFileService.generate(cluster_name)
         raise Errors::TokensFileBlank, 'Tokens file empty!' if body.blank?
 

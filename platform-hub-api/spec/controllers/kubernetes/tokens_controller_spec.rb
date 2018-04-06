@@ -160,6 +160,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'aws_account_id' => @token.cluster.aws_account_id,
                 'aws_region' => @token.cluster.aws_region,
                 'costs_bucket' => @token.cluster.costs_bucket,
+                'skip_sync' => @token.cluster.skip_sync,
                 'api_url' => @token.cluster.api_url,
                 'ca_cert_encoded' => @token.cluster.ca_cert_encoded
               },
@@ -199,6 +200,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'aws_account_id' => @token.cluster.aws_account_id,
                 'aws_region' => @token.cluster.aws_region,
                 'costs_bucket' => @token.cluster.costs_bucket,
+                'skip_sync' => @token.cluster.skip_sync,
                 'api_url' => @token.cluster.api_url,
                 'ca_cert_encoded' => @token.cluster.ca_cert_encoded
               },
@@ -244,6 +246,7 @@ RSpec.describe Kubernetes::TokensController, type: :controller do
                 'aws_account_id' => @token.cluster.aws_account_id,
                 'aws_region' => @token.cluster.aws_region,
                 'costs_bucket' => @token.cluster.costs_bucket,
+                'skip_sync' => @token.cluster.skip_sync,
                 'api_url' => @token.cluster.api_url,
                 'ca_cert_encoded' => @token.cluster.ca_cert_encoded
               },

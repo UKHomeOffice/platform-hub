@@ -67,10 +67,17 @@
 
                 <p class="md-body-1">
                   <span md-colors="{color: 'blue-grey-700'}">
-                    Costs bucket::
+                    Costs bucket:
                   </span>
                   <span ng-if="$ctrl.cluster.costs_bucket">{{$ctrl.cluster.costs_bucket}}</span>
                   <span ng-if="!$ctrl.cluster.costs_bucket" class="none-text">not set yet</span>
+                </p>
+
+                <p class="md-body-1">
+                  <span md-colors="{color: 'blue-grey-700'}">
+                    Skip tokens sync?
+                  </span>
+                  <span>{{$ctrl.cluster.skip_sync}}</span>
                 </p>
 
                 <md-divider></md-divider>

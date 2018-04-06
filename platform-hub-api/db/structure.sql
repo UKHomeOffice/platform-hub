@@ -278,11 +278,11 @@ CREATE TABLE kubernetes_clusters (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     name character varying NOT NULL,
     description text NOT NULL,
-    s3_region character varying NOT NULL,
-    s3_bucket_name character varying NOT NULL,
-    s3_access_key_id character varying NOT NULL,
-    s3_secret_access_key character varying NOT NULL,
-    s3_object_key character varying NOT NULL,
+    s3_region character varying,
+    s3_bucket_name character varying,
+    s3_access_key_id character varying,
+    s3_secret_access_key character varying,
+    s3_object_key character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     aws_account_id bigint,
@@ -290,7 +290,8 @@ CREATE TABLE kubernetes_clusters (
     ca_cert_encoded character varying,
     aws_region character varying,
     aliases character varying[] DEFAULT '{}'::character varying[],
-    costs_bucket character varying
+    costs_bucket character varying,
+    skip_sync boolean DEFAULT false
 );
 
 
@@ -1144,6 +1145,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180216141957'),
 ('20180221130735'),
 ('20180221145217'),
-('20180314151141');
+('20180314151141'),
+('20180406075539'),
+('20180406083658');
 
 
