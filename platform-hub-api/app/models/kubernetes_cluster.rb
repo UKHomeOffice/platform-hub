@@ -25,6 +25,8 @@ class KubernetesCluster < ApplicationRecord
     where(name: value.downcase).or(by_alias(value))
   }
 
+  scope :syncable, -> { where(skip_sync: false) }
+
   validates :name,
     format: {
       with: NAME_REGEX,
@@ -34,7 +36,9 @@ class KubernetesCluster < ApplicationRecord
   validates :name, presence: true, uniqueness: true
 
   validates :description, :s3_region, :s3_bucket_name, :s3_object_key,
-            :s3_access_key_id, :s3_secret_access_key, presence: true
+            :s3_access_key_id, :s3_secret_access_key,
+            presence: true,
+            unless: :skip_sync
 
   validates :aws_account_id,
     allow_nil: true,

@@ -113,6 +113,7 @@ RSpec.describe Kubernetes::NamespacesController, type: :controller do
                 'aws_account_id' => @namespace.cluster.aws_account_id,
                 'aws_region' => @namespace.cluster.aws_region,
                 'costs_bucket' => @namespace.cluster.costs_bucket,
+                'skip_sync' => @namespace.cluster.skip_sync,
                 'api_url' => @namespace.cluster.api_url,
                 'ca_cert_encoded' => @namespace.cluster.ca_cert_encoded
               },
@@ -185,6 +186,7 @@ RSpec.describe Kubernetes::NamespacesController, type: :controller do
               'aws_account_id' => namespace.cluster.aws_account_id,
               'aws_region' => namespace.cluster.aws_region,
               'costs_bucket' => namespace.cluster.costs_bucket,
+              'skip_sync' => namespace.cluster.skip_sync,
               'api_url' => namespace.cluster.api_url,
               'ca_cert_encoded' => namespace.cluster.ca_cert_encoded
             },
