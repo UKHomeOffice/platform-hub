@@ -388,7 +388,8 @@ module Costs
           date_accumulation[:clusters][cluster_name]
         end
 
-      when :mapped_cluster_and_mapped_namespace, :mapped_project_directly
+      when :mapped_cluster_and_mapped_namespace,
+           :mapped_project_directly
         project_id = item[:project_id]
         project_shortname = item[:project_shortname]
 
@@ -406,6 +407,7 @@ module Costs
 
         unless project_entry.has_key?(:top_level)
           project_entry[:top_level] = HashInitializer[:array]
+          project_entry[:top_level][:total] = 0.0
         end
 
         service_id = item[:service_id]
@@ -417,6 +419,7 @@ module Costs
 
           unless project_entry[:services].has_key?(service_id)
             project_entry[:services][service_id][:name] = service_name
+            project_entry[:services][service_id][:total] = 0.0
           end
 
           project_entry[:services][service_id]
