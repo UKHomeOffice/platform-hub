@@ -404,6 +404,10 @@ module Costs
 
         project_entry = category_group[project_id]
 
+        unless project_entry.has_key?(:top_level)
+          project_entry[:top_level] = HashInitializer[:array]
+        end
+
         service_id = item[:service_id]
         service_name = item[:service_name]
         if service_id.present?
@@ -417,10 +421,6 @@ module Costs
 
           project_entry[:services][service_id]
         else
-          unless project_entry.has_key?(:top_level)
-            project_entry[:top_level] = HashInitializer[:array]
-          end
-
           project_entry[:top_level]
         end
 
