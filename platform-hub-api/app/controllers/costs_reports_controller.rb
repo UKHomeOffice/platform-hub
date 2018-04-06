@@ -1,4 +1,8 @@
+require 'csv'
+
 class CostsReportsController < ApiJsonController
+
+  extend Memoist
 
   S3_OBJECT_PREFIX = 'costs'
 
@@ -28,20 +32,17 @@ class CostsReportsController < ApiJsonController
     params = self.params.require(:costs_report)
     year = params.require('year')
     month = params.require('month')
-    billing_file = params.require('billing_file')
-    metrics_file = params.require('metrics_file')
 
     unless CostsReport.is_valid_month_abbr?(month)
       invalid_month_error and return
     end
 
-    billing_csv_string = filestore_service.get(billing_file)
-    metrics_csv_string = filestore_service.get(metrics_file)
-
-    results = CostsReportGeneratorService.prepare(
-      billing_csv_string,
-      metrics_csv_string
-    )
+    results = Costs::ReportResultsGeneratorService.new(
+      billing_data_service,
+      metrics_data_service,
+      project_lookup_cache_service,
+      project_service_name_lookup_cache_service
+    ).prepare_results
 
     results[:exists] = CostsReport.exists_for? year, month
     results[:already_published] = CostsReport.already_published? year, month
@@ -60,15 +61,16 @@ class CostsReportsController < ApiJsonController
       invalid_month_error and return
     end
 
-    billing_csv_string = filestore_service.get(params[:billing_file])
-    metrics_csv_string = filestore_service.get(params[:metrics_file])
+    if CostsReport.already_published?(year, month)
+      render_error('Report already exists and is published - cannot overwrite', :unprocessable_entity) and return
+    end
 
-    results = CostsReportGeneratorService.build(
-      notes: params[:notes],
-      billing_csv_string: billing_csv_string,
-      metrics_csv_string: metrics_csv_string,
-      config: params[:config]
-    )
+    results = Costs::ReportResultsGeneratorService.new(
+      billing_data_service,
+      metrics_data_service,
+      project_lookup_cache_service,
+      project_service_name_lookup_cache_service
+    ).report_results(params[:config])
 
     # Now that we have the results, delete an existing report if it exists
     CostsReport.by_year_and_month(year, month).delete_all
@@ -92,7 +94,15 @@ class CostsReportsController < ApiJsonController
 
   # DELETE /costs_reports/:id
   def destroy
-    @report.destroy
+    if @report.published?
+      # IMPORTANT: for published reports, we call `.delete` here to directly
+      # delete the entry in the db, in order to bypass the readonly checks.
+      # This does mean that any callbacks and association deletions are not
+      # taken care of.
+      @report.delete
+    else
+      @report.destroy!
+    end
 
     AuditService.log(
       context: audit_context,
@@ -161,8 +171,53 @@ class CostsReportsController < ApiJsonController
     render_error 'Invalid month specified', :unprocessable_entity
   end
 
-  def filestore_service
-    @filestore_service ||= FilestoreService.new(
+  memoize def billing_data_service
+    data = CSV.parse(
+      filestore_service.get(
+        params.require('billing_file')
+      )
+    )
+
+    Costs::BillingDataService.new(
+      data,
+      cluster_lookup_cache_service,
+      namespace_lookup_cache_service,
+      project_lookup_cache_service
+    )
+  end
+
+  memoize def metrics_data_service
+    data = CSV.parse(
+      filestore_service.get(
+        params.require('metrics_file')
+      )
+    )
+
+    Costs::MetricsDataService.new(
+      data,
+      cluster_lookup_cache_service,
+      namespace_lookup_cache_service
+    )
+  end
+
+  memoize def cluster_lookup_cache_service
+    Kubernetes::ClusterLookupCacheService.new
+  end
+
+  memoize def namespace_lookup_cache_service
+    Kubernetes::NamespaceLookupCacheService.new
+  end
+
+  memoize def project_lookup_cache_service
+    ProjectLookupCacheService.new
+  end
+
+  memoize def project_service_name_lookup_cache_service
+    ProjectServiceNameLookupCacheService.new
+  end
+
+  memoize def filestore_service
+    FilestoreService.new(
       s3_region: Rails.application.secrets.filestore_s3_region,
       s3_bucket_name: Rails.application.secrets.filestore_s3_bucket_name,
       s3_access_key_id: Rails.application.secrets.filestore_s3_access_key_id,

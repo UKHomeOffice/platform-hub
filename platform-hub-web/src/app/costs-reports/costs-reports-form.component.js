@@ -5,7 +5,7 @@ export const CostsReportsFormComponent = {
   controller: CostsReportsFormController
 };
 
-function CostsReportsFormController($state, CostsReports, logger, moment, _) {
+function CostsReportsFormController($state, CostsReports, treeDataHelper, logger, moment, _) {
   'ngInject';
 
   const PREPARE_FIELDS = [
@@ -15,10 +15,12 @@ function CostsReportsFormController($state, CostsReports, logger, moment, _) {
     'metrics_file'
   ];
 
+  const SHARED_BUCKET = 'Shared';
+
   const ctrl = this;
 
-  ctrl.months = moment.localeData('en').monthsShort();
-  ctrl.years = generateYears();
+  ctrl.months = generateMonthsList();
+  ctrl.years = generateYearsList();
 
   ctrl.loading = true;
   ctrl.preparing = false;
@@ -27,17 +29,28 @@ function CostsReportsFormController($state, CostsReports, logger, moment, _) {
   ctrl.availableMetricsFiles = [];
   ctrl.report = null;
   ctrl.prepareResults = null;
-  ctrl.projectsForExclusionsList = [];
+  ctrl.prepareResultsTreeData = null;
+  ctrl.prepareResultsTreeFilter = null;
+  ctrl.availableClusters = [];
+  ctrl.availableProjects = [];
+  ctrl.mappedMetricsNamespacesCount = null;
+  ctrl.allMappedClustersGrouped = null;
 
+  ctrl.handleYearOrMonthChange = handleYearOrMonthChange;
   ctrl.isReadyToPrepare = isReadyToPrepare;
   ctrl.prepare = prepare;
   ctrl.hasSufficientMappingsToContinue = hasSufficientMappingsToContinue;
   ctrl.doMetricWeightsAddUp = doMetricWeightsAddUp;
+  ctrl.readyToGenerate = readyToGenerate;
   ctrl.create = create;
 
   init();
 
-  function generateYears() {
+  function generateMonthsList() {
+    return moment.localeData('en').monthsShort();
+  }
+
+  function generateYearsList() {
     const currentYear = moment().year();
     return _.range(currentYear - 5, currentYear + 1);
   }
@@ -52,6 +65,8 @@ function CostsReportsFormController($state, CostsReports, logger, moment, _) {
         ctrl.availableMetricsFiles = metricsFiles;
 
         initReport();
+
+        handleYearOrMonthChange();
       })
       .finally(() => {
         ctrl.loading = false;
@@ -62,16 +77,27 @@ function CostsReportsFormController($state, CostsReports, logger, moment, _) {
     const lastMonth = moment().subtract(1, 'month');
     ctrl.report = {
       year: lastMonth.year(),
-      month: lastMonth.format('MMM'),
-      config: {
-        shared_costs: {
-          clusters: [],
-          allocation_percentage: 100
-        },
-        metric_weights: {},
-        excluded_projects: []
-      }
+      month: lastMonth.format('MMM')
     };
+  }
+
+  function initReportConfig() {
+    ctrl.report.config = {
+      metric_weights: {},
+      shared_costs: {
+        clusters: [],
+        projects: []
+      },
+      cluster_groups: {}
+    };
+  }
+
+  function handleYearOrMonthChange() {
+    if (ctrl.report && ctrl.report.year && ctrl.report.month) {
+      const prefix = `${ctrl.report.year}-${ctrl.report.month}`;
+      ctrl.report.billing_file = _.find(ctrl.availableBillingFiles, f => _.startsWith(f, prefix));
+      ctrl.report.metrics_file = _.find(ctrl.availableMetricsFiles, f => _.startsWith(f, prefix));
+    }
   }
 
   function isReadyToPrepare() {
@@ -85,7 +111,13 @@ function CostsReportsFormController($state, CostsReports, logger, moment, _) {
     }
 
     ctrl.prepareResults = null;
-    ctrl.projectsForExclusionsList = [];
+    ctrl.prepareResultsTreeData = null;
+    ctrl.availableClusters = [];
+    ctrl.availableProjects = [];
+    ctrl.mappedMetricsNamespacesCount = null;
+    ctrl.allMappedClustersGrouped = null;
+
+    initReportConfig();
 
     ctrl.preparing = true;
 
@@ -96,29 +128,13 @@ function CostsReportsFormController($state, CostsReports, logger, moment, _) {
       .then(results => {
         ctrl.prepareResults = results;
 
-        // Set metric weights defaults
-        const metrics = ctrl.prepareResults.metrics;
-        if (metrics && metrics.length) {
-          const eachWeight = _.floor(100 / metrics.length);
-          metrics.forEach(m => {
-            ctrl.report.config.metric_weights[m.name] = eachWeight;
-          });
-        }
-
-        // Find all mapped projects
-        const projectsMap = results.namespaces.mapped.reduce((acc, n) => {
-          if (!_.has(acc, n.project_id)) {
-            acc[n.project_id] = {
-              id: n.project_id,
-              name: n.project_shortname
-            };
-          }
-          return acc;
-        }, {});
-        angular.copy(
-          _.sortBy(_.values(projectsMap), ['name']),
-          ctrl.projectsForExclusionsList
-        );
+        setPrepareResultsTreeData();
+        setMetricWeightsDefaults();
+        setAvailableClusters();
+        setAvailableProjects();
+        setMappedMetricsNamespacesCount();
+        setAllClustersGrouped();
+        setConfigSharedClustersAndGroupedClusters();
       })
       .finally(() => {
         ctrl.preparing = false;
@@ -126,16 +142,20 @@ function CostsReportsFormController($state, CostsReports, logger, moment, _) {
   }
 
   function hasSufficientMappingsToContinue() {
-    const unmappedAccounts = _.get(ctrl.prepareResults, 'accounts.unmapped');
-    const mappedNamespaces = _.get(ctrl.prepareResults, 'namespaces.mapped');
-    return ctrl.prepareResults &&
-      !unmappedAccounts.length &&
-      mappedNamespaces.length;
+    return ctrl.prepareResults && ctrl.mappedMetricsNamespacesCount && ctrl.allMappedClustersGrouped;
   }
 
   function doMetricWeightsAddUp() {
     const weights = ctrl.report.config.metric_weights;
     return weights && _.sum(_.values(weights)) === 100;
+  }
+
+  function readyToGenerate() {
+    return ctrl.prepareResults &&
+      !ctrl.prepareResults.already_published &&
+      ctrl.report.config &&
+      hasSufficientMappingsToContinue() &&
+      doMetricWeightsAddUp();
   }
 
   function create() {
@@ -150,5 +170,67 @@ function CostsReportsFormController($state, CostsReports, logger, moment, _) {
       .finally(() => {
         ctrl.saving = false;
       });
+  }
+
+  function setPrepareResultsTreeData() {
+    ctrl.prepareResultsTreeData = treeDataHelper.objectToTreeData(ctrl.prepareResults);
+  }
+
+  function setMetricWeightsDefaults() {
+    ctrl.report.config.metric_weights = {};
+    const metrics = ctrl.prepareResults.metrics.metric_types;
+    if (metrics && metrics.length) {
+      const eachWeight = _.floor(100 / metrics.length);
+      metrics.forEach(m => {
+        ctrl.report.config.metric_weights[m.name] = eachWeight;
+      });
+    }
+  }
+
+  function setAvailableClusters() {
+    ctrl.availableClusters = _.sortBy(
+      _.values(ctrl.prepareResults.billing.clusters_and_namespaces.mapped),
+      ['cluster_name']
+    );
+  }
+
+  function setAvailableProjects() {
+    ctrl.availableProjects = _.sortBy(
+      _.values(ctrl.prepareResults.billing.projects.mapped),
+      ['project_shortname']
+    );
+  }
+
+  function setMappedMetricsNamespacesCount() {
+    const mappedMetricsClusters = ctrl.prepareResults.metrics.clusters_and_namespaces.mapped;
+    ctrl.mappedMetricsNamespacesCount = _.reduce(mappedMetricsClusters, (count, cluster) => {
+      count += _.keys(cluster.namespaces.mapped).length;
+      return count;
+    }, 0);
+  }
+
+  function setAllClustersGrouped() {
+    ctrl.allMappedClustersGrouped = _.every(
+      _.values(ctrl.prepareResults.billing.clusters_and_namespaces.mapped),
+      c => c.costs_bucket
+    );
+  }
+
+  function setConfigSharedClustersAndGroupedClusters() {
+    if (ctrl.allMappedClustersGrouped) {
+      const config = ctrl.report.config;
+      _.values(ctrl.prepareResults.billing.clusters_and_namespaces.mapped).forEach(c => {
+        if (c.costs_bucket.toLowerCase() === SHARED_BUCKET.toLowerCase()) {
+          config.shared_costs.clusters.push(c.cluster_name);
+        } else {
+          if (!_.has(config.cluster_groups, c.costs_bucket)) {
+            config.cluster_groups[c.costs_bucket] = [];
+          }
+          if (!_.includes(config.cluster_groups[c.costs_bucket], c.cluster_name)) {
+            config.cluster_groups[c.costs_bucket].push(c.cluster_name);
+          }
+        }
+      });
+    }
   }
 }

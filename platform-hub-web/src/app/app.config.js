@@ -1,4 +1,4 @@
-export const appConfig = function ($mdIconProvider, $mdThemingProvider, $httpProvider, jwtOptionsProvider) {
+export const appConfig = function ($mdIconProvider, $mdThemingProvider, $httpProvider, jwtOptionsProvider, ivhTreeviewOptionsProvider) {
   'ngInject';
 
   $mdIconProvider
@@ -18,4 +18,15 @@ export const appConfig = function ($mdIconProvider, $mdThemingProvider, $httpPro
   });
   $httpProvider.interceptors.push('apiInterceptorService');
   $httpProvider.interceptors.push('jwtInterceptor');
+
+  // Based on: https://codepen.io/kasajian/pen/MyWyMo
+  ivhTreeviewOptionsProvider.set({
+    defaultSelectedState: false,
+    validate: true,
+    useCheckboxes: false,
+    expandToDepth: -1,
+    twistieCollapsedTpl: '<md-icon>chevron_right</md-icon>',
+    twistieExpandedTpl: '<md-icon>expand_more</md-icon>',
+    twistieLeafTpl: '<span style="cursor: default;">&#8192;&#8192;</span>'
+  });
 };

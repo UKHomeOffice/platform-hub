@@ -240,7 +240,7 @@ class ProjectsController < ApiJsonController
 
   # GET /projects/:id/bills
   def bills
-    bills = ProjectBillsQueryService.fetch @project.id
+    bills = Costs::ProjectBillsQueryService.fetch @project.id
     render json: bills
   end
 

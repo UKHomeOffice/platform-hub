@@ -113,6 +113,10 @@ angular-cookies@1.5.11:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular-cookies/-/angular-cookies-1.5.11.tgz#88558de7c5044dcc3abeb79614d7ef8107ba49c0"
 
+angular-ivh-treeview@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/angular-ivh-treeview/-/angular-ivh-treeview-1.1.0.tgz#1f77b0a7ea12d7fc6413b73f43a59ec740302b69"
+
 angular-jwt@^0.1.9:
   version "0.1.9"
   resolved "https://registry.yarnpkg.com/angular-jwt/-/angular-jwt-0.1.9.tgz#db8bcf18f05aa57320ac2fda161d7e9622c099c3"
