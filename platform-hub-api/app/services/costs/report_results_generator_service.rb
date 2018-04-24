@@ -169,6 +169,8 @@ module Costs
         raise "Cluster '#{cluster_name}' has not been allocated to a cluster group" if group_name.blank?
 
         h1.each do |(date, h2)|
+          raise "Missing cluster '#{cluster_name}' in the billing accumulations" unless billing_accumulations[date][:clusters].has_key?(cluster_name)
+
           cluster_day_total_cost = billing_accumulations[date][:clusters][cluster_name][:total]
 
           h2.each do |(project_id, h3)|
@@ -178,7 +180,9 @@ module Costs
             h3.each do |(service_id, metrics)|
               day_bill = metrics.reduce(0.0) do |amount, (metric_name, entries)|
                 cluster_day_metric_total = metrics_totals[cluster_name][date][metric_name]
+
                 proportion = entries.values.sum / cluster_day_metric_total
+                proportion = 0 if proportion.nan?
 
                 amount + (proportion * cluster_day_total_cost * metric_weights[metric_name])
               end
@@ -225,6 +229,7 @@ module Costs
               entry[:services].each do |(service_id, h5)|
                 h5[:cluster_groups].each do |(group_name, h6)|
                   proportion = h6.values.sum / project_cluster_group_totals[date][group_name]
+                  proportion = 0 if proportion.nan?
 
                   allocated = proportion * shared_cluster_group_totals[group_name]
 
@@ -258,43 +263,40 @@ module Costs
           next unless h2.has_key?(:services)
 
           h2[:services].each do |(service_id, h3)|
-            service_cluster_group_total = h3[:cluster_groups].reduce(0.0) do |acc, (_, entries)|
+            service_cluster_groups_total = h3[:cluster_groups].reduce(0.0) do |acc, (_, entries)|
               acc += entries.values.sum
             end
 
-            proportion = service_cluster_group_total / total_project_cluster_groups_bills[date]
+            proportion = service_cluster_groups_total / total_project_cluster_groups_bills[date]
+            proportion = 0 if proportion.nan?
 
             # Shared cluster costs
             shared_costs_breakdown.data[date][:from_shared_clusters].each do |(cluster_name, cluster_total)|
-              cluster_allocated = proportion * cluster_total
-
               project_bills.add_shared_cluster_allocated_cost_for_service(
                 project_id,
                 service_id,
                 date,
                 cluster_name,
-                cluster_allocated
+                proportion * cluster_total
               )
             end
 
             # Unmapped costs
             unmapped_total = shared_costs_breakdown.data[date][:from_unmapped]
-            unmapped_allocated = proportion * unmapped_total
             project_bills.add_shared_unmapped_allocated_cost_for_service(
               project_id,
               service_id,
               date,
-              unmapped_allocated
+              proportion * unmapped_total
             )
 
             # Unknown costs
             unknown_total = shared_costs_breakdown.data[date][:from_unknown]
-            unknown_allocated = proportion * unknown_total
             project_bills.add_shared_unknown_allocated_cost_for_service(
               project_id,
               service_id,
               date,
-              unknown_allocated
+              proportion * unknown_total
             )
 
             # Shared project known resources

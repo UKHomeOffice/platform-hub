@@ -127,7 +127,7 @@ module Costs
     def get_project_entry(project_id, date)
       entry = @data[project_id]
 
-      if entry[:shortname].blank?
+      unless entry.has_key?(:shortname)
         project = @project_lookup.by_id project_id
         entry[:shortname] = project.shortname
         entry[:name] = project.name
@@ -152,7 +152,7 @@ module Costs
     def get_service_shared_project_entry(project_id, service_id, date, shared_project_id)
       entry = get_service_entry(project_id, service_id, date)[:shared][:from_shared_projects][shared_project_id]
 
-      if entry[:shortname].blank?
+      unless entry.has_key?(:shortname)
         entry[:shortname] = @project_lookup.by_id(shared_project_id).shortname
       end
 
