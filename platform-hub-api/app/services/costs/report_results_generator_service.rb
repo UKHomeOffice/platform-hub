@@ -258,43 +258,40 @@ module Costs
           next unless h2.has_key?(:services)
 
           h2[:services].each do |(service_id, h3)|
-            service_cluster_group_total = h3[:cluster_groups].reduce(0.0) do |acc, (_, entries)|
+            service_cluster_groups_total = h3[:cluster_groups].reduce(0.0) do |acc, (_, entries)|
               acc += entries.values.sum
             end
 
-            proportion = service_cluster_group_total / total_project_cluster_groups_bills[date]
+            proportion = service_cluster_groups_total / total_project_cluster_groups_bills[date]
+            proportion = 0 if proportion.nan?
 
             # Shared cluster costs
             shared_costs_breakdown.data[date][:from_shared_clusters].each do |(cluster_name, cluster_total)|
-              cluster_allocated = proportion * cluster_total
-
               project_bills.add_shared_cluster_allocated_cost_for_service(
                 project_id,
                 service_id,
                 date,
                 cluster_name,
-                cluster_allocated
+                proportion * cluster_total
               )
             end
 
             # Unmapped costs
             unmapped_total = shared_costs_breakdown.data[date][:from_unmapped]
-            unmapped_allocated = proportion * unmapped_total
             project_bills.add_shared_unmapped_allocated_cost_for_service(
               project_id,
               service_id,
               date,
-              unmapped_allocated
+              proportion * unmapped_total
             )
 
             # Unknown costs
             unknown_total = shared_costs_breakdown.data[date][:from_unknown]
-            unknown_allocated = proportion * unknown_total
             project_bills.add_shared_unknown_allocated_cost_for_service(
               project_id,
               service_id,
               date,
-              unknown_allocated
+              proportion * unknown_total
             )
 
             # Shared project known resources
