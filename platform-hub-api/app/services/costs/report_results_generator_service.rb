@@ -169,6 +169,8 @@ module Costs
         raise "Cluster '#{cluster_name}' has not been allocated to a cluster group" if group_name.blank?
 
         h1.each do |(date, h2)|
+          raise "Missing cluster '#{cluster_name}' in the billing accumulations" unless billing_accumulations[date][:clusters].has_key?(cluster_name)
+
           cluster_day_total_cost = billing_accumulations[date][:clusters][cluster_name][:total]
 
           h2.each do |(project_id, h3)|
