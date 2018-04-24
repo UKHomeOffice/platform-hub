@@ -180,7 +180,9 @@ module Costs
             h3.each do |(service_id, metrics)|
               day_bill = metrics.reduce(0.0) do |amount, (metric_name, entries)|
                 cluster_day_metric_total = metrics_totals[cluster_name][date][metric_name]
+
                 proportion = entries.values.sum / cluster_day_metric_total
+                proportion = 0 if proportion.nan?
 
                 amount + (proportion * cluster_day_total_cost * metric_weights[metric_name])
               end
@@ -227,6 +229,7 @@ module Costs
               entry[:services].each do |(service_id, h5)|
                 h5[:cluster_groups].each do |(group_name, h6)|
                   proportion = h6.values.sum / project_cluster_group_totals[date][group_name]
+                  proportion = 0 if proportion.nan?
 
                   allocated = proportion * shared_cluster_group_totals[group_name]
 
