@@ -7,7 +7,7 @@ RSpec.describe HashRollup do
   describe '.rollup' do
 
     context 'with compatible deep hashes' do
-      let(:data) do
+      let :data do
         {
           a: 'a',
           b: 5,
@@ -37,7 +37,7 @@ RSpec.describe HashRollup do
         }
       end
 
-      let(:into) do
+      let :into do
         {
           a: '10',
           b: 10,
@@ -63,7 +63,7 @@ RSpec.describe HashRollup do
         }
       end
 
-      let(:expected) do
+      let :expected do
         {
           a: 'a',
           b: 15,
@@ -100,14 +100,14 @@ RSpec.describe HashRollup do
     end
 
     context 'with incompatible hashes' do
-      let(:data) do
+      let :data do
         {
           a: 1,
           b: []
         }
       end
 
-      let(:into) do
+      let :into do
         {
           a: 5,
           b: 'b'
@@ -120,6 +120,33 @@ RSpec.describe HashRollup do
             "Mismatch in types detected! Key = b, current value type = String, new value type = Array"
           )
         }
+      end
+    end
+
+    context 'with missing values / sub hashes' do
+      let :list do
+        [
+          { b: 2, c: { ca: 3 }, d: { db: 5 } },
+          { a: 1, d: { da: {  }, db: 5 } },
+          { a: 1, b: 2, c: { }, d: { da: { daa: 4 } } },
+          { b: 2, c: { ca: 3 }, d: { da: { daa: 4 }, db: 5 } }
+        ]
+      end
+
+      let :expected do
+        {
+          a: 2,
+          b: 6,
+          c: { ca: 6 },
+          d: { da: { daa: 8 }, db: 15 }
+        }
+      end
+
+      it 'rolls up all the hashes into one making sure to aggregate missing values / sub hashes accordingly' do
+        result = list.reduce({}) do |acc, h|
+          subject.rollup(h, acc)
+        end
+        expect(result).to eq expected
       end
     end
 
