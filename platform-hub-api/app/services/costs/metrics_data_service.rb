@@ -129,9 +129,15 @@ module Costs
           metric_value = line[mt[:index]].to_f
 
           if project_id && service_id && namespace_name
-            metrics_total_per_cluster_by_date_and_metric[cluster_name][date][metric_name] += metric_value
+            entry = metrics_per_cluster_by_date_and_project_and_service_and_metric_and_namespace[cluster_name][date][project_id][service_id][metric_name]
 
-            metrics_per_cluster_by_date_and_project_and_service_and_metric_and_namespace[cluster_name][date][project_id][service_id][metric_name][namespace_name] = metric_value
+            # Ignore if we've already seen a metric for that day
+            next if entry[namespace_name].present?
+
+            entry[namespace_name] = metric_value
+
+            # Add to running totals
+            metrics_total_per_cluster_by_date_and_metric[cluster_name][date][metric_name] += metric_value
           end
         end
       end
