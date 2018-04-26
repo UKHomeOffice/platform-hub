@@ -128,9 +128,9 @@ module Costs
           metric_name = mt[:name]
           metric_value = line[mt[:index]].to_f
 
-          metrics_total_per_cluster_by_date_and_metric[cluster_name][date][metric_name] += metric_value
-
           if project_id && service_id && namespace_name
+            metrics_total_per_cluster_by_date_and_metric[cluster_name][date][metric_name] += metric_value
+
             metrics_per_cluster_by_date_and_project_and_service_and_metric_and_namespace[cluster_name][date][project_id][service_id][metric_name][namespace_name] = metric_value
           end
         end
