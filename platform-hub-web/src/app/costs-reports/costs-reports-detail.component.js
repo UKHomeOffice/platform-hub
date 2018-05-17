@@ -6,7 +6,7 @@ export const CostsReportsDetailComponent = {
   controller: CostsReportsDetailController
 };
 
-function CostsReportsDetailController($mdDialog, $state, CostsReports, Projects, roleCheckerService, logger) {
+function CostsReportsDetailController($mdDialog, $state, CostsReports, Projects, roleCheckerService, objectRollupService, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -16,7 +16,9 @@ function CostsReportsDetailController($mdDialog, $state, CostsReports, Projects,
   ctrl.loading = true;
   ctrl.isAdmin = false;
   ctrl.report = null;
+  ctrl.totals = null;
 
+  ctrl.handleProjectBillTotals = handleProjectBillTotals;
   ctrl.deleteReport = deleteReport;
 
   init();
@@ -43,6 +45,10 @@ function CostsReportsDetailController($mdDialog, $state, CostsReports, Projects,
       .finally(() => {
         ctrl.loading = false;
       });
+  }
+
+  function handleProjectBillTotals(totals) {
+    ctrl.totals = objectRollupService.rollup(totals, ctrl.totals);
   }
 
   function deleteReport(targetEvent) {
