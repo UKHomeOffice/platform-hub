@@ -87,6 +87,22 @@
           Project bills generated
         </h4>
 
+        <md-card md-colors="{background: 'green-50'}">
+          <md-card-title>
+            <md-card-title-text>
+              <span class="md-title">Grand total</span>
+            </md-card-title-text>
+          </md-card-title>
+
+          <md-card-content>
+            <p class="md-display-1">
+              {{$ctrl.totals.total | currency:'$'}}
+            </p>
+
+            <pre>{{$ctrl.totals | json}}</pre>
+          </md-card-content>
+        </md-card>
+
         <md-card ng-repeat="(id, b) in $ctrl.report.results.project_bills track by id">
           <md-card-title>
             <md-card-title-text>
@@ -105,7 +121,7 @@
               <span>{{b.cost_centre_code || '--'}}</span>
             </p>
 
-            <project-bill-breakdown-table bills="b.bills"></project-bill-breakdown-table>
+            <project-bill-breakdown-table bills="b.bills" on-totals="$ctrl.handleProjectBillTotals(totals)"></project-bill-breakdown-table>
           </md-card-content>
         </md-card>
 

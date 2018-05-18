@@ -6,7 +6,7 @@ export const CostsReportsDetailComponent = {
   controller: CostsReportsDetailController
 };
 
-function CostsReportsDetailController($mdDialog, $state, $q, CostsReports, Projects, roleCheckerService, logger) {
+function CostsReportsDetailController($mdDialog, $state, CostsReports, Projects, roleCheckerService, objectRollupService, logger) {
   'ngInject';
 
   const ctrl = this;
@@ -16,8 +16,9 @@ function CostsReportsDetailController($mdDialog, $state, $q, CostsReports, Proje
   ctrl.loading = true;
   ctrl.isAdmin = false;
   ctrl.report = null;
-  ctrl.excludedProjects = [];
+  ctrl.totals = null;
 
+  ctrl.handleProjectBillTotals = handleProjectBillTotals;
   ctrl.deleteReport = deleteReport;
 
   init();
@@ -40,24 +41,14 @@ function CostsReportsDetailController($mdDialog, $state, $q, CostsReports, Proje
       .get(id)
       .then(report => {
         ctrl.report = report;
-
-        return prepareExcludedProjects(report.config);
       })
       .finally(() => {
         ctrl.loading = false;
       });
   }
 
-  function prepareExcludedProjects(config) {
-    if (config.excluded_projects) {
-      const promises = config.excluded_projects.map(Projects.get);
-      return $q
-        .all(promises)
-        .then(projects => {
-          angular.copy(projects, ctrl.excludedProjects);
-        });
-    }
-    return $q.when([]);
+  function handleProjectBillTotals(totals) {
+    ctrl.totals = objectRollupService.rollup(totals, ctrl.totals);
   }
 
   function deleteReport(targetEvent) {

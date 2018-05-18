@@ -1,6 +1,7 @@
 export const ProjectBillBreakdownTableComponent = {
   bindings: {
-    bills: '<'
+    bills: '<',
+    onTotals: '&'
   },
   template: require('./project-bill-breakdown-table.html'),
   controller: ProjectBillBreakdownTableController
@@ -150,5 +151,10 @@ function ProjectBillBreakdownTableController(_) {
 
     ctrl.headers = headers;
     ctrl.rows = rows;
+
+    // Emit totals if needed
+    if (ctrl.onTotals) {
+      ctrl.onTotals({totals});
+    }
   }
 }
