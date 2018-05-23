@@ -8,6 +8,7 @@ module Costs
         {
           from_shared_projects: HashInitializer[:hash, :hash, 0.0],
           from_shared_clusters: HashInitializer[0.0],
+          from_missing_metrics: HashInitializer[0.0],
           from_unmapped: 0.0,
           from_unknown: 0.0
         }
@@ -29,6 +30,10 @@ module Costs
 
     def add_cluster_cost(cluster_name, date, amount)
       @data[date][:from_shared_clusters][cluster_name] += amount
+    end
+
+    def add_missing_metrics_cost(cluster_name, date, amount)
+      @data[date][:from_missing_metrics][cluster_name] += amount
     end
 
     def add_unmapped_cost(date, amount)
