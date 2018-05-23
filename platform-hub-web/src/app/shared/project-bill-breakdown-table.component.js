@@ -85,6 +85,12 @@ function ProjectBillBreakdownTableController(_) {
       summary.total += fromSharedClustersAmount;
       totals.total += fromSharedClustersAmount;
 
+      const fromMissingMetricsAmount = _.sum(_.values(s.shared.from_missing_metrics));
+      summary.shared += fromMissingMetricsAmount;
+      totals.shared += fromMissingMetricsAmount;
+      summary.total += fromMissingMetricsAmount;
+      totals.total += fromMissingMetricsAmount;
+
       _.each(s.shared.from_shared_projects, sharedProject => {
         const topLevelKnownResourcesAmount = _.get(sharedProject, 'top_level.known_resources') || 0.0;
         summary.shared += topLevelKnownResourcesAmount;

@@ -42,6 +42,9 @@ module Costs
     #               from_shared_clusters: {
     #                 '<cluster_name>' => 0.0
     #               },
+    #               from_missing_metrics: {
+    #                 '<cluster_name>' => 0.0
+    #               },
     #               from_unmapped: 0.0,
     #               from_unknown: 0.0
     #             }
@@ -99,6 +102,11 @@ module Costs
 
     def add_shared_cluster_allocated_cost_for_service(project_id, service_id, date, cluster_name, amount)
       entry = get_service_entry(project_id, service_id, date)[:shared][:from_shared_clusters]
+      entry[cluster_name] += amount
+    end
+
+    def add_shared_missing_metrics_allocated_cost_for_service(project_id, service_id, date, cluster_name, amount)
+      entry = get_service_entry(project_id, service_id, date)[:shared][:from_missing_metrics]
       entry[cluster_name] += amount
     end
 
@@ -178,6 +186,7 @@ module Costs
         shared: {
           from_shared_projects: HashInitializer[:hash, :hash, 0.0],
           from_shared_clusters: HashInitializer[0.0],
+          from_missing_metrics: HashInitializer[0.0],
           from_unmapped: 0.0,
           from_unknown: 0.0
         }

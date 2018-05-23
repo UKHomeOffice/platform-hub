@@ -208,6 +208,18 @@ module Costs
         end
       end
 
+      # It's possible that we have no metrics for an entire day for an entire
+      # cluster, in which case we have some costs not accounted for. We should
+      # capture those daily costs in a separate shared pot.
+
+      billing_accumulations.each do |(date, h1)|
+        h1[:clusters].each do |(cluster_name, h2)|
+          unless metrics_totals[cluster_name].has_key?(date)
+            shared_costs_breakdown.add_missing_metrics_cost(cluster_name, date, h2[:total])
+          end
+        end
+      end
+
       # Now allocate the shared project(s) cluster group costs to the non shared
       # projects based on the proportion, amongst other non shared projects
       # only, of their bills *within* that cluster group.
@@ -273,6 +285,17 @@ module Costs
             # Shared cluster costs
             shared_costs_breakdown.data[date][:from_shared_clusters].each do |(cluster_name, cluster_total)|
               project_bills.add_shared_cluster_allocated_cost_for_service(
+                project_id,
+                service_id,
+                date,
+                cluster_name,
+                proportion * cluster_total
+              )
+            end
+
+            # Missing metrics costs
+            shared_costs_breakdown.data[date][:from_missing_metrics].each do |(cluster_name, cluster_total)|
+              project_bills.add_shared_missing_metrics_allocated_cost_for_service(
                 project_id,
                 service_id,
                 date,
