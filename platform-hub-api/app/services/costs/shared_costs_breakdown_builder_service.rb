@@ -6,11 +6,11 @@ module Costs
     def initialize dates, project_lookup, service_name_lookup
       @data = HashUtils.initialize_hash_with_keys_with_defaults(dates) do
         {
-          from_shared_projects: HashInitializer[:hash, :hash, 0.0],
-          from_shared_clusters: HashInitializer[0.0],
-          from_missing_metrics: HashInitializer[0.0],
-          from_unmapped: 0.0,
-          from_unknown: 0.0
+          from_shared_projects: HashInitializer[:hash, :hash, BigDecimal('0')],
+          from_shared_clusters: HashInitializer[BigDecimal('0')],
+          from_missing_metrics: HashInitializer[BigDecimal('0')],
+          from_unmapped: BigDecimal('0'),
+          from_unknown: BigDecimal('0')
         }
       end
 
@@ -83,8 +83,8 @@ module Costs
 
     def initialize_empty_service_entry
       {
-        known_resources: 0.0,
-        cluster_groups: HashInitializer[:hash, 0.0]
+        known_resources: BigDecimal('0'),
+        cluster_groups: HashInitializer[:hash, BigDecimal('0')]
       }
     end
 

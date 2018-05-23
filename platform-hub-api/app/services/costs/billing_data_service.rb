@@ -122,7 +122,7 @@ module Costs
 
     def parse_and_map_line line
       date = line[COLUMNS[:date]]
-      cost = line[COLUMNS[:cost]].to_f
+      cost = BigDecimal(line[COLUMNS[:cost]])
       resource_type = line[COLUMNS[:resource_type]]
       resource_id = line[COLUMNS[:resource_id]]
       tags = line[COLUMNS[:tags]]

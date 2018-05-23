@@ -99,7 +99,7 @@ module Costs
       metrics_total_per_cluster_by_date_and_metric = HashInitializer[
         :hash,
           :hash,
-            0.0
+            BigDecimal('0')
       ]
       metrics_per_cluster_by_date_and_project_and_service_and_metric_and_namespace = HashInitializer[
         :hash,
@@ -126,7 +126,7 @@ module Costs
         # Add to totals and project service grouped lists
         metric_types.each do |mt|
           metric_name = mt[:name]
-          metric_value = line[mt[:index]].to_f
+          metric_value = BigDecimal(line[mt[:index]])
 
           if project_id && service_id && namespace_name
             entry = metrics_per_cluster_by_date_and_project_and_service_and_metric_and_namespace[cluster_name][date][project_id][service_id][metric_name]
