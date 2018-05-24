@@ -352,18 +352,19 @@ module Costs
         end
       end
 
-      bigdecimal_to_float = -> (v) { v.to_f }
+      # We need to *store* the BigDecimal values as Integer cents.
+      bigdecimal_to_integer_cents = -> (v) { (v * 100).round.to_i }
 
       shared_costs_breakdown_data = HashUtils.deep_convert_values_of_type(
         shared_costs_breakdown.data_rolled_up,
         BigDecimal,
-        &bigdecimal_to_float
+        &bigdecimal_to_integer_cents
       )
 
       project_bills_data = HashUtils.deep_convert_values_of_type(
         project_bills.data_rolled_up,
         BigDecimal,
-        &bigdecimal_to_float
+        &bigdecimal_to_integer_cents
       )
 
       {
