@@ -3,12 +3,10 @@ export const CostsReportsListComponent = {
   controller: CostsReportsListController
 };
 
-function CostsReportsListController($mdDialog, CostsReports, roleCheckerService, icons, logger) {
+function CostsReportsListController($mdDialog, CostsReports, roleCheckerService, logger) {
   'ngInject';
 
   const ctrl = this;
-
-  ctrl.analyseIcon = icons.analyse;
 
   ctrl.loading = true;
   ctrl.isAdmin = false;
