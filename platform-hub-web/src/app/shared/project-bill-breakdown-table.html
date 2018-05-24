@@ -17,7 +17,7 @@
         <span ng-if="$index != 0">
           <span ng-if="d == '--'">--</span>
           <span ng-if="d != '--'">
-            {{d | currency:'$'}}
+            {{d | formatCurrencyUnits:'$'}}
           </span>
         </span>
       </td>

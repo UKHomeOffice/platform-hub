@@ -66,9 +66,9 @@ module Costs
 
       # Normalise the metric weights provided in the config
 
-      metrics_weights_total = config[:metric_weights].values.map(&:to_f).sum
+      metrics_weights_total = config[:metric_weights].values.map{ |v| BigDecimal(v) }.sum
       metric_weights = config[:metric_weights].each_with_object({}) do |(name, weight), obj|
-        obj[name] = (weight.to_f / metrics_weights_total)
+        obj[name] = (BigDecimal(weight) / metrics_weights_total)
       end
 
       # Get the relevant metrics usage
@@ -157,7 +157,7 @@ module Costs
       # Also build up the non shared project cluster group totals so we can use
       # these later to work out proportions of bills within the cluster group
       # (i.e. excluding shared project costs within the cluster groups).
-      project_cluster_group_totals = HashInitializer[:hash, 0.0]
+      project_cluster_group_totals = HashInitializer[:hash, BigDecimal('0')]
 
       metrics_grouped.each do |(cluster_name, h1)|
         # Completely ignore metrics from shared clusters as their costs are part
@@ -178,11 +178,11 @@ module Costs
             is_shared = shared_projects.include?(project_shortname)
 
             h3.each do |(service_id, metrics)|
-              day_bill = metrics.reduce(0.0) do |amount, (metric_name, entries)|
+              day_bill = metrics.reduce(BigDecimal('0')) do |amount, (metric_name, entries)|
                 cluster_day_metric_total = metrics_totals[cluster_name][date][metric_name]
 
                 proportion = entries.values.sum / cluster_day_metric_total
-                proportion = 0 if proportion.nan?
+                proportion = 0 if proportion.nan? || proportion.infinite?
 
                 amount + (proportion * cluster_day_total_cost * metric_weights[metric_name])
               end
@@ -229,7 +229,7 @@ module Costs
           next unless h2.has_key?(:services)
 
           h2[:services].each do |(shared_service_id, h3)|
-            shared_cluster_group_totals = h3[:cluster_groups].each_with_object(HashInitializer[0.0]) do |(group_name, entries), acc|
+            shared_cluster_group_totals = h3[:cluster_groups].each_with_object(HashInitializer[BigDecimal('0')]) do |(group_name, entries), acc|
               acc[group_name] += entries.values.sum
             end
 
@@ -241,7 +241,7 @@ module Costs
               entry[:services].each do |(service_id, h5)|
                 h5[:cluster_groups].each do |(group_name, h6)|
                   proportion = h6.values.sum / project_cluster_group_totals[date][group_name]
-                  proportion = 0 if proportion.nan?
+                  proportion = 0 if proportion.nan? || proportion.infinite?
 
                   allocated = proportion * shared_cluster_group_totals[group_name]
 
@@ -264,7 +264,7 @@ module Costs
       # Now split out the rest of the shared pool based on the *overall*
       # proportion of bills from all cluster groups combined.
 
-      total_project_cluster_groups_bills = HashInitializer[0.0]
+      total_project_cluster_groups_bills = HashInitializer[BigDecimal('0')]
 
       project_cluster_group_totals.each do |(date, cluster_group)|
         total_project_cluster_groups_bills[date] += cluster_group.values.sum
@@ -275,12 +275,12 @@ module Costs
           next unless h2.has_key?(:services)
 
           h2[:services].each do |(service_id, h3)|
-            service_cluster_groups_total = h3[:cluster_groups].reduce(0.0) do |acc, (_, entries)|
+            service_cluster_groups_total = h3[:cluster_groups].reduce(BigDecimal('0')) do |acc, (_, entries)|
               acc += entries.values.sum
             end
 
             proportion = service_cluster_groups_total / total_project_cluster_groups_bills[date]
-            proportion = 0 if proportion.nan?
+            proportion = 0 if proportion.nan? || proportion.infinite?
 
             # Shared cluster costs
             shared_costs_breakdown.data[date][:from_shared_clusters].each do |(cluster_name, cluster_total)|
@@ -352,9 +352,24 @@ module Costs
         end
       end
 
+      # We need to *store* the BigDecimal values as Integer cents.
+      bigdecimal_to_integer_cents = -> (v) { (v * 100).round.to_i }
+
+      shared_costs_breakdown_data = HashUtils.deep_convert_values_of_type(
+        shared_costs_breakdown.data_rolled_up,
+        BigDecimal,
+        &bigdecimal_to_integer_cents
+      )
+
+      project_bills_data = HashUtils.deep_convert_values_of_type(
+        project_bills.data_rolled_up,
+        BigDecimal,
+        &bigdecimal_to_integer_cents
+      )
+
       {
-        shared_costs_breakdown: shared_costs_breakdown.data_rolled_up,
-        project_bills: project_bills.data_rolled_up,
+        shared_costs_breakdown: shared_costs_breakdown_data,
+        project_bills: project_bills_data,
       }
     end
 
@@ -385,7 +400,7 @@ module Costs
         entry[:items] << item
 
         cost = item[:cost]
-        entry[:total] = 0.0 unless entry.has_key?(:total)
+        entry[:total] = BigDecimal('0') unless entry.has_key?(:total)
         entry[:total] += cost
       end
 
@@ -432,7 +447,7 @@ module Costs
 
         unless project_entry.has_key?(:top_level)
           project_entry[:top_level] = HashInitializer[:array]
-          project_entry[:top_level][:total] = 0.0
+          project_entry[:top_level][:total] = BigDecimal('0')
         end
 
         service_id = item[:service_id]
@@ -444,7 +459,7 @@ module Costs
 
           unless project_entry[:services].has_key?(service_id)
             project_entry[:services][service_id][:name] = service_name
-            project_entry[:services][service_id][:total] = 0.0
+            project_entry[:services][service_id][:total] = BigDecimal('0')
           end
 
           project_entry[:services][service_id]

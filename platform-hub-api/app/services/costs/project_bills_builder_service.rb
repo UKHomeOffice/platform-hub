@@ -10,15 +10,15 @@ module Costs
     #     bills: {
     #       '<date>' => {
     #         top_level: {
-    #           known_resources: 0.0,
+    #           known_resources: <BigDecimal>,
     #         },
     #         services: {
     #           '<service_id>' => {
     #             name: 'API service',
-    #             known_resources: 0.0,
+    #             known_resources: <BigDecimal>,
     #             cluster_groups: {
     #               '<cluster_group_name>' => {
-    #                 '<cluster_name>' => 0.0
+    #                 '<cluster_name>' => <BigDecimal>
     #               }
     #             },
     #             shared: {
@@ -26,27 +26,27 @@ module Costs
     #                 '<project_id>': {
     #                   shortname: 'BAR',
     #                   top_level: {
-    #                     known_resources: 0.0,
+    #                     known_resources: <BigDecimal>,
     #                   },
     #                   services: {
     #                     '<service_id>' => {
     #                       name: 'Core service',
-    #                       known_resources: 0.0,
+    #                       known_resources: <BigDecimal>,
     #                       cluster_groups: {
-    #                         '<cluster_group_name>': 0.0
+    #                         '<cluster_group_name>': <BigDecimal>
     #                       }
     #                     }
     #                   }
     #                 }
     #               },
     #               from_shared_clusters: {
-    #                 '<cluster_name>' => 0.0
+    #                 '<cluster_name>' => <BigDecimal>
     #               },
     #               from_missing_metrics: {
-    #                 '<cluster_name>' => 0.0
+    #                 '<cluster_name>' => <BigDecimal>
     #               },
-    #               from_unmapped: 0.0,
-    #               from_unknown: 0.0
+    #               from_unmapped: <BigDecimal>,
+    #               from_unknown: <BigDecimal>
     #             }
     #           }
     #         }
@@ -63,7 +63,7 @@ module Costs
           :hash,
             :hash,
               :hash,
-                0.0
+                BigDecimal('0')
       ]
 
       @project_lookup = project_lookup
@@ -181,22 +181,22 @@ module Costs
 
     def initialize_empty_service_entry
       {
-        known_resources: 0.0,
-        cluster_groups: HashInitializer[:hash, 0.0],
+        known_resources: BigDecimal('0'),
+        cluster_groups: HashInitializer[:hash, BigDecimal('0')],
         shared: {
-          from_shared_projects: HashInitializer[:hash, :hash, 0.0],
-          from_shared_clusters: HashInitializer[0.0],
-          from_missing_metrics: HashInitializer[0.0],
-          from_unmapped: 0.0,
-          from_unknown: 0.0
+          from_shared_projects: HashInitializer[:hash, :hash, BigDecimal('0')],
+          from_shared_clusters: HashInitializer[BigDecimal('0')],
+          from_missing_metrics: HashInitializer[BigDecimal('0')],
+          from_unmapped: BigDecimal('0'),
+          from_unknown: BigDecimal('0')
         }
       }
     end
 
     def initialize_empty_shared_project_service_entry
       {
-        known_resources: 0.0,
-        cluster_groups: HashInitializer[0.0],
+        known_resources: BigDecimal('0'),
+        cluster_groups: HashInitializer[BigDecimal('0')],
       }
     end
 

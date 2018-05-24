@@ -96,7 +96,7 @@
 
           <md-card-content>
             <p class="md-display-1">
-              {{$ctrl.totals.total | currency:'$'}}
+              {{$ctrl.totals.total | formatCurrencyUnits:'$'}}
             </p>
 
             <pre>{{$ctrl.totals | json}}</pre>

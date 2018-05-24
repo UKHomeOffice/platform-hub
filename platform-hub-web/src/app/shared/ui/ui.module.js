@@ -4,6 +4,7 @@ import {chipsHelpers} from './chips-helpers.factory';
 import {FieldsEditorComponent} from './fields-editor.component';
 import {FieldsListingsComponent} from './fields-listings.component';
 import {FormFieldComponent} from './form-field.component';
+import {FormatCurrencyUnitsFilter} from './format-currency-units.filter.js';
 import {LoadingIndicatorComponent} from './loading-indicator.component';
 import {PaginatedListDirective} from './paginated-list.directive';
 import {PaginationToolbarComponent} from './pagination-toolbar.component';
@@ -17,6 +18,7 @@ export const UiModule = angular
   .component('fieldsEditor', FieldsEditorComponent)
   .component('fieldsListings', FieldsListingsComponent)
   .component('formField', FormFieldComponent)
+  .filter('formatCurrencyUnits', FormatCurrencyUnitsFilter)
   .component('loadingIndicator', LoadingIndicatorComponent)
   .directive('paginatedList', PaginatedListDirective)
   .component('paginationToolbar', PaginationToolbarComponent)
