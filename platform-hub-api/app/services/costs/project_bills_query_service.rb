@@ -8,7 +8,7 @@ module Costs
 
       entries = CostsReport
         .published
-        .select("costs_reports.year, costs_reports.month, costs_reports.results #> '{project_bills,#{project_id}}' as project_bill")
+        .select("costs_reports.year, costs_reports.month, costs_reports.config, costs_reports.results #> '{project_bills,#{project_id}}' as project_bill")
         .order(id: :desc)
         .entries
 
@@ -17,7 +17,8 @@ module Costs
           acc << {
             year: e.year,
             month: e.month,
-            bills: e.project_bill['bills']
+            bills: e.project_bill['bills'],
+            config: e.config.select { |key, _| ['ui'].include? key }
           }
         end
       end

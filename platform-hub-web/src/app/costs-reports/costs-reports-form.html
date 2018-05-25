@@ -237,11 +237,13 @@
 
                       <h5>Of the mapped projects in the billing data (tagged directly or via namespaces), which ones should have their costs shared out to the other projects?</h5>
 
-                      <md-input-container class="md-block" ng-if="$ctrl.availableProjects.length">
+                      <md-input-container class="md-block">
                         <md-select
                           ng-model="$ctrl.report.config.shared_costs.projects"
                           name="shared_projects"
                           multiple
+                          ng-change="$ctrl.handleSharedProjectsChange()"
+                          ng-disabled="$ctrl.availableProjects.length == 0"
                           aria-label="Select mapped projects to consider as shared costs to other projects">
                           <md-option
                             ng-repeat="p in $ctrl.availableProjects track by p.project_shortname"
@@ -255,7 +257,33 @@
                     <br />
 
                     <div>
-                      <h4>Step 3: check projects with specific billing items</h4>
+                      <h4>Step 3: configure UI / display</h4>
+
+                      <br />
+
+                      <h5>Of the shared projects' services, which ones should be shown separately in the shared breakdown table? (checked = shown in separate column; unchecked = accumulated into a 'Misc' column).</h5>
+                      <small>Note: this is purely a UI grouping and doesn't affect the underlying cost report that is generated.</small>
+
+                      <md-input-container class="md-block">
+                        <md-select
+                          ng-model="$ctrl.report.config.ui.main_shared_services"
+                          name="main_shared_services"
+                          multiple
+                          ng-disabled="$ctrl.availableSharedServices.length == 0"
+                          aria-label="Select the important shared project services that will be shown separately in the project bills">
+                          <md-option
+                            ng-repeat="s in $ctrl.availableSharedServices track by s.service_id"
+                            value="{{s.service_id}}">
+                            {{s.project_shortname}}: {{s.service_name}}
+                          </md-option>
+                        </md-select>
+                      </md-input-container>
+                    </div>
+
+                    <br />
+
+                    <div>
+                      <h4>Step 4: check projects with specific billing items</h4>
 
                       <br />
 
@@ -271,7 +299,7 @@
                     <br />
 
                     <div>
-                      <h4>Step 4: check the shared clusters and non-shared cluster groups</h4>
+                      <h4>Step 5: check the shared clusters and non-shared cluster groups</h4>
 
                       <p class="md-body-1">
                         Note: these were worked out using the 'costs bucket' value from each cluster in the hub.
@@ -304,7 +332,7 @@
                     <br />
 
                     <div>
-                      <h4>Step 5. add notes to this report (optional)</h4>
+                      <h4>Step 6. add notes to this report (optional)</h4>
 
                       <md-input-container class="md-block" ng-if="$ctrl.prepareResults">
                         <label for="notes">Notes for this report (only visible to hub admins):</label>

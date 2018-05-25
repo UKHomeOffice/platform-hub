@@ -33,6 +33,8 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
   ctrl.prepareResultsTreeFilter = null;
   ctrl.availableClusters = [];
   ctrl.availableProjects = [];
+  ctrl.availableServices = [];
+  ctrl.availableSharedServices = [];
   ctrl.mappedMetricsNamespacesCount = null;
   ctrl.allMappedClustersGrouped = null;
 
@@ -41,6 +43,7 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
   ctrl.prepare = prepare;
   ctrl.hasSufficientMappingsToContinue = hasSufficientMappingsToContinue;
   ctrl.doMetricWeightsAddUp = doMetricWeightsAddUp;
+  ctrl.handleSharedProjectsChange = handleSharedProjectsChange;
   ctrl.readyToGenerate = readyToGenerate;
   ctrl.create = create;
 
@@ -88,7 +91,10 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
         clusters: [],
         projects: []
       },
-      cluster_groups: {}
+      cluster_groups: {},
+      ui: {
+        main_shared_services: []
+      }
     };
   }
 
@@ -114,6 +120,8 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
     ctrl.prepareResultsTreeData = null;
     ctrl.availableClusters = [];
     ctrl.availableProjects = [];
+    ctrl.availableServices = [];
+    ctrl.availableSharedServices = [];
     ctrl.mappedMetricsNamespacesCount = null;
     ctrl.allMappedClustersGrouped = null;
 
@@ -132,6 +140,7 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
         setMetricWeightsDefaults();
         setAvailableClusters();
         setAvailableProjects();
+        setAvailableServices();
         setMappedMetricsNamespacesCount();
         setAllClustersGrouped();
         setConfigSharedClustersAndGroupedClusters();
@@ -148,6 +157,10 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
   function doMetricWeightsAddUp() {
     const weights = ctrl.report.config.metric_weights;
     return weights && _.sum(_.values(weights)) === 100;
+  }
+
+  function handleSharedProjectsChange() {
+    setAvailableSharedServices();
   }
 
   function readyToGenerate() {
@@ -199,6 +212,31 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
       _.values(ctrl.prepareResults.billing.projects.mapped),
       ['project_shortname']
     );
+  }
+
+  function setAvailableServices() {
+    const mappedClusters = _.concat(
+      _.values(ctrl.prepareResults.billing.clusters_and_namespaces.mapped),
+      _.values(ctrl.prepareResults.metrics.clusters_and_namespaces.mapped)
+    );
+
+    const mappedServices = {};
+
+    _.each(mappedClusters, c => {
+      _.each((c.namespaces.mapped || {}), n => {
+        if (!_.has(mappedServices, n.service_id)) {
+          mappedServices[n.service_id] = n;
+        }
+      });
+    });
+
+    ctrl.availableServices = _.sortBy(_.values(mappedServices), ['project_shortname']);
+  }
+
+  function setAvailableSharedServices() {
+    ctrl.availableSharedServices = _.filter(ctrl.availableServices, s => {
+      return _.includes(ctrl.report.config.shared_costs.projects, s.project_shortname);
+    });
   }
 
   function setMappedMetricsNamespacesCount() {

@@ -217,6 +217,48 @@
           </div>
 
           <br />
+          <md-divider></md-divider>
+          <br />
+
+          <!-- Costs reports -->
+          <div>
+            <h3 class="md-title">Costs reports global settings</h3>
+
+            <br />
+
+            <fieldset>
+              <legend>
+                Link to "more info" page
+              </legend>
+
+              <p
+                class="md-body-1"
+                md-colors="{background: 'green-50'}"
+                layout-padding>
+                This link is shown to projects when they view their project bills, and should be used to provide more details about the costs reports generation, how shared costs are broken down, etc.
+              </p>
+
+              <md-input-container class="md-block">
+                <label for="costsReportsMoreInfoLinkUrl">Link URL:</label>
+                <input
+                  type="url"
+                  name="costsReportsMoreInfoLinkUrl"
+                  ng-model="$ctrl.settings.costs_reports.more_info.url">
+                <div ng-messages="$ctrl.settingsForm.costsReportsMoreInfoLinkUrl.$error">
+                  <div ng-message="url">Not a valid URL.</div>
+                </div>
+              </md-input-container>
+
+              <md-input-container class="md-block">
+                <label for="costsReportsMoreInfoLinkText">Link text:</label>
+                <input
+                  name="costsReportsMoreInfoLinkText"
+                  ng-model="$ctrl.settings.costs_reports.more_info.text">
+              </md-input-container>
+            </fieldset>
+          </div>
+
+          <br />
           <br />
 
           <div>

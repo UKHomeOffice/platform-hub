@@ -317,7 +317,10 @@
             </md-card-title>
 
             <md-card-content>
-              <project-bill-breakdown-table bills="b.bills"></project-bill-breakdown-table>
+              <project-bill-breakdown
+                bills="b.bills"
+                main-shared-services="b.config.ui.main_shared_services">
+              </project-bill-breakdown>
             </md-card-content>
           </md-card>
 

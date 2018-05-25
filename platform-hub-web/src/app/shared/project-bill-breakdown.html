@@ -1,0 +1,90 @@
+<div class="project-bill-breakdown">
+
+  <p class="md-headline">
+    <span md-colors="{color: 'blue-grey-700'}">
+      Total bill =
+    </span>
+    <span>
+      {{$ctrl.totals.total | formatCurrencyUnits:'$'}}
+    </span>
+  </p>
+
+  <div style="overflow-x: scroll">
+    <table class="simple-table md-body-1">
+      <thead>
+        <th
+          ng-repeat="h in $ctrl.headers track by h"
+          style="text-align: center;">
+          {{h}}
+        </th>
+      </thead>
+      <tbody>
+        <tr
+          ng-repeat="r in $ctrl.rows track by r[0]"
+          ng-style="r[0] == 'Total' ? {'font-weight': 'bold'} : {}"
+          md-colors="r[0] == 'Total' ? {background: 'green-50'} : {}">
+          <td
+            ng-repeat="d in r track by $index"
+            ng-style="$index == 0 ? {'text-align': 'right'} : {'text-align': 'center'}">
+            <span ng-if="$index == 0">{{d}}</span>
+            <span ng-if="$index != 0">
+              <span ng-if="d == '--'">--</span>
+              <span ng-if="d != '--'">
+                {{d | formatCurrencyUnits:'$'}}
+              </span>
+            </span>
+          </td>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div ng-if="$ctrl.totals.shared > 0">
+    <br />
+
+    <p class="md-body-2">
+      Platform / shared breakdown:
+    </p>
+
+    <div style="overflow-x: scroll">
+      <table class="simple-table md-body-1">
+        <thead>
+          <th
+            ng-repeat="h in $ctrl.sharedHeaders track by h"
+            style="text-align: center;">
+            {{h}}
+          </th>
+        </thead>
+        <tbody>
+          <tr
+            ng-repeat="r in $ctrl.sharedRows track by r[0]"
+            ng-style="r[0] == 'Total' ? {'font-weight': 'bold'} : {}"
+            md-colors="r[0] == 'Total' ? {background: 'green-50'} : {}">
+            <td
+              ng-repeat="d in r track by $index"
+              ng-style="$index == 0 ? {'text-align': 'right'} : {'text-align': 'center'}">
+              <span ng-if="$index == 0">{{d}}</span>
+              <span ng-if="$index != 0">
+                {{d | formatCurrencyUnits:'$'}}
+              </span>
+            </td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p
+    class="md-body-1"
+    ng-if="$ctrl.moreInfoLink.url && $ctrl.moreInfoLink.text">
+    <br />
+    <a
+      target="_blank"
+      ng-href="$ctrl.moreInfoLink.url">
+      {{$ctrl.moreInfoLink.text}}
+    </a>
+  </p>
+
+</div>

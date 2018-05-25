@@ -132,7 +132,11 @@
               <span>{{b.cost_centre_code || '--'}}</span>
             </p>
 
-            <project-bill-breakdown-table bills="b.bills" on-totals="$ctrl.handleProjectBillTotals(totals)"></project-bill-breakdown-table>
+            <project-bill-breakdown
+              bills="b.bills"
+              main-shared-services="$ctrl.report.config.ui.main_shared_services"
+              on-totals="$ctrl.handleProjectBillTotals(totals)">
+            </project-bill-breakdown>
           </md-card-content>
         </md-card>
 
