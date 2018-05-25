@@ -147,8 +147,6 @@ Rails.application.routes.draw do
       get :available_data_files, on: :collection
       post :prepare, on: :collection
       post :publish, on: :member
-
-      post '/analysis/prepare', to: 'costs_reports#analysis_prepare', on: :collection
     end
 
   end
