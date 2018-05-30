@@ -8,7 +8,7 @@ export const objectRollupService = function (_) {
   return service;
 
   function rollup(obj, into) {
-    return _.mergeWith(obj, into, (objValue, srcValue) => {
+    return _.mergeWith(_.cloneDeep(obj), _.cloneDeep(into), (objValue, srcValue) => {
       if (_.isObject(objValue)) {
         return rollup(srcValue, objValue);
       } else if (_.isArray(objValue)) {
