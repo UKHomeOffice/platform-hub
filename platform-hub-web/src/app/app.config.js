@@ -27,6 +27,6 @@ export const appConfig = function ($mdIconProvider, $mdThemingProvider, $httpPro
     expandToDepth: -1,
     twistieCollapsedTpl: '<md-icon>chevron_right</md-icon>',
     twistieExpandedTpl: '<md-icon>expand_more</md-icon>',
-    twistieLeafTpl: '<span style="cursor: default;">&#8192;&#8192;</span>'
+    twistieLeafTpl: '<span style="cursor: default; line-height: 1.5; margin-left: 1em; padding-left: 0.66em; border-left: 1px solid rgba(0, 0, 0, 0.2);"></span>'
   });
 };

@@ -77,7 +77,7 @@
           Config used to generate report
         </h4>
 
-        <pre>{{$ctrl.report.config | json}}</pre>
+        <div ivh-treeview="$ctrl.configTreeData"></div>
 
         <br />
 
@@ -133,7 +133,7 @@
           Shared costs breakdown
         </h4>
 
-        <pre>{{$ctrl.report.results.shared_costs_breakdown | json}}</pre>
+        <div ivh-treeview="$ctrl.sharedCostsBreakdownTreeData"></div>
 
       </md-content>
     </div>
