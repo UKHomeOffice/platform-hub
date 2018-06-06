@@ -6,8 +6,17 @@ export const CostsReportsDetailComponent = {
   controller: CostsReportsDetailController
 };
 
-function CostsReportsDetailController($mdDialog, $state, CostsReports, Projects, roleCheckerService, objectRollupService, logger) {
+function CostsReportsDetailController($mdDialog, $state, $filter, CostsReports, Projects, roleCheckerService, objectRollupService, treeDataHelper, logger, _) {
   'ngInject';
+
+  const formatCurrencyUnitsFilter = $filter('formatCurrencyUnits');
+
+  const valueFormatter = v => {
+    if (_.isFinite(v)) {
+      return formatCurrencyUnitsFilter(v, '$');
+    }
+    return v;
+  };
 
   const ctrl = this;
 
@@ -17,6 +26,8 @@ function CostsReportsDetailController($mdDialog, $state, CostsReports, Projects,
   ctrl.isAdmin = false;
   ctrl.report = null;
   ctrl.totals = null;
+  ctrl.configTreeData = null;
+  ctrl.sharedCostsBreakdownTreeData = null;
 
   ctrl.handleProjectBillTotals = handleProjectBillTotals;
   ctrl.deleteReport = deleteReport;
@@ -41,6 +52,13 @@ function CostsReportsDetailController($mdDialog, $state, CostsReports, Projects,
       .get(id)
       .then(report => {
         ctrl.report = report;
+
+        ctrl.configTreeData = treeDataHelper.objectToTreeData(report.config);
+
+        ctrl.sharedCostsBreakdownTreeData = treeDataHelper.objectToTreeData(
+          report.results.shared_costs_breakdown,
+          valueFormatter
+        );
       })
       .finally(() => {
         ctrl.loading = false;

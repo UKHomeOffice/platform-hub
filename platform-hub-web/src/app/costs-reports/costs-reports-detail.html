@@ -77,7 +77,7 @@
           Config used to generate report
         </h4>
 
-        <pre>{{$ctrl.report.config | json}}</pre>
+        <div ivh-treeview="$ctrl.configTreeData"></div>
 
         <br />
 
@@ -88,18 +88,29 @@
         </h4>
 
         <md-card md-colors="{background: 'green-50'}">
-          <md-card-title>
-            <md-card-title-text>
-              <span class="md-title">Grand total</span>
-            </md-card-title-text>
-          </md-card-title>
-
           <md-card-content>
             <p class="md-display-1">
               {{$ctrl.totals.total | formatCurrencyUnits:'$'}}
             </p>
 
-            <pre>{{$ctrl.totals | json}}</pre>
+            <p class="md-body-1 indented">
+              From resources:
+              <strong>{{$ctrl.totals.resources | formatCurrencyUnits:'$'}}</strong>
+            </p>
+
+            <p class="md-body-1 indented">
+              <span>From cluster groups:</span><br />
+              <span class="indented" ng-repeat="(c, a) in $ctrl.totals.clusterGroups">
+                {{c}}:
+                <strong>{{a | formatCurrencyUnits:'$'}}</strong>
+                <br />
+              </span>
+            </p>
+
+            <p class="md-body-1 indented">
+              From shared / platform:
+              <strong>{{$ctrl.totals.shared | formatCurrencyUnits:'$'}}</strong>
+            </p>
           </md-card-content>
         </md-card>
 
@@ -121,7 +132,11 @@
               <span>{{b.cost_centre_code || '--'}}</span>
             </p>
 
-            <project-bill-breakdown-table bills="b.bills" on-totals="$ctrl.handleProjectBillTotals(totals)"></project-bill-breakdown-table>
+            <project-bill-breakdown
+              bills="b.bills"
+              main-shared-services="$ctrl.report.config.ui.main_shared_services"
+              on-totals="$ctrl.handleProjectBillTotals(totals)">
+            </project-bill-breakdown>
           </md-card-content>
         </md-card>
 
@@ -133,7 +148,7 @@
           Shared costs breakdown
         </h4>
 
-        <pre>{{$ctrl.report.results.shared_costs_breakdown | json}}</pre>
+        <div ivh-treeview="$ctrl.sharedCostsBreakdownTreeData"></div>
 
       </md-content>
     </div>

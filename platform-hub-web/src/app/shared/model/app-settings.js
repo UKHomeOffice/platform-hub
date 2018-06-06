@@ -16,6 +16,7 @@ export const AppSettings = function ($window, hubApiService, apiBackoffTimeMs, l
   model.getPlatformOverviewText = getPlatformOverviewText;
   model.getTermsOfServiceText = getTermsOfServiceText;
   model.getOtherManagedServices = getOtherManagedServices;
+  model.getCostsReportsSettings = getCostsReportsSettings;
 
   return model;
 
@@ -65,5 +66,9 @@ export const AppSettings = function ($window, hubApiService, apiBackoffTimeMs, l
 
   function getOtherManagedServices() {
     return model.data.other_managed_services || [];
+  }
+
+  function getCostsReportsSettings() {
+    return model.data.costs_reports || {};
   }
 };

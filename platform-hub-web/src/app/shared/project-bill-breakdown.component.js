@@ -1,23 +1,33 @@
-export const ProjectBillBreakdownTableComponent = {
+export const ProjectBillBreakdownComponent = {
   bindings: {
     bills: '<',
+    mainSharedServices: '<',
     onTotals: '&'
   },
-  template: require('./project-bill-breakdown-table.html'),
-  controller: ProjectBillBreakdownTableController
+  template: require('./project-bill-breakdown.html'),
+  controller: ProjectBillBreakdownController
 };
 
-function ProjectBillBreakdownTableController(_) {
+function ProjectBillBreakdownController(AppSettings, _) {
   'ngInject';
 
   const ctrl = this;
 
+  ctrl.moreInfoLink = null;
+  ctrl.totals = null;
   ctrl.headers = [];
   ctrl.rows = [];
+  ctrl.sharedHeaders = [];
+  ctrl.sharedRows = [];
 
   init();
 
   function init() {
+    ctrl.moreInfoLink = _.get(
+      AppSettings.getCostsReportsSettings(),
+      'more_info'
+    );
+
     // Important:
     // we expect the numbers provided in the `bills` to be in Integer cents
     // (i.e. 100 instead of 1.00 for $1)
@@ -33,14 +43,28 @@ function ProjectBillBreakdownTableController(_) {
     const clusterGroupNames = new Set();
 
     const serviceSummaries = [];
+    const serviceSharedAllocations = [];
 
-    _.each(ctrl.bills.services, s => {
+    ctrl.sharedHeaders.push('');
+    ctrl.sharedHeaders.push('Total');
+
+    _.keys(ctrl.bills.services).forEach((id, ix) => {
+      const s = ctrl.bills.services[id];
+
+      const label = `Service: ${s.name}`;
+
       const summary = {
-        label: `Service: ${s.name}`,
+        label,
         total: 0,
         resources: 0,
         clusterGroups: {},
         shared: 0
+      };
+
+      const sharedAllocation = {
+        label,
+        total: 0,
+        items: []
       };
 
       // Resources
@@ -72,29 +96,18 @@ function ProjectBillBreakdownTableController(_) {
 
       // Shared
 
-      const fromUnknownSharedAmount = s.shared.from_unknown || 0;
-      summary.shared += fromUnknownSharedAmount;
-      totals.shared += fromUnknownSharedAmount;
-      summary.total += fromUnknownSharedAmount;
-      totals.total += fromUnknownSharedAmount;
-
-      const fromUnmappedSharedAmount = s.shared.from_unmapped || 0;
-      summary.shared += fromUnmappedSharedAmount;
-      totals.shared += fromUnmappedSharedAmount;
-      summary.total += fromUnmappedSharedAmount;
-      totals.total += fromUnmappedSharedAmount;
-
       const fromSharedClustersAmount = _.sum(_.values(s.shared.from_shared_clusters));
       summary.shared += fromSharedClustersAmount;
       totals.shared += fromSharedClustersAmount;
       summary.total += fromSharedClustersAmount;
       totals.total += fromSharedClustersAmount;
+      // For shared table:
+      if (ix === 0) {
+        ctrl.sharedHeaders.push('Shared Clusters');
+      }
+      sharedAllocation.items.push(fromSharedClustersAmount);
 
-      const fromMissingMetricsAmount = _.sum(_.values(s.shared.from_missing_metrics));
-      summary.shared += fromMissingMetricsAmount;
-      totals.shared += fromMissingMetricsAmount;
-      summary.total += fromMissingMetricsAmount;
-      totals.total += fromMissingMetricsAmount;
+      let allMiscSharedServicesTotal = 0;
 
       _.each(s.shared.from_shared_projects, sharedProject => {
         const topLevelKnownResourcesAmount = _.get(sharedProject, 'top_level.known_resources') || 0;
@@ -102,24 +115,76 @@ function ProjectBillBreakdownTableController(_) {
         totals.shared += topLevelKnownResourcesAmount;
         summary.total += topLevelKnownResourcesAmount;
         totals.total += topLevelKnownResourcesAmount;
+        allMiscSharedServicesTotal += topLevelKnownResourcesAmount;
 
-        _.each(sharedProject.services, sharedService => {
+        _.each(sharedProject.services, (sharedService, sharedServiceId) => {
+          let sharedServiceTotal = 0;
+
           const sharedServiceKnownResourcesAmount = sharedService.known_resources || 0;
           summary.shared += sharedServiceKnownResourcesAmount;
           totals.shared += sharedServiceKnownResourcesAmount;
           summary.total += sharedServiceKnownResourcesAmount;
           totals.total += sharedServiceKnownResourcesAmount;
+          sharedServiceTotal += sharedServiceKnownResourcesAmount;
 
           _.each(sharedService.cluster_groups, amount => {
             summary.shared += amount;
             totals.shared += amount;
             summary.total += amount;
             totals.total += amount;
+            sharedServiceTotal += amount;
           });
+
+          // For shared table:
+          if (_.includes(ctrl.mainSharedServices, sharedServiceId)) {
+            if (ix === 0) {
+              ctrl.sharedHeaders.push(`${sharedProject.shortname}: ${sharedService.name}`);
+            }
+            sharedAllocation.items.push(sharedServiceTotal);
+          } else {
+            allMiscSharedServicesTotal += sharedServiceTotal;
+          }
         });
       });
 
+      if (ix === 0) {
+        ctrl.sharedHeaders.push('Misc shared services');
+      }
+      sharedAllocation.items.push(allMiscSharedServicesTotal);
+
+      let sharedUnmappedUnknown = 0;
+
+      const fromUnmappedSharedAmount = s.shared.from_unmapped || 0;
+      summary.shared += fromUnmappedSharedAmount;
+      totals.shared += fromUnmappedSharedAmount;
+      summary.total += fromUnmappedSharedAmount;
+      totals.total += fromUnmappedSharedAmount;
+      sharedUnmappedUnknown += fromUnmappedSharedAmount;
+
+      const fromMissingMetricsAmount = _.sum(_.values(s.shared.from_missing_metrics));
+      summary.shared += fromMissingMetricsAmount;
+      totals.shared += fromMissingMetricsAmount;
+      summary.total += fromMissingMetricsAmount;
+      totals.total += fromMissingMetricsAmount;
+      sharedUnmappedUnknown += fromMissingMetricsAmount;
+
+      const fromUnknownSharedAmount = s.shared.from_unknown || 0;
+      summary.shared += fromUnknownSharedAmount;
+      totals.shared += fromUnknownSharedAmount;
+      summary.total += fromUnknownSharedAmount;
+      totals.total += fromUnknownSharedAmount;
+      sharedUnmappedUnknown += fromUnknownSharedAmount;
+
+      // For shared table:
+      if (ix === 0) {
+        ctrl.sharedHeaders.push('Unmapped / Unknown');
+      }
+      sharedAllocation.items.push(sharedUnmappedUnknown);
+
+      sharedAllocation.total = summary.shared;
+
       serviceSummaries.push(summary);
+      serviceSharedAllocations.push(sharedAllocation);
     });
 
     const clusterGroupNamesSorted = Array.from(clusterGroupNames).sort();
@@ -127,7 +192,7 @@ function ProjectBillBreakdownTableController(_) {
     const headers = [
       '',
       'Total',
-      'Resources'
+      'AWS Resources'
     ].concat(clusterGroupNamesSorted)
      .concat(['Platform / Shared']);
 
@@ -145,7 +210,7 @@ function ProjectBillBreakdownTableController(_) {
     totals.resources += topLevelKnownResourcesAmount;
     totals.total += topLevelKnownResourcesAmount;
     const topLevelRow = [
-      'Top level',
+      'Misc',
       topLevelKnownResourcesAmount,
       topLevelKnownResourcesAmount
     ].concat(clusterGroupNamesSorted.map(() => '--'))
@@ -163,9 +228,20 @@ function ProjectBillBreakdownTableController(_) {
     ctrl.headers = headers;
     ctrl.rows = rows;
 
+    ctrl.totals = totals;
+
     // Emit totals if needed
     if (ctrl.onTotals) {
       ctrl.onTotals({totals});
     }
+
+    // Shared table rows
+    const serviceSharedAllocationsSorted = _.sortBy(serviceSharedAllocations, ['label']);
+    ctrl.sharedRows = serviceSharedAllocationsSorted.map(s => {
+      return [
+        s.label,
+        s.total
+      ].concat(s.items);
+    });
   }
 }
