@@ -54,6 +54,11 @@ class KubernetesCluster < ApplicationRecord
     foreign_key: :cluster_id,
     dependent: :destroy
 
+  has_many :namespaces,
+    class_name: KubernetesNamespace,
+    foreign_key: :cluster_id,
+    dependent: :destroy
+
   def s3_access_key_id=(val)
     self['s3_access_key_id'] = ENCRYPTOR.encrypt(val)
   end
