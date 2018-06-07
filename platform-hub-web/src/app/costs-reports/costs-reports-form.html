@@ -239,7 +239,7 @@
 
                       <md-input-container class="md-block">
                         <md-select
-                          ng-model="$ctrl.report.config.shared_costs.projects"
+                          ng-model="$ctrl.report.config.shared_projects"
                           name="shared_projects"
                           multiple
                           ng-change="$ctrl.handleSharedProjectsChange()"
@@ -247,7 +247,7 @@
                           aria-label="Select mapped projects to consider as shared costs to other projects">
                           <md-option
                             ng-repeat="p in $ctrl.availableProjects track by p.project_shortname"
-                            value="{{p.project_shortname}}">
+                            ng-value="p.project_shortname">
                             {{p.project_shortname}}
                           </md-option>
                         </md-select>
@@ -257,7 +257,33 @@
                     <br />
 
                     <div>
-                      <h4>Step 3: configure UI / display</h4>
+                      <h4>Step 3: configure where shared services are hosted</h4>
+
+                      <br />
+
+                      <h5>Which cluster groups are used to actually <em>host</em> shared services?</h5>
+                      <small>The costs from these cluster groups will be shared across all projects.</small>
+
+                      <md-input-container class="md-block">
+                        <md-select
+                          ng-model="$ctrl.report.config.cluster_groups_for_shared_services"
+                          name="cluster_groups_for_shared_services"
+                          multiple
+                          ng-disabled="$ctrl.report.config.cluster_groups.length == 0"
+                          aria-label="Select the cluster groups that host shared services and thus have their costs split across all projects">
+                          <md-option
+                            ng-repeat="(group, clusters) in $ctrl.report.config.cluster_groups track by group"
+                            ng-value="group">
+                            {{group}} (clusters: {{clusters.join(', ')}})
+                          </md-option>
+                        </md-select>
+                      </md-input-container>
+                    </div>
+
+                    <br />
+
+                    <div>
+                      <h4>Step 4: configure UI / display</h4>
 
                       <br />
 
@@ -273,7 +299,7 @@
                           aria-label="Select the important shared project services that will be shown separately in the project bills">
                           <md-option
                             ng-repeat="s in $ctrl.availableSharedServices track by s.service_id"
-                            value="{{s.service_id}}">
+                            ng-value="s.service_id">
                             {{s.project_shortname}}: {{s.service_name}}
                           </md-option>
                         </md-select>
@@ -283,7 +309,7 @@
                     <br />
 
                     <div>
-                      <h4>Step 4: check projects with specific billing items</h4>
+                      <h4>Step 5: check projects with specific billing items</h4>
 
                       <br />
 
@@ -299,27 +325,15 @@
                     <br />
 
                     <div>
-                      <h4>Step 5: check the shared clusters and non-shared cluster groups</h4>
+                      <h4>Step 6: check the cluster groups</h4>
 
                       <p class="md-body-1">
                         Note: these were worked out using the 'costs bucket' value from each cluster in the hub.
-                        <br />
-                        Clusters with a costs bucket value of 'Shared' are treated specially here.
                       </p>
 
                       <br />
 
-                      <h5>The following clusters will be shared across projects:</h5>
-
-                      <div>
-                        <p class="indented" ng-repeat="c in $ctrl.report.config.shared_costs.clusters track by c">
-                          {{c}}
-                        </p>
-                      </div>
-
-                      <br />
-
-                      <h5>Of the remaining non-shared clusters these are the cluster groupings that will be used when distributing costs:</h5>
+                      <h5>These are the cluster groupings that will be used when distributing costs:</h5>
 
                       <div ng-repeat="(group, clusters) in $ctrl.report.config.cluster_groups track by group">
                         <p class="md-body-2">Cluster group: {{group}}</p>

@@ -40,18 +40,18 @@ module Costs
       #     "memory": 40,
       #     "cpu": 60
       #   },
-      #   "shared_costs": {
-      #     "clusters": ['foo', 'bar'],
-      #     "projects": ['BOO']
-      #   },
+      #   "shared_projects": ['BOO'],
+      #   "cluster_groups_for_shared_services": ['Shared'],
       #   "cluster_groups": {
       #     "Prod": ['prod1', 'prod2'],
-      #     "NotProd": ['notprod1', 'dev1', 'notprod2']
+      #     "NotProd": ['notprod1', 'dev1', 'notprod2'],
+      #     "Shared": ['ci', 'ops']
       #   }
       # }
 
-      shared_clusters = config[:shared_costs][:clusters]
-      shared_projects = config[:shared_costs][:projects]
+      shared_projects = config[:shared_projects]
+
+      cluster_groups_for_shared_services = config[:cluster_groups_for_shared_services]
 
       cluster_groups = config[:cluster_groups]
       cluster_name_to_group_map = cluster_groups.each_with_object({}) do |(group, names), obj|
@@ -86,7 +86,6 @@ module Costs
       billing_accumulations = accumulate_billing_items(
         dates,
         @billing_data_service.items,
-        shared_clusters,
         shared_projects
       )
 
@@ -123,16 +122,6 @@ module Costs
           shared_costs_breakdown.method(:add_project_known_resource_cost_for_service)
         )
 
-        # Shared clusters
-
-        h[:shared][:from_shared_clusters].each do |(cluster_name, c_data)|
-          shared_costs_breakdown.add_cluster_cost(
-            cluster_name,
-            date,
-            c_data[:total]
-          )
-        end
-
         # Unmapped
         shared_costs_breakdown.add_unmapped_cost(
           date,
@@ -147,23 +136,19 @@ module Costs
       end
 
       # Share out the cluster-specific accumulations based on actual resource
-      # usage – these can be considered as the Kubernetes cluster costs that
-      # we now need to distribute across projects based on the resource usage
-      # of their namespaces within that cluster.
+      # usage - these are the Kubernetes cluster costs that we now need to
+      # distribute across projects based on the resource usage of their
+      # namespaces within that cluster.
       #
-      # Note: this includes any shared projects, which we'll put into the shared
-      # pool of costs.
+      # Note: this includes all shared project services too as we want to
+      # account for their usage within clusters (across all cluster groups).
 
-      # Also build up the non shared project cluster group totals so we can use
-      # these later to work out proportions of bills within the cluster group
-      # (i.e. excluding shared project costs within the cluster groups).
-      project_cluster_group_totals = HashInitializer[:hash, BigDecimal('0')]
+      # Also build up the non shared projects' cluster group totals so we can
+      # use these later to work out proportions of bills within the cluster
+      # group (i.e. excluding shared project costs within the cluster groups).
+      non_shared_project_cluster_group_totals = HashInitializer[:hash, BigDecimal('0')]
 
       metrics_grouped.each do |(cluster_name, h1)|
-        # Completely ignore metrics from shared clusters as their costs are part
-        # of the overall shared pool
-        next if shared_clusters.include?(cluster_name)
-
         group_name = cluster_name_to_group_map[cluster_name]
 
         raise "Cluster '#{cluster_name}' has not been allocated to a cluster group" if group_name.blank?
@@ -201,7 +186,7 @@ module Costs
               else
                 project_bills.set_usage_allocated_cost_for_service(*args)
 
-                project_cluster_group_totals[date][group_name] += day_bill
+                non_shared_project_cluster_group_totals[date][group_name] += day_bill
               end
             end
           end
@@ -223,6 +208,10 @@ module Costs
       # Now allocate the shared project(s) cluster group costs to the non shared
       # projects based on the proportion, amongst other non shared projects
       # only, of their bills *within* that cluster group.
+      #
+      # Note: we skip cluster groups that host shared services, as these need be
+      # shared across all projects, not just the ones running within those
+      # cluster groups.
 
       shared_costs_breakdown.data.each do |(date, h1)|
         h1[:from_shared_projects].each do |(shared_project_id, h2)|
@@ -240,7 +229,9 @@ module Costs
 
               entry[:services].each do |(service_id, h5)|
                 h5[:cluster_groups].each do |(group_name, h6)|
-                  proportion = h6.values.sum / project_cluster_group_totals[date][group_name]
+                  next if cluster_groups_for_shared_services.include?(group_name)
+
+                  proportion = h6.values.sum / non_shared_project_cluster_group_totals[date][group_name]
                   proportion = 0 if proportion.nan? || proportion.infinite?
 
                   allocated = proportion * shared_cluster_group_totals[group_name]
@@ -263,11 +254,14 @@ module Costs
 
       # Now split out the rest of the shared pool based on the *overall*
       # proportion of bills from all cluster groups combined.
+      #
+      # Make sure to include the shared services costs from the cluster groups
+      # that primarily host shared services.
 
-      total_project_cluster_groups_bills = HashInitializer[BigDecimal('0')]
+      total_non_shared_project_cluster_groups_bills = HashInitializer[BigDecimal('0')]
 
-      project_cluster_group_totals.each do |(date, cluster_group)|
-        total_project_cluster_groups_bills[date] += cluster_group.values.sum
+      non_shared_project_cluster_group_totals.each do |(date, cluster_group)|
+        total_non_shared_project_cluster_groups_bills[date] += cluster_group.values.sum
       end
 
       project_bills.data.each do |(project_id, h1)|
@@ -279,19 +273,8 @@ module Costs
               acc += entries.values.sum
             end
 
-            proportion = service_cluster_groups_total / total_project_cluster_groups_bills[date]
+            proportion = service_cluster_groups_total / total_non_shared_project_cluster_groups_bills[date]
             proportion = 0 if proportion.nan? || proportion.infinite?
-
-            # Shared cluster costs
-            shared_costs_breakdown.data[date][:from_shared_clusters].each do |(cluster_name, cluster_total)|
-              project_bills.add_shared_cluster_allocated_cost_for_service(
-                project_id,
-                service_id,
-                date,
-                cluster_name,
-                proportion * cluster_total
-              )
-            end
 
             # Missing metrics costs
             shared_costs_breakdown.data[date][:from_missing_metrics].each do |(cluster_name, cluster_total)|
@@ -322,10 +305,10 @@ module Costs
               proportion * unknown_total
             )
 
-            # Shared project known resources
+            # Shared projects costs
             shared_costs_breakdown.data[date][:from_shared_projects].each do |(shared_project_id, h4)|
 
-              # Top level
+              # Top level known resources
               project_bills.add_allocated_known_resource_cost_from_shared_project_top_level_for_service(
                 project_id,
                 service_id,
@@ -334,9 +317,10 @@ module Costs
                 proportion * h4[:top_level][:known_resources]
               )
 
-              # Services
+              # Shared services within these shared projects
               next unless h4.has_key?(:services)
               h4[:services].each do |(shared_service_id, h5)|
+                # Shared services known resources
                 project_bills.add_allocated_known_resource_cost_from_shared_project_service_for_service(
                   project_id,
                   service_id,
@@ -345,6 +329,23 @@ module Costs
                   shared_service_id,
                   proportion * h5[:known_resources]
                 )
+
+                # Cluster groups that specifically host these shared services
+                cluster_groups_for_shared_services.each do |group_name|
+                  next unless h5[:cluster_groups].has_key?(group_name)
+
+                  amount = h5[:cluster_groups][group_name].values.sum
+
+                  project_bills.add_allocated_cluster_group_cost_from_shared_project_for_service(
+                    project_id,
+                    service_id,
+                    date,
+                    shared_project_id,
+                    shared_service_id,
+                    group_name,
+                    proportion * amount
+                  )
+                end
               end
 
             end
@@ -373,14 +374,13 @@ module Costs
       }
     end
 
-    def accumulate_billing_items(dates, billing_items, shared_clusters, shared_projects)
+    def accumulate_billing_items(dates, billing_items, shared_projects)
       accumulations = HashUtils.initialize_hash_with_keys_with_defaults(dates) do
         {
           projects: HashInitializer[:hash],
           clusters: HashInitializer[:hash, :array],
           shared: {
             from_shared_projects: HashInitializer[:hash],
-            from_shared_clusters: HashInitializer[:hash, :array],
             from_unmapped: HashInitializer[:array],
             from_unknown: HashInitializer[:array]
           }
@@ -393,7 +393,6 @@ module Costs
         entry = setup_and_get_accumulation_entry(
           accumulations[date],
           item,
-          shared_clusters,
           shared_projects
         )
 
@@ -407,7 +406,7 @@ module Costs
       accumulations
     end
 
-    def setup_and_get_accumulation_entry(date_accumulation, item, shared_clusters, shared_projects)
+    def setup_and_get_accumulation_entry(date_accumulation, item, shared_projects)
       case item[:type]
 
       when :unmapped_cluster_only,
@@ -421,12 +420,7 @@ module Costs
 
       when :mapped_cluster_only
         cluster_name = item[:cluster_name]
-
-        if shared_clusters.include?(cluster_name)
-          date_accumulation[:shared][:from_shared_clusters][cluster_name]
-        else
-          date_accumulation[:clusters][cluster_name]
-        end
+        date_accumulation[:clusters][cluster_name]
 
       when :mapped_cluster_and_mapped_namespace,
            :mapped_project_directly

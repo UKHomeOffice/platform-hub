@@ -39,9 +39,6 @@ module Costs
     #                   }
     #                 }
     #               },
-    #               from_shared_clusters: {
-    #                 '<cluster_name>' => <BigDecimal>
-    #               },
     #               from_missing_metrics: {
     #                 '<cluster_name>' => <BigDecimal>
     #               },
@@ -98,11 +95,6 @@ module Costs
     def add_allocated_known_resource_cost_from_shared_project_service_for_service(project_id, service_id, date, shared_project_id, shared_service_id, amount)
       entry = get_service_shared_project_service_entry(project_id, service_id, date, shared_project_id, shared_service_id)
       entry[:known_resources] += amount
-    end
-
-    def add_shared_cluster_allocated_cost_for_service(project_id, service_id, date, cluster_name, amount)
-      entry = get_service_entry(project_id, service_id, date)[:shared][:from_shared_clusters]
-      entry[cluster_name] += amount
     end
 
     def add_shared_missing_metrics_allocated_cost_for_service(project_id, service_id, date, cluster_name, amount)
@@ -185,7 +177,6 @@ module Costs
         cluster_groups: HashInitializer[:hash, BigDecimal('0')],
         shared: {
           from_shared_projects: HashInitializer[:hash, :hash, BigDecimal('0')],
-          from_shared_clusters: HashInitializer[BigDecimal('0')],
           from_missing_metrics: HashInitializer[BigDecimal('0')],
           from_unmapped: BigDecimal('0'),
           from_unknown: BigDecimal('0')
