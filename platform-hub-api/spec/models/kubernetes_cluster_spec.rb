@@ -170,4 +170,28 @@ RSpec.describe KubernetesCluster, type: :model do
 
   end
 
+  describe 'when destroyed' do
+    subject { create :kubernetes_cluster }
+
+    context 'and has namespace(s)' do
+      let :service do
+        s = create :service
+        create :allocation, allocatable: subject, allocation_receivable: s.project
+        s
+      end
+      let!(:n1) { create :kubernetes_namespace, service: service, cluster: subject }
+      let!(:n2) { create :kubernetes_namespace }
+
+      it 'deletes associated namespaces from the database too' do
+        expect(KubernetesNamespace.exists?(id: n1.id)).to be true
+        expect(KubernetesNamespace.exists?(id: n2.id)).to be true
+
+        subject.destroy
+
+        expect(KubernetesNamespace.exists?(id: n1.id)).to be false
+        expect(KubernetesNamespace.exists?(id: n2.id)).to be true
+      end
+    end
+  end
+
 end

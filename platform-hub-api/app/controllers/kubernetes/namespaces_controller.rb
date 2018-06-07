@@ -6,16 +6,12 @@ class Kubernetes::NamespacesController < ApiJsonController
 
   # GET /kubernetes/namespaces
   def index
-    scope = KubernetesNamespace.all
-
-    if params[:service_id]
-      service = Service.find params[:service_id]
-      scope = scope.by_service(service)
-    end
-
-    if params[:cluster_name]
-      cluster = KubernetesCluster.friendly.find params[:cluster_name]
-      scope = scope.by_cluster(cluster)
+    scope = if params[:service_id]
+      Service.find(params[:service_id]).kubernetes_namespaces
+    elsif params[:cluster_name]
+      KubernetesCluster.friendly.find(params[:cluster_name]).namespaces
+    else
+      KubernetesNamespace.all
     end
 
     namespaces = scope.order(:name)

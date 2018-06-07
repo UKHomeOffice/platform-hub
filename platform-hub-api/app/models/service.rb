@@ -27,4 +27,6 @@ class Service < ApplicationRecord
     class_name: KubernetesToken,
     dependent: :destroy
 
+  has_many :kubernetes_namespaces, dependent: :destroy
+
 end
