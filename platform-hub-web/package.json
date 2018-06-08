@@ -34,7 +34,7 @@
     "angular-ui-router": "^1.0.3",
     "angular-url-encode": "^1.0.0",
     "bourbon": "^4.3.4",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.10",
     "medium-editor": "^5.23.2",
     "moment": "^2.18.1",
     "ng-material-datetimepicker": "^1.6.3",
