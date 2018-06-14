@@ -225,12 +225,30 @@ function ProjectBillBreakdownController(AppSettings, _) {
     }
 
     // Shared table rows
-    const serviceSharedAllocationsSorted = _.sortBy(serviceSharedAllocations, ['label']);
-    ctrl.sharedRows = serviceSharedAllocationsSorted.map(s => {
-      return [
-        s.label,
-        s.total
-      ].concat(s.items);
-    });
+
+    if (serviceSharedAllocations.length) {
+      const sharedTotalsRow = [
+        'Total',
+        serviceSharedAllocations.reduce((acc, s) => {
+          return acc + s.total;
+        }, 0)
+      ].concat(
+        _.times(serviceSharedAllocations[0].items.length).map(ix => {
+          return serviceSharedAllocations.reduce((acc, s) => {
+            return acc + s.items[ix];
+          }, 0);
+        })
+      );
+
+      const serviceSharedAllocationsSorted = _.sortBy(serviceSharedAllocations, ['label']);
+      ctrl.sharedRows = [sharedTotalsRow].concat(
+        serviceSharedAllocationsSorted.map(s => {
+          return [
+            s.label,
+            s.total
+          ].concat(s.items);
+        })
+      );
+    }
   }
 }
