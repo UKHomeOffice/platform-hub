@@ -112,7 +112,7 @@
         </md-card-content>
       </md-card>
 
-      <md-card ng-repeat="(id, b) in $ctrl.report.results.project_bills track by id">
+      <md-card ng-repeat="b in $ctrl.projectBills track by b.name">
         <md-card-title>
           <md-card-title-text>
             <span class="md-title">
