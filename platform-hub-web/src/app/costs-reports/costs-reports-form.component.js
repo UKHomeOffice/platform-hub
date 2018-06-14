@@ -15,8 +15,6 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
     'metrics_file'
   ];
 
-  const SHARED_BUCKET = 'Shared';
-
   const ctrl = this;
 
   ctrl.months = generateMonthsList();
@@ -87,10 +85,8 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
   function initReportConfig() {
     ctrl.report.config = {
       metric_weights: {},
-      shared_costs: {
-        clusters: [],
-        projects: []
-      },
+      shared_projects: [],
+      cluster_groups_for_shared_services: [],
       cluster_groups: {},
       ui: {
         main_shared_services: []
@@ -143,7 +139,7 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
         setAvailableServices();
         setMappedMetricsNamespacesCount();
         setAllClustersGrouped();
-        setConfigSharedClustersAndGroupedClusters();
+        setGroupedClusters();
       })
       .finally(() => {
         ctrl.preparing = false;
@@ -235,7 +231,7 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
 
   function setAvailableSharedServices() {
     ctrl.availableSharedServices = _.filter(ctrl.availableServices, s => {
-      return _.includes(ctrl.report.config.shared_costs.projects, s.project_shortname);
+      return _.includes(ctrl.report.config.shared_projects, s.project_shortname);
     });
   }
 
@@ -254,19 +250,15 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
     );
   }
 
-  function setConfigSharedClustersAndGroupedClusters() {
+  function setGroupedClusters() {
     if (ctrl.allMappedClustersGrouped) {
       const config = ctrl.report.config;
       _.values(ctrl.prepareResults.billing.clusters_and_namespaces.mapped).forEach(c => {
-        if (c.costs_bucket.toLowerCase() === SHARED_BUCKET.toLowerCase()) {
-          config.shared_costs.clusters.push(c.cluster_name);
-        } else {
-          if (!_.has(config.cluster_groups, c.costs_bucket)) {
-            config.cluster_groups[c.costs_bucket] = [];
-          }
-          if (!_.includes(config.cluster_groups[c.costs_bucket], c.cluster_name)) {
-            config.cluster_groups[c.costs_bucket].push(c.cluster_name);
-          }
+        if (!_.has(config.cluster_groups, c.costs_bucket)) {
+          config.cluster_groups[c.costs_bucket] = [];
+        }
+        if (!_.includes(config.cluster_groups[c.costs_bucket], c.cluster_name)) {
+          config.cluster_groups[c.costs_bucket].push(c.cluster_name);
         }
       });
     }

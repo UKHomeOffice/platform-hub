@@ -96,17 +96,6 @@ function ProjectBillBreakdownController(AppSettings, _) {
 
       // Shared
 
-      const fromSharedClustersAmount = _.sum(_.values(s.shared.from_shared_clusters));
-      summary.shared += fromSharedClustersAmount;
-      totals.shared += fromSharedClustersAmount;
-      summary.total += fromSharedClustersAmount;
-      totals.total += fromSharedClustersAmount;
-      // For shared table:
-      if (ix === 0) {
-        ctrl.sharedHeaders.push('Shared Clusters');
-      }
-      sharedAllocation.items.push(fromSharedClustersAmount);
-
       let allMiscSharedServicesTotal = 0;
 
       _.each(s.shared.from_shared_projects, sharedProject => {

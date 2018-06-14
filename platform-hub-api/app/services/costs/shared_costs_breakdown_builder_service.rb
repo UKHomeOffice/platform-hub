@@ -7,7 +7,6 @@ module Costs
       @data = HashUtils.initialize_hash_with_keys_with_defaults(dates) do
         {
           from_shared_projects: HashInitializer[:hash, :hash, BigDecimal('0')],
-          from_shared_clusters: HashInitializer[BigDecimal('0')],
           from_missing_metrics: HashInitializer[BigDecimal('0')],
           from_unmapped: BigDecimal('0'),
           from_unknown: BigDecimal('0')
@@ -26,10 +25,6 @@ module Costs
     def add_project_known_resource_cost_for_service(project_id, service_id, date, amount)
       entry = get_service_entry(project_id, service_id, date)
       entry[:known_resources] += amount
-    end
-
-    def add_cluster_cost(cluster_name, date, amount)
-      @data[date][:from_shared_clusters][cluster_name] += amount
     end
 
     def add_missing_metrics_cost(cluster_name, date, amount)
