@@ -32,6 +32,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.processingKubernetesUserTokens = false;
   ctrl.bills = [];
   ctrl.loadingBills = false;
+  ctrl.billsExpanded = false;
 
   ctrl.deleteProject = deleteProject;
   ctrl.searchUsers = searchUsers;

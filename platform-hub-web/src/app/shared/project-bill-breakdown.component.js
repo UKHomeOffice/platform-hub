@@ -2,7 +2,8 @@ export const ProjectBillBreakdownComponent = {
   bindings: {
     bills: '<',
     mainSharedServices: '<',
-    onTotals: '&'
+    onTotals: '&',
+    expanded: '='
   },
   template: require('./project-bill-breakdown.html'),
   controller: ProjectBillBreakdownController

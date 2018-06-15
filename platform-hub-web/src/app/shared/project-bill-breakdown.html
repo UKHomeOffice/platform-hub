@@ -14,6 +14,7 @@
       <thead>
         <th
           ng-repeat="h in $ctrl.headers track by h"
+          ng-show="$index != 0 || $ctrl.expanded"
           style="text-align: center;">
           {{h}}
         </th>
@@ -21,10 +22,12 @@
       <tbody>
         <tr
           ng-repeat="r in $ctrl.rows track by r[0]"
+          ng-show="$ctrl.expanded || r[0] == 'Total'"
           ng-style="r[0] == 'Total' ? {'font-weight': 'bold'} : {}"
           md-colors="r[0] == 'Total' ? {background: 'green-50'} : {}">
           <td
             ng-repeat="d in r track by $index"
+            ng-show="$index != 0 || $ctrl.expanded"
             ng-style="$index == 0 ? {'text-align': 'right'} : {'text-align': 'center'}">
             <span ng-if="$index == 0">{{d}}</span>
             <span ng-if="$index != 0">
@@ -40,9 +43,12 @@
     </table>
   </div>
 
-  <div ng-if="$ctrl.totals.shared > 0">
-    <br />
+  <br ng-if="$ctrl.totals.shared > 0" />
 
+  <div
+    ng-if="$ctrl.totals.shared > 0"
+    class="indented-alt"
+    style="padding-top: 0.33em; padding-bottom: 1em; padding-right: 0.5em;">
     <p class="md-body-2">
       Platform / shared breakdown:
     </p>
@@ -52,6 +58,7 @@
         <thead>
           <th
             ng-repeat="h in $ctrl.sharedHeaders track by h"
+            ng-show="$index != 0 || $ctrl.expanded"
             style="text-align: center;">
             {{h}}
           </th>
@@ -59,10 +66,12 @@
         <tbody>
           <tr
             ng-repeat="r in $ctrl.sharedRows track by r[0]"
+            ng-show="$ctrl.expanded || r[0] == 'Total'"
             ng-style="r[0] == 'Total' ? {'font-weight': 'bold'} : {}"
             md-colors="r[0] == 'Total' ? {background: 'green-50'} : {}">
             <td
               ng-repeat="d in r track by $index"
+              ng-show="$index != 0 || $ctrl.expanded"
               ng-style="$index == 0 ? {'text-align': 'right'} : {'text-align': 'center'}">
               <span ng-if="$index == 0">{{d}}</span>
               <span ng-if="$index != 0">
@@ -76,15 +85,27 @@
     </div>
   </div>
 
-  <p
-    class="md-body-1"
-    ng-if="$ctrl.moreInfoLink.url && $ctrl.moreInfoLink.text">
-    <br />
-    <a
-      target="_blank"
-      ng-href="{{$ctrl.moreInfoLink.url}}">
-      {{$ctrl.moreInfoLink.text}}
-    </a>
-  </p>
+  <br />
+
+  <div layout="row">
+    <p
+      class="md-body-1"
+      ng-if="$ctrl.moreInfoLink.url && $ctrl.moreInfoLink.text">
+      <a
+        target="_blank"
+        ng-href="{{$ctrl.moreInfoLink.url}}">
+        {{$ctrl.moreInfoLink.text}}
+      </a>
+    </p>
+    <span flex></span>
+    <md-button
+      class="md-raised md-primary"
+      ng-click="$ctrl.expanded = !$ctrl.expanded"
+      aria-label="Expand or collapse more details in the tables">
+      <span ng-if="$ctrl.expanded">Collapse details</span>
+      <span ng-if="!$ctrl.expanded">Expand details</span>
+    </md-button>
+  </div>
+
 
 </div>

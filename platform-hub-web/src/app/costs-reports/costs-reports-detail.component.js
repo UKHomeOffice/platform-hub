@@ -29,6 +29,7 @@ function CostsReportsDetailController($mdDialog, $state, $filter, CostsReports, 
   ctrl.totals = null;
   ctrl.configTreeData = null;
   ctrl.sharedCostsBreakdownTreeData = null;
+  ctrl.expanded = false;
 
   ctrl.handleProjectBillTotals = handleProjectBillTotals;
   ctrl.deleteReport = deleteReport;
