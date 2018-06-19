@@ -14,6 +14,8 @@ function ProjectBillBreakdownController(AppSettings, _) {
 
   const ctrl = this;
 
+  ctrl.platformSharedLabel = 'Platform shared';
+
   ctrl.moreInfoLink = null;
   ctrl.totals = null;
   ctrl.headers = [];
@@ -167,7 +169,7 @@ function ProjectBillBreakdownController(AppSettings, _) {
 
       // For shared table:
       if (ix === 0) {
-        ctrl.sharedHeaders.push('Unmapped / Unknown');
+        ctrl.sharedHeaders.push('Other');
       }
       sharedAllocation.items.push(sharedUnmappedUnknown);
 
@@ -183,8 +185,8 @@ function ProjectBillBreakdownController(AppSettings, _) {
       '',
       'Total',
       'AWS Resources'
-    ].concat(clusterGroupNamesSorted)
-     .concat(['Platform / Shared']);
+    ].concat(clusterGroupNamesSorted.map(n => `In ${n}`))
+     .concat([ctrl.platformSharedLabel]);
 
     const serviceSummariesSorted = _.sortBy(serviceSummaries, ['label']);
     const serviceRows = serviceSummariesSorted.map(s => {
