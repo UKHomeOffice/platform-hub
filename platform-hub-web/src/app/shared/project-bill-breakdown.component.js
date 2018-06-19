@@ -2,7 +2,8 @@ export const ProjectBillBreakdownComponent = {
   bindings: {
     bills: '<',
     mainSharedServices: '<',
-    onTotals: '&'
+    onTotals: '&',
+    expanded: '='
   },
   template: require('./project-bill-breakdown.html'),
   controller: ProjectBillBreakdownController
@@ -12,6 +13,8 @@ function ProjectBillBreakdownController(AppSettings, _) {
   'ngInject';
 
   const ctrl = this;
+
+  ctrl.platformSharedLabel = 'Platform shared';
 
   ctrl.moreInfoLink = null;
   ctrl.totals = null;
@@ -166,7 +169,7 @@ function ProjectBillBreakdownController(AppSettings, _) {
 
       // For shared table:
       if (ix === 0) {
-        ctrl.sharedHeaders.push('Unmapped / Unknown');
+        ctrl.sharedHeaders.push('Other');
       }
       sharedAllocation.items.push(sharedUnmappedUnknown);
 
@@ -182,8 +185,8 @@ function ProjectBillBreakdownController(AppSettings, _) {
       '',
       'Total',
       'AWS Resources'
-    ].concat(clusterGroupNamesSorted)
-     .concat(['Platform / Shared']);
+    ].concat(clusterGroupNamesSorted.map(n => `In ${n}`))
+     .concat([ctrl.platformSharedLabel]);
 
     const serviceSummariesSorted = _.sortBy(serviceSummaries, ['label']);
     const serviceRows = serviceSummariesSorted.map(s => {
@@ -225,12 +228,30 @@ function ProjectBillBreakdownController(AppSettings, _) {
     }
 
     // Shared table rows
-    const serviceSharedAllocationsSorted = _.sortBy(serviceSharedAllocations, ['label']);
-    ctrl.sharedRows = serviceSharedAllocationsSorted.map(s => {
-      return [
-        s.label,
-        s.total
-      ].concat(s.items);
-    });
+
+    if (serviceSharedAllocations.length) {
+      const sharedTotalsRow = [
+        'Total',
+        serviceSharedAllocations.reduce((acc, s) => {
+          return acc + s.total;
+        }, 0)
+      ].concat(
+        _.times(serviceSharedAllocations[0].items.length).map(ix => {
+          return serviceSharedAllocations.reduce((acc, s) => {
+            return acc + s.items[ix];
+          }, 0);
+        })
+      );
+
+      const serviceSharedAllocationsSorted = _.sortBy(serviceSharedAllocations, ['label']);
+      ctrl.sharedRows = [sharedTotalsRow].concat(
+        serviceSharedAllocationsSorted.map(s => {
+          return [
+            s.label,
+            s.total
+          ].concat(s.items);
+        })
+      );
+    }
   }
 }

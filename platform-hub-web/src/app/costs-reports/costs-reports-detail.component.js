@@ -25,9 +25,11 @@ function CostsReportsDetailController($mdDialog, $state, $filter, CostsReports, 
   ctrl.loading = true;
   ctrl.isAdmin = false;
   ctrl.report = null;
+  ctrl.projectBills = null;
   ctrl.totals = null;
   ctrl.configTreeData = null;
   ctrl.sharedCostsBreakdownTreeData = null;
+  ctrl.expanded = false;
 
   ctrl.handleProjectBillTotals = handleProjectBillTotals;
   ctrl.deleteReport = deleteReport;
@@ -52,6 +54,11 @@ function CostsReportsDetailController($mdDialog, $state, $filter, CostsReports, 
       .get(id)
       .then(report => {
         ctrl.report = report;
+
+        ctrl.projectBills = _.sortBy(
+          _.values(report.results.project_bills),
+          ['name']
+        );
 
         ctrl.configTreeData = treeDataHelper.objectToTreeData(report.config);
 

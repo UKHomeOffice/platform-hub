@@ -19,139 +19,136 @@
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
   <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.report">
+    <div layout-padding>
 
-    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50">
-      <md-content layout-padding>
+      <h3 class="md-title" layout="row">
+        {{$ctrl.report.year}}
+        {{$ctrl.report.month}}
+      </h3>
 
-        <h3 class="md-title" layout="row">
-          {{$ctrl.report.year}}
-          {{$ctrl.report.month}}
-        </h3>
+      <p class="md-body-1">
+        <span md-colors="{color: 'blue-grey-700'}">
+          Billing data file:
+        </span>
+        {{$ctrl.report.billing_file}}
+      </p>
+      <p class="md-body-1">
+        <span md-colors="{color: 'blue-grey-700'}">
+          Metrics data file:
+        </span>
+        {{$ctrl.report.metrics_file}}
+      </p>
 
-        <p class="md-body-1">
-          <span md-colors="{color: 'blue-grey-700'}">
-            Billing data file:
+      <p class="md-body-1">
+        <span md-colors="{color: 'blue-grey-700'}">
+          Created at:
+        </span>
+        {{$ctrl.report.created_at | date:'medium'}}
+      </p>
+
+      <p class="md-body-1">
+        <span md-colors="{color: 'blue-grey-700'}">
+          Published at:
+        </span>
+        <span ng-if="!$ctrl.report.published_at" class="none-text">not published yet</span>
+        <span ng-if="$ctrl.report.published_at">
+          <span>
+            {{$ctrl.report.published_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
           </span>
-          {{$ctrl.report.billing_file}}
-        </p>
-        <p class="md-body-1">
-          <span md-colors="{color: 'blue-grey-700'}">
-            Metrics data file:
-          </span>
-          {{$ctrl.report.metrics_file}}
-        </p>
+          (<strong><span am-time-ago="$ctrl.report.published_at" md-colors="{color: 'accent'}"></span></strong>)
+        </span>
+      </p>
 
-        <p class="md-body-1">
-          <span md-colors="{color: 'blue-grey-700'}">
-            Created at:
-          </span>
-          {{$ctrl.report.created_at | date:'medium'}}
-        </p>
+      <p
+        class="md-body-1"
+        md-colors="{background: 'blue-grey-50'}"
+        ng-if="$ctrl.report.notes"
+        ng-bind-html='$ctrl.report.notes | simpleFormat'
+        layout-padding>
+      </p>
 
-        <p class="md-body-1">
-          <span md-colors="{color: 'blue-grey-700'}">
-            Published at:
-          </span>
-          <span ng-if="!$ctrl.report.published_at" class="none-text">not published yet</span>
-          <span ng-if="$ctrl.report.published_at">
-            <span>
-              {{$ctrl.report.published_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+      <br />
+
+      <md-divider></md-divider>
+
+      <h4>
+        Config used to generate report
+      </h4>
+
+      <div ivh-treeview="$ctrl.configTreeData"></div>
+
+      <br />
+
+      <md-divider></md-divider>
+
+      <h4>
+        Project bills generated
+      </h4>
+
+      <md-card md-colors="{background: 'green-50'}">
+        <md-card-content>
+          <p class="md-display-1">
+            {{$ctrl.totals.total | formatCurrencyUnits:'$'}}
+          </p>
+
+          <p class="md-body-1 indented">
+            From resources:
+            <strong>{{$ctrl.totals.resources | formatCurrencyUnits:'$'}}</strong>
+          </p>
+
+          <p class="md-body-1 indented">
+            <span>From cluster groups:</span><br />
+            <span class="indented" ng-repeat="(c, a) in $ctrl.totals.clusterGroups">
+              {{c}}:
+              <strong>{{a | formatCurrencyUnits:'$'}}</strong>
+              <br />
             </span>
-            (<strong><span am-time-ago="$ctrl.report.published_at" md-colors="{color: 'accent'}"></span></strong>)
-          </span>
-        </p>
+          </p>
 
-        <p
-          class="md-body-1"
-          md-colors="{background: 'blue-grey-50'}"
-          ng-if="$ctrl.report.notes"
-          ng-bind-html='$ctrl.report.notes | simpleFormat'
-          layout-padding>
-        </p>
+          <p class="md-body-1 indented">
+            From shared / platform:
+            <strong>{{$ctrl.totals.shared | formatCurrencyUnits:'$'}}</strong>
+          </p>
+        </md-card-content>
+      </md-card>
 
-        <br />
+      <md-card ng-repeat="b in $ctrl.projectBills track by b.name">
+        <md-card-title>
+          <md-card-title-text>
+            <span class="md-title">
+              {{b.name}}
+              ({{b.shortname}})
+            </span>
+          </md-card-title-text>
+        </md-card-title>
 
-        <md-divider></md-divider>
+        <md-card-content>
+          <p class="md-body-1">
+            <span md-colors="{color: 'blue-grey-700'}">
+              Cost centre code:
+            </span>
+            <span>{{b.cost_centre_code || '--'}}</span>
+          </p>
 
-        <h4>
-          Config used to generate report
-        </h4>
+          <project-bill-breakdown
+            bills="b.bills"
+            main-shared-services="$ctrl.report.config.ui.main_shared_services"
+            on-totals="$ctrl.handleProjectBillTotals(totals)"
+            expanded="$ctrl.expanded">
+          </project-bill-breakdown>
+        </md-card-content>
+      </md-card>
 
-        <div ivh-treeview="$ctrl.configTreeData"></div>
+      <br />
 
-        <br />
+      <md-divider></md-divider>
 
-        <md-divider></md-divider>
+      <h4>
+        Shared costs breakdown
+      </h4>
 
-        <h4>
-          Project bills generated
-        </h4>
+      <div ivh-treeview="$ctrl.sharedCostsBreakdownTreeData"></div>
 
-        <md-card md-colors="{background: 'green-50'}">
-          <md-card-content>
-            <p class="md-display-1">
-              {{$ctrl.totals.total | formatCurrencyUnits:'$'}}
-            </p>
-
-            <p class="md-body-1 indented">
-              From resources:
-              <strong>{{$ctrl.totals.resources | formatCurrencyUnits:'$'}}</strong>
-            </p>
-
-            <p class="md-body-1 indented">
-              <span>From cluster groups:</span><br />
-              <span class="indented" ng-repeat="(c, a) in $ctrl.totals.clusterGroups">
-                {{c}}:
-                <strong>{{a | formatCurrencyUnits:'$'}}</strong>
-                <br />
-              </span>
-            </p>
-
-            <p class="md-body-1 indented">
-              From shared / platform:
-              <strong>{{$ctrl.totals.shared | formatCurrencyUnits:'$'}}</strong>
-            </p>
-          </md-card-content>
-        </md-card>
-
-        <md-card ng-repeat="(id, b) in $ctrl.report.results.project_bills track by id">
-          <md-card-title>
-            <md-card-title-text>
-              <span class="md-title">
-                {{b.name}}
-                ({{b.shortname}})
-              </span>
-            </md-card-title-text>
-          </md-card-title>
-
-          <md-card-content>
-            <p class="md-body-1">
-              <span md-colors="{color: 'blue-grey-700'}">
-                Cost centre code:
-              </span>
-              <span>{{b.cost_centre_code || '--'}}</span>
-            </p>
-
-            <project-bill-breakdown
-              bills="b.bills"
-              main-shared-services="$ctrl.report.config.ui.main_shared_services"
-              on-totals="$ctrl.handleProjectBillTotals(totals)">
-            </project-bill-breakdown>
-          </md-card-content>
-        </md-card>
-
-        <br />
-
-        <md-divider></md-divider>
-
-        <h4>
-          Shared costs breakdown
-        </h4>
-
-        <div ivh-treeview="$ctrl.sharedCostsBreakdownTreeData"></div>
-
-      </md-content>
     </div>
-
   </md-content>
 </div>

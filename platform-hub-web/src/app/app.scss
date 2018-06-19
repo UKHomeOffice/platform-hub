@@ -10,6 +10,7 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 table.simple-table {
+  background: #fff;
   border-collapse: collapse;
 
   &, td, th {
@@ -88,6 +89,12 @@ fieldset {
   margin-left: 0.66em;
   padding-left: 0.66em;
   border-left: 2px solid rgba(black, 0.16);
+}
+
+.indented-alt {
+  padding-left: 1em;
+  border-left: 1px dashed #ccc;
+  background-color: lighten(#ccc, 17);
 }
 
 .md-button.md-icon-button.input-button-end {

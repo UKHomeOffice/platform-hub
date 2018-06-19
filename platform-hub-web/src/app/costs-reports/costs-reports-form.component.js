@@ -226,7 +226,7 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
       });
     });
 
-    ctrl.availableServices = _.sortBy(_.values(mappedServices), ['project_shortname']);
+    ctrl.availableServices = _.sortBy(_.values(mappedServices), ['project_shortname', 'service_name']);
   }
 
   function setAvailableSharedServices() {
