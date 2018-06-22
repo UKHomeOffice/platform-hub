@@ -5,7 +5,7 @@ export const CostsReportsFormComponent = {
   controller: CostsReportsFormController
 };
 
-function CostsReportsFormController($state, CostsReports, treeDataHelper, logger, moment, _) {
+function CostsReportsFormController($q, $state, CostsReports, treeDataHelper, logger, moment, _) {
   'ngInject';
 
   const PREPARE_FIELDS = [
@@ -25,6 +25,7 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
   ctrl.saving = false;
   ctrl.availableBillingFiles = [];
   ctrl.availableMetricsFiles = [];
+  ctrl.previousConfig = null;
   ctrl.report = null;
   ctrl.prepareResults = null;
   ctrl.prepareResultsTreeData = null;
@@ -44,6 +45,8 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
   ctrl.handleSharedProjectsChange = handleSharedProjectsChange;
   ctrl.readyToGenerate = readyToGenerate;
   ctrl.create = create;
+  ctrl.hasPreviousConfig = hasPreviousConfig;
+  ctrl.applyPreviousConfig = applyPreviousConfig;
 
   init();
 
@@ -59,7 +62,7 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
   function init() {
     ctrl.loading = true;
 
-    CostsReports
+    const dataFilesFetch = CostsReports
       .getAvailableDataFiles()
       .then(([billingFiles, metricsFiles]) => {
         ctrl.availableBillingFiles = billingFiles;
@@ -68,7 +71,16 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
         initReport();
 
         handleYearOrMonthChange();
-      })
+      });
+
+    const previousConfigFetch = CostsReports
+      .lastPublishedConfig()
+      .then(config => {
+        ctrl.previousConfig = config;
+      });
+
+    $q
+      .all([dataFilesFetch, previousConfigFetch])
       .finally(() => {
         ctrl.loading = false;
       });
@@ -179,6 +191,28 @@ function CostsReportsFormController($state, CostsReports, treeDataHelper, logger
       .finally(() => {
         ctrl.saving = false;
       });
+  }
+
+  function hasPreviousConfig() {
+    return ctrl.previousConfig && !_.isEmpty(ctrl.previousConfig);
+  }
+
+  function applyPreviousConfig() {
+    // Important: the previous config MUST be fully forwards compatible.
+    //
+    // We ignore the `cluster_groups` field though, since it's a computed field.
+    if (hasPreviousConfig()) {
+      _.mergeWith(
+        ctrl.report.config,
+        ctrl.previousConfig,
+        (objValue, srcValue, key) => {
+          if (key === 'cluster_groups') {
+            return objValue;
+          }
+        }
+      );
+      handleSharedProjectsChange();
+    }
   }
 
   function setPrepareResultsTreeData() {

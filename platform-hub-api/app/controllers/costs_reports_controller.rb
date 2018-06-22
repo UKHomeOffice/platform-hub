@@ -129,6 +129,15 @@ class CostsReportsController < ApiJsonController
     render json: @report
   end
 
+  def last_published_config
+    report = CostsReport
+      .where.not(published_at: nil)
+      .order(published_at: :desc)
+      .first
+
+    render json: report.try(:config) || {}
+  end
+
   private
 
   def find_report

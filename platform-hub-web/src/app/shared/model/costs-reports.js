@@ -10,6 +10,7 @@ export const CostsReports = function (hubApiService, _) {
   model.create = hubApiService.createCostsReport;
   model.delete = hubApiService.deleteCostsReport;
   model.publish = hubApiService.publishCostsReport;
+  model.lastPublishedConfig = hubApiService.lastPublishedConfigCostsReports;
 
   return model;
 

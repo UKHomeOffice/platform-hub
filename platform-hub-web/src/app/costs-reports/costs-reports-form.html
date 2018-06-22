@@ -198,6 +198,26 @@
                 <md-tab-label>Configure & Check</md-tab-label>
                 <md-tab-body>
                   <div layout-padding>
+                    <div layout="column" layout-align="center center">
+                      <div>
+                        <md-button
+                          class="md-raised md-primary"
+                          ng-if="$ctrl.hasPreviousConfig()"
+                          ng-click="$ctrl.applyPreviousConfig()">
+                          Apply the last published config as a starting point
+                        </md-button>
+                      </div>
+                      <p>
+                        <small>
+                          IMPORTANT: it's possible that this last config contains values that don't exist any more (e.g. project and service IDs that have since been deleted). If so, this may cause the report generation to fail.
+                        </small>
+                      </p>
+                    </div>
+
+                    <br />
+                    <md-divider></md-divider>
+                    <br />
+
                     <div>
                       <h4>Step 1: configure metrics</h4>
 

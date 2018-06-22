@@ -147,6 +147,7 @@ Rails.application.routes.draw do
       get :available_data_files, on: :collection
       post :prepare, on: :collection
       post :publish, on: :member
+      get :last_published_config, on: :collection
     end
 
   end
