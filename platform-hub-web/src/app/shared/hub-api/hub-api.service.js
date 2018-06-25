@@ -175,6 +175,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.createCostsReport = buildResourceCreator('costs_reports');
   service.deleteCostsReport = buildResourceDeletor('costs_reports');
   service.publishCostsReport = publishCostsReport;
+  service.lastPublishedConfigCostsReports = buildSimpleFetcher('costs_reports/last_published_config');
 
   return service;
 

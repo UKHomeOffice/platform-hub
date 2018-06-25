@@ -497,4 +497,58 @@ RSpec.describe CostsReportsController, type: :controller do
     end
   end
 
+  describe 'POST #last_published_config' do
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        get :last_published_config
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not a hub admin so forbidden'  do
+        before do
+          get :last_published_config
+        end
+      end
+
+      it_behaves_like 'a hub admin' do
+
+        context 'when no costs reports have been published' do
+          before do
+            create :costs_report, published_at: nil
+          end
+
+          it 'should return an empty object' do
+            get :last_published_config
+            expect(json_response).to eq({})
+          end
+        end
+
+        context 'when costs reports have been published' do
+          let :config do
+            { 'foo' => 'bar' }
+          end
+
+          before do
+            create :costs_report, config: {}, published_at: nil
+            move_time_to 1.minute.from_now
+            create :costs_report, config: {}, published_at: now
+            move_time_to 2.minute.from_now
+            create :costs_report, config: config, published_at: now
+            move_time_to 3.minute.from_now
+            create :costs_report, config: {}, published_at: nil
+          end
+
+          it 'should return the last published config data' do
+            get :last_published_config
+            expect(json_response).to eq config
+          end
+        end
+
+      end
+
+    end
+  end
+
 end
