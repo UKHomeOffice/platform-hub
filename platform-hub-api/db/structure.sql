@@ -1079,6 +1079,20 @@ CREATE INDEX index_users_on_role ON users USING btree (role);
 
 
 --
+-- Name: kg_search_description_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kg_search_description_idx ON kubernetes_groups USING gin (description gin_trgm_ops);
+
+
+--
+-- Name: kg_search_name_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kg_search_name_idx ON kubernetes_groups USING gin (name gin_trgm_ops);
+
+
+--
 -- Name: read_marks_reader_readable_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1147,6 +1161,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180221145217'),
 ('20180314151141'),
 ('20180406075539'),
-('20180406083658');
+('20180406083658'),
+('20180711092801');
 
 

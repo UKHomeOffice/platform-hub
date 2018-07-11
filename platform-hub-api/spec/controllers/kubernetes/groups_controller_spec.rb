@@ -509,4 +509,29 @@ RSpec.describe Kubernetes::GroupsController, type: :controller do
     end
   end
 
+  describe 'GET #filters' do
+    it_behaves_like 'unauthenticated not allowed' do
+      before do
+        get :filters
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not a hub admin so forbidden'  do
+        before do
+          get :filters
+        end
+      end
+
+      it_behaves_like 'a hub admin' do
+        it 'returns filters available' do
+          get :filters
+          expect(response).to be_success
+        end
+      end
+
+    end
+  end
+
 end

@@ -2,27 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Allocation, type: :model do
 
-  with_model :AllocatableModel do
-    table id: :uuid do |t|
-      t.timestamps
-    end
-
-    model do
-      include Allocatable
-      allocatable
-    end
-  end
-
-  with_model :AllocationReceivableModel do
-    table id: :uuid do |t|
-      t.timestamps
-    end
-
-    model do
-      include AllocationReceivable
-      allocation_receivable
-    end
-  end
+  include_context 'allocation test models'
 
   describe 'ensure_uniqueness custom validation' do
     let(:allocatable) { AllocatableModel.create }
