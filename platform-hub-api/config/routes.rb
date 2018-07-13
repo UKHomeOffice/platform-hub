@@ -133,6 +133,7 @@ Rails.application.routes.draw do
           post :allocate, on: :member
           get :allocations, on: :member
           get :tokens, on: :member
+          get :filters, on: :collection
         end
 
         resources :namespaces

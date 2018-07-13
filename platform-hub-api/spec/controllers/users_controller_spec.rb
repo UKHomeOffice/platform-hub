@@ -173,11 +173,11 @@ RSpec.describe UsersController, type: :controller do
         context 'when users exist and include_deactivated param is true' do
           before do
             create_list :user, 3
-            @user = create :user, name: 'foobar', is_active: false
+            @user = create :user, name: 'searchable name', is_active: false
           end
 
           it 'should return expected results' do
-            get :search, params: { q: 'foo', include_deactivated: 'true' }
+            get :search, params: { q: 'searcha', include_deactivated: 'true' }
             expect(response).to be_success
             expect(json_response.length).to eq 1
             expect(json_response.first['id']).to eq @user.id
@@ -187,11 +187,11 @@ RSpec.describe UsersController, type: :controller do
         context 'when users exist and include_deactivated param is false' do
           before do
             create_list :user, 3
-            @user = create :user, name: 'foobar', is_active: false
+            @user = create :user, name: 'searchable name', is_active: false
           end
 
           it 'filters out deactivated users' do
-            get :search, params: { q: 'foo', include_deactivated: 'false' }
+            get :search, params: { q: 'searcha', include_deactivated: 'false' }
             expect(response).to be_success
             expect(json_response.length).to eq 0
           end
@@ -204,11 +204,11 @@ RSpec.describe UsersController, type: :controller do
           create :project_membership_as_admin, project: project, user: current_user
 
           create_list :user, 3
-          @user = create :user, name: 'foobar'
+          @user = create :user, name: 'searchable name'
         end
 
         it 'should return expected results' do
-          get :search, params: { q: 'foo' }
+          get :search, params: { q: 'searcha' }
           expect(response).to be_success
           expect(json_response.length).to eq 1
           expect(json_response.first['id']).to eq @user.id

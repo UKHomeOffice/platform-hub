@@ -16,73 +16,194 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content
-    paginated-list
-    paginated-list-per-page="$ctrl.groups.pagination.perPage"
-    paginated-list-total="$ctrl.groups.pagination.total"
-    paginated-list-fetch="$ctrl.fetchGroups(page)">
+  <md-content>
 
-    <md-card ng-repeat="g in $ctrl.groups track by g.id">
-      <md-card-title>
-        <md-card-title-text>
-          <span class="md-headline">
-            {{g.name}}
+    <div
+      ng-if="$ctrl.filters.length"
+      md-colors="{background: 'primary-50'}"
+      layout="column" layout-padding>
 
-            <small
-              class="badge float-right"
-              md-colors="{background: 'green'}">
-              {{g.target}}
-            </small>
+      <form
+        role="form"
+        class="compact"
+        ng-submit="$ctrl.fetchGroups()"
+        layout="row" layout-align="start center" layout-padding>
+        <md-input-container
+          class="md-icon-float md-block md-title compact hide-error-spacer"
+          md-no-float
+          flex
+          layout="row" layout-align="start center">
+          <input
+            ng-model="$ctrl.searchText"
+            placeholder="Search..."
+            flex>
+        </md-input-container>
+        <div>
+          <md-button
+            type="submit"
+            class="md-primary md-raised"
+            aria-label="Perform search"
+            ng-disabled="!$ctrl.searchText">
+            Search
+          </md-button>
+          <md-button
+            class="md-raised"
+            aria-label="Clear search"
+            ng-click="$ctrl.searchText = ''; $ctrl.fetchGroups()"
+            ng-disabled="!$ctrl.searchText">
+            Clear
+          </md-button>
+        </div>
+      </form>
 
-            <small
-              class="badge float-right"
-              md-colors="{background: 'blue'}">
-              {{g.kind}}
-            </small>
+      <div ng-repeat="f in $ctrl.filters track by f.param" layout="row">
+        <div class="md-body-2" layout="row" layout-align="start center">
+          Filter by {{f.title}}:
+        </div>
+        <div
+          flex
+          ng-switch="f.type"
+          style="padding-left: 1em;"
+          layout="row" layout-align="start center">
+          <div ng-switch-when="boolean" flex layout="row" layout-align="start center">
+            <md-checkbox
+              ng-model="f.selectedValue"
+              ng-change="$ctrl.fetchGroups()"
+              aria-label="Filter by {{f.title}}"
+              md-no-ink
+              style="margin-bottom: 0">
+            </md-checkbox>
+          </div>
 
-            <small
-              ng-if="g.is_privileged"
-              class="badge float-right"
-              md-colors="{background: 'accent'}">
-              Privileged
-            </small>
-          </span>
-        </md-card-title-text>
-      </md-card-title>
+          <ul ng-switch-default class="inline-list">
+            <li ng-repeat="i in f.values">
+              <md-button
+                class="md-raised md-primary"
+                ng-class="{'md-warn': i == f.selectedValue}"
+                aria-label="Filter group by {{f.title}} with value '{{i}}'"
+                ng-click="f.selectedValue = i; $ctrl.fetchGroups()">
+                {{i}}
+              </md-button>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <md-button
+            class="md-raised"
+            aria-label="Clear filter for {{f.title}}"
+            ng-click="f.selectedValue = undefined; $ctrl.fetchGroups()"
+            ng-disabled="!f.selectedValue">
+            Clear
+          </md-button>
+        </div>
+      </div>
 
-      <md-card-content>
-        <p
-          class="md-body-1"
-          md-colors="{background: 'blue-grey-50'}"
-          ng-if="g.description"
-          ng-bind-html='g.description | simpleFormat'
-          layout-padding>
-        </p>
+      <div layout="row">
+        <div class="md-body-2" layout="row" layout-align="start center">
+          Sort by:
+        </div>
+        <div
+          flex
+          style="padding-left: 1em;"
+          layout="row" layout-align="start center">
+          <md-button
+            ng-repeat="s in $ctrl.sortOptions track by s.value"
+            class="md-raised md-primary"
+            ng-class="{'md-warn': $ctrl.sort == s.value }"
+            aria-label="Sort by {{s.title}}"
+            ng-click="$ctrl.sort = s.value; $ctrl.fetchGroups()">
+            {{s.title}}
+          </md-button>
+        </div>
+        <div>
+          <md-button
+            class="md-raised"
+            aria-label="Clear sort ordering"
+            ng-click="$ctrl.sort = undefined; $ctrl.fetchGroups()"
+            ng-disabled="!$ctrl.sort">
+            Clear
+          </md-button>
+        </div>
+      </div>
 
-        <br />
+    </div>
 
-        <p class="md-body-1" ng-if="g.restricted_to_clusters.length > 0">
-          <span md-colors="{color: 'blue-grey-700'}">
-            Restricted to particular clusters:
-          </span>
-          <span>
-            {{g.restricted_to_clusters.join(', ')}}
-          </span>
-        </p>
-        <p class="md-body-1 none-text" ng-if="!g.restricted_to_clusters.length">
-          No cluster restrictions for this group
-        </p>
-      </md-card-content>
+    <p
+      ng-if="!$ctrl.groups.length"
+      class="none-text"
+      layout="row" layout-align="center center" layout-padding>
+      No Kubernetes groups found
+    </p>
 
-      <md-card-actions layout="row" layout-align="start center">
-        <md-button
-          class="md-primary"
-          aria-label="View details of this RBAC group"
-          ui-sref="kubernetes.groups.detail({id: g.id})">
-          Details
-        </md-button>
-      </md-card-actions>
-    </md-card>
+    <div
+      paginated-list
+      paginated-list-per-page="$ctrl.groups.pagination.perPage"
+      paginated-list-total="$ctrl.groups.pagination.total"
+      paginated-list-fetch="$ctrl.fetchGroups(page)">
+
+      <md-card ng-repeat="g in $ctrl.groups track by g.id">
+        <md-card-title>
+          <md-card-title-text>
+            <span class="md-headline">
+              {{g.name}}
+
+              <small
+                class="badge float-right"
+                md-colors="{background: 'green'}">
+                {{g.target}}
+              </small>
+
+              <small
+                class="badge float-right"
+                md-colors="{background: 'blue'}">
+                {{g.kind}}
+              </small>
+
+              <small
+                ng-if="g.is_privileged"
+                class="badge float-right"
+                md-colors="{background: 'accent'}">
+                Privileged
+              </small>
+            </span>
+          </md-card-title-text>
+        </md-card-title>
+
+        <md-card-content>
+          <p
+            class="md-body-1"
+            md-colors="{background: 'blue-grey-50'}"
+            ng-if="g.description"
+            ng-bind-html='g.description | simpleFormat'
+            layout-padding>
+          </p>
+
+          <br />
+
+          <p class="md-body-1" ng-if="g.restricted_to_clusters.length > 0">
+            <span md-colors="{color: 'blue-grey-700'}">
+              Restricted to particular clusters:
+            </span>
+            <span>
+              {{g.restricted_to_clusters.join(', ')}}
+            </span>
+          </p>
+          <p class="md-body-1 none-text" ng-if="!g.restricted_to_clusters.length">
+            No cluster restrictions for this group
+          </p>
+        </md-card-content>
+
+        <md-card-actions layout="row" layout-align="start center">
+          <md-button
+            class="md-primary"
+            aria-label="View details of this RBAC group"
+            ui-sref="kubernetes.groups.detail({id: g.id})">
+            Details
+          </md-button>
+        </md-card-actions>
+      </md-card>
+
+    </div>
 
   </md-content>
 </div>

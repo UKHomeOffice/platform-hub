@@ -30,6 +30,16 @@ fieldset {
   }
 }
 
+ul.inline-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    display: inline-block;
+  }
+}
+
 .pointer {
   cursor: pointer;
 }
@@ -159,4 +169,12 @@ md-card,
   md-list-item .md-secondary-container {
     margin: inherit;
   }
+}
+
+md-input-container.compact {
+  margin: 0;
+}
+
+form.compact {
+  padding: 0;
 }

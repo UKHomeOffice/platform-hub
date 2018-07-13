@@ -11,9 +11,27 @@ class Kubernetes::GroupsController < ApiJsonController
 
   authorize_resource class: KubernetesGroup
 
+  has_scope :by_kind, only: :index
+  has_scope :by_target, only: :index
+  has_scope :privileged, type: :boolean, only: :index
+  has_scope :unallocated, type: :boolean, only: :index
+
   # GET /kubernetes/groups
   def index
-    groups = KubernetesGroup.order(:name)
+    scope = if (q = params[:q]).present?
+      KubernetesGroup.search(q)
+    else
+      KubernetesGroup.all
+    end
+
+    scope = apply_scopes(scope)
+
+    groups = if params[:sort].present?
+      sort_field, sort_order = params[:sort].split(':')
+      scope.order(sort_field => sort_order)
+    else
+      scope.order(:name)
+    end
 
     paginate json: groups
   end
@@ -118,6 +136,18 @@ class Kubernetes::GroupsController < ApiJsonController
   def tokens
     tokens = KubernetesToken.by_group(@group.name).order(updated_at: :desc)
     paginate json: tokens
+  end
+
+  # GET /kubernetes/groups/filters
+  def filters
+    filters = [
+      { title: 'Kind', param: 'by_kind', values: KubernetesGroup.kinds.keys },
+      { title: 'Target', param: 'by_target', values: KubernetesGroup.targets.keys },
+      { title: 'Privileged only', param: 'privileged', type: 'boolean' },
+      { title: 'Unallocated only', param: 'unallocated', type: 'boolean' }
+    ]
+
+    render json: filters
   end
 
   private

@@ -2,6 +2,7 @@ class KubernetesGroup < ApplicationRecord
 
   NAME_REGEX = /\A[a-zA-Z][\w:-]*\z/
 
+  include PgSearch
   include Audited
   include FriendlyId
   include Allocatable
@@ -40,12 +41,20 @@ class KubernetesGroup < ApplicationRecord
 
   validate :cluster_names_exists
 
+  scope :by_kind, -> kind { where(kind: kind) }
+
+  scope :by_target, -> target { where(target: target) }
+
   scope :privileged, -> { where(is_privileged: true) }
   scope :not_privileged, -> { where.not(is_privileged: true) }
 
   scope :with_restricted_cluster, -> (c) {
     where("restricted_to_clusters @> ARRAY[?]::varchar[]", Array(c.name))
   }
+
+  pg_search_scope :search,
+    against: [ :name, :description ],
+    using: [ :tsearch, :trigram ]
 
   def self.privileged_names
     privileged.pluck(:name)
