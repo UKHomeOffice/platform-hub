@@ -1,11 +1,20 @@
 <span ng-if="$ctrl.item.token">
   <strong><span ng-bind="showToken ? '{{$ctrl.item.token}}' : '{{$ctrl.item.obfuscated_token}}'"></span></strong>
   <md-button
-    ng-click="!showToken ? showToken = true : showToken = false"
+    ng-click="showToken = !showToken"
     class="md-icon-button"
-    aria-label="reveal">
+    aria-label="reveal token value">
     <md-icon ng-if="!showToken">visibility</md-icon>
     <md-icon ng-if="showToken">visibility_off</md-icon>
+  </md-button>
+  <md-button
+    class="md-icon-button"
+    ngclipboard
+    data-clipboard-text="{{$ctrl.item.token}}">
+    <md-icon ng-bind="$ctrl.copyIcon"></md-icon>
+    <md-tooltip md-direction="bottom">
+      Copy to clipboard
+    </md-tooltip>
   </md-button>
 </span>
 <span ng-if="!$ctrl.item.token">
