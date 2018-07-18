@@ -260,7 +260,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
     }
 
     return $http
-      .get(`${apiEndpoint}/users/search/${query}?include_deactivated=${include_deactivated}`)
+      .get(`${apiEndpoint}/users/search/${encodeURIComponent(query)}?include_deactivated=${include_deactivated}`)
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to search for users', response));

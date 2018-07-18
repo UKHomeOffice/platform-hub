@@ -15,6 +15,14 @@ RSpec.describe UsersController, type: :routing do
       expect(:get => '/users/search/foo').to route_to('users#search', :q => 'foo')
     end
 
+    it 'routes to #search with special chars' do
+      expect(:get => '/users/search/foo.bar@example.com').to route_to('users#search', :q => 'foo.bar@example.com')
+    end
+
+    it 'routes to #search with encoded chars' do
+      expect(:get => '/users/search/foo.bar%40example.com').to route_to('users#search', :q => 'foo.bar@example.com')
+    end
+
     it 'routes to #identities' do
       expect(:get => '/users/1/identities').to route_to('users#identities', :id => '1')
     end
