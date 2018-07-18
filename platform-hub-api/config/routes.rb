@@ -33,7 +33,7 @@ Rails.application.routes.draw do
     end
 
     resources :users, only: [ :index, :show ] do
-      get '/search/:q', to: 'users#search', on: :collection
+      get '/search/:q', to: 'users#search', on: :collection, :constraints => { :q => /[^\/]+/ }
 
       get :identities, on: :member
 
