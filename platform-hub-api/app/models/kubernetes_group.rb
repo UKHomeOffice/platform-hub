@@ -53,8 +53,14 @@ class KubernetesGroup < ApplicationRecord
   }
 
   pg_search_scope :search,
-    against: [ :name, :description ],
-    using: [ :tsearch, :trigram ]
+    against: {
+      name: 'A',
+      description: 'B'
+    },
+    using: {
+      tsearch: { prefix: true },
+      trigram: {}
+    }
 
   def self.privileged_names
     privileged.pluck(:name)
