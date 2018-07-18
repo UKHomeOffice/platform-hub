@@ -183,18 +183,18 @@
 
       <md-tab
         id="services-tab"
-        ng-disabled="!$ctrl.shouldShowServicesTab()"
+        ng-disabled="!$ctrl.shouldEnableServicesTab()"
         md-on-select="$ctrl.loadServices()">
         <md-tab-label>Services</md-tab-label>
         <md-tab-body>
           <loading-indicator loading="$ctrl.loadingServices"></loading-indicator>
 
           <div
-            ng-if="$ctrl.shouldShowCreateServiceButton()"
             layout="row"
             layout-align="center center">
             <md-button
               class="md-primary md-raised"
+              ng-disabled="!$ctrl.shouldEnableCreateServiceButton()"
               aria-label="Create a new service for this project"
               ui-sref="projects.services.new({projectId: $ctrl.project.id})">
               <md-icon>add_box</md-icon>
@@ -235,7 +235,8 @@
 
       <md-tab
         id="kube-user-tokens-tab"
-        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens) && ($ctrl.isAdmin || $ctrl.isProjectAdmin)"
+        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)"
+        ng-disabled="!$ctrl.shouldEnableKubernetesUserTokensTab()"
         md-on-select="$ctrl.loadKubernetesUserTokens()">
         <md-tab-label>Kube User Tokens</md-tab-label>
         <md-tab-body>
@@ -291,7 +292,7 @@
 
       <md-tab
         id="bills-tab"
-        ng-if="$ctrl.shouldShowBillsTab()"
+        ng-disabled="!$ctrl.shouldEnableBillsTab()"
         md-on-select="$ctrl.loadBills()">
         <md-tab-label>Bills</md-tab-label>
         <md-tab-body>

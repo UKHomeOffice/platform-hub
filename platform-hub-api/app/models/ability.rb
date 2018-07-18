@@ -33,7 +33,7 @@ class Ability
       can_participate_in_project project, user
     end
     can :bills, Project do |project|
-      can_administer_project project, user
+      can_participate_in_project project, user
     end
 
 

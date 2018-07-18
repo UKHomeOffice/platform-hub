@@ -1489,9 +1489,8 @@ RSpec.describe ProjectsController, type: :controller do
           create :project_membership, project: @project, user: current_user
         end
 
-        it 'cannot fetch bills for the project - returning 403 Forbidden' do
-          get :bills, params: { id: @project.friendly_id }
-          expect(response).to have_http_status(403)
+        it 'can fetch bills for the project as expected' do
+          expect_bills @project
         end
 
         it 'cannot fetch bills for the other project - returning 403 Forbidden' do
@@ -1529,9 +1528,8 @@ RSpec.describe ProjectsController, type: :controller do
           expect(response).to have_http_status(403)
         end
 
-        it 'cannot fetch bills for the other project - returning 403 Forbidden' do
-          get :bills, params: { id: @other_project.friendly_id }
-          expect(response).to have_http_status(403)
+        it 'can fetch bills for the other project as expected' do
+          expect_bills @other_project
         end
 
       end

@@ -45,11 +45,12 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.userOnboardGitHub = userOnboardGitHub;
   ctrl.userOffboardGitHub = userOffboardGitHub;
   ctrl.offboardAndRemove = offboardAndRemove;
-  ctrl.shouldShowServicesTab = shouldShowServicesTab;
+  ctrl.shouldEnableServicesTab = shouldEnableServicesTab;
   ctrl.loadServices = loadServices;
-  ctrl.shouldShowCreateServiceButton = shouldShowCreateServiceButton;
+  ctrl.shouldEnableCreateServiceButton = shouldEnableCreateServiceButton;
+  ctrl.shouldEnableKubernetesUserTokensTab = shouldEnableKubernetesUserTokensTab;
   ctrl.loadKubernetesUserTokens = loadKubernetesUserTokens;
-  ctrl.shouldShowBillsTab = shouldShowBillsTab;
+  ctrl.shouldEnableBillsTab = shouldEnableBillsTab;
   ctrl.loadBills = loadBills;
 
   init();
@@ -345,7 +346,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       });
   }
 
-  function shouldShowServicesTab() {
+  function shouldEnableServicesTab() {
     return ctrl.isAdmin || ctrl.isProjectTeamMember;
   }
 
@@ -361,7 +362,11 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       });
   }
 
-  function shouldShowCreateServiceButton() {
+  function shouldEnableCreateServiceButton() {
+    return ctrl.isAdmin || ctrl.isProjectAdmin;
+  }
+
+  function shouldEnableKubernetesUserTokensTab() {
     return ctrl.isAdmin || ctrl.isProjectAdmin;
   }
 
@@ -379,8 +384,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
       });
   }
 
-  function shouldShowBillsTab() {
-    return ctrl.isAdmin || ctrl.isProjectAdmin;
+  function shouldEnableBillsTab() {
+    return ctrl.isAdmin || ctrl.isProjectTeamMember;
   }
 
   function loadBills() {
