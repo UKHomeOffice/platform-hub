@@ -173,11 +173,18 @@ RSpec.describe UsersController, type: :controller do
         context 'when users exist and include_deactivated param is true' do
           before do
             create_list :user, 3
-            @user = create :user, name: 'searchable name', is_active: false
+            @user = create :user, name: 'searchable name', email: 'my.email@example.com', is_active: false
           end
 
           it 'should return expected results' do
             get :search, params: { q: 'searcha', include_deactivated: 'true' }
+            expect(response).to be_success
+            expect(json_response.length).to eq 1
+            expect(json_response.first['id']).to eq @user.id
+          end
+
+          it 'can also search by email' do
+            get :search, params: { q: 'my.email@example.com', include_deactivated: 'true' }
             expect(response).to be_success
             expect(json_response.length).to eq 1
             expect(json_response.first['id']).to eq @user.id
@@ -196,6 +203,7 @@ RSpec.describe UsersController, type: :controller do
             expect(json_response.length).to eq 0
           end
         end
+
       end
 
       context 'not a hub admin but is a project admin of some project' do

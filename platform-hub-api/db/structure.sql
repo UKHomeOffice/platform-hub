@@ -1100,6 +1100,13 @@ CREATE UNIQUE INDEX read_marks_reader_readable_index ON read_marks USING btree (
 
 
 --
+-- Name: users_search_email_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX users_search_email_idx ON users USING gin (email gin_trgm_ops);
+
+
+--
 -- Name: users_search_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1162,6 +1169,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180314151141'),
 ('20180406075539'),
 ('20180406083658'),
-('20180711092801');
+('20180711092801'),
+('20180718141143');
 
 

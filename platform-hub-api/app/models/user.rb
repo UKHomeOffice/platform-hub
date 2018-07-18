@@ -36,8 +36,14 @@ class User < ApplicationRecord
     dependent: :destroy
 
   pg_search_scope :search,
-    against: :name,
-    using: [ :tsearch, :trigram ]
+    against: {
+      name: 'A',
+      email: 'B'
+    },
+    using: {
+      tsearch: { prefix: true },
+      trigram: {}
+    }
 
   scope :active, -> { where(is_active: true) }
 
