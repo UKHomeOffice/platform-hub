@@ -151,6 +151,8 @@ Rails.application.routes.draw do
       get :last_published_config, on: :collection
     end
 
+    get '/help/search', to: 'help#search', constraints: lambda { |_| FeatureFlagService.is_enabled? :help_search }
+
   end
 
 end

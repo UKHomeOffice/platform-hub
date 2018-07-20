@@ -74,7 +74,7 @@
       ng-repeat="t in $ctrl.templates track by t.id"
       ng-if="$ctrl.templateIsVisible(t)"
       ui-sref="help.support.requests.new({id: t.id})"
-      style="cursor: pointer;">
+      class="pointer">
       <md-card-content layout="row" layout-xs="column" layout-align="space-between">
         <div flex>
           <p class="md-headline">

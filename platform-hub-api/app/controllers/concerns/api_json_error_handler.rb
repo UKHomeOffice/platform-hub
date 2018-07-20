@@ -38,4 +38,8 @@ module ApiJsonErrorHandler
     render_error message, :bad_request
   end
 
+  def service_unavailable_error message
+    render_error message, :service_unavailable
+  end
+
 end

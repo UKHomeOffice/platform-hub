@@ -13,10 +13,12 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
   ctrl.AppSettings = AppSettings;
   ctrl.PlatformThemes = PlatformThemes;
   ctrl.FeatureFlags = FeatureFlags;
+  ctrl.featureFlagKeys = featureFlagKeys;
   ctrl.Me = Me;
   ctrl.announcementsIcon = icons.announcements;
   ctrl.homeIcon = icons.home;
   ctrl.platformThemeIcon = icons.platformThemes;
+  ctrl.searchIcon = icons.search;
 
   ctrl.isAdmin = false;
   ctrl.isLimitedAdmin = false;
@@ -74,7 +76,13 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
 
   ctrl.helpNavStates = [
     {
-      title: 'FAQ',
+      title: 'Search',
+      state: 'help.search',
+      icon: ctrl.searchIcon,
+      featureFlags: [featureFlagKeys.helpSearch]
+    },
+    {
+      title: 'FAQs',
       state: 'help.faq',
       icon: icons.faq
     },

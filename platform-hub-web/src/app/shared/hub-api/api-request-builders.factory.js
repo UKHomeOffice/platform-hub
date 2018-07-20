@@ -26,9 +26,11 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
   };
 
   function buildSimpleFetcher(path, errorDescriptor) {
-    return function () {
+    return function (params = {}) {
       return $http
-        .get(`${apiEndpoint}/${path}`)
+        .get(`${apiEndpoint}/${path}`, {
+          params
+        })
         .then(response => {
           return response.data;
         })

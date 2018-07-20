@@ -12,6 +12,16 @@
         Menu
       </md-button>
       <h1 flex>{{$ctrl.AppSettings.getAppTitle()}}</h1>
+      <md-button
+        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.helpSearch)"
+        class="md-icon-button md-raised"
+        ui-sref="help.search"
+        aria-label="Search">
+        <md-icon>{{$ctrl.searchIcon}}</md-icon>
+        <md-tooltip md-direction="bottom">
+          Search for help
+        </md-tooltip>
+      </md-button>
     </div>
   </md-toolbar>
 

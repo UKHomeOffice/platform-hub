@@ -1,0 +1,85 @@
+<div class="search">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>
+        Search for help
+      </h2>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content>
+
+    <div md-colors="{background: 'primary-50'}" layout="column" layout-padding>
+
+      <form
+        name="$ctrl.searchForm"
+        role="form"
+        class="compact"
+        ng-submit="$ctrl.fetchResults()"
+        layout="row" layout-align="start center" layout-padding>
+        <md-input-container
+          class="md-icon-float md-block md-title compact hide-error-spacer"
+          md-no-float
+          flex
+          layout="row" layout-align="start center">
+          <input
+            ng-model="$ctrl.searchText"
+            placeholder="Search..."
+            flex>
+        </md-input-container>
+        <div>
+          <md-button
+            type="submit"
+            class="md-primary md-raised"
+            aria-label="Perform search"
+            ng-disabled="!$ctrl.searchText">
+            Search
+          </md-button>
+          <md-button
+            class="md-raised"
+            aria-label="Clear search"
+            ng-click="$ctrl.searchText = ''; $ctrl.results = [];"
+            ng-disabled="!$ctrl.searchText">
+            Clear
+          </md-button>
+        </div>
+      </form>
+
+    </div>
+
+    <p
+      ng-if="!$ctrl.initialState && !$ctrl.results.length"
+      class="none-text"
+      layout="row" layout-align="center center" layout-padding>
+      No help items found
+    </p>
+
+    <div>
+      <md-card
+        ng-repeat="item in $ctrl.results track by item.id"
+        ng-if="item.type == 'support-request'"
+        ui-sref="help.support.requests.new({id: item.hub_id})"
+        class="pointer">
+        <md-card-title>
+          <md-card-title-text>
+            <span class="md-headline">
+              <md-icon>{{$ctrl.supportRequestsIcon}}</md-icon>
+              <span ng-bind-html="item.title"></span>
+            </span>
+          </md-card-title-text>
+        </md-card-title>
+
+        <md-card-content ng-if="item.content" layout-padding>
+          <p
+            class="md-body-1"
+            md-colors="{background: 'blue-grey-50'}"
+            ng-bind-html='item.content'>
+          </p>
+        </md-card-content>
+      </md-card>
+    </div>
+
+  </md-content>
+</div>

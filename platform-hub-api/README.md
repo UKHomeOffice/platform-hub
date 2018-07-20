@@ -115,6 +115,22 @@ To set up local email delivery, ensure you have the following env variables set 
 
 **As usual, be careful when sending out emails from your local development environment!**
 
+### Help search
+
+The help search feature uses ElasticSearch; most of the relevant functionality is in the `HelpSearchService` class. The global instance `HelpSearchService.instance` can be used.
+
+To reindex all help items from scratch to a fresh index:
+
+```ruby
+HelpSearchService.instance.reindex_all force: true
+```
+
+To reindex all help items into an existing index:
+
+```ruby
+HelpSearchService.instance.reindex_all
+```
+
 ### Troubleshooting
 
 #### Test database issues
