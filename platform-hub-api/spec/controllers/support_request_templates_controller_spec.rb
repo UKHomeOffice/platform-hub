@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe SupportRequestTemplatesController, type: :controller do
 
   include_context 'time helpers'
+  include_context 'help search helpers'
 
   describe 'GET #index' do
     it_behaves_like 'unauthenticated not allowed' do
@@ -110,6 +111,11 @@ RSpec.describe SupportRequestTemplatesController, type: :controller do
 
       it_behaves_like 'a hub admin' do
 
+        before do
+          expect(help_search_service_instance).to receive(:index_item)
+            .with(SupportRequestTemplate)
+        end
+
         it 'creates a new support request template as expected' do
           expect(SupportRequestTemplate.count).to eq 0
           expect(Audit.count).to eq 0
@@ -179,6 +185,11 @@ RSpec.describe SupportRequestTemplatesController, type: :controller do
 
       it_behaves_like 'a hub admin' do
 
+        before do
+          expect(help_search_service_instance).to receive(:index_item)
+            .with(@support_request_template)
+        end
+
         it 'updates the specified support request template' do
           expect(SupportRequestTemplate.count).to eq 1
           expect(Audit.count).to eq 0
@@ -223,6 +234,11 @@ RSpec.describe SupportRequestTemplatesController, type: :controller do
       end
 
       it_behaves_like 'a hub admin' do
+
+        before do
+          expect(help_search_service_instance).to receive(:delete_item)
+            .with(@support_request_template)
+        end
 
         it 'should delete the specified support request template' do
           expect(SupportRequestTemplate.exists?(@support_request_template.id)).to be true

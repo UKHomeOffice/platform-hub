@@ -28,7 +28,11 @@ The following packages are required to run the API (may vary across Operating Sy
 
 #### PostgresSQL v9.6.1
 
-We recommend using the scripts provided in `./bin/postgres/*` to easily manage a locally running PostgreSQL container with the correct config set up already. See the [relevant README doc](bin/postgres/README.md) for more details.
+For local development, we recommend using the scripts provided in `./bin/postgres/*` to easily manage a locally running PostgreSQL container with the correct config set up already. See the [relevant README doc](bin/postgres/README.md) for more details.
+
+#### ElasticSearch v6.3.1
+
+For local development, we recommend using the scripts provided in `./bin/elasticsearch/*` to easily manage a locally running ElasticSearch container with the correct config set up already. See the [relevant README doc](bin/elasticsearch/README.md) for more details.
 
 ### Dev flows
 
@@ -110,6 +114,22 @@ To set up local email delivery, ensure you have the following env variables set 
 - `EMAIL_SMTP_PASSWORD`
 
 **As usual, be careful when sending out emails from your local development environment!**
+
+### Help search
+
+The help search feature uses ElasticSearch; most of the relevant functionality is in the `HelpSearchService` class. The global instance `HelpSearchService.instance` can be used.
+
+To reindex all help items from scratch to a fresh index:
+
+```ruby
+HelpSearchService.instance.reindex_all force: true
+```
+
+To reindex all help items into an existing index:
+
+```ruby
+HelpSearchService.instance.reindex_all
+```
 
 ### Troubleshooting
 

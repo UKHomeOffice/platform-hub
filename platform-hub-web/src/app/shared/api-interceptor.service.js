@@ -1,4 +1,4 @@
-export const apiInterceptorService = function ($rootScope, events) {
+export const apiInterceptorService = function ($q, $rootScope, events) {
   'ngInject';
 
   const service = {};
@@ -20,6 +20,6 @@ export const apiInterceptorService = function ($rootScope, events) {
     if (response.status === 418) {
       $rootScope.$broadcast(events.auth.deactivated, 'User deactivated');
     }
-    return response;
+    return $q.reject(response);
   }
 };

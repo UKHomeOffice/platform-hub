@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+# shellcheck source=/dev/null
+source "$(dirname ${0})/.env"
+
+echo "Stopping ElasticSearch container '${PHUB_ES_CONTAINER_NAME}'…"
+echo "Note: you can start this up again with 'bin/elasticsearch/start'"
+echo
+
+docker stop ${PHUB_ES_CONTAINER_NAME}

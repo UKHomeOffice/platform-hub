@@ -69,6 +69,7 @@ pipeline:
     environment:
       - SECRET_KEY_BASE=$(head -c30 < /dev/urandom | base64)
       - PHUB_DB_HOST=postgres
+      - PHUB_ELASTICSEARCH_URL=noop
       - GITHUB_CLIENT_ID=NA
       - GITHUB_CLIENT_SECRET=NA
       - AGENT_GITHUB_TOKEN=noop
@@ -138,6 +139,7 @@ pipeline:
           -e PHUB_DB_NAME=phub_development
           -e PHUB_DB_USERNAME=$${POSTGRES_USER}
           -e PHUB_DB_PASSWORD=$${POSTGRES_PASSWORD}
+          -e PHUB_ELASTICSEARCH_URL=noop
           -e RAILS_LOG_TO_STDOUT=true
           -e SECRET_KEY_BASE=$(head -c30 < /dev/urandom | base64)
           -e GITHUB_CLIENT_ID=NA

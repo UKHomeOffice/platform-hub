@@ -26,6 +26,7 @@ export const icons = function () {
     platformThemes: 'lens',
     projects: 'group_work',
     revokeToken: 'delete_sweep',
+    search: 'search',
     services: 'cloud_circle',
     supportRequests: 'live_help',
     syncTokens: 'cloud_upload',

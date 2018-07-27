@@ -1,10 +1,10 @@
-# Postgres container scripts
+# ElasticSearch container scripts
 
-Scripts to run and interact with a local containerised Postgres.
+Scripts to run and interact with a local containerised ElasticSearch instance.
 
 Intended for local dev and not for production environments!
 
-Uses a local data volume to store the pgdata.
+Uses a local data volume to store the data.
 
 See `.env` for details of the set up.
 
@@ -18,12 +18,12 @@ See `.env` for details of the set up.
 Note: make sure you run scripts from the root of your Rails app.
 
 - _Create_ the container for the first time
-  - `bin/postgres/create`
-- Access an interactive [psql](http://postgresguide.com/utilities/psql.html) console into the running Postgres
-  - `bin/postgres/console`
+  - `bin/elasticsearch/create`
 - _Stop_ the container when you don't need it
-  - `bin/postgres/stop`
+  - `bin/elasticsearch/stop`
 - _Start_ the container when you do need it again
-  - `bin/postgres/start`
+  - `bin/elasticsearch/start`
 - _Destroy_ the container if you want to recreate it or just don't need it anymore (note: the local data volume will NOT be deleted)
-  - `bin/postgres/destroy`
+  - `bin/elasticsearch/destroy`
+
+Run `curl http://127.0.0.1:9200/_cat/health` to check status.

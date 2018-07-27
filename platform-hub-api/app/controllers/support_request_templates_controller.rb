@@ -28,6 +28,8 @@ class SupportRequestTemplatesController < ApiJsonController
         auditable: @support_request_template
       )
 
+      HelpSearchService.instance.index_item @support_request_template
+
       render json: @support_request_template, status: :created
     else
       render_model_errors @support_request_template.errors
@@ -42,6 +44,8 @@ class SupportRequestTemplatesController < ApiJsonController
         action: 'update',
         auditable: @support_request_template
       )
+
+      HelpSearchService.instance.index_item @support_request_template
 
       render json: @support_request_template
     else
@@ -61,6 +65,8 @@ class SupportRequestTemplatesController < ApiJsonController
       action: 'destroy',
       comment: "User '#{current_user.email}' deleted support request template: '#{shortname}' (ID: #{id})"
     )
+
+    HelpSearchService.instance.delete_item @support_request_template
 
     head :no_content
   end

@@ -178,6 +178,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.publishCostsReport = publishCostsReport;
   service.lastPublishedConfigCostsReports = buildSimpleFetcher('costs_reports/last_published_config');
 
+  service.helpSearch = buildSimpleFetcher('help/search', 'help search');
+
   return service;
 
   function getMe() {

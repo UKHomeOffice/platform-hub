@@ -21,6 +21,7 @@ import {
 } from './feature-flags/feature-flags.module';
 import {
   Faq,
+  Search,
   SupportRequestsForm,
   SupportRequestsOverview,
   SupportRequestTemplatesDetail,
@@ -490,6 +491,14 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         component: Faq,
         data: {
           authenticate: true
+        }
+      })
+      .state('help.search', {
+        url: '/search',
+        component: Search,
+        data: {
+          authenticate: true,
+          featureFlags: [featureFlagKeys.helpSearch]
         }
       })
       .state('help.support', {
