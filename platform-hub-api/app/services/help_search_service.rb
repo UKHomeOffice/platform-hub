@@ -11,7 +11,7 @@ class HelpSearchService
   def self.instance
     @instance ||= HelpSearchService.new(
       es_client: ELASTICSEARCH_CLIENT,
-      index_name: "phub_#{Rails.env}_help_entries"
+      index_name: "phub_#{Rails.env}_help_items"
     )
   end
 
@@ -102,7 +102,7 @@ class HelpSearchService
 
       index index_name
 
-      type :_doc
+      type :item
 
       settings number_of_shards: 1, number_of_replicas: 0 do
         mapping do

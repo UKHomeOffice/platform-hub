@@ -30,7 +30,7 @@ The following packages are required to run the API (may vary across Operating Sy
 
 For local development, we recommend using the scripts provided in `./bin/postgres/*` to easily manage a locally running PostgreSQL container with the correct config set up already. See the [relevant README doc](bin/postgres/README.md) for more details.
 
-#### ElasticSearch v6.3.1
+#### ElasticSearch v5.5.1
 
 For local development, we recommend using the scripts provided in `./bin/elasticsearch/*` to easily manage a locally running ElasticSearch container with the correct config set up already. See the [relevant README doc](bin/elasticsearch/README.md) for more details.
 

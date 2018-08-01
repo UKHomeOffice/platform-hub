@@ -17,7 +17,7 @@ docker run --name ${PHUB_ES_CONTAINER_NAME} \
   --env "cluster.routing.allocation.disk.threshold_enabled=false" \
   -v ${PHUB_ES_DATA_LOCAL}:${PHUB_ES_DATA_CONTAINER} \
   -d -p 9200:9200 \
-  docker.elastic.co/elasticsearch/elasticsearch-oss:${PHUB_ES_VERSION}
+  docker.elastic.co/elasticsearch/elasticsearch:${PHUB_ES_VERSION}
 
 echo
 echo "Started a new ElasticSearch container '${PHUB_ES_CONTAINER_NAME}'"
