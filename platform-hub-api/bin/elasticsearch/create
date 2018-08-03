@@ -14,7 +14,11 @@ echo "… mounted as a volume in the container"
 docker run --name ${PHUB_ES_CONTAINER_NAME} \
   --env "discovery.type=single-node" \
   --env "cluster.name=${PHUB_ES_CONTAINER_NAME}" \
-  --env "cluster.routing.allocation.disk.threshold_enabled=false" \
+  --env "bootstrap.memory_lock=true" \
+  --env "xpack.security.enabled=false" \
+  --env "xpack.monitoring.enabled=false" \
+  --env "xpack.ml.enabled=false" \
+  --env "xpack.watcher.enabled=false" \
   -v ${PHUB_ES_DATA_LOCAL}:${PHUB_ES_DATA_CONTAINER} \
   -d -p 9200:9200 \
   docker.elastic.co/elasticsearch/elasticsearch:${PHUB_ES_VERSION}
