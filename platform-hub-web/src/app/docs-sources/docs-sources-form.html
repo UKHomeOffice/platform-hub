@@ -1,0 +1,63 @@
+<div class="docs-sources-form">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span ng-if="$ctrl.isNew">New Docs Source</span>
+        <span ng-if="!$ctrl.isNew">Edit Docs Source</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z1" layout-padding>
+      <md-content>
+        <form name="$ctrl.sourceForm" role="form" ng-submit="$ctrl.createOrUpdate()">
+
+          <md-input-container class="md-block">
+            <label for="name">Name:</label>
+            <input
+              name="name"
+              ng-model="$ctrl.source.name"
+              required
+              placeholder="Name for this source, e.g. 'Main platform docs'">
+            <div ng-messages="$ctrl.sourceForm.name.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <md-input-container class="md-block">
+            <label for="kind">What kind of source is this:</label>
+            <md-select
+              name="kind"
+              ng-model="$ctrl.source.kind"
+              aria-label="Set what kind of docs source this is">
+              <md-option
+                ng-repeat="(k,v) in $ctrl.DocsSources.kinds"
+                ng-value="k">
+                {{v}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="$ctrl.saving || $ctrl.sourceForm.$invalid"
+              ng-class="{'md-raised': ($ctrl.sourceForm.$dirty && $ctrl.sourceForm.$valid) }"
+              aria-label="Save docs source">
+              <span ng-if="$ctrl.isNew">Create</span>
+              <span ng-if="!$ctrl.isNew">Update</span>
+            </md-button>
+            <md-button ui-sref="docs-sources.list" ng-disabled="$ctrl.saving">Cancel</md-button>
+          </div>
+
+        </form>
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

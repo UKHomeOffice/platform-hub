@@ -7,6 +7,7 @@ import {AnnouncementTemplates} from './announcement-templates';
 import {Announcements} from './announcements';
 import {AppSettings} from './app-settings';
 import {CostsReports} from './costs-reports';
+import {DocsSources} from './docs-sources';
 import {FeatureFlags} from './feature-flags';
 import {Identities} from './identities';
 import {KubernetesClusters} from './kubernetes-clusters';
@@ -31,6 +32,7 @@ export const ModelModule = angular
   .service('Announcements', Announcements)
   .service('AppSettings', AppSettings)
   .service('CostsReports', CostsReports)
+  .service('DocsSources', DocsSources)
   .service('FeatureFlags', FeatureFlags)
   .service('Identities', Identities)
   .service('KubernetesClusters', KubernetesClusters)

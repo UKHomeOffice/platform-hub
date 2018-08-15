@@ -8,6 +8,7 @@ export const icons = function () {
     contactList: 'contacts',
     copy: 'content_copy',
     costsReports: 'attach_money',
+    docsSources: 'library_books',
     escalateToken: 'security',
     externalLink: 'link',
     faq: 'question_answer',

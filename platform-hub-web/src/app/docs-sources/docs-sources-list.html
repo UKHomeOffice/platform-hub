@@ -1,0 +1,50 @@
+<div class="docs-sources-list">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>All Docs Sources</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        aria-label="Add new docs source"
+        ui-sref="docs-sources.new">
+        <md-icon>add_box</md-icon>
+        New
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content>
+
+    <md-card ng-repeat="s in $ctrl.sources track by t.id">
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            {{s.name}}
+
+            <small
+              class="badge float-right"
+              md-colors="{background: 'blue'}">
+              {{$ctrl.DocsSources.kinds[s.kind]}}
+            </small>
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content>
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          class="md-primary"
+          aria-label="View details of this docs source"
+          ui-sref="docs-sources.detail({id: s.id})">
+          Details
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+</div>

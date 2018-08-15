@@ -180,6 +180,12 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
   service.helpSearch = buildSimpleFetcher('help/search', 'help search');
 
+  service.getDocsSources = buildCollectionFetcher('docs_sources');
+  service.getDocsSource = buildResourceFetcher('docs_sources');
+  service.createDocsSource = buildResourceCreator('docs_sources');
+  service.updateDocsSource = buildResourceUpdater('docs_sources');
+  service.deleteDocsSource = buildResourceDeletor('docs_sources');
+
   return service;
 
   function getMe() {

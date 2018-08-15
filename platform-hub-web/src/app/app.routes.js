@@ -17,6 +17,11 @@ import {
   CostsReportsList
 } from './costs-reports/costs-reports.module';
 import {
+  DocsSourcesDetail,
+  DocsSourcesForm,
+  DocsSourcesList
+} from './docs-sources/docs-sources.module';
+import {
   FeatureFlagsForm
 } from './feature-flags/feature-flags.module';
 import {
@@ -786,6 +791,49 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
       .state('costs-reports.new', {
         url: '/new',
         component: CostsReportsForm,
+        data: {
+          authenticate: true,
+          rolesPermitted: ['admin']
+        }
+      })
+    .state('docs-sources', {
+      abstract: true,
+      url: '/docs-sources',
+      template: '<ui-view></ui-view>'
+    })
+      .state('docs-sources.list', {
+        url: '/list',
+        component: DocsSourcesList,
+        data: {
+          authenticate: true,
+          rolesPermitted: ['admin']
+        }
+      })
+      .state('docs-sources.detail', {
+        url: '/detail/:id',
+        component: DocsSourcesDetail,
+        resolve: {
+          transition: '$transition$'
+        },
+        data: {
+          authenticate: true,
+          rolesPermitted: ['admin']
+        }
+      })
+      .state('docs-sources.new', {
+        url: '/new',
+        component: DocsSourcesForm,
+        data: {
+          authenticate: true,
+          rolesPermitted: ['admin']
+        }
+      })
+      .state('docs-sources.edit', {
+        url: '/edit/:id',
+        component: DocsSourcesForm,
+        resolve: {
+          transition: '$transition$'
+        },
         data: {
           authenticate: true,
           rolesPermitted: ['admin']

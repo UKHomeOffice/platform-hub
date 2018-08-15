@@ -240,6 +240,25 @@ ALTER SEQUENCE delayed_jobs_id_seq OWNED BY delayed_jobs.id;
 
 
 --
+-- Name: docs_sources; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE docs_sources (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    kind character varying NOT NULL,
+    name character varying NOT NULL,
+    config json NOT NULL,
+    is_fetching boolean DEFAULT false NOT NULL,
+    last_fetch_status character varying,
+    last_fetch_started_at timestamp without time zone,
+    last_fetch_error character varying,
+    last_successful_fetch_started_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: hash_records; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -359,7 +378,7 @@ CREATE TABLE platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying NOT NULL,
+    colour character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -401,9 +420,9 @@ CREATE TABLE projects (
 
 CREATE TABLE read_marks (
     id integer NOT NULL,
-    readable_type character varying,
+    readable_type character varying NOT NULL,
     readable_id uuid,
-    reader_type character varying,
+    reader_type character varying NOT NULL,
     reader_id uuid,
     "timestamp" timestamp without time zone
 );
@@ -585,6 +604,14 @@ ALTER TABLE ONLY costs_reports
 
 ALTER TABLE ONLY delayed_jobs
     ADD CONSTRAINT delayed_jobs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: docs_sources docs_sources_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY docs_sources
+    ADD CONSTRAINT docs_sources_pkey PRIMARY KEY (id);
 
 
 --
@@ -838,6 +865,13 @@ CREATE INDEX index_audits_on_user_name ON audits USING btree (user_name);
 --
 
 CREATE INDEX index_delayed_jobs_on_queue ON delayed_jobs USING btree (queue);
+
+
+--
+-- Name: index_docs_sources_on_kind; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_docs_sources_on_kind ON docs_sources USING btree (kind);
 
 
 --
@@ -1170,6 +1204,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180406075539'),
 ('20180406083658'),
 ('20180711092801'),
-('20180718141143');
+('20180718141143'),
+('20180810102606');
 
 
