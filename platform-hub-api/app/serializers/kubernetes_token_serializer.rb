@@ -31,6 +31,7 @@ class KubernetesTokenSerializer < BaseSerializer
   has_one :service,
     if: -> { object.robot? && object.tokenable_type == Service.name },
     serializer: ServiceSerializer do
+    sleep 0.25
     object.tokenable
   end
 
