@@ -123,6 +123,12 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       icon: icons.costsReports
     },
     {
+      title: 'Docs Sources',
+      state: 'docs-sources.list',
+      activeState: 'docs-sources',
+      icon: icons.docsSources
+    },
+    {
       title: 'Users',
       state: 'users',
       icon: icons.users
