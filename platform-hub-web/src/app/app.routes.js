@@ -499,8 +499,11 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         }
       })
       .state('help.search', {
-        url: '/search',
+        url: '/search?q',
         component: Search,
+        resolve: {
+          transition: '$transition$'
+        },
         data: {
           authenticate: true,
           featureFlags: [featureFlagKeys.helpSearch]

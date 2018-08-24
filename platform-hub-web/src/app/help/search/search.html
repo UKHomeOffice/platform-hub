@@ -17,7 +17,7 @@
         name="$ctrl.searchForm"
         role="form"
         class="compact"
-        ng-submit="$ctrl.fetchResults()"
+        ng-submit="$ctrl.search()"
         layout="row" layout-align="start center" layout-padding>
         <md-input-container
           class="md-icon-float md-block md-title compact hide-error-spacer"
@@ -40,7 +40,7 @@
           <md-button
             class="md-raised"
             aria-label="Clear search"
-            ng-click="$ctrl.searchText = ''; $ctrl.results = [];"
+            ng-click="$ctrl.clear()"
             ng-disabled="!$ctrl.searchText">
             Clear
           </md-button>
@@ -56,29 +56,51 @@
       No help items found
     </p>
 
-    <div>
-      <md-card
-        ng-repeat="item in $ctrl.results track by item.id"
-        ng-if="item.type == 'support-request'"
-        ui-sref="help.support.requests.new({id: item.hub_id})"
-        class="pointer">
-        <md-card-title>
-          <md-card-title-text>
-            <span class="md-headline">
-              <md-icon>{{$ctrl.supportRequestsIcon}}</md-icon>
-              <span ng-bind-html="item.title"></span>
-            </span>
-          </md-card-title-text>
-        </md-card-title>
+    <div class="search-results">
+      <md-list flex>
+        <ng-switch
+          ng-repeat="item in $ctrl.results track by item.id"
+          on="item.type">
 
-        <md-card-content ng-if="item.content" layout-padding>
-          <p
-            class="md-body-1"
-            md-colors="{background: 'blue-grey-50'}"
-            ng-bind-html='item.content'>
-          </p>
-        </md-card-content>
-      </md-card>
+          <!-- Support request -->
+          <md-list-item
+            ng-switch-when="support-request"
+            class="md-3-line md-long-text"
+            ui-sref="help.support.requests.new({id: item.hub_id})">
+            <md-icon class="md-avatar-icon">{{$ctrl.supportRequestsIcon}}</md-icon>
+            <div class="md-list-item-text" layout="column">
+              <h3 ng-bind-html="item.title"></h3>
+              <h4>
+                <small class="badge" md-colors="{background: 'blue-grey-400'}">
+                  Support request form
+                </small>
+              </h4>
+              <p ng-bind-html='item.content'></p>
+            </div>
+            <md-divider ng-if="!$last"></md-divider>
+          </md-list-item>
+
+          <!-- Doc -->
+          <md-list-item
+            ng-switch-when="doc"
+            class="md-3-line md-long-text"
+            ng-href="{{item.link}}"
+            target="_blank">
+            <md-icon class="md-avatar-icon">{{$ctrl.docsIcon}}</md-icon>
+            <div class="md-list-item-text" layout="column">
+              <h3 ng-bind-html="item.title"></h3>
+              <h4>
+                <small class="badge" md-colors="{background: 'blue-grey-400'}">
+                  Documentation
+                </small>
+              </h4>
+              <p ng-bind-html='item.content'></p>
+            </div>
+            <md-divider ng-if="!$last"></md-divider>
+          </md-list-item>
+
+        </ng-switch>
+      </md-list>
     </div>
 
   </md-content>

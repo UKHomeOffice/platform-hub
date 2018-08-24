@@ -33,7 +33,8 @@
             <md-select
               name="kind"
               ng-model="$ctrl.source.kind"
-              aria-label="Set what kind of docs source this is">
+              ng-change="$ctrl.handleKindChange()"
+              aria-label="Specify what kind of docs source this is">
               <md-option
                 ng-repeat="(k,v) in $ctrl.DocsSources.kinds"
                 ng-value="k">
@@ -41,6 +42,39 @@
               </md-option>
             </md-select>
           </md-input-container>
+
+          <fieldset ng-if="$ctrl.source.kind">
+            <legend>
+              Config
+            </legend>
+
+            <div ng-if="$ctrl.source.kind == 'github_repo'">
+              <md-input-container class="md-block">
+                <label for="configRepo">Repo:</label>
+                <input
+                  name="configRepo"
+                  ng-model="$ctrl.source.config.repo"
+                  required
+                  placeholder="e.g. kubernetes/ingress-nginx"
+                  aria-label="The GitHub repo to fetch docs from">
+                <div ng-messages="$ctrl.sourceForm.configRepo.$error">
+                  <div ng-message="required">This is required.</div>
+                </div>
+              </md-input-container>
+
+              <md-input-container class="md-block">
+                <label for="configBranch">Branch:</label>
+                <input
+                  name="configBranch"
+                  ng-model="$ctrl.source.config.branch"
+                  placeholder="Leave blank to use master branch"
+                  aria-label="The specific branch to fetch docs from in the repo">
+              </md-input-container>
+            </div>
+          </fieldset>
+
+          <br />
+          <br />
 
           <div>
             <md-button

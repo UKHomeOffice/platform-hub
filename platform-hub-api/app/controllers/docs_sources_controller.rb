@@ -53,6 +53,11 @@ class DocsSourcesController < ApiJsonController
     id = @docs_source.id
     name = @docs_source.name
 
+    # Clean up docs in the help search index
+    @docs_source.entries.each do |entry|
+      HelpSearchService.instance.delete_item entry
+    end
+
     @docs_source.destroy
 
     AuditService.log(

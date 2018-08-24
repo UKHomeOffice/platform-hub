@@ -25,6 +25,14 @@ module Agents
       resource.html_url
     end
 
+    def repo_tree repo, sha
+      @client.tree repo, sha, recursive: true
+    end
+
+    def blob_content repo, blob_sha
+      @client.blob repo, blob_sha, accept: 'application/vnd.github.v3.raw'
+    end
+
     private
 
     def with_identity user

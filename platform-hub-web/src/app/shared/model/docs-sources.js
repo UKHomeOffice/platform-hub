@@ -7,7 +7,7 @@ export const DocsSources = function (hubApiService) {
 
   model.kinds = {
     github_repo: 'GitHub repo',
-    gitlab_repo: 'Gitlab repo'
+    gitlab_repo: 'GitLab repo'
   };
 
   model.getAll = hubApiService.getDocsSources;

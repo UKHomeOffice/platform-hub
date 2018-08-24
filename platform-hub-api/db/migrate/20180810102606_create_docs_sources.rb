@@ -7,7 +7,7 @@ class CreateDocsSources < ActiveRecord::Migration[5.0]
       t.boolean :is_fetching, null: false, default: false
       t.string :last_fetch_status
       t.datetime :last_fetch_started_at
-      t.string :last_fetch_error
+      t.text :last_fetch_error
       t.datetime :last_successful_fetch_started_at
 
       t.timestamps
