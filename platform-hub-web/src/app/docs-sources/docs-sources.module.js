@@ -9,8 +9,8 @@ export const DocsSourcesDetail = 'docsSourcesDetail';
 export const DocsSourcesForm = 'docsSourcesForm';
 export const DocsSourcesList = 'docsSourcesList';
 
-export const AnnouncementsModule = angular
-  .module('app.announcements', [])
+export const DocsSourcesModule = angular
+  .module('app.docs-sources', [])
   .component(DocsSourcesDetail, DocsSourcesDetailComponent)
   .component(DocsSourcesForm, DocsSourcesFormComponent)
   .component(DocsSourcesList, DocsSourcesListComponent)
