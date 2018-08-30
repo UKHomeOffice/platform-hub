@@ -19,6 +19,8 @@ docker run --name ${PHUB_ES_CONTAINER_NAME} \
   --env "xpack.monitoring.enabled=false" \
   --env "xpack.ml.enabled=false" \
   --env "xpack.watcher.enabled=false" \
+  --env "xpack.graph.enabled=false" \
+  --env "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
   -v ${PHUB_ES_DATA_LOCAL}:${PHUB_ES_DATA_CONTAINER} \
   -d -p 9200:9200 \
   docker.elastic.co/elasticsearch/elasticsearch:${PHUB_ES_VERSION}

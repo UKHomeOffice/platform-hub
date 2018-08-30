@@ -10,7 +10,7 @@ See `.env` for details of the set up.
 
 ## Prerequisites
 
-- Docker 1.12.x
+- Docker 1.12.x+
   - On Mac: [Docker for Mac](https://docs.docker.com/docker-for-mac/)
 
 ## General workflow

@@ -61,6 +61,8 @@ RSpec.describe TokensSyncJob, type: :job do
         expect(KubernetesCluster).to receive(:names).never
         expect(Kubernetes::TokenSyncService).to receive(:sync_tokens).never
         expect(AuditService).to receive(:log).never
+
+        TokensSyncJob.new.perform
       end
     end
 
@@ -74,6 +76,8 @@ RSpec.describe TokensSyncJob, type: :job do
         expect(KubernetesCluster).to receive(:names).never
         expect(Kubernetes::TokenSyncService).to receive(:sync_tokens).never
         expect(AuditService).to receive(:log).never
+
+        TokensSyncJob.new.perform
       end
     end
 
