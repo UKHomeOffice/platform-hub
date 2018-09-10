@@ -47,6 +47,8 @@ You can override any config value by adding it to a `.env.local` file that you w
 - `AGENT_GITHUB_TOKEN` – the access token used for GitHub onboarding flows. This token MUST be for a user that has owner access to the GitHub organisation specified below.
 - `AGENT_GITHUB_ORG` – the GitHub organisation that users will be onboarded on to.
 - `AGENT_GITHUB_ORG_MAIN_TEAM_ID` – the integer ID of the GitHub team that users will be onboarded on to.
+- `AGENT_GITLAB_BASE_URL` – the base URL of the GitLab instance managed by the hub.
+- `AGENT_GITLAB_TOKEN` – the personal access token to access the API of the abovementioned GitLab instance.
 - `AGENT_KEYCLOAK_CLIENT_ID` - Keycloak client ID. Make sure this is a test one and not a production one!
 - `AGENT_KEYCLOAK_CLIENT_SECRET` - Keycloak client secret. Make sure this is a test one and not a production one!
 - `AGENT_KEYCLOAK_USERNAME` - Keycloak agent username. This is a Keycloak user with sufficient privileges to manage users in AGENT_KEYCLOAK_REALM.
