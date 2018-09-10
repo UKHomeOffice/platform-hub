@@ -9,6 +9,8 @@ import {SupportRequestTemplatesDetailComponent} from './support/request-template
 import {SupportRequestTemplatesFormComponent} from './support/request-templates/support-request-templates-form.component';
 import {SupportRequestTemplatesListComponent} from './support/request-templates/support-request-templates-list.component';
 
+import './search/search.scss';
+
 // Main section component names
 export const Faq = 'faq';
 export const FaqEntries = 'faqEntries';

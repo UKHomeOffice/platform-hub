@@ -2,6 +2,7 @@ class HelpSearchService
 
   module Types
     SUPPORT_REQUEST = 'support-request'.freeze
+    DOC = 'doc'.freeze
   end
 
   module Errors
@@ -33,6 +34,8 @@ class HelpSearchService
     end
 
     SupportRequestTemplate.all.each(&method(:index_item))
+
+    Docs::DocsSyncService.new(help_search_service: self).sync_all
   end
 
   def index_item item
@@ -40,6 +43,7 @@ class HelpSearchService
 
     case item
     when SupportRequestTemplate
+
       @repository.save(
         id: id_for(item),
         type: Types::SUPPORT_REQUEST,
@@ -47,6 +51,23 @@ class HelpSearchService
         title: item.title,
         content: item.description + "\n\n" + (item.form_spec['help_text'] || '')
       )
+
+    when DocsSourceEntry
+
+      processed = doc_processor.fetch_and_process(item)
+
+      return if processed.blank?
+
+      @repository.save(
+        id: id_for(item),
+        type: Types::DOC,
+        hub_id: item.id,
+        link: item.content_url,
+        title: processed[:title],
+        content: processed[:content],
+        headings: processed[:headings]
+      )
+
     else
       raise "Item of class '#{item.class.name}' not supported for indexing by the HelpSearchService"
     end
@@ -56,7 +77,7 @@ class HelpSearchService
     ensure_available
 
     case item
-    when SupportRequestTemplate
+    when SupportRequestTemplate, DocsSource
       @repository.delete(id_for(item))
     else
       raise "Item of class '#{item.class.name}' not supported for deletion by the HelpSearchService"
@@ -70,7 +91,7 @@ class HelpSearchService
       query: {
         multi_match: {
           query: query,
-          fields: ['title^10', 'content']
+          fields: ['title^10', 'content', 'headings^7']
         }
       },
       highlight: {
@@ -108,8 +129,10 @@ class HelpSearchService
         mapping do
           indexes :type, type: :keyword
           indexes :hub_id, type: :keyword
+          indexes :link, type: :keyword
           indexes :title
           indexes :content, analyzer: 'snowball'
+          indexes :headings
         end
       end
 
@@ -118,6 +141,10 @@ class HelpSearchService
 
   def ensure_available
     raise Errors::SearchUnavailable unless @repository.index_exists?
+  end
+
+  def doc_processor
+    @doc_processor ||= Docs::DocProcessor.new
   end
 
 end

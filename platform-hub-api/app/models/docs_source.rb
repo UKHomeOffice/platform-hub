@@ -4,6 +4,10 @@ class DocsSource < ApplicationRecord
 
   audited descriptor_field: :name
 
+  has_many :entries,
+    class_name: DocsSourceEntry,
+    dependent: :destroy
+
   attr_readonly :kind
 
   enum kind: {

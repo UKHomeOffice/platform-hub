@@ -240,6 +240,21 @@ ALTER SEQUENCE delayed_jobs_id_seq OWNED BY delayed_jobs.id;
 
 
 --
+-- Name: docs_source_entries; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE docs_source_entries (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    docs_source_id uuid NOT NULL,
+    content_id character varying NOT NULL,
+    content_url character varying NOT NULL,
+    metadata json,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: docs_sources; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -251,10 +266,11 @@ CREATE TABLE docs_sources (
     is_fetching boolean DEFAULT false NOT NULL,
     last_fetch_status character varying,
     last_fetch_started_at timestamp without time zone,
-    last_fetch_error character varying,
+    last_fetch_error text,
     last_successful_fetch_started_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    last_successful_fetch_metadata json
 );
 
 
@@ -607,6 +623,14 @@ ALTER TABLE ONLY delayed_jobs
 
 
 --
+-- Name: docs_source_entries docs_source_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY docs_source_entries
+    ADD CONSTRAINT docs_source_entries_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: docs_sources docs_sources_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -865,6 +889,13 @@ CREATE INDEX index_audits_on_user_name ON audits USING btree (user_name);
 --
 
 CREATE INDEX index_delayed_jobs_on_queue ON delayed_jobs USING btree (queue);
+
+
+--
+-- Name: index_docs_source_entries_on_docs_source_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_docs_source_entries_on_docs_source_id ON docs_source_entries USING btree (docs_source_id);
 
 
 --
@@ -1205,6 +1236,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180406083658'),
 ('20180711092801'),
 ('20180718141143'),
-('20180810102606');
+('20180810102606'),
+('20180822125540'),
+('20180822130915');
 
 

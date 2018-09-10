@@ -1,27 +1,46 @@
 export const SearchComponent = {
+  bindings: {
+    transition: '<'
+  },
   template: require('./search.html'),
   controller: SearchController
 };
 
-function SearchController($sce, hubApiService, icons, _) {
+function SearchController($state, $sce, hubApiService, icons, _) {
   'ngInject';
 
   const ctrl = this;
 
+  const query = ctrl.transition && ctrl.transition.params().q;
+
   ctrl.supportRequestsIcon = icons.supportRequests;
+  ctrl.docsIcon = icons.docs;
 
   ctrl.loading = false;
   ctrl.initialState = true;
-  ctrl.searchText = '';
+  ctrl.searchText = query;
   ctrl.results = [];
 
-  ctrl.fetchResults = fetchResults;
+  ctrl.search = search;
+  ctrl.clear = clear;
+
+  init();
+
+  function init() {
+    if (query) {
+      fetchResults();
+    }
+  }
+
+  function search() {
+    $state.go($state.current, {q: ctrl.searchText}, {reload: true});
+  }
+
+  function clear() {
+    $state.go($state.current, {q: undefined}, {reload: true});
+  }
 
   function fetchResults() {
-    if (_.isNull(ctrl.searchText) || _.isEmpty(ctrl.searchText)) {
-      return;
-    }
-
     ctrl.initialState = false;
     ctrl.loading = true;
     ctrl.results = [];

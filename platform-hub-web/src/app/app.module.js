@@ -116,6 +116,7 @@ angular
   .constant('apiEndpoint', apiEndpoint)
   .constant('apiBackoffTimeMs', 2000)
   .constant('featureFlagKeys', {
+    docsSync: 'docs_sync',
     helpSearch: 'help_search',
     kubernetesTokens: 'kubernetes_tokens',
     kubernetesTokensEscalatePrivilege: 'kubernetes_tokens_escalate_privilege',

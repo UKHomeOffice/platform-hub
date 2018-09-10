@@ -1,0 +1,19 @@
+.search-results {
+  .badge {
+    margin-left: 0;
+    margin-right: 0.66em
+  }
+
+  md-list-item.md-3-line.md-long-text {
+    margin-top: 0;
+    margin-bottom: 0;
+
+    .md-list-item-text {
+      margin-bottom: 1em;
+
+      h3 {
+        margin-top: 1em;
+      }
+    }
+  }
+}

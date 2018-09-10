@@ -21,6 +21,7 @@ function DocsSourcesFormController($state, DocsSources, logger) {
   ctrl.source = null;
 
   ctrl.createOrUpdate = createOrUpdate;
+  ctrl.handleKindChange = handleKindChange;
 
   init();
 
@@ -84,5 +85,9 @@ function DocsSourcesFormController($state, DocsSources, logger) {
           ctrl.saving = false;
         });
     }
+  }
+
+  function handleKindChange() {
+    ctrl.source.config = {};
   }
 }

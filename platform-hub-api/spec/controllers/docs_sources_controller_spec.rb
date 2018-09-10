@@ -87,6 +87,7 @@ RSpec.describe DocsSourcesController, type: :controller do
               'last_fetch_started_at' => @docs_source.last_fetch_started_at,
               'last_fetch_error' => @docs_source.last_fetch_error,
               'last_successful_fetch_started_at' => @docs_source.last_successful_fetch_started_at,
+              'last_successful_fetch_metadata' => @docs_source.last_successful_fetch_metadata,
               'created_at' => now_json_value,
               'updated_at' => now_json_value,
             })
@@ -144,6 +145,7 @@ RSpec.describe DocsSourcesController, type: :controller do
             'last_fetch_started_at' => docs_source.last_fetch_started_at,
             'last_fetch_error' => docs_source.last_fetch_error,
             'last_successful_fetch_started_at' => docs_source.last_successful_fetch_started_at,
+            'last_successful_fetch_metadata' => docs_source.last_successful_fetch_metadata,
             'created_at' => now_json_value,
             'updated_at' => now_json_value,
           });
@@ -210,5 +212,50 @@ RSpec.describe DocsSourcesController, type: :controller do
     end
   end
 
+  describe 'DELETE #destroy' do
+    let(:help_search_service) { instance_double('HelpSearchService') }
+
+    before do
+      allow(HelpSearchService).to receive(:instance).and_return(help_search_service)
+
+      @docs_source = create :docs_source
+      create_list :docs_source_entry, 3, docs_source: @docs_source
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        delete :destroy, params: { id: @docs_source.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not a hub admin so forbidden'  do
+        before do
+          delete :destroy, params: { id: @docs_source.id }
+        end
+      end
+
+      it_behaves_like 'a hub admin' do
+
+        it 'should delete the specified docs source and it\'s entries' do
+          expect(DocsSource.exists?(@docs_source.id)).to be true
+          expect(DocsSourceEntry.count).to be 3
+          expect(Audit.count).to eq 0
+          expect(help_search_service).to receive(:delete_item).exactly(3).times
+          delete :destroy, params: { id: @docs_source.id }
+          expect(response).to be_success
+          expect(DocsSource.exists?(@docs_source.id)).to be false
+          expect(DocsSourceEntry.count).to be 0
+          expect(Audit.count).to eq 1
+          audit = Audit.first
+          expect(audit.action).to eq 'destroy'
+          expect(audit.user.id).to eq current_user_id
+        end
+
+      end
+
+    end
+  end
 
 end
