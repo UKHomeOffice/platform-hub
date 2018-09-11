@@ -13,7 +13,7 @@ RSpec.describe DocsSource, type: :model do
     describe '#kind' do
       it 'does not allow you to update the kind' do
         expect {
-          @docs_source.update! kind: :gitlab_repo
+          @docs_source.update! kind: :hosted_gitlab_repo
         }.to raise_error(
           ActiveRecord::ReadOnlyRecord,
           "kind can't be modified"

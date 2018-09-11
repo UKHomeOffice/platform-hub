@@ -48,7 +48,7 @@
               Config
             </legend>
 
-            <div ng-if="$ctrl.source.kind == 'github_repo'">
+            <div ng-if="$ctrl.source.kind == 'github_repo' || $ctrl.source.kind == 'hosted_gitlab_repo'">
               <md-input-container class="md-block">
                 <label for="configRepo">Repo:</label>
                 <input
@@ -56,7 +56,7 @@
                   ng-model="$ctrl.source.config.repo"
                   required
                   placeholder="e.g. kubernetes/ingress-nginx"
-                  aria-label="The GitHub repo to fetch docs from">
+                  aria-label="The repo to fetch docs from">
                 <div ng-messages="$ctrl.sourceForm.configRepo.$error">
                   <div ng-message="required">This is required.</div>
                 </div>

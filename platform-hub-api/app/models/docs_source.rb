@@ -12,7 +12,7 @@ class DocsSource < ApplicationRecord
 
   enum kind: {
     github_repo: 'github_repo',
-    gitlab_repo: 'gitlab_repo'
+    hosted_gitlab_repo: 'hosted_gitlab_repo'
   }
 
   enum last_fetch_status: {

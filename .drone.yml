@@ -74,6 +74,8 @@ pipeline:
       - GITHUB_CLIENT_SECRET=NA
       - AGENT_GITHUB_TOKEN=noop
       - AGENT_GITHUB_ORG=noop
+      - AGENT_GITLAB_BASE_URL="http://noop"
+      - AGENT_GITLAB_TOKEN=noop
       - AGENT_GITHUB_ORG_MAIN_TEAM_ID=noop
       - AGENT_KEYCLOAK_CLIENT_ID=noop
       - AGENT_KEYCLOAK_CLIENT_SECRET=noop
@@ -147,6 +149,8 @@ pipeline:
           -e AGENT_GITHUB_TOKEN=noop
           -e AGENT_GITHUB_ORG=noop
           -e AGENT_GITHUB_ORG_MAIN_TEAM_ID=noop
+          -e AGENT_GITLAB_BASE_URL="http://noop"
+          -e AGENT_GITLAB_TOKEN=noop
           -e AGENT_KEYCLOAK_CLIENT_ID=noop
           -e AGENT_KEYCLOAK_CLIENT_SECRET=noop
           -e AGENT_KEYCLOAK_USERNAME=noop
