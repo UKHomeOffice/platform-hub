@@ -119,7 +119,7 @@ GEM
       railties (>= 3.0.0)
     faraday (0.15.2)
       multipart-post (>= 1.2, < 3)
-    ffi (1.9.18)
+    ffi (1.9.25)
     friendly_id (5.2.3)
       activerecord (>= 4.0.0)
     gitlab (4.5.0)
