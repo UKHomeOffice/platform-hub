@@ -9,10 +9,14 @@ module Docs
     end
 
     def sync_all
+      return false unless allow_sync?
+
       DocsSource.all.each(&method(:sync))
     end
 
     def sync docs_source
+      return false unless allow_sync?
+
       case
       when docs_source.github_repo?
         git_hub_repo_docs_sync_service.sync docs_source
@@ -24,6 +28,10 @@ module Docs
     end
 
     private
+
+    def allow_sync?
+      FeatureFlagService.is_enabled?(:docs_sync)
+    end
 
     def git_hub_repo_docs_sync_service
       @git_hub_repo_docs_sync_service ||= GitHubRepoDocsSyncService.new(
