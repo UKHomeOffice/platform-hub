@@ -153,7 +153,10 @@ Rails.application.routes.draw do
 
     get '/help/search', to: 'help#search', constraints: lambda { |_| FeatureFlagService.is_enabled? :help_search }
 
-    resources :docs_sources
+    resources :docs_sources do
+      post '/sync', to: 'docs_sources#sync_all', on: :collection
+      post :sync, on: :member
+    end
 
   end
 

@@ -18,6 +18,18 @@
 
   <md-content>
 
+    <div layout="row" layout-align="center center" layout-padding>
+      <div>
+        <md-button
+          class="md-primary md-raised"
+          ng-disabled="!$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.docsSync)"
+          ng-click="$ctrl.triggerSyncAll()"
+          aria-label="Trigger a sync job to sync all docs sources">
+          Trigger sync all
+        </md-button>
+      </div>
+    </div>
+
     <md-card ng-repeat="s in $ctrl.sources track by s.id">
       <md-card-title>
         <md-card-title-text>
@@ -42,6 +54,12 @@
           aria-label="View details of this docs source"
           ui-sref="docs-sources.detail({id: s.id})">
           Details
+        </md-button>
+        <md-button
+          ng-disabled="!$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.docsSync)"
+          ng-click="$ctrl.triggerSync(s)"
+          aria-label="Trigger a sync job for this particular docs source">
+          Trigger sync
         </md-button>
       </md-card-actions>
     </md-card>

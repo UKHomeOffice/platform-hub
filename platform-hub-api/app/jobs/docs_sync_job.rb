@@ -5,9 +5,15 @@ class DocsSyncJob < ApplicationJob
     Delayed::Job.where(queue: :docs_sync).count > 0
   end
 
-  def perform
+  def perform docs_source = nil
     return unless FeatureFlagService.is_enabled?(:docs_sync)
 
-    Docs::DocsSyncService.new(help_search_service: HelpSearchService.instance).sync_all
+    service = Docs::DocsSyncService.new(help_search_service: HelpSearchService.instance)
+
+    if docs_source
+      service.sync docs_source
+    else
+      service.sync_all
+    end
   end
 end

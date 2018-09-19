@@ -27,5 +27,13 @@ RSpec.describe DocsSourcesController, type: :routing do
       expect(:delete => "/docs_sources/1").to route_to("docs_sources#destroy", :id => "1")
     end
 
+    it 'routes to #sync_all' do
+      expect(:post => "/docs_sources/sync").to route_to("docs_sources#sync_all")
+    end
+
+    it 'routes to #sync' do
+      expect(:post => "/docs_sources/1/sync").to route_to("docs_sources#sync", :id => "1")
+    end
+
   end
 end

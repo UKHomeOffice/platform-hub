@@ -24,15 +24,28 @@ RSpec.describe DocsSyncJob, type: :job do
     context 'with docs_sync feature flag enabled' do
       before do
         FeatureFlagService.create_or_update(:docs_sync, true)
-      end
 
-      it 'should call the DocsSyncService' do
         expect(Docs::DocsSyncService).to receive(:new)
           .with(help_search_service: help_search_service)
           .and_return(docs_sync_service)
-        expect(docs_sync_service).to receive(:sync_all)
+      end
 
-        DocsSyncJob.new.perform
+      context 'when not passed anything' do
+        it 'should call the DocsSyncService#sync_all' do
+          expect(docs_sync_service).to receive(:sync_all)
+
+          DocsSyncJob.new.perform
+        end
+      end
+
+      context 'when passed a docs_source' do
+        let(:docs_source) { create :docs_source }
+
+        it 'should call the DocsSyncService#sync with the particular docs_source only' do
+          expect(docs_sync_service).to receive(:sync).with(docs_source)
+
+          DocsSyncJob.new.perform docs_source
+        end
       end
     end
 
