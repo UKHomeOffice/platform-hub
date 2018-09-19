@@ -41,10 +41,10 @@ export const apiRequestBuilders = function ($q, $http, apiEndpoint, apiHelpers, 
     };
   }
 
-  function buildSimplePoster(path, errorDescriptor) {
+  function buildSimplePoster(path, errorDescriptor, dataRequired = true) {
     return function (data) {
-      if (_.isNull(data) || _.isEmpty(data)) {
-        throw new Error('"data" argument not specified or empty');
+      if (dataRequired && (_.isNull(data) || _.isEmpty(data))) {
+        throw new Error('"data" argument not specified or empty, when it\'s required');
       }
 
       return $http

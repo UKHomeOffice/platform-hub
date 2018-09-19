@@ -15,6 +15,8 @@ export const DocsSources = function (hubApiService) {
   model.create = hubApiService.createDocsSource;
   model.update = hubApiService.updateDocsSource;
   model.delete = hubApiService.deleteDocsSource;
+  model.syncAll = hubApiService.syncAllDocsSources;
+  model.sync = hubApiService.syncDocsSource;
 
   return model;
 };

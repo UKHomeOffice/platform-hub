@@ -185,6 +185,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.createDocsSource = buildResourceCreator('docs_sources');
   service.updateDocsSource = buildResourceUpdater('docs_sources');
   service.deleteDocsSource = buildResourceDeletor('docs_sources');
+  service.syncAllDocsSources = buildSimplePoster('docs_sources/sync', 'sync all docs sources', false);
+  service.syncDocsSource = syncDocsSource;
 
   return service;
 
@@ -982,6 +984,20 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to publish report', response));
+        return $q.reject(response);
+      });
+  }
+
+  function syncDocsSource(id) {
+    if (_.isNull(id) || _.isEmpty(id)) {
+      throw new Error('"id" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/docs_sources/${id}/sync`, {})
+      .then(handleHttpError)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to sync the docs source', response));
         return $q.reject(response);
       });
   }

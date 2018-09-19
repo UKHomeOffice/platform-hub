@@ -258,4 +258,65 @@ RSpec.describe DocsSourcesController, type: :controller do
     end
   end
 
+  describe 'POST #sync_all' do
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :sync_all
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not a hub admin so forbidden'  do
+        before do
+          post :sync_all
+        end
+      end
+
+      it_behaves_like 'a hub admin' do
+
+        it 'should schedule a docs sync job' do
+          expect(DocsSyncJob).to receive(:perform_later)
+          post :sync_all
+          expect(response).to be_success
+        end
+
+      end
+
+    end
+  end
+
+  describe 'POST #sync' do
+    before do
+      @docs_source = create :docs_source
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        post :sync, params: { id: @docs_source.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not a hub admin so forbidden'  do
+        before do
+          post :sync, params: { id: @docs_source.id }
+        end
+      end
+
+      it_behaves_like 'a hub admin' do
+
+        it 'should schedule a docs sync job for the docs_source' do
+          expect(DocsSyncJob).to receive(:perform_later).with(@docs_source)
+          post :sync, params: { id: @docs_source.id }
+          expect(response).to be_success
+        end
+
+      end
+
+    end
+  end
+
 end

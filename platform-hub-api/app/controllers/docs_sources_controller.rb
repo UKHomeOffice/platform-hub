@@ -1,6 +1,6 @@
 class DocsSourcesController < ApiJsonController
 
-  before_action :find_docs_source, only: [ :show, :update, :destroy ]
+  before_action :find_docs_source, only: [ :show, :update, :destroy, :sync ]
 
   authorize_resource
 
@@ -66,6 +66,20 @@ class DocsSourcesController < ApiJsonController
       auditable: @docs_source,
       comment: "User '#{current_user.email}' deleted docs source: '#{name}' (ID: #{id})"
     )
+
+    head :no_content
+  end
+
+  # POST /docs_sources/sync
+  def sync_all
+    DocsSyncJob.perform_later
+
+    head :no_content
+  end
+
+  # POST /docs_sources/1/sync
+  def sync
+    DocsSyncJob.perform_later @docs_source
 
     head :no_content
   end
