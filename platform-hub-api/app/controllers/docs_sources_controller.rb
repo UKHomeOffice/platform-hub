@@ -1,6 +1,6 @@
 class DocsSourcesController < ApiJsonController
 
-  before_action :find_docs_source, only: [ :show, :update, :destroy, :sync ]
+  before_action :find_docs_source, only: [ :show, :update, :destroy, :sync, :entries ]
 
   authorize_resource
 
@@ -82,6 +82,11 @@ class DocsSourcesController < ApiJsonController
     DocsSyncJob.perform_later @docs_source
 
     head :no_content
+  end
+
+  # GET /docs_sources/1/entries
+  def entries
+    render json: @docs_source.entries.order(:content_url)
   end
 
   private

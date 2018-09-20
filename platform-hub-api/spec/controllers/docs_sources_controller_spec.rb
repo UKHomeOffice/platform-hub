@@ -319,4 +319,40 @@ RSpec.describe DocsSourcesController, type: :controller do
     end
   end
 
+  describe 'GET #entries' do
+    before do
+      @docs_source = create :docs_source
+      @entries = create_list :docs_source_entry, 3, docs_source: @docs_source
+
+      # Create some additional entries just to have a pool to choose from
+      create_list :docs_source_entry, 2
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        get :entries, params: { id: @docs_source.id }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      it_behaves_like 'not a hub admin so forbidden'  do
+        before do
+          get :entries, params: { id: @docs_source.id }
+        end
+      end
+
+      it_behaves_like 'a hub admin' do
+
+        it 'should return the docs source\'s entries' do
+          get :entries, params: { id: @docs_source.id }
+          expect(response).to be_success
+          expect(pluck_from_json_response('content_id')).to eq @entries.sort_by(&:content_url).map(&:content_id)
+        end
+
+      end
+
+    end
+  end
+
 end
