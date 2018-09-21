@@ -35,5 +35,9 @@ RSpec.describe DocsSourcesController, type: :routing do
       expect(:post => "/docs_sources/1/sync").to route_to("docs_sources#sync", :id => "1")
     end
 
+    it 'routes to #entries' do
+      expect(:get => "/docs_sources/1/entries").to route_to("docs_sources#entries", :id => "1")
+    end
+
   end
 end

@@ -187,6 +187,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.deleteDocsSource = buildResourceDeletor('docs_sources');
   service.syncAllDocsSources = buildSimplePoster('docs_sources/sync', 'sync all docs sources', false);
   service.syncDocsSource = syncDocsSource;
+  service.getDocsSourceEntries = buildSubCollectionFetcher('docs_sources', 'entries');
 
   return service;
 

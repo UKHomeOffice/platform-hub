@@ -25,29 +25,67 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.source">
+  <md-content>
+    <md-tabs
+      ng-if="!$ctrl.loading && $ctrl.source"
+      md-dynamic-height
+      md-border-bottom>
 
-    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50">
-      <md-content layout-padding>
+      <md-tab id="overview-tab">
+        <md-tab-label>Overview</md-tab-label>
+        <md-tab-body>
+          <div layout="padding">
+            <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50">
+              <md-content layout-padding>
+                <h3 class="md-title" layout="row">
+                  {{$ctrl.source.name}}
 
-        <h3 class="md-title" layout="row">
-          {{$ctrl.source.name}}
+                  <span
+                    class="badge float-right"
+                    md-colors="{background: 'blue'}">
+                    {{$ctrl.DocsSources.kinds[$ctrl.source.kind]}}
+                  </span>
+                </h3>
 
-          <span
-            class="badge float-right"
-            md-colors="{background: 'blue'}">
-            {{$ctrl.DocsSources.kinds[$ctrl.source.kind]}}
+                <h4>
+                  Source config
+                </h4>
+
+                <pre>{{$ctrl.source.config | json}}</pre>
+              </md-content>
+            </div>
+          </div>
+        </md-tab-body>
+      </md-tab>
+
+      <md-tab id="entries-tab" md-on-select="$ctrl.loadEntries()">
+        <md-tab-label>
+          Entries
+          <span ng-if="$ctrl.entries.length > 0">
+            ({{$ctrl.entries.length}})
           </span>
-        </h3>
+        </md-tab-label>
+        <md-tab-body>
+          <loading-indicator loading="$ctrl.loadingEntries"></loading-indicator>
 
-        <h4>
-          Source config
-        </h4>
+          <div ng-if="$ctrl.entries.length == 0" layout-padding>
+            <p class="md-body-1 none-text text-center">
+              No entries found yet, or docs source has not been synced yet.
+            </p>
+          </div>
 
-        <pre>{{$ctrl.source.config | json}}</pre>
+          <md-list ng-if="$ctrl.entries.length > 0" flex>
+            <md-list-item class="md-3-line md-long-text" ng-repeat="e in $ctrl.entries track by e.content_id">
+              <div class="md-list-item-text" layout="column">
+                <h3>{{e.content_id}}</h3>
+                <h4>{{e.content_url}}</h4>
+                <p>{{e.metadata}}</p>
+              </div>
+            </md-list-item>
+          </md-list>
+        </md-tab-body>
+      </md-tab>
 
-      </md-content>
-    </div>
-
+    </md-tabs>
   </md-content>
 </div>

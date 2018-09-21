@@ -17,8 +17,11 @@ function DocsSourcesDetailController($mdDialog, $state, DocsSources, logger) {
 
   ctrl.loading = true;
   ctrl.source = null;
+  ctrl.entries = [];
+  ctrl.loadingServices = false;
 
   ctrl.deleteSource = deleteSource;
+  ctrl.loadEntries = loadEntries;
 
   init();
 
@@ -63,6 +66,18 @@ function DocsSourcesDetailController($mdDialog, $state, DocsSources, logger) {
           .finally(() => {
             ctrl.loading = false;
           });
+      });
+  }
+
+  function loadEntries() {
+    ctrl.loadingEntries = true;
+
+    DocsSources
+      .getEntries(ctrl.source.id)
+      .then(entries => {
+        angular.copy(entries, ctrl.entries);
+      }).finally(() => {
+        ctrl.loadingEntries = false;
       });
   }
 }

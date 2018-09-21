@@ -156,6 +156,7 @@ Rails.application.routes.draw do
     resources :docs_sources do
       post '/sync', to: 'docs_sources#sync_all', on: :collection
       post :sync, on: :member
+      get :entries, on: :member
     end
 
   end
