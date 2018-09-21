@@ -104,8 +104,8 @@ class HelpSearchService
 
     Array(results.response.hits.hits).map do |h|
       {
-        'item' => h._source.to_hash,
-        'highlights' => h.highlight.to_hash
+        'item' => h._source.to_hash.reject { |k,v| k == 'content' },
+        'highlights' => h.highlight.respond_to?(:to_hash) ? h.highlight.to_hash : {}
       }
     end
   end

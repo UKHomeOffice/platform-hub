@@ -50,11 +50,18 @@
     </div>
 
     <p
-      ng-if="!$ctrl.initialState && !$ctrl.results.length"
+      ng-if="$ctrl.query && !$ctrl.initialState && !$ctrl.results.length"
       class="none-text"
       layout="row" layout-align="center center" layout-padding>
       No help items found
     </p>
+
+    <h4
+      ng-if="!$ctrl.query && $ctrl.results.length"
+      layout="row" layout-align="center center" layout-padding
+      style="padding-bottom: 0;">
+      Suggestions
+    </h4>
 
     <div class="search-results">
       <md-list flex>
@@ -65,7 +72,10 @@
           <!-- Support request -->
           <md-list-item
             ng-switch-when="support-request"
-            class="md-3-line md-long-text"
+            ng-class="{
+              'md-2-line': !item.content,
+              'md-3-line md-long-text': item.content
+            }"
             ui-sref="help.support.requests.new({id: item.hub_id})">
             <md-icon class="md-avatar-icon">{{$ctrl.supportRequestsIcon}}</md-icon>
             <div class="md-list-item-text" layout="column">
@@ -75,7 +85,7 @@
                   Support request form
                 </small>
               </h4>
-              <p ng-bind-html='item.content'></p>
+              <p ng-if="item.content" ng-bind-html='item.content'></p>
             </div>
             <md-divider ng-if="!$last"></md-divider>
           </md-list-item>
@@ -83,7 +93,10 @@
           <!-- Doc -->
           <md-list-item
             ng-switch-when="doc"
-            class="md-3-line md-long-text"
+            ng-class="{
+              'md-2-line': !item.content,
+              'md-3-line md-long-text': item.content
+            }"
             ng-href="{{item.link}}"
             target="_blank">
             <md-icon class="md-avatar-icon">{{$ctrl.docsIcon}}</md-icon>
@@ -94,7 +107,7 @@
                   Documentation
                 </small>
               </h4>
-              <p ng-bind-html='item.content'></p>
+              <p ng-if="item.content" ng-bind-html='item.content'></p>
             </div>
             <md-divider ng-if="!$last"></md-divider>
           </md-list-item>

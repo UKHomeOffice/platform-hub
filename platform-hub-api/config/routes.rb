@@ -159,6 +159,9 @@ Rails.application.routes.draw do
       get :entries, on: :member
     end
 
+    get '/pinned_help_entries', to: 'pinned_help_entries#show'
+    put '/pinned_help_entries', to: 'pinned_help_entries#update'
+
   end
 
 end

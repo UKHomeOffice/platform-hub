@@ -129,6 +129,11 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       icon: icons.docsSources
     },
     {
+      title: 'Pinned Help Entries',
+      state: 'pinned-help-entries',
+      icon: icons.pinnedHelpEntries
+    },
+    {
       title: 'Users',
       state: 'users',
       icon: icons.users

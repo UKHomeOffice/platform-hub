@@ -189,6 +189,9 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.syncDocsSource = syncDocsSource;
   service.getDocsSourceEntries = buildSubCollectionFetcher('docs_sources', 'entries');
 
+  service.getPinnedHelpEntries = buildSimpleFetcher('pinned_help_entries', 'pinned help entries');
+  service.updatePinnedHelpEntries = buildSimpleUpdater('pinned_help_entries', 'pinned help entries');
+
   return service;
 
   function getMe() {

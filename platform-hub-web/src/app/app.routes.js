@@ -19,7 +19,8 @@ import {
 import {
   DocsSourcesDetail,
   DocsSourcesForm,
-  DocsSourcesList
+  DocsSourcesList,
+  PinnedHelpEntriesForm
 } from './docs-sources/docs-sources.module';
 import {
   FeatureFlagsForm
@@ -841,5 +842,13 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           authenticate: true,
           rolesPermitted: ['admin']
         }
-      });
+      })
+    .state('pinned-help-entries', {
+      url: '/pinned-help-entries/edit',
+      component: PinnedHelpEntriesForm,
+      data: {
+        authenticate: true,
+        rolesPermitted: ['admin']
+      }
+    });
 };
