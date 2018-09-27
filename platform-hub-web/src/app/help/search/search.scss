@@ -16,4 +16,11 @@
       }
     }
   }
+
+  .md-list-item-inner {
+    em {
+      font-style: normal;
+      background-color: rgba(#FFFBCC, 0.8);
+    }
+  }
 }
