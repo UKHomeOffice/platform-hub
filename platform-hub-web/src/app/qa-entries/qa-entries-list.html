@@ -1,0 +1,73 @@
+<div class="qa-entries-list">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>All Q&A Entries</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        aria-label="Add new Q&A entry"
+        ui-sref="qa-entries.new">
+        <md-icon>add_box</md-icon>
+        New
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content>
+
+    <div layout="column" layout-align="center center" layout-padding>
+      <p class="md-body-1" md-colors="{background: 'orange-50', color: 'orange'}"
+      layout-padding>
+        <span><strong>Important:</strong></span>
+        <br />
+        <span>
+          - All of these Q&A entries will be indexed in the help search and thus be findable by any logged in hub user.
+        </span>
+      </p>
+    </div>
+
+    <md-card ng-repeat="q in $ctrl.entries track by q.id">
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">
+            {{q.question}}
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content>
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-bind-html='q.answer | simpleFormat'
+          layout-padding>
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Created at:
+          </span>
+          <span>{{q.created_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
+          <span class="separator">|</span>
+          <span md-colors="{color: 'blue-grey-700'}">
+            Updated at:
+          </span>
+          <span>{{q.updated_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
+        </p>
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button
+          class="md-primary"
+          aria-label="View details of this Q&A entry"
+          ui-sref="qa-entries.detail({id: s.id})">
+          Details
+        </md-button>
+      </md-card-actions>
+    </md-card>
+
+  </md-content>
+</div>

@@ -192,6 +192,12 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.getPinnedHelpEntries = buildSimpleFetcher('pinned_help_entries', 'pinned help entries');
   service.updatePinnedHelpEntries = buildSimpleUpdater('pinned_help_entries', 'pinned help entries');
 
+  service.getQaEntries = buildCollectionFetcher('qa_entries');
+  service.getQaEntry = buildResourceFetcher('qa_entries');
+  service.createQaEntry = buildResourceCreator('qa_entries');
+  service.updateQaEntry = buildResourceUpdater('qa_entries');
+  service.deleteQaEntry = buildResourceDeletor('qa_entries');
+
   return service;
 
   function getMe() {

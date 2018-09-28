@@ -18,7 +18,7 @@ function DocsSourcesDetailController($mdDialog, $state, DocsSources, logger) {
   ctrl.loading = true;
   ctrl.source = null;
   ctrl.entries = [];
-  ctrl.loadingServices = false;
+  ctrl.loadingEntries = false;
 
   ctrl.deleteSource = deleteSource;
   ctrl.loadEntries = loadEntries;

@@ -1,0 +1,47 @@
+<div class="qa-entries-detail">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>Q&A Entry: </span>
+        <span ng-cloak>{{$ctrl.entry.question}}</span>
+      </h3>
+      <span flex></span>
+      <md-button
+        ng-if="$ctrl.entry"
+        aria-label="Edit this Q&A entry"
+        ui-sref="qa-entries.edit({id: $ctrl.entry.id})">
+        <md-icon>edit</md-icon>
+        Edit
+      </md-button>
+      <md-button
+        ng-if="$ctrl.entry"
+        aria-label="Delete this Q&A entry"
+        ng-click="$ctrl.deleteEntry($event)">
+        <md-icon>delete</md-icon>
+        Delete
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading && $ctrl.entry">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50">
+      <md-content layout-padding>
+
+        <h3 class="md-title" layout="row">
+          {{$ctrl.entry.question}}
+        </h3>
+
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50'}"
+          ng-bind-html='$ctrl.entry.answer | simpleFormat'>
+        </p>
+
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

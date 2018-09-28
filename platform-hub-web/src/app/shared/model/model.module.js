@@ -19,6 +19,7 @@ import {PinnedHelpEntries} from './pinned-help-entries';
 import {PlatformThemes} from './platform-themes';
 import {PlatformThemesResourceKinds} from './platform-themes-resource-kinds';
 import {Projects} from './projects';
+import {QaEntries} from './qa-entries';
 import {UserScopes} from './user-scopes';
 
 import {announcementTemplateValidator} from './validators/announcement-template-validator';
@@ -45,6 +46,7 @@ export const ModelModule = angular
   .service('PlatformThemes', PlatformThemes)
   .service('PlatformThemesResourceKinds', PlatformThemesResourceKinds)
   .service('Projects', Projects)
+  .service('QaEntries', QaEntries)
   .service('UserScopes', UserScopes)
   .service('announcementTemplateValidator', announcementTemplateValidator)
   .service('formFieldsValidator', formFieldsValidator)
