@@ -25,6 +25,7 @@ export const icons = function () {
     link: 'link',
     markAllRead: 'drafts',
     menu: 'menu',
+    pinnedHelpEntries: 'low_priority',
     platformThemes: 'lens',
     projects: 'group_work',
     revokeToken: 'delete_sweep',

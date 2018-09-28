@@ -15,6 +15,7 @@ import {KubernetesGroups} from './kubernetes-groups';
 import {KubernetesNamespaces} from './kubernetes-namespaces';
 import {KubernetesTokens} from './kubernetes-tokens';
 import {Me} from './me';
+import {PinnedHelpEntries} from './pinned-help-entries';
 import {PlatformThemes} from './platform-themes';
 import {PlatformThemesResourceKinds} from './platform-themes-resource-kinds';
 import {Projects} from './projects';
@@ -40,6 +41,7 @@ export const ModelModule = angular
   .service('KubernetesNamespaces', KubernetesNamespaces)
   .service('KubernetesTokens', KubernetesTokens)
   .service('Me', Me)
+  .service('PinnedHelpEntries', PinnedHelpEntries)
   .service('PlatformThemes', PlatformThemes)
   .service('PlatformThemesResourceKinds', PlatformThemesResourceKinds)
   .service('Projects', Projects)

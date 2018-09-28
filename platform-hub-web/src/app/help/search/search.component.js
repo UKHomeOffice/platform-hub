@@ -6,19 +6,19 @@ export const SearchComponent = {
   controller: SearchController
 };
 
-function SearchController($state, $sce, hubApiService, icons, _) {
+function SearchController($state, $sce, hubApiService, PinnedHelpEntries, icons, _) {
   'ngInject';
 
   const ctrl = this;
 
-  const query = ctrl.transition && ctrl.transition.params().q;
+  ctrl.query = ctrl.transition && ctrl.transition.params().q;
 
   ctrl.supportRequestsIcon = icons.supportRequests;
   ctrl.docsIcon = icons.docs;
 
   ctrl.loading = false;
   ctrl.initialState = true;
-  ctrl.searchText = query;
+  ctrl.searchText = ctrl.query;
   ctrl.results = [];
 
   ctrl.search = search;
@@ -27,8 +27,10 @@ function SearchController($state, $sce, hubApiService, icons, _) {
   init();
 
   function init() {
-    if (query) {
+    if (ctrl.query) {
       fetchResults();
+    } else {
+      fetchPinnedItems();
     }
   }
 
@@ -41,7 +43,6 @@ function SearchController($state, $sce, hubApiService, icons, _) {
   }
 
   function fetchResults() {
-    ctrl.initialState = false;
     ctrl.loading = true;
     ctrl.results = [];
 
@@ -53,6 +54,20 @@ function SearchController($state, $sce, hubApiService, icons, _) {
       .helpSearch(params)
       .then(results => {
         ctrl.results = processResults(results);
+        ctrl.initialState = false;
+      })
+      .finally(() => {
+        ctrl.loading = false;
+      });
+  }
+
+  function fetchPinnedItems() {
+    ctrl.loading = true;
+
+    PinnedHelpEntries
+      .get()
+      .then(items => {
+        angular.copy(items, ctrl.results);
       })
       .finally(() => {
         ctrl.loading = false;

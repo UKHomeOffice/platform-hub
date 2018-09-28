@@ -1,0 +1,96 @@
+<div class="pinned-help-entries-form">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>
+        Pinned help entries
+      </h2>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z1" layout-padding>
+      <p class="md-body-1" md-colors="{background: 'primary-50'}">
+        The list specfied here will be shown by default on the help search page when no search has been carried out yet.
+      </p>
+
+      <div>
+        <h3 class="md-title">
+          Add item:
+        </h3>
+        <div layout="column" layout-margin layout-padding>
+          <md-autocomplete
+            md-no-cache="true"
+            md-selected-item="$ctrl.searchSelectedEntry"
+            md-selected-item-change="$ctrl.addSelectedToPinned()"
+            md-search-text="$ctrl.searchText"
+            md-items="entry in $ctrl.search($ctrl.searchText)"
+            md-item-text="'[' + entry.item.type + '] ' + entry.item.title"
+            md-min-length="2"
+            ng-model-options="{debounce: 500}"
+            placeholder="Search for existing help items to add...">
+            <md-item-template>
+              <span md-highlight-text="$ctrl.searchText" md-highlight-flags="^i">
+                [{{entry.item.type}}]
+                {{entry.item.title}}
+              </span>
+              <span ng-if="entry.item.link">
+                - <small>{{entry.item.link}}</small>
+              </span>
+            </md-item-template>
+            <md-not-found>
+              No items found in the help search matching "{{$ctrl.searchText}}"
+            </md-not-found>
+          </md-autocomplete>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="md-title">
+          Manage the list:
+        </h3>
+        <div
+          sv-root
+          class="multi-sortable"
+          layout="column"
+          layout-margin
+          layout-padding>
+          <div
+            flex
+            class="sortable-container"
+            sv-part="$ctrl.entries"
+            md-colors="{background: 'blue-grey-50'}">
+            <div
+              ng-repeat="e in $ctrl.entries"
+              md-colors="{background: 'blue-grey-100'}"
+              sv-element
+              md-whiteframe="1"
+              class="item">
+              <span>
+                [{{e.type}}]
+                {{e.title}}
+              </span>
+              <br ng-if="e.link" />
+              <small ng-if="e.link">{{e.link}}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <md-button
+          type="button"
+          class="md-primary md-raised"
+          ng-click="$ctrl.update()"
+          ng-disabled="$ctrl.saving"
+          aria-label="Save the list of pinned help entries">
+          Save
+        </md-button>
+        <md-button ui-sref="home" ng-disabled="$ctrl.saving">Cancel</md-button>
+      </div>
+    </div>
+
+  </md-content>
+</div>
