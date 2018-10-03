@@ -27,6 +27,8 @@ class QaEntriesController < ApiJsonController
         auditable: @qa_entry
       )
 
+      HelpSearchService.instance.index_item @qa_entry
+
       render json: @qa_entry, status: :created
     else
       render_model_errors @qa_entry.errors
@@ -41,6 +43,8 @@ class QaEntriesController < ApiJsonController
         action: 'update',
         auditable: @qa_entry
       )
+
+      HelpSearchService.instance.index_item @qa_entry
 
       render json: @qa_entry
     else
@@ -61,6 +65,8 @@ class QaEntriesController < ApiJsonController
       auditable: @qa_entry,
       comment: "User '#{current_user.email}' deleted Q&A entry: '#{question}' (ID: #{id})"
     )
+
+    HelpSearchService.instance.delete_item @qa_entry
 
     head :no_content
   end

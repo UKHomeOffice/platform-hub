@@ -90,6 +90,29 @@
             <md-divider ng-if="!$last"></md-divider>
           </md-list-item>
 
+          <!-- Q&A entry -->
+          <md-list-item
+            ng-switch-when="qa-entry"
+            class="md-3-line md-long-text">
+            <md-icon class="md-avatar-icon">{{$ctrl.qaEntriesIcon}}</md-icon>
+            <div class="md-list-item-text" layout="column">
+              <h3 ng-bind-html="item.title"></h3>
+              <h4>
+                <small class="badge" md-colors="{background: 'blue-grey-400'}">
+                  Q&A
+                </small>
+              </h4>
+              <div layout-padding>
+                <p
+                  md-colors="{background: 'blue-grey-50'}"
+                  ng-bind-html='item.raw_content | simpleFormat'
+                  layout-padding>
+                </p>
+              </div>
+            </div>
+            <md-divider ng-if="!$last"></md-divider>
+          </md-list-item>
+
           <!-- Doc -->
           <md-list-item
             ng-switch-when="doc"
