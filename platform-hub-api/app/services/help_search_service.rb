@@ -2,6 +2,7 @@ class HelpSearchService
 
   module Types
     SUPPORT_REQUEST = 'support-request'.freeze
+    QA_ENTRY = 'qa-entry'.freeze
     DOC = 'doc'.freeze
   end
 
@@ -35,6 +36,8 @@ class HelpSearchService
 
     SupportRequestTemplate.all.each(&method(:index_item))
 
+    QaEntry.all.each(&method(:index_item))
+
     Docs::DocsSyncService.new(help_search_service: self).sync_all
   end
 
@@ -50,6 +53,17 @@ class HelpSearchService
         hub_id: item.friendly_id,
         title: item.title,
         content: item.description + "\n\n" + (item.form_spec['help_text'] || '')
+      )
+
+    when QaEntry
+
+      @repository.save(
+        id: id_for(item),
+        type: Types::QA_ENTRY,
+        hub_id: item.id,
+        title: item.question,
+        content: item.answer,
+        raw_content: item.answer
       )
 
     when DocsSourceEntry
@@ -77,7 +91,7 @@ class HelpSearchService
     ensure_available
 
     case item
-    when SupportRequestTemplate, DocsSource
+    when SupportRequestTemplate, QaEntry, DocsSource
       @repository.delete(id_for(item))
     else
       raise "Item of class '#{item.class.name}' not supported for deletion by the HelpSearchService"
@@ -132,6 +146,7 @@ class HelpSearchService
           indexes :link, type: :keyword
           indexes :title
           indexes :content, analyzer: 'snowball'
+          indexes :raw_content, index: false
           indexes :headings
         end
       end

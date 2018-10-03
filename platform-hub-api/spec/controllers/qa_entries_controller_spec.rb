@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe QaEntriesController, type: :controller do
 
   include_context 'time helpers'
+  include_context 'help search helpers'
 
   describe 'GET #index' do
     it_behaves_like 'unauthenticated not allowed' do
@@ -120,6 +121,11 @@ RSpec.describe QaEntriesController, type: :controller do
 
       it_behaves_like 'a hub admin' do
 
+        before do
+          expect(help_search_service_instance).to receive(:index_item)
+            .with(QaEntry)
+        end
+
         it 'creates a new Q&A entry as expected' do
           expect(QaEntry.count).to eq 0
           expect(Audit.count).to eq 0
@@ -176,6 +182,11 @@ RSpec.describe QaEntriesController, type: :controller do
 
       it_behaves_like 'a hub admin' do
 
+        before do
+          expect(help_search_service_instance).to receive(:index_item)
+            .with(@qa_entry)
+        end
+
         it 'updates the specified Q&A entry' do
           expect(QaEntry.count).to eq 1
           expect(Audit.count).to eq 0
@@ -217,6 +228,11 @@ RSpec.describe QaEntriesController, type: :controller do
       end
 
       it_behaves_like 'a hub admin' do
+
+        before do
+          expect(help_search_service_instance).to receive(:delete_item)
+            .with(@qa_entry)
+        end
 
         it 'should delete the specified Q&A entry' do
           expect(QaEntry.exists?(@qa_entry.id)).to be true

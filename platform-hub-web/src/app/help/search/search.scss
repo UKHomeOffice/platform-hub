@@ -1,4 +1,6 @@
 .search-results {
+  background: white;
+
   .badge {
     margin-left: 0;
     margin-right: 0.66em
@@ -17,7 +19,7 @@
     }
   }
 
-  .md-list-item-inner {
+  .md-list-item-text {
     em {
       font-style: normal;
       background-color: rgba(#FFFBCC, 0.8);

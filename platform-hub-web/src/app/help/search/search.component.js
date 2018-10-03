@@ -14,6 +14,7 @@ function SearchController($state, $sce, hubApiService, PinnedHelpEntries, icons,
   ctrl.query = ctrl.transition && ctrl.transition.params().q;
 
   ctrl.supportRequestsIcon = icons.supportRequests;
+  ctrl.qaEntriesIcon = icons.qaEntries;
   ctrl.docsIcon = icons.docs;
 
   ctrl.loading = false;
