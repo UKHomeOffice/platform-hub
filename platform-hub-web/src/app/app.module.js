@@ -41,6 +41,7 @@ import {LayoutModule} from './layout/layout.module';
 import {OnboardingModule} from './onboarding/onboarding.module';
 import {PlatformThemesModule} from './platform-themes/platform-themes.module';
 import {ProjectsModule} from './projects/projects.module';
+import {QaEntriesModule} from './qa-entries/qa-entries.module';
 import {SharedModule} from './shared/shared.module';
 import {TermsOfServiceModule} from './terms-of-service/terms-of-service.module';
 import {UsersModule} from './users/users.module';
@@ -78,6 +79,7 @@ angular
     OnboardingModule,
     PlatformThemesModule,
     ProjectsModule,
+    QaEntriesModule,
     SharedModule,
     TermsOfServiceModule,
     UsersModule,

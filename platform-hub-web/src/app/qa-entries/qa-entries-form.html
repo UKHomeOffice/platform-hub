@@ -1,0 +1,63 @@
+<div class="qa-entries-form">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span ng-if="$ctrl.isNew">New Q&A Entry</span>
+        <span ng-if="!$ctrl.isNew">Edit Q&A Entry</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z1" layout-padding>
+      <md-content>
+        <form name="$ctrl.entryForm" role="form" ng-submit="$ctrl.createOrUpdate()">
+
+          <md-input-container class="md-block">
+            <label for="question">Question:</label>
+            <input
+              name="question"
+              ng-model="$ctrl.entry.question"
+              required
+              placeholder="How can I get access to the CI service?">
+            <div ng-messages="$ctrl.entryForm.question.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <md-input-container class="md-block">
+            <label for="answer">Answer:</label>
+            <textarea
+              name="answer"
+              ng-model="$ctrl.entry.answer"
+              rows="8"
+              required
+              aria-label="Answer for the Q&A entry">
+            </textarea>
+            <div ng-messages="$ctrl.entryForm.answer.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="$ctrl.saving || $ctrl.entryForm.$invalid"
+              ng-class="{'md-raised': ($ctrl.entryForm.$dirty && $ctrl.entryForm.$valid) }"
+              aria-label="Save Q&A entry">
+              <span ng-if="$ctrl.isNew">Create</span>
+              <span ng-if="!$ctrl.isNew">Update</span>
+            </md-button>
+            <md-button ui-sref="qa-entries.list" ng-disabled="$ctrl.saving">Cancel</md-button>
+          </div>
+
+        </form>
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

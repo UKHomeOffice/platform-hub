@@ -431,6 +431,19 @@ CREATE TABLE projects (
 
 
 --
+-- Name: qa_entries; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qa_entries (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    question character varying NOT NULL,
+    answer text NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: read_marks; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -700,6 +713,14 @@ ALTER TABLE ONLY platform_themes
 
 ALTER TABLE ONLY projects
     ADD CONSTRAINT projects_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qa_entries qa_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qa_entries
+    ADD CONSTRAINT qa_entries_pkey PRIMARY KEY (id);
 
 
 --
@@ -1221,6 +1242,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171003130836'),
 ('20171005115420'),
 ('20171010111440'),
+('20171012110416'),
 ('20171031164247'),
 ('20171114100517'),
 ('20171127115843'),
@@ -1238,6 +1260,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180718141143'),
 ('20180810102606'),
 ('20180822125540'),
-('20180822130915');
+('20180822130915'),
+('20180927152425');
 
 

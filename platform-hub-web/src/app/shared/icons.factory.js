@@ -28,6 +28,7 @@ export const icons = function () {
     pinnedHelpEntries: 'low_priority',
     platformThemes: 'lens',
     projects: 'group_work',
+    qaEntries: 'question_answer',
     revokeToken: 'delete_sweep',
     search: 'search',
     services: 'cloud_circle',

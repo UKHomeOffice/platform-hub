@@ -162,6 +162,7 @@ Rails.application.routes.draw do
     get '/pinned_help_entries', to: 'pinned_help_entries#show'
     put '/pinned_help_entries', to: 'pinned_help_entries#update'
 
+    resources :qa_entries
   end
 
 end

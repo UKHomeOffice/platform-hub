@@ -70,6 +70,11 @@ import {
   ProjectServicesDetail,
   ProjectServicesForm
 } from './projects/projects.module';
+import {
+  QaEntriesDetail,
+  QaEntriesForm,
+  QaEntriesList
+} from './qa-entries/qa-entries.module';
 import {TermsOfService} from './terms-of-service/terms-of-service.module';
 import {UsersList} from './users/users.module';
 
@@ -850,5 +855,48 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         authenticate: true,
         rolesPermitted: ['admin']
       }
-    });
+    })
+    .state('qa-entries', {
+      abstract: true,
+      url: '/qa-entries',
+      template: '<ui-view></ui-view>'
+    })
+      .state('qa-entries.list', {
+        url: '/list',
+        component: QaEntriesList,
+        data: {
+          authenticate: true,
+          rolesPermitted: ['admin']
+        }
+      })
+      .state('qa-entries.detail', {
+        url: '/detail/:id',
+        component: QaEntriesDetail,
+        resolve: {
+          transition: '$transition$'
+        },
+        data: {
+          authenticate: true,
+          rolesPermitted: ['admin']
+        }
+      })
+      .state('qa-entries.new', {
+        url: '/new',
+        component: QaEntriesForm,
+        data: {
+          authenticate: true,
+          rolesPermitted: ['admin']
+        }
+      })
+      .state('qa-entries.edit', {
+        url: '/edit/:id',
+        component: QaEntriesForm,
+        resolve: {
+          transition: '$transition$'
+        },
+        data: {
+          authenticate: true,
+          rolesPermitted: ['admin']
+        }
+      });
 };
