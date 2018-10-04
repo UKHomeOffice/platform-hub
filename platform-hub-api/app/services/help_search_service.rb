@@ -113,7 +113,8 @@ class HelpSearchService
           title: { number_of_fragments: 0 },
           content: { number_of_fragments: 3 }
         }
-      }
+      },
+      size: 100
     )
 
     Array(results.response.hits.hits).map do |h|

@@ -151,7 +151,10 @@ Rails.application.routes.draw do
       get :last_published_config, on: :collection
     end
 
-    get '/help/search', to: 'help#search', constraints: lambda { |_| FeatureFlagService.is_enabled? :help_search }
+    constraints lambda { |_| FeatureFlagService.is_enabled? :help_search } do
+      get '/help/search', to: 'help#search'
+      get '/help/search_query_stats', to: 'help#search_query_stats'
+    end
 
     resources :docs_sources do
       post '/sync', to: 'docs_sources#sync_all', on: :collection
