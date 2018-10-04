@@ -35,6 +35,9 @@ RSpec.describe HelpController, type: :controller do
           expect(help_search_service_instance).to receive(:search)
             .with(query)
             .and_return(results)
+
+          expect(HelpSearchStatsService).to receive(:count_query)
+            .with(query, results.size)
         end
 
         it 'should return the results as expected' do

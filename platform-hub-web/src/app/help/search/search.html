@@ -139,5 +139,41 @@
       </md-list>
     </div>
 
+    <!-- Stats -->
+    <section ng-if="!$ctrl.query && $ctrl.stats.length" layout="column" layout-align="center center" layout-padding style="margin-top: 1em;">
+      <h4>
+        Popular search queries
+      </h4>
+
+      <table class="simple-table">
+        <thead>
+          <th></th>
+          <th>
+            Count
+          </th>
+          <th>
+            Last result size(s)
+          </th>
+        </thead>
+        <tbody>
+          <tr ng-repeat="s in $ctrl.stats track by s.query">
+            <td class="centred">
+              <a ui-sref="help.search({q: s.query, reload: true})">
+                {{s.query}}
+              </a>
+            </td>
+            <td class="centred">
+              {{s.count}}
+            </td>
+            <td class="centred">
+              {{s.last_result_sizes.join(', ')}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <br />
+
   </md-content>
 </div>
