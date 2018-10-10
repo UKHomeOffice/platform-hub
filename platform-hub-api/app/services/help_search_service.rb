@@ -1,5 +1,16 @@
 class HelpSearchService
 
+  SYNONYMS = [
+    'kubernetes,k8s=>kube',
+    'continuous integration=>ci',
+    'lets encrypt=>le',
+    'kube cert manager=>kcm',
+    'single signon, single sign on=>sso',
+    'elasticsearch=>es',
+    'logstash,kibana=>elk',
+    'identity provider=>idp',
+  ].freeze
+
   module Types
     SUPPORT_REQUEST = 'support-request'.freeze
     QA_ENTRY = 'qa-entry'.freeze
@@ -105,7 +116,9 @@ class HelpSearchService
       query: {
         multi_match: {
           query: query,
-          fields: ['title^10', 'content', 'headings^7']
+          fields: ['title^10', 'content', 'headings^7'],
+          type: 'phrase',
+          slop: 10
         }
       },
       highlight: {
@@ -140,15 +153,38 @@ class HelpSearchService
 
       type :item
 
-      settings number_of_shards: 1, number_of_replicas: 0 do
+      settings(
+        number_of_shards: 1,
+        number_of_replicas: 0,
+        analysis: {
+          filter: {
+            synonym: {
+              type: 'synonym',
+              synonyms: SYNONYMS
+            }
+          },
+          analyzer: {
+            snowball_with_synonyms: {
+              tokenizer: 'standard',
+              filter: [
+                'standard',
+                'lowercase',
+                'stop',
+                'synonym',
+                'snowball'
+              ]
+            }
+          }
+        }
+      ) do
         mapping do
           indexes :type, type: :keyword
           indexes :hub_id, type: :keyword
           indexes :link, type: :keyword
-          indexes :title
-          indexes :content, analyzer: 'snowball'
+          indexes :title, analyzer: 'snowball_with_synonyms'
+          indexes :content, analyzer: 'snowball_with_synonyms'
           indexes :raw_content, index: false
-          indexes :headings
+          indexes :headings, analyzer: 'snowball_with_synonyms'
         end
       end
 
