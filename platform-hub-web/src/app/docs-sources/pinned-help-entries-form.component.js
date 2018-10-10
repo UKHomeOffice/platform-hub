@@ -16,6 +16,7 @@ function PinnedHelpEntriesFormController(PinnedHelpEntries, hubApiService, logge
 
   ctrl.search = search;
   ctrl.addSelectedToPinned = addSelectedToPinned;
+  ctrl.remove = remove;
   ctrl.update = update;
 
   init();
@@ -49,6 +50,10 @@ function PinnedHelpEntriesFormController(PinnedHelpEntries, hubApiService, logge
       ctrl.searchText = '';
       ctrl.searchSelectedEntry = null;
     }
+  }
+
+  function remove(ix) {
+    ctrl.entries.splice(ix, 1);
   }
 
   function update() {

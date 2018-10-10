@@ -67,7 +67,16 @@
               md-colors="{background: 'blue-grey-100'}"
               sv-element
               md-whiteframe="1"
-              class="item">
+              class="item"
+              style="position: relative;">
+              <md-button
+                type="button"
+                class="md-icon-button float-right"
+                ng-click="$ctrl.remove($index)"
+                aria-label="Remove this entry from the list"
+                style="position: absolute; top: 0; right: -10px;">
+                <md-icon style="font-size: 1.3em;">close</md-icon>
+              </md-button>
               <span>
                 [{{e.type}}]
                 {{e.title}}
