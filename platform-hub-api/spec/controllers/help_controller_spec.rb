@@ -35,15 +35,33 @@ RSpec.describe HelpController, type: :controller do
           expect(help_search_service_instance).to receive(:search)
             .with(query)
             .and_return(results)
-
-          expect(HelpSearchStatsService).to receive(:count_query)
-            .with(query, results.size)
         end
 
-        it 'should return the results as expected' do
-          get :search, params: { q: query }
-          expect(response).to be_success
-          expect(json_response).to eq results
+        context 'with ignore_for_stats not passed in' do
+          before do
+            expect(HelpSearchStatsService).to receive(:count_query)
+              .with(query, results.size)
+          end
+
+          it 'should return the results as expected' do
+            get :search, params: { q: query }
+            expect(response).to be_success
+            expect(json_response).to eq results
+          end
+        end
+
+        context 'with ignore_for_stats passed in' do
+          before do
+            expect(HelpSearchStatsService).to receive(:count_query)
+              .with(query, results.size)
+              .never
+          end
+
+          it 'should return the results as expected' do
+            get :search, params: { q: query, ignore_for_stats: true }
+            expect(response).to be_success
+            expect(json_response).to eq results
+          end
         end
 
       end

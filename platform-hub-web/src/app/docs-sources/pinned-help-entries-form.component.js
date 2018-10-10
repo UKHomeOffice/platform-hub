@@ -1,3 +1,5 @@
+/* eslint camelcase: 0 */
+
 export const PinnedHelpEntriesFormComponent = {
   template: require('./pinned-help-entries-form.html'),
   controller: PinnedHelpEntriesFormController
@@ -40,7 +42,7 @@ function PinnedHelpEntriesFormController(PinnedHelpEntries, hubApiService, logge
   }
 
   function search(query) {
-    return hubApiService.helpSearch({q: query});
+    return hubApiService.helpSearch({q: query, ignore_for_stats: true});
   }
 
   function addSelectedToPinned() {

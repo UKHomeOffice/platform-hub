@@ -12,7 +12,7 @@ class HelpController < ApiJsonController
       begin
         results = HelpSearchService.instance.search(q)
 
-        HelpSearchStatsService.count_query q, results.size
+        HelpSearchStatsService.count_query(q, results.size) unless params[:ignore_for_stats]
 
         render json: results
       rescue HelpSearchService::Errors::SearchUnavailable
