@@ -1,21 +1,39 @@
 .search-results {
   background: white;
 
-  .badge {
-    margin-left: 0;
-    margin-right: 0.66em
+  md-list {
+    padding: 0;
   }
 
-  md-list-item.md-3-line.md-long-text {
-    margin-top: 0;
-    margin-bottom: 0;
+  md-list-item {
+    &.md-2-line.md-long-text {
+      margin: 0;
 
-    .md-list-item-text {
-      margin-bottom: 1em;
+      .md-list-item-text {
+        margin-bottom: 1em;
 
-      h3 {
-        margin-top: 1em;
+        h3 {
+          margin-top: 1em;
+        }
       }
+    }
+
+    &:not(.md-2-line) {
+      h3 {
+        font-size: 16px;
+        font-weight: 400;
+        letter-spacing: 0.010em;
+        margin: 0 0 0px 0;
+        line-height: 1.2em;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+      }
+    }
+
+    .badge {
+      font-size: 0.7em;
     }
   }
 
@@ -23,6 +41,13 @@
     em {
       font-style: normal;
       background-color: rgba(#FFFBCC, 0.8);
+    }
+
+    .qa-answer-text {
+      font-weight: normal;
+      font-size: 0.85em;
+      line-height: 1.2em;
+      margin-top: 5px;
     }
   }
 }
