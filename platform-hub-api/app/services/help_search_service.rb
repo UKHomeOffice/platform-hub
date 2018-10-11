@@ -123,8 +123,16 @@ class HelpSearchService
       },
       highlight: {
         fields: {
-          title: { number_of_fragments: 0 },
-          content: { number_of_fragments: 3 }
+          title: {
+            fragment_size: 200,
+            number_of_fragments: 0,
+            fragmenter: 'simple'
+          },
+          content: {
+            fragment_size: 200,
+            number_of_fragments: 3,
+            fragmenter: 'simple'
+          }
         }
       },
       size: 100
