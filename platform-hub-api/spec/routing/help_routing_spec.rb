@@ -17,6 +17,10 @@ RSpec.describe HelpController, type: :routing do
         expect(:get => '/help/search_query_stats').to route_to('help#search_query_stats')
       end
 
+      it 'routes to #hide_search_query_stat' do
+        expect(:post => '/help/hide_search_query_stat').to route_to('help#hide_search_query_stat')
+      end
+
     end
   end
 
@@ -32,6 +36,10 @@ RSpec.describe HelpController, type: :routing do
 
     it 'route to #search_query_stats is not routable' do
       expect(:get => '/help/search_query_stats').to_not be_routable
+    end
+
+    it 'route to #hide_search_query_stat is not routable' do
+      expect(:post => '/help/hide_search_query_stat').to_not be_routable
     end
 
   end

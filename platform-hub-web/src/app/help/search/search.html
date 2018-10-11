@@ -142,37 +142,29 @@
     </div>
 
     <!-- Stats -->
-    <section ng-if="!$ctrl.query && $ctrl.stats.length" layout="column" layout-align="center center" layout-padding style="margin-top: 1em;">
+    <section class="popular-searches" ng-if="!$ctrl.query && $ctrl.stats.length" layout="column" layout-align="center center" layout-padding style="margin-top: 1em;">
       <h4>
-        Popular search queries
+        Popular searches
       </h4>
 
-      <table class="simple-table">
-        <thead>
-          <th></th>
-          <th>
-            Count
-          </th>
-          <th>
-            Last result size(s)
-          </th>
-        </thead>
-        <tbody>
-          <tr ng-repeat="s in $ctrl.stats track by s.query">
-            <td class="centred">
-              <a ui-sref="help.search({q: s.query, reload: true})">
-                {{s.query}}
-              </a>
-            </td>
-            <td class="centred">
-              {{s.count}}
-            </td>
-            <td class="centred">
-              {{s.last_result_sizes.join(', ')}}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <md-list flex-sm="100" flex-gt-sm="50">
+        <md-list-item
+          ng-repeat="s in $ctrl.stats track by s.query"
+          ui-sref="help.search({q: s.query, reload: true})">
+          <p layout-align="center center">
+            {{s.query}}
+          </p>
+          <md-button
+            ng-if="$ctrl.isAdmin"
+            type="button"
+            class="md-secondary"
+            ng-click="$ctrl.hideSearchQueryStat(s.query)"
+            aria-label="hide this">
+            Hide
+          </md-button>
+          <md-divider ng-if="!$last"></md-divider>
+        </md-list-item>
+      </md-list>
     </section>
 
     <br />

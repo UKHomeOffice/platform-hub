@@ -6,7 +6,7 @@ export const SearchComponent = {
   controller: SearchController
 };
 
-function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, icons, _) {
+function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, roleCheckerService, icons, _) {
   'ngInject';
 
   const ctrl = this;
@@ -17,6 +17,7 @@ function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, ic
   ctrl.qaEntriesIcon = icons.qaEntries;
   ctrl.docsIcon = icons.docs;
 
+  ctrl.isAdmin = false;
   ctrl.loading = false;
   ctrl.initialState = true;
   ctrl.searchText = ctrl.query;
@@ -25,10 +26,13 @@ function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, ic
 
   ctrl.search = search;
   ctrl.clear = clear;
+  ctrl.hideSearchQueryStat = hideSearchQueryStat;
 
   init();
 
   function init() {
+    loadAdminStatus();
+
     if (ctrl.query) {
       fetchResults();
     } else {
@@ -41,6 +45,14 @@ function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, ic
         ctrl.loading = false;
       });
     }
+  }
+
+  function loadAdminStatus() {
+    return roleCheckerService
+      .hasHubRole('admin')
+      .then(hasRole => {
+        ctrl.isAdmin = hasRole;
+      });
   }
 
   function search() {
@@ -100,5 +112,11 @@ function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, ic
 
       return item;
     });
+  }
+
+  function hideSearchQueryStat(query) {
+    return hubApiService
+      .hideHelpSearchQueryStat({q: query})
+      .then(fetchStats);
   }
 }
