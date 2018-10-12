@@ -82,15 +82,15 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       featureFlags: [featureFlagKeys.helpSearch]
     },
     {
-      title: 'FAQs',
-      state: 'help.faq',
-      icon: icons.faq
-    },
-    {
       title: 'Support Requests',
       state: 'help.support.requests.overview',
       activeState: 'help.support.requests',
       icon: icons.supportRequests
+    },
+    {
+      title: 'About the Hub',
+      state: 'help.faq',
+      icon: icons.info
     }
   ];
 

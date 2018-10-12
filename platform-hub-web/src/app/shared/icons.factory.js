@@ -17,6 +17,7 @@ export const icons = function () {
     home: 'home',
     hubSetup: 'settings',
     identities: 'account_box',
+    info: 'info',
     internalLink: 'input',
     kubernetesClusters: 'cloud_circle',
     kubernetesGroups: 'groups',
