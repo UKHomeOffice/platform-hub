@@ -1,6 +1,6 @@
 class HelpController < ApiJsonController
 
-  skip_authorization_check only: [ :search, :search_query_stats ]
+  skip_authorization_check only: [ :search, :search_status, :search_query_stats ]
 
   # GET /help/search
   def search
@@ -20,6 +20,11 @@ class HelpController < ApiJsonController
         service_unavailable_error 'Search is currently unavailable'
       end
     end
+  end
+
+  # GET /help/search_status
+  def search_status
+    render json: HelpSearchStatusService.status
   end
 
   # GET /help/search_query_stats

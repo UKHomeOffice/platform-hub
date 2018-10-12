@@ -49,6 +49,16 @@
 
     </div>
 
+    <div ng-if="$ctrl.status.forced_reindexing" layout="row" layout-padding>
+      <md-icon md-colors="{color: 'accent'}">warning</md-icon>
+      <p
+        class="md-body-2"
+        md-colors="{background: 'accent-50', color: 'accent'}"
+        flex>
+        Note: content is currently being fetched and indexed so you may get partial results until this is complete.
+      </p>
+    </div>
+
     <p
       ng-if="$ctrl.query && !$ctrl.initialState && !$ctrl.results.length"
       class="none-text"

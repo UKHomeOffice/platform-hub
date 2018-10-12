@@ -38,6 +38,8 @@ class HelpSearchService
   end
 
   def reindex_all force: false
+    HelpSearchStatusService.reindex_started force
+
     if force
       @repository.delete_index! if @repository.index_exists?
       @repository.create_index!
@@ -50,6 +52,8 @@ class HelpSearchService
     QaEntry.all.each(&method(:index_item))
 
     Docs::DocsSyncService.new(help_search_service: self).sync_all
+
+    HelpSearchStatusService.reindex_finished
   end
 
   def index_item item

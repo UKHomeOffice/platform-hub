@@ -153,6 +153,7 @@ Rails.application.routes.draw do
 
     constraints lambda { |_| FeatureFlagService.is_enabled? :help_search } do
       get '/help/search', to: 'help#search'
+      get '/help/search_status', to: 'help#search_status'
       get '/help/search_query_stats', to: 'help#search_query_stats'
       post '/help/hide_search_query_stat', to: 'help#hide_search_query_stat'
     end

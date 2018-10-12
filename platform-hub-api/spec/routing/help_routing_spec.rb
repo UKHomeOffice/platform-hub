@@ -13,6 +13,10 @@ RSpec.describe HelpController, type: :routing do
         expect(:get => '/help/search').to route_to('help#search')
       end
 
+      it 'routes to #search_status' do
+        expect(:get => '/help/search_status').to route_to('help#search_status')
+      end
+
       it 'routes to #search_query_stats' do
         expect(:get => '/help/search_query_stats').to route_to('help#search_query_stats')
       end
@@ -32,6 +36,10 @@ RSpec.describe HelpController, type: :routing do
 
     it 'route to #search is not routable' do
       expect(:get => '/help/search').to_not be_routable
+    end
+
+    it 'route to #search_status is not routable' do
+      expect(:get => '/help/search_status').to_not be_routable
     end
 
     it 'route to #search_query_stats is not routable' do

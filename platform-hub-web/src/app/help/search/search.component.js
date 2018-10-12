@@ -21,6 +21,7 @@ function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, ro
   ctrl.loading = false;
   ctrl.initialState = true;
   ctrl.searchText = ctrl.query;
+  ctrl.status = null;
   ctrl.results = [];
   ctrl.stats = [];
 
@@ -32,6 +33,7 @@ function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, ro
 
   function init() {
     loadAdminStatus();
+    loadSearchStatus();
 
     if (ctrl.query) {
       fetchResults();
@@ -52,6 +54,14 @@ function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, ro
       .hasHubRole('admin')
       .then(hasRole => {
         ctrl.isAdmin = hasRole;
+      });
+  }
+
+  function loadSearchStatus() {
+    return hubApiService
+      .helpSearchStatus()
+      .then(status => {
+        ctrl.status = status;
       });
   }
 
