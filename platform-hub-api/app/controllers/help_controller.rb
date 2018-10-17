@@ -1,6 +1,6 @@
 class HelpController < ApiJsonController
 
-  skip_authorization_check only: [ :search, :search_query_stats ]
+  skip_authorization_check only: [ :search, :search_status, :search_query_stats ]
 
   # GET /help/search
   def search
@@ -12,7 +12,7 @@ class HelpController < ApiJsonController
       begin
         results = HelpSearchService.instance.search(q)
 
-        HelpSearchStatsService.count_query q, results.size
+        HelpSearchStatsService.count_query(q, results.size) unless params[:ignore_for_stats]
 
         render json: results
       rescue HelpSearchService::Errors::SearchUnavailable
@@ -22,9 +22,28 @@ class HelpController < ApiJsonController
     end
   end
 
+  # GET /help/search_status
+  def search_status
+    render json: HelpSearchStatusService.status
+  end
+
   # GET /help/search_query_stats
   def search_query_stats
-    render json: HelpSearchStatsService.query_stats.first(20)
+    stats = HelpSearchStatsService
+      .query_stats
+      .select { |s| !s[:hidden] }
+      .first(20)
+
+    render json: stats
+  end
+
+  # POST /help/hide_search_query_stat
+  def hide_search_query_stat
+    authorize! :manage, :search_query_stats
+
+    HelpSearchStatsService.mark_hidden params[:q]
+
+    head :no_content
   end
 
 end

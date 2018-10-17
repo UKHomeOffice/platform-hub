@@ -4,10 +4,10 @@ class PinnedHelpEntriesController < ApiJsonController
 
   before_action :load_pinned_help_entries_hash_record
 
+  skip_authorization_check only: [ :show ]
+
   # GET /pinned_help_entries
   def show
-    authorize! :manage, :pinned_help_entries
-
     render json: entries
   end
 

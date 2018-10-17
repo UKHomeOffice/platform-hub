@@ -1,3 +1,5 @@
+/* eslint camelcase: 0 */
+
 export const PinnedHelpEntriesFormComponent = {
   template: require('./pinned-help-entries-form.html'),
   controller: PinnedHelpEntriesFormController
@@ -16,6 +18,7 @@ function PinnedHelpEntriesFormController(PinnedHelpEntries, hubApiService, logge
 
   ctrl.search = search;
   ctrl.addSelectedToPinned = addSelectedToPinned;
+  ctrl.remove = remove;
   ctrl.update = update;
 
   init();
@@ -39,7 +42,7 @@ function PinnedHelpEntriesFormController(PinnedHelpEntries, hubApiService, logge
   }
 
   function search(query) {
-    return hubApiService.helpSearch({q: query});
+    return hubApiService.helpSearch({q: query, ignore_for_stats: true});
   }
 
   function addSelectedToPinned() {
@@ -49,6 +52,10 @@ function PinnedHelpEntriesFormController(PinnedHelpEntries, hubApiService, logge
       ctrl.searchText = '';
       ctrl.searchSelectedEntry = null;
     }
+  }
+
+  function remove(ix) {
+    ctrl.entries.splice(ix, 1);
   }
 
   function update() {

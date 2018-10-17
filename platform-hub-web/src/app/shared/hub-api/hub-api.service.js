@@ -179,7 +179,9 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.lastPublishedConfigCostsReports = buildSimpleFetcher('costs_reports/last_published_config');
 
   service.helpSearch = buildSimpleFetcher('help/search', 'help search');
+  service.helpSearchStatus = buildSimpleFetcher('help/search_status', 'help search status');
   service.helpSearchQueryStats = buildSimpleFetcher('help/search_query_stats', 'help search query stats');
+  service.hideHelpSearchQueryStat = buildSimplePoster('help/hide_search_query_stat', 'hide that particular search query stat');
 
   service.getDocsSources = buildCollectionFetcher('docs_sources');
   service.getDocsSource = buildResourceFetcher('docs_sources');

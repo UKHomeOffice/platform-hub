@@ -59,7 +59,7 @@ module Docs
     end
 
     def is_doc? name
-      MARKDOWN_FILE_EXTS.any? { |ext| name.end_with?(ext) }
+      MARKDOWN_FILE_EXTS.any? { |ext| name.downcase.end_with?(ext) }
     end
 
     protected

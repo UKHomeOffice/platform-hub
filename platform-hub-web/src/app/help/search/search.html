@@ -49,6 +49,16 @@
 
     </div>
 
+    <div ng-if="$ctrl.status.forced_reindexing" layout="row" layout-padding>
+      <md-icon md-colors="{color: 'accent'}">warning</md-icon>
+      <p
+        class="md-body-2"
+        md-colors="{background: 'accent-50', color: 'accent'}"
+        flex>
+        Note: content is currently being fetched and indexed so you may get partial results until this is complete.
+      </p>
+    </div>
+
     <p
       ng-if="$ctrl.query && !$ctrl.initialState && !$ctrl.results.length"
       class="none-text"
@@ -57,13 +67,18 @@
     </p>
 
     <h4
+      ng-if="$ctrl.query && $ctrl.results.length"
+      layout="row" layout-align="center center" layout-padding>
+      {{$ctrl.results.length}} search result(s)
+    </h4>
+
+    <h4
       ng-if="!$ctrl.query && $ctrl.results.length"
-      layout="row" layout-align="center center" layout-padding
-      style="padding-bottom: 0;">
+      layout="row" layout-align="center center" layout-padding>
       Suggestions
     </h4>
 
-    <div class="search-results">
+    <div class="search-results" ng-if="$ctrl.results.length" layout="column">
       <md-list flex>
         <ng-switch
           ng-repeat="item in $ctrl.results track by item.id"
@@ -73,18 +88,17 @@
           <md-list-item
             ng-switch-when="support-request"
             ng-class="{
-              'md-2-line': !item.content,
-              'md-3-line md-long-text': item.content
+              'md-2-line md-long-text': item.content
             }"
             ui-sref="help.support.requests.new({id: item.hub_id})">
             <md-icon class="md-avatar-icon">{{$ctrl.supportRequestsIcon}}</md-icon>
-            <div class="md-list-item-text" layout="column">
-              <h3 ng-bind-html="item.title"></h3>
-              <h4>
-                <small class="badge" md-colors="{background: 'blue-grey-400'}">
+            <div class="md-list-item-text" flex>
+              <h3>
+                <small class="badge float-right" md-colors="{background: 'indigo-300'}">
                   Support request form
                 </small>
-              </h4>
+                <span ng-bind-html="item.title"></span>
+              </h3>
               <p ng-if="item.content" ng-bind-html='item.content'></p>
             </div>
             <md-divider ng-if="!$last"></md-divider>
@@ -93,22 +107,21 @@
           <!-- Q&A entry -->
           <md-list-item
             ng-switch-when="qa-entry"
-            class="md-3-line md-long-text">
+            class="md-2-line md-long-text">
             <md-icon class="md-avatar-icon">{{$ctrl.qaEntriesIcon}}</md-icon>
-            <div class="md-list-item-text" layout="column">
-              <h3 ng-bind-html="item.title"></h3>
-              <h4>
-                <small class="badge" md-colors="{background: 'blue-grey-400'}">
+            <div class="md-list-item-text" flex>
+              <h3>
+                <small class="badge float-right" md-colors="{background: 'indigo-300'}">
                   Q&A
                 </small>
-              </h4>
-              <div layout-padding>
-                <p
-                  md-colors="{background: 'blue-grey-50'}"
-                  ng-bind-html='item.raw_content | simpleFormat'
-                  layout-padding>
-                </p>
-              </div>
+                <span ng-bind-html="item.title"></span>
+              </h3>
+              <p
+                class="qa-answer-text"
+                md-colors="{background: 'blue-grey-50'}"
+                ng-bind-html='item.raw_content | simpleFormat'
+                layout-padding>
+              </p>
             </div>
             <md-divider ng-if="!$last"></md-divider>
           </md-list-item>
@@ -117,19 +130,18 @@
           <md-list-item
             ng-switch-when="doc"
             ng-class="{
-              'md-2-line': !item.content,
-              'md-3-line md-long-text': item.content
+              'md-2-line md-long-text': item.content
             }"
             ng-href="{{item.link}}"
             target="_blank">
             <md-icon class="md-avatar-icon">{{$ctrl.docsIcon}}</md-icon>
-            <div class="md-list-item-text" layout="column">
-              <h3 ng-bind-html="item.title"></h3>
-              <h4>
-                <small class="badge" md-colors="{background: 'blue-grey-400'}">
+            <div class="md-list-item-text" flex>
+              <h3>
+                <small class="badge float-right" md-colors="{background: 'indigo-300'}">
                   Documentation
                 </small>
-              </h4>
+                <span ng-bind-html="item.title"></span>
+              </h3>
               <p ng-if="item.content" ng-bind-html='item.content'></p>
             </div>
             <md-divider ng-if="!$last"></md-divider>
@@ -140,40 +152,45 @@
     </div>
 
     <!-- Stats -->
-    <section ng-if="!$ctrl.query && $ctrl.stats.length" layout="column" layout-align="center center" layout-padding style="margin-top: 1em;">
+    <section class="popular-searches" ng-if="!$ctrl.query && $ctrl.stats.length" layout="column" layout-align="center center" layout-padding style="margin-top: 1em;">
       <h4>
-        Popular search queries
+        Popular searches
       </h4>
 
-      <table class="simple-table">
-        <thead>
-          <th></th>
-          <th>
-            Count
-          </th>
-          <th>
-            Last result size(s)
-          </th>
-        </thead>
-        <tbody>
-          <tr ng-repeat="s in $ctrl.stats track by s.query">
-            <td class="centred">
-              <a ui-sref="help.search({q: s.query, reload: true})">
-                {{s.query}}
-              </a>
-            </td>
-            <td class="centred">
-              {{s.count}}
-            </td>
-            <td class="centred">
-              {{s.last_result_sizes.join(', ')}}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <md-list flex-sm="100" flex-gt-sm="50">
+        <md-list-item
+          ng-repeat="s in $ctrl.stats track by s.query"
+          ui-sref="help.search({q: s.query, reload: true})">
+          <p layout-align="center center">
+            {{s.query}}
+          </p>
+          <md-button
+            ng-if="$ctrl.isAdmin"
+            type="button"
+            class="md-secondary"
+            ng-click="$ctrl.hideSearchQueryStat(s.query)"
+            aria-label="hide this">
+            Hide
+          </md-button>
+          <md-divider ng-if="!$last"></md-divider>
+        </md-list-item>
+      </md-list>
     </section>
 
     <br />
+
+    <div layout="row" layout-padding>
+      <md-icon>info</md-icon>
+      <p
+        class="md-body-1"
+        md-colors="{background: 'blue-grey-50'}"
+        flex>
+        To access private docs on GitHub and GitLab, make sure you are
+        <a ui-sref="onboarding.services">
+          onboarded on to these services.
+        </a>
+      </p>
+    </div>
 
   </md-content>
 </div>

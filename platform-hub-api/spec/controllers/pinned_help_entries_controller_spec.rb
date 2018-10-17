@@ -13,42 +13,32 @@ RSpec.describe PinnedHelpEntriesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      it_behaves_like 'not a hub admin so forbidden'  do
-        before do
+      context 'when no data exists' do
+        it 'creates a new HashRecord with an empty default list and returns it' do
+          expect(HashRecord.webapp.where(id: key).count).to eq 0
           get :show
+          expect(response).to be_success
+          expect(json_response).to eq([])
+          expect(HashRecord.webapp.where(id: key).count).to eq 1
         end
       end
 
-      it_behaves_like 'a hub admin' do
-
-        context 'when no data exists' do
-          it 'creates a new HashRecord with an empty default list and returns it' do
-            expect(HashRecord.webapp.where(id: key).count).to eq 0
-            get :show
-            expect(response).to be_success
-            expect(json_response).to eq([])
-            expect(HashRecord.webapp.where(id: key).count).to eq 1
-          end
+      context 'when data exists' do
+        let :data do
+          {
+            'default' => ['1', '2', '3']
+          }
         end
 
-        context 'when data exists' do
-          let :data do
-            {
-              'default' => ['1', '2', '3']
-            }
-          end
-
-          before do
-            @pinned_help_entries = create :hash_record, id: key, scope: 'webapp', data: data
-          end
-
-          it 'returns the default list' do
-            get :show
-            expect(response).to be_success
-            expect(json_response).to eq data['default']
-          end
+        before do
+          @pinned_help_entries = create :hash_record, id: key, scope: 'webapp', data: data
         end
 
+        it 'returns the default list' do
+          get :show
+          expect(response).to be_success
+          expect(json_response).to eq data['default']
+        end
       end
 
     end

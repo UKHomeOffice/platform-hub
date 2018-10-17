@@ -15,7 +15,7 @@
       <md-button
         ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.helpSearch)"
         class="md-icon-button md-raised"
-        ui-sref="help.search"
+        ui-sref="help.search({q: null, reload: true})"
         aria-label="Search">
         <md-icon>{{$ctrl.searchIcon}}</md-icon>
         <md-tooltip md-direction="bottom">

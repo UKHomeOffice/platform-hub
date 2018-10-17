@@ -1,5 +1,16 @@
 class HelpSearchService
 
+  SYNONYMS = [
+    'kubernetes,k8s=>kube',
+    'continuous integration=>ci',
+    'lets encrypt=>le',
+    'kube cert manager=>kcm',
+    'single signon, single sign on=>sso',
+    'elasticsearch=>es',
+    'logstash,kibana=>elk',
+    'identity provider=>idp',
+  ].freeze
+
   module Types
     SUPPORT_REQUEST = 'support-request'.freeze
     QA_ENTRY = 'qa-entry'.freeze
@@ -27,6 +38,8 @@ class HelpSearchService
   end
 
   def reindex_all force: false
+    HelpSearchStatusService.reindex_started force
+
     if force
       @repository.delete_index! if @repository.index_exists?
       @repository.create_index!
@@ -39,6 +52,8 @@ class HelpSearchService
     QaEntry.all.each(&method(:index_item))
 
     Docs::DocsSyncService.new(help_search_service: self).sync_all
+
+    HelpSearchStatusService.reindex_finished
   end
 
   def index_item item
@@ -105,13 +120,23 @@ class HelpSearchService
       query: {
         multi_match: {
           query: query,
-          fields: ['title^10', 'content', 'headings^7']
+          fields: ['title^10', 'content', 'headings^7'],
+          type: 'phrase',
+          slop: 10
         }
       },
       highlight: {
         fields: {
-          title: { number_of_fragments: 0 },
-          content: { number_of_fragments: 3 }
+          title: {
+            fragment_size: 200,
+            number_of_fragments: 0,
+            fragmenter: 'simple'
+          },
+          content: {
+            fragment_size: 200,
+            number_of_fragments: 3,
+            fragmenter: 'simple'
+          }
         }
       },
       size: 100
@@ -140,15 +165,38 @@ class HelpSearchService
 
       type :item
 
-      settings number_of_shards: 1, number_of_replicas: 0 do
+      settings(
+        number_of_shards: 1,
+        number_of_replicas: 0,
+        analysis: {
+          filter: {
+            synonym: {
+              type: 'synonym',
+              synonyms: SYNONYMS
+            }
+          },
+          analyzer: {
+            snowball_with_synonyms: {
+              tokenizer: 'standard',
+              filter: [
+                'standard',
+                'lowercase',
+                'stop',
+                'synonym',
+                'snowball'
+              ]
+            }
+          }
+        }
+      ) do
         mapping do
           indexes :type, type: :keyword
           indexes :hub_id, type: :keyword
           indexes :link, type: :keyword
-          indexes :title
-          indexes :content, analyzer: 'snowball'
+          indexes :title, analyzer: 'snowball_with_synonyms'
+          indexes :content, analyzer: 'snowball_with_synonyms'
           indexes :raw_content, index: false
-          indexes :headings
+          indexes :headings, analyzer: 'snowball_with_synonyms'
         end
       end
 
