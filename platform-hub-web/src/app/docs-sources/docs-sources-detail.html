@@ -52,6 +52,67 @@
                 </h4>
 
                 <pre>{{$ctrl.source.config | json}}</pre>
+
+                <h4>Fetch status</h4>
+
+                <p class="md-body-1">
+                  <span md-colors="{color: 'blue-grey-700'}">
+                    Currently fetching?
+                  </span>
+                  {{$ctrl.source.is_fetching}}
+                </p>
+
+                <p class="md-body-1">
+                  <span md-colors="{color: 'blue-grey-700'}">
+                    Last fetch status:
+                  </span>
+                  <span ng-if="$ctrl.source.last_fetch_started_at">
+                    {{$ctrl.source.last_fetch_status}}
+                  </span>
+                  <span ng-if="!$ctrl.source.last_fetch_status" class="none-text">
+                    unknown
+                  </span>
+                </p>
+
+                <p class="md-body-1">
+                  <span md-colors="{color: 'blue-grey-700'}">
+                    Last fetch started at:
+                  </span>
+                  <span ng-if="$ctrl.source.last_fetch_started_at">
+                    {{$ctrl.source.last_fetch_started_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+                  </span>
+                  <span ng-if="!$ctrl.source.last_fetch_started_at" class="none-text">
+                    not fetched yet
+                  </span>
+                </p>
+
+                <p
+                  class="md-body-1"
+                  ng-if="$ctrl.source.last_fetch_error"
+                  md-colors="{color: 'blue-grey-700'}">
+                  Last fetch error
+                </p>
+                <pre ng-if="$ctrl.source.last_fetch_error">{{$ctrl.source.last_fetch_error}}</pre>
+
+                <p class="md-body-1">
+                  <span md-colors="{color: 'blue-grey-700'}">
+                    Last <strong>successful</strong> fetch started at:
+                  </span>
+                  <span ng-if="$ctrl.source.last_successful_fetch_started_at">
+                    {{$ctrl.source.last_successful_fetch_started_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+                  </span>
+                  <span ng-if="!$ctrl.source.last_successful_fetch_started_at" class="none-text">
+                    none
+                  </span>
+                </p>
+
+                <p
+                  class="md-body-1"
+                  ng-if="$ctrl.source.last_successful_fetch_metadata"
+                  md-colors="{color: 'blue-grey-700'}">
+                  Last <strong>successful</strong> fetch metadata:
+                </p>
+                <pre ng-if="$ctrl.source.last_successful_fetch_metadata">{{$ctrl.source.last_successful_fetch_metadata | json}}</pre>
               </md-content>
             </div>
           </div>
