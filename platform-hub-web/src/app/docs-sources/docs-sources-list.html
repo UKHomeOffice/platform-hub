@@ -59,6 +59,51 @@
       </md-card-title>
 
       <md-card-content>
+        <p class="md-body-1" md-colors="{color: 'blue-grey-700'}">
+          Source config:
+        </p>
+        <pre>{{s.config | json}}</pre>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Currently fetching?
+          </span>
+          {{s.is_fetching}}
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Last fetch status:
+          </span>
+          <span ng-if="s.last_fetch_started_at">
+            {{s.last_fetch_status}}
+          </span>
+          <span ng-if="!s.last_fetch_status" class="none-text">
+            unknown
+          </span>
+          <span class="separator">|</span>
+          <span md-colors="{color: 'blue-grey-700'}">
+            Last fetch started at:
+          </span>
+          <span ng-if="s.last_fetch_started_at">
+            {{s.last_fetch_started_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+          </span>
+          <span ng-if="!s.last_fetch_started_at" class="none-text">
+            not fetched yet
+          </span>
+        </p>
+
+        <p class="md-body-1">
+          <span md-colors="{color: 'blue-grey-700'}">
+            Last <strong>successful</strong> fetch started at:
+          </span>
+          <span ng-if="s.last_successful_fetch_started_at">
+            {{s.last_successful_fetch_started_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+          </span>
+          <span ng-if="!s.last_successful_fetch_started_at" class="none-text">
+            none
+          </span>
+        </p>
       </md-card-content>
 
       <md-card-actions layout="row" layout-align="start center">
