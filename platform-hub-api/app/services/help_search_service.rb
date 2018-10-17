@@ -118,11 +118,27 @@ class HelpSearchService
 
     results = @repository.search(
       query: {
-        multi_match: {
-          query: query,
-          fields: ['title^10', 'content', 'headings^7'],
-          type: 'phrase',
-          slop: 10
+        function_score: {
+          query: {
+            multi_match: {
+              query: query,
+              fields: ['title^10', 'content', 'headings^7'],
+              type: 'phrase',
+              slop: 10
+            }
+          },
+          functions: [
+            {
+              filter: { match: { type: Types::SUPPORT_REQUEST } },
+              weight: 30
+            },
+            {
+              filter: { match: { type: Types::QA_ENTRY } },
+              weight: 20
+            }
+          ],
+          score_mode: 'multiply',
+          boost_mode: 'multiply'
         }
       },
       highlight: {
