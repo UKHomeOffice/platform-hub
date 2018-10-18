@@ -29,7 +29,7 @@ gem 'api-pagination', '~> 4.7'
 gem 'memoist', '~> 0.16.0'
 gem 'has_scope', '~> 0.7.2'
 gem 'elasticsearch-persistence', '~> 5.1'
-gem 'commonmarker', '~> 0.17.13'
+gem 'commonmarker', '~> 0.18.1'
 gem 'gitlab', '~> 4.5'
 
 group :development, :test do
