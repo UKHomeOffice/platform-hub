@@ -203,4 +203,44 @@ RSpec.describe MeController, type: :controller do
     end
   end
 
+  describe '#kubernetes_tokens' do
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        get :kubernetes_tokens
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      context 'when no kubernetes identity exists for the user' do
+        it 'should return an empty list' do
+          get :kubernetes_tokens
+          expect(response).to be_success
+          expect(json_response).to eq []
+        end
+      end
+
+      context 'when a kubernetes identity exists for the user and has tokens associated' do
+        before do
+          @token = create :user_kubernetes_token, tokenable: create(:kubernetes_identity, user: current_user)
+        end
+
+        it 'should return a list of tokens with the token value revealed' do
+          get :kubernetes_tokens
+          expect(response).to be_success
+          expect(json_response.length).to eq 1
+          expect(json_response.first['cluster']['name']).to eq @token.cluster.name
+          expect(json_response.first['token']).to eq @token.decrypted_token
+          expect(json_response.first['obfuscated_token']).to eq @token.obfuscated_token
+          expect(json_response.first['uid']).to eq @token.uid
+          expect(json_response.first['name']).to eq @token.name
+          expect(json_response.first['groups']).to match_array @token.groups
+          expect(json_response.first['description']).to eq nil
+          expect(json_response.first['kind']).to eq 'user'
+        end
+      end
+
+    end
+  end
+
 end

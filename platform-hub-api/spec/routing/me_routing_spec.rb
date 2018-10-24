@@ -37,5 +37,25 @@ RSpec.describe MeController, type: :routing do
       expect(:post => '/me/global_announcements/mark_all_read').to route_to('me#global_announcements_mark_all_read')
     end
 
+    context 'with kubernetes_tokens feature flag enabled' do
+      before do
+        FeatureFlagService.create_or_update(:kubernetes_tokens, true)
+      end
+
+      it 'routes to #kubernetes_tokens' do
+        expect(:get => '/me/kubernetes_tokens').to route_to('me#kubernetes_tokens')
+      end
+    end
+
+    context 'with kubernetes_tokens feature flag disabled' do
+      before do
+        FeatureFlagService.create_or_update(:kubernetes_tokens, false)
+      end
+
+      it 'should not route to #kubernetes_tokens' do
+        expect(:get => '/me/kubernetes_tokens').not_to be_routable
+      end
+    end
+
   end
 end

@@ -59,7 +59,7 @@
 
         <p ng-if="i.connected">
           <ng-pluralize
-            count="i.kubernetes_tokens.length"
+            count="i.kubernetes_tokens_count"
             when="{
               '0': 'No tokens available yet',
               '1': '1 token ',
@@ -69,10 +69,10 @@
         </p>
 
         <md-button class="md-secondary md-raised"
-          ng-if="i.kubernetes_tokens.length > 0"
-          ng-click="$ctrl.showKubernetesTokens(i, $event)"
-          aria-label="Show tokens for this Kubernetes identity">
-          Show tokens
+          ng-if="i.kubernetes_tokens_count > 0"
+          ng-click="$ctrl.viewKubernetesTokens(i, $event)"
+          aria-label="View tokens for this Kubernetes identity">
+          View tokens
         </md-button>
       </div>
 

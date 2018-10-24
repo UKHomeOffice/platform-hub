@@ -1,4 +1,4 @@
-export const KubeConfigHelperPopupController = function ($mdDialog, icons, kubeId, token) {
+export const KubeConfigHelperPopupController = function ($mdDialog, icons, token) {
   'ngInject';
 
   const ctrl = this;
@@ -8,7 +8,7 @@ export const KubeConfigHelperPopupController = function ($mdDialog, icons, kubeI
   ctrl.clusterName = token.cluster.name;
 
   const contextName = `${token.cluster.name}_${token.project.shortname}`;
-  const userName = `${kubeId}_${contextName}`;
+  const userName = `${token.name}_${contextName}`;
 
   ctrl.clusterCommands = `kubectl config set-cluster ${token.cluster.name} --server=${token.cluster.api_url} && kubectl config set clusters.${token.cluster.name}.certificate-authority-data ${token.cluster.ca_cert_encoded}`;
 

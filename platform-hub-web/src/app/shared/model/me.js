@@ -17,6 +17,7 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
   model.completeServicesOnboarding = completeServicesOnboarding;
   model.agreeTermsOfService = agreeTermsOfService;
   model.globalAnnouncementsMarkAllRead = globalAnnouncementsMarkAllRead;
+  model.getKubernetesTokens = hubApiService.getMeKubernetesTokens;
 
   return model;
 
