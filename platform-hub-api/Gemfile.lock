@@ -112,6 +112,9 @@ GEM
       multi_json
     equalizer (0.0.11)
     erubis (2.7.0)
+    exception_notification (4.2.2)
+      actionmailer (>= 4.0, < 6)
+      activesupport (>= 4.0, < 6)
     factory_girl (4.8.1)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.8.0)
@@ -295,6 +298,7 @@ DEPENDENCIES
   delayed_job_active_record (~> 4.1, >= 4.1.2)
   dotenv-rails (~> 2.2, >= 2.2.0)
   elasticsearch-persistence (~> 5.1)
+  exception_notification (~> 4.2, >= 4.2.2)
   factory_girl_rails (~> 4.8)
   faraday (~> 0.15.2, >= 0.15.2)
   friendly_id (~> 5.2)

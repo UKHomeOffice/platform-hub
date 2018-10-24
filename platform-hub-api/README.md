@@ -56,6 +56,8 @@ You can override any config value by adding it to a `.env.local` file that you w
 - `AGENT_KEYCLOAK_BASE_URL` - Keycloak base URL. Make sure this is not a production Keycloak URL!
 - `AGENT_KEYCLOAK_REALM` - The Keycloak realm in which users will be managed.
 - `SLACK_WEBHOOK` – the webhook URL for Slack integration – use wisely when developing locally, just in case unwanted messages get sent to a public Slack channel – set to `noop` or some other string to ensure nothing gets sent out.
+- `NOTIFY_EXCEPTIONS` – specifies whether unhandled exceptions should be notified on Slack. Either omit this entirely, or set to `false`, to disable.
+- `NOTIFY_EXCEPTIONS_SLACK_CHANNEL` – the specific Slack channel to send notifications about unhandled exceptions.
 
 Note that these env files only work for local development and testing.
 
