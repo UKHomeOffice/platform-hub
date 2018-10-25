@@ -86,6 +86,23 @@ class MeController < ApiJsonController
     render_me_resource
   end
 
+  # GET /me/kubernetes_tokens
+  def kubernetes_tokens
+    kubernetes_identity = current_user.kubernetes_identity
+
+    tokens = if kubernetes_identity.present?
+      kubernetes_identity
+        .tokens
+        .includes(:project, :cluster)  # Eager load projects and clusters for performance
+        .joins(:project, :cluster)
+        .order('"projects"."name" ASC, "kubernetes_clusters"."name" ASC')  # Order by project and cluster names
+    else
+      []
+    end
+
+    render json: tokens
+  end
+
   private
 
   def render_me_resource

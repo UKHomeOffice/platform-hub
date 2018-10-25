@@ -9,13 +9,13 @@ import {UtilModule} from './util/util.module';
 
 import {AllocationsListingComponent} from './allocations-listing.component';
 import {apiInterceptorService} from './api-interceptor.service';
+import {currentUserKubernetesTokensPopupController} from './current-user-kubernetes-tokens-popup.controller';
+import {currentUserKubernetesTokensPopupService} from './current-user-kubernetes-tokens-popup.service';
 import {events} from './events.factory';
 import {homeEndpoints} from './home-endpoints.factory';
 import {icons} from './icons.factory';
 import {KubeConfigHelperPopupController} from './kube-config-helper-popup.controller';
 import {kubeConfigHelperPopupService} from './kube-config-helper-popup.service';
-import {KubernetesIdentityTokensPopupController} from './kubernetes-identity-tokens-popup.controller';
-import {kubernetesIdentityTokensPopupService} from './kubernetes-identity-tokens-popup.service';
 import {KubernetesTokenCardComponent} from './kubernetes-token-card.component';
 import {KubernetesTokenValueComponent} from './kubernetes-token-value.component';
 import {onboardingTrigger} from './onboarding-trigger.factory';
@@ -33,15 +33,15 @@ export const SharedModule = angular
   ])
   .component('allocationsListing', AllocationsListingComponent)
   .service('apiInterceptorService', apiInterceptorService)
+  .controller('currentUserKubernetesTokensPopupController', currentUserKubernetesTokensPopupController)
+  .service('currentUserKubernetesTokensPopupService', currentUserKubernetesTokensPopupService)
   .factory('events', events)
   .factory('homeEndpoints', homeEndpoints)
   .factory('icons', icons)
   .controller('KubeConfigHelperPopupController', KubeConfigHelperPopupController)
   .service('kubeConfigHelperPopupService', kubeConfigHelperPopupService)
-  .controller('KubernetesIdentityTokensPopupController', KubernetesIdentityTokensPopupController)
   .component('kubernetesTokenCard', KubernetesTokenCardComponent)
   .component('kubernetesTokenValue', KubernetesTokenValueComponent)
-  .service('kubernetesIdentityTokensPopupService', kubernetesIdentityTokensPopupService)
   .factory('onboardingTrigger', onboardingTrigger)
   .component('projectBillBreakdown', ProjectBillBreakdownComponent)
   .service('roleCheckerService', roleCheckerService)

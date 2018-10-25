@@ -34,6 +34,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.completeServicesOnboarding = completeServicesOnboarding;
   service.agreeTermsOfService = agreeTermsOfService;
   service.globalAnnouncementsMarkAllRead = globalAnnouncementsMarkAllRead;
+  service.getMeKubernetesTokens = buildSimpleFetcher('me/kubernetes_tokens');
 
   service.getUsers = buildCollectionFetcher('users', true);
   service.getUser = buildResourceFetcher('users');

@@ -8,7 +8,7 @@ export const IdentitiesListComponent = {
   controller: IdentitiesListController
 };
 
-function IdentitiesListController($mdDialog, Identities, Me, _, FeatureFlags, featureFlagKeys, kubernetesIdentityTokensPopupService) {
+function IdentitiesListController($mdDialog, Identities, Me, _, FeatureFlags, featureFlagKeys, currentUserKubernetesTokensPopupService) {
   'ngInject';
 
   const ctrl = this;
@@ -22,7 +22,7 @@ function IdentitiesListController($mdDialog, Identities, Me, _, FeatureFlags, fe
 
   ctrl.connect = connect;
   ctrl.disconnect = disconnect;
-  ctrl.showKubernetesTokens = showKubernetesTokens;
+  ctrl.viewKubernetesTokens = viewKubernetesTokens;
 
   init();
 
@@ -102,7 +102,7 @@ function IdentitiesListController($mdDialog, Identities, Me, _, FeatureFlags, fe
       });
   }
 
-  function showKubernetesTokens(identity, targetEvent) {
-    return kubernetesIdentityTokensPopupService.open(identity, targetEvent);
+  function viewKubernetesTokens(identity, targetEvent) {
+    return currentUserKubernetesTokensPopupService.open(targetEvent);
   }
 }

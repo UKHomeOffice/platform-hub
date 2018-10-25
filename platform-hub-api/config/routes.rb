@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     post '/me/complete_hub_onboarding', to: 'me#complete_hub_onboarding'
     post '/me/complete_services_onboarding', to: 'me#complete_services_onboarding'
     post '/me/global_announcements/mark_all_read', to: 'me#global_announcements_mark_all_read'
+    get '/me/kubernetes_tokens', to: 'me#kubernetes_tokens', constraints: lambda { |_| FeatureFlagService.is_enabled?(:kubernetes_tokens) }
 
     resources :feature_flags, only: [ :index ] do
       put '/:flag', to: 'feature_flags#update_flag', on: :collection

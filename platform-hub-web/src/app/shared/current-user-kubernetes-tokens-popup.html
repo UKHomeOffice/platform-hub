@@ -1,6 +1,6 @@
-<md-dialog aria-label="Kubernetes tokens" class="kubernetes-identity-tokens">
+<md-dialog aria-label="Kubernetes tokens" class="current-user-kubernetes-tokens-popup">
   <md-toolbar class="md-toolbar-tools md-accent">
-    <h2>Kubernetes tokens for {{$ctrl.identity.external_id}}</h2>
+    <h2>Your Kubernetes tokens</h2>
     <span flex></span>
     <md-button
       class="close-button md-icon-button"
@@ -9,6 +9,8 @@
       <md-icon>clear</md-icon>
     </md-button>
   </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
   <md-dialog-content>
     <md-list flex ng-repeat="(label, tokens) in $ctrl.tokensByProject track by label">
@@ -65,7 +67,7 @@
           <md-button
             class="md-raised md-secondary"
             ng-if="t.cluster.api_url && t.cluster.ca_cert_encoded"
-            ng-click="$ctrl.openKubeConfigHelperPopup($ctrl.identity.external_id, t, $event)"
+            ng-click="$ctrl.openKubeConfigHelperPopup(t, $event)"
             aria-label="Help me set up my kube config to use this token">
             Set up Kube Config
           </md-button>
