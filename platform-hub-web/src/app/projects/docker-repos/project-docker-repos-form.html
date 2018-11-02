@@ -1,0 +1,101 @@
+<div class="project-docker-repos-form">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h3>
+        Request New Docker Repo
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div class="md-body-2">
+      <a class="md-button" ui-sref="projects.detail({id: $ctrl.projectId})">
+        <md-icon>arrow_back</md-icon>
+        Back to project
+      </a>
+    </div>
+
+    <p
+      ng-if="!$ctrl.services.length"
+      class="md-body-2"
+      md-colors="{background: 'accent-50', color: 'accent'}"
+      layout-padding>
+      The project doesn't yet have any services. You will need at least one service, to associate with this Docker repo. Please ask your project admin to create a service first.
+    </p>
+
+    <div ng-if="$ctrl.services.length" flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z1" layout-padding>
+      <md-content>
+        <form
+          name="$ctrl.repoForm"
+          role="form"
+          ng-submit="$ctrl.createOrUpdate()">
+
+          <md-input-container class="md-block">
+            <label for="service">Which project service is this repo for?</label>
+            <md-select
+              name="service"
+              ng-model="$ctrl.repo.service_id"
+              required>
+              <md-option
+                ng-repeat="s in $ctrl.services"
+                ng-value="s.id">
+                {{s.name}}
+                ({{s.description}})
+              </md-option>
+            </md-select>
+          </md-input-container>
+
+          <div layout="row">
+            <div class="md-title" style="margin-top: 25px; margin-right: 5px;">
+              {{$ctrl.project.shortname.toLowerCase()}} /
+            </div>
+            <md-input-container class="md-block" flex>
+              <label for="name">Name:</label>
+              <input
+              name="name"
+              ng-model="$ctrl.repo.name"
+              ng-pattern="$ctrl.fieldNameRegex"
+              placeholder="only lowercase letters, numbers, hyphens, underscores, and forward slashes"
+              required>
+              <div ng-messages="$ctrl.repoForm.name.$error">
+                <div ng-message="required">This is required.</div>
+                <div ng-message="pattern">Must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, and forward slashes.</div>
+              </div>
+            </md-input-container>
+          </div>
+
+          <md-input-container class="md-block">
+            <label for="description">Description:</label>
+            <textarea
+              name="description"
+              ng-model="$ctrl.repo.description"
+              rows="3"
+              md-select-on-focus>
+            </textarea>
+          </md-input-container>
+
+          <div>
+            <md-button
+              type="submit"
+              class="md-primary"
+              ng-disabled="$ctrl.saving || $ctrl.repoForm.$invalid"
+              ng-class="{'md-raised': ($ctrl.repoForm.$dirty && $ctrl.repoForm.$valid) }"
+              aria-label="Save project service">
+              Request
+            </md-button>
+            <md-button
+              ui-sref="projects.detail({id: $ctrl.projectId})"
+              ng-disabled="$ctrl.saving">
+              Cancel
+            </md-button>
+          </div>
+
+        </form>
+      </md-content>
+    </div>
+
+  </md-content>
+</div>

@@ -51,6 +51,10 @@ class Project < ApplicationRecord
     class_name: 'KubernetesToken',
     dependent: :destroy
 
+  has_many :docker_repos,
+    through: :services,
+    dependent: :destroy
+
   def memberships_ordered_by_users_name
     memberships
       .includes(:user)  # Eager load users for performance

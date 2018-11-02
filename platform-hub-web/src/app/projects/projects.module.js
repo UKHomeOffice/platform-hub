@@ -1,5 +1,6 @@
 import angular from 'angular';
 
+import {ProjectDockerReposFormComponent} from './docker-repos/project-docker-repos-form.component';
 import {ProjectsFormComponent} from './projects-form.component';
 import {ProjectsDetailComponent} from './projects-detail.component';
 import {ProjectsListComponent} from './projects-list.component';
@@ -9,6 +10,7 @@ import {ProjectServiceSelectorPopupController} from './services/project-service-
 import {projectServiceSelectorPopupService} from './services/project-service-selector-popup.service';
 
 // Main section component names
+export const ProjectDockerReposForm = 'projectDockerReposForm';
 export const ProjectsForm = 'projectsForm';
 export const ProjectsDetail = 'projectsDetail';
 export const ProjectsList = 'projectsList';
@@ -17,6 +19,7 @@ export const ProjectServicesForm = 'projectServicesForm';
 
 export const ProjectsModule = angular
   .module('app.projects', [])
+  .component(ProjectDockerReposForm, ProjectDockerReposFormComponent)
   .component(ProjectsForm, ProjectsFormComponent)
   .component(ProjectsDetail, ProjectsDetailComponent)
   .component(ProjectsList, ProjectsListComponent)
