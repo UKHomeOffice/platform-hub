@@ -53,6 +53,16 @@ class Ability
     end
 
 
+    # Docker repos in projects
+
+    can :read_docker_repos_in_project, Project do |project|
+      can_participate_in_project project, user
+    end
+    can :administer_docker_repos_in_project, Project do |project|
+      can_participate_in_project project, user
+    end
+
+
     # Users
 
     can :identities, User do |target_user|

@@ -240,6 +240,22 @@ ALTER SEQUENCE delayed_jobs_id_seq OWNED BY delayed_jobs.id;
 
 
 --
+-- Name: docker_repos; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE docker_repos (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    name character varying NOT NULL,
+    description text,
+    service_id uuid NOT NULL,
+    status character varying NOT NULL,
+    url character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: docs_source_entries; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -636,6 +652,14 @@ ALTER TABLE ONLY delayed_jobs
 
 
 --
+-- Name: docker_repos docker_repos_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY docker_repos
+    ADD CONSTRAINT docker_repos_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: docs_source_entries docs_source_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -910,6 +934,20 @@ CREATE INDEX index_audits_on_user_name ON audits USING btree (user_name);
 --
 
 CREATE INDEX index_delayed_jobs_on_queue ON delayed_jobs USING btree (queue);
+
+
+--
+-- Name: index_docker_repos_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_docker_repos_on_name ON docker_repos USING btree (name);
+
+
+--
+-- Name: index_docker_repos_on_service_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_docker_repos_on_service_id ON docker_repos USING btree (service_id);
 
 
 --
@@ -1261,6 +1299,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180810102606'),
 ('20180822125540'),
 ('20180822130915'),
-('20180927152425');
+('20180927152425'),
+('20181101135115');
 
 

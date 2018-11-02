@@ -59,7 +59,7 @@ RSpec.describe ServicesController, type: :routing do
 
     end
 
-    context 'with projects/foo feature flag disabled' do
+    context 'with projects feature flag disabled' do
 
       before do
         FeatureFlagService.create_or_update(:projects, false)

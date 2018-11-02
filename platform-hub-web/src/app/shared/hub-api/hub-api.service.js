@@ -79,6 +79,10 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.updateProjectServiceKubernetesRobotToken = updateProjectServiceKubernetesRobotToken;
   service.deleteProjectServiceKubernetesRobotToken = deleteProjectServiceKubernetesRobotToken;
 
+  service.getProjectDockerRepos = buildSubCollectionFetcher('projects', 'docker_repos');
+  service.createProjectDockerRepo = buildSubResourceCreator('projects', 'docker_repos');
+  service.deleteProjectDockerRepo = buildSubResourceDeletor('projects', 'docker_repos');
+
   service.userOnboardGitHub = userOnboardGitHub;
   service.userOffboardGitHub = userOffboardGitHub;
 
