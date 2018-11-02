@@ -255,25 +255,31 @@ RSpec.describe KubernetesToken, type: :model do
 
     describe '#token' do
       it 'does not allow to update token' do
+        previous_token = @t.token
         expect { @t.update_attributes(token: SecureRandom.uuid) }.to raise_error(
           ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
         )
+        expect(@t.reload.token).to eq previous_token
       end
     end
 
     describe '#uid' do
       it 'does not allow to update uid' do
+        previous_uid = @t.uid
         expect { @t.update_attributes(uid: SecureRandom.uuid) }.to raise_error(
           ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
         )
+        expect(@t.reload.uid).to eq previous_uid
       end
     end
 
     describe '#name' do
       it 'does not allow to update name' do
+        previous_name = @t.name
         expect { @t.update_attributes(name: 'new_name') }.to raise_error(
           ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
         )
+        expect(@t.reload.name).to eq previous_name
       end
     end
 
@@ -282,9 +288,11 @@ RSpec.describe KubernetesToken, type: :model do
       let(:cluster) { create :kubernetes_cluster, allocate_to: service.project }
 
       it 'does not allow to update kind' do
+        previous_kind = @t.kind
         expect { @t.update_attributes(kind: 'robot', tokenable: service, cluster: cluster, description: 'blah', groups: []) }.to raise_error(
           ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
         )
+        expect(@t.reload.kind).to eq previous_kind
       end
     end
 
@@ -297,9 +305,11 @@ RSpec.describe KubernetesToken, type: :model do
       end
 
       it 'does not allow to update project' do
+        previous_project_id = @t.project_id
         expect { @t.update_attributes(project: new_project) }.to raise_error(
           ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
         )
+        expect(@t.reload.project_id).to eq previous_project_id
       end
     end
 
@@ -307,9 +317,11 @@ RSpec.describe KubernetesToken, type: :model do
       let(:new_cluster) { create :kubernetes_cluster, allocate_to: @t.project }
 
       it 'does not allow to update cluster' do
+        previous_cluster = @t.cluster
         expect { @t.update_attributes(cluster: new_cluster) }.to raise_error(
           ActiveRecord::ReadOnlyRecord, "token, name, uid, kind, cluster_id, project_id can't be modified"
         )
+        expect(@t.reload.cluster).to eq previous_cluster
       end
     end
   end

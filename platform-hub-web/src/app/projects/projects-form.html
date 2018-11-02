@@ -21,6 +21,7 @@
             <input
               name="shortname"
               ng-model="$ctrl.project.shortname"
+              ng-disabled="!$ctrl.isNew"
               required
               placeholder="A short and memorable name or acronym for this project"
               autofocus>
