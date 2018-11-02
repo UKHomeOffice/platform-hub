@@ -18,6 +18,8 @@ RSpec.describe DocsSource, type: :model do
           ActiveRecord::ReadOnlyRecord,
           "kind can't be modified"
         )
+
+        expect(@docs_source.reload.github_repo?).to be true
       end
     end
   end

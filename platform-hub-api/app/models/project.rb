@@ -11,9 +11,7 @@ class Project < ApplicationRecord
 
   allocation_receivable
 
-  def should_generate_new_friendly_id?
-    shortname_changed? || super
-  end
+  attr_readonly :shortname
 
   scope :by_shortname, -> (value) {
     # Important: the shortname query needs to be case insensitive
@@ -57,6 +55,17 @@ class Project < ApplicationRecord
     memberships
       .includes(:user)  # Eager load users for performance
       .joins(:user).order("users.name")  # Order by user name
+  end
+
+  private
+
+  def readonly?
+    if persisted?
+      read_only_attrs = self.class.readonly_attributes.to_a
+      if read_only_attrs.any? {|f| send(:"#{f}_changed?")}
+        raise ActiveRecord::ReadOnlyRecord, "#{read_only_attrs.join(', ')} can't be modified"
+      end
+    end
   end
 
 end

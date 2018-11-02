@@ -18,6 +18,7 @@ RSpec.describe Announcement, type: :model do
       expect {
         a.update! title: 'baz'
       }.to raise_error(ActiveRecord::ReadOnlyRecord)
+      expect(a.reload.title).to eq 'bar'
 
       a2 = Announcement.find(a.id)
       a2.update! status: :delivered
@@ -36,6 +37,7 @@ RSpec.describe Announcement, type: :model do
       expect {
         a.update! title: 'baz'
       }.to raise_error(ActiveRecord::ReadOnlyRecord)
+      expect(a.reload.title).to eq 'bar'
 
       a2 = Announcement.find(a.id)
       a2.update! status: :delivered
@@ -50,14 +52,15 @@ RSpec.describe Announcement, type: :model do
     end
 
     it 'should allow status change from \'awaiting_resend\' to another status' do
-      a = create :published_announcement
+      a = create :published_announcement, title: 'foo'
 
       a.mark_for_resend!
       expect(a.status).to eq 'awaiting_resend'
 
       expect {
-        a.update! title: 'baz'
+        a.update! title: 'bar'
       }.to raise_error(ActiveRecord::ReadOnlyRecord)
+      expect(a.reload.title).to eq 'foo'
 
       a2 = Announcement.find(a.id)
       a2.update! status: :delivering
