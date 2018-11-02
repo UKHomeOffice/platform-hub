@@ -197,7 +197,6 @@ RSpec.describe ProjectsController, type: :controller do
       {
         id: @project.friendly_id,
         project: {
-          shortname: 'foo',
           name: 'foobar',
           cost_centre_code: 'NOTSOEXPENSIVENOW'
         }
@@ -235,7 +234,7 @@ RSpec.describe ProjectsController, type: :controller do
           expect(response).to be_success
           expect(Project.count).to eq 1
           updated = Project.first
-          expect(updated.shortname).to eq put_data[:project][:shortname]
+          expect(updated.shortname).to eq @project.shortname
           expect(updated.name).to eq put_data[:project][:name]
           expect(updated.description).to eq existing_description
           expect(updated.cost_centre_code).to eq put_data[:project][:cost_centre_code]
