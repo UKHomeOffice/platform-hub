@@ -28,6 +28,15 @@
 
     <div ng-if="$ctrl.services.length" flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z1" layout-padding>
       <md-content>
+        <p
+          class="md-body-1"
+          md-colors="{background: 'blue-grey-50', color: 'blue-grey'}"
+          layout-padding>
+          Fill in the form below to request a new Docker repository on AWS ECR
+        </p>
+
+        <br />
+
         <form
           name="$ctrl.repoForm"
           role="form"
