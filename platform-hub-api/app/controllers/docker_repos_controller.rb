@@ -19,6 +19,7 @@ class DockerReposController < ApiJsonController
     service = @project.services.find params[:service_id]
 
     docker_repo = service.docker_repos.new(docker_repo_params)
+    docker_repo.provider = :ECR
 
     if docker_repo.save
       # TODO post to queue

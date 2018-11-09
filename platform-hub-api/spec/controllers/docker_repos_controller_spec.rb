@@ -134,6 +134,7 @@ RSpec.describe DockerReposController, type: :controller do
           'url' => docker_repo.url,
           'description' => docker_repo.description,
           'status' => docker_repo.status,
+          'provider'=> docker_repo.provider,
           'created_at' => docker_repo.created_at.iso8601,
           'updated_at' => docker_repo.updated_at.iso8601
         )
