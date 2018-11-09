@@ -6,5 +6,6 @@ FactoryGirl.define do
     end
     service
     status :pending
+    provider :ECR
   end
 end

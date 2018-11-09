@@ -55,7 +55,7 @@ RSpec.describe DockerRepo, type: :model do
           @docker_repo.update! name: 'bar'
         }.to raise_error(
           ActiveRecord::ReadOnlyRecord,
-          "name, service_id can't be modified"
+          "name, service_id, provider can't be modified"
         )
         expect(@docker_repo.reload.name).to eq previous_name
       end
@@ -73,7 +73,7 @@ RSpec.describe DockerRepo, type: :model do
           @docker_repo.update! service: create(:service)
         }.to raise_error(
           ActiveRecord::ReadOnlyRecord,
-          "name, service_id can't be modified"
+          "name, service_id, provider can't be modified"
         )
         expect(@docker_repo.reload.service_id).to eq previous_service_id
       end

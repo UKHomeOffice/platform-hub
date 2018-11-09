@@ -6,7 +6,7 @@ class DockerRepo < ApplicationRecord
 
   audited descriptor_field: :name, associated_field: :service
 
-  attr_readonly :name, :service_id
+  attr_readonly :name, :service_id, :provider
 
   before_validation :build_repo_name
 
@@ -18,6 +18,10 @@ class DockerRepo < ApplicationRecord
     pending: 'pending',
     ready: 'ready',
     deleting: 'deleting',
+  }
+
+  enum provider: {
+    ECR: 'ECR'
   }
 
   validates :name,
