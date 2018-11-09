@@ -27,6 +27,8 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.processing = false;
   ctrl.services = [];
   ctrl.loadingServices = false;
+  ctrl.dockerRepos = [];
+  ctrl.loadingDockerRepos = false;
   ctrl.kubernetesUserTokens = [];
   ctrl.kubernetesUserTokensSelectedUser = undefined;
   ctrl.processingKubernetesUserTokens = false;
@@ -48,6 +50,9 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.shouldEnableServicesTab = shouldEnableServicesTab;
   ctrl.loadServices = loadServices;
   ctrl.shouldEnableCreateServiceButton = shouldEnableCreateServiceButton;
+  ctrl.shouldEnableDockerReposTab = shouldEnableDockerReposTab;
+  ctrl.loadDockerRepos = loadDockerRepos;
+  ctrl.deleteDockerRepo = deleteDockerRepo;
   ctrl.shouldEnableKubernetesUserTokensTab = shouldEnableKubernetesUserTokensTab;
   ctrl.loadKubernetesUserTokens = loadKubernetesUserTokens;
   ctrl.shouldEnableBillsTab = shouldEnableBillsTab;
@@ -364,6 +369,48 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
 
   function shouldEnableCreateServiceButton() {
     return ctrl.isAdmin || ctrl.isProjectAdmin;
+  }
+
+  function shouldEnableDockerReposTab() {
+    return ctrl.isAdmin || ctrl.isProjectTeamMember;
+  }
+
+  function loadDockerRepos() {
+    ctrl.loadingDockerRepos = true;
+
+    Projects
+      .getDockerRepos(ctrl.project.id)
+      .then(dockerRepos => {
+        angular.copy(dockerRepos, ctrl.dockerRepos);
+      }).finally(() => {
+        ctrl.loadingDockerRepos = false;
+      });
+  }
+
+  function deleteDockerRepo(repo, targetEvent) {
+    const confirm = $mdDialog.confirm()
+      .title('Are you sure?')
+      .textContent('This will delete the Docker repository PERMANENTLY, with all it\'s images - this could break any builds and/or deployments that rely on these images.')
+      .ariaLabel('Confirm deletion of Docker repo')
+      .targetEvent(targetEvent)
+      .ok('Do it')
+      .cancel('Cancel');
+
+    $mdDialog
+      .show(confirm)
+      .then(() => {
+        ctrl.processing = true;
+
+        return Projects
+          .deleteDockerRepo(ctrl.project.id, repo.id)
+          .then(() => {
+            logger.success('Docker repo marked for deletion');
+            return loadDockerRepos();
+          })
+          .finally(() => {
+            ctrl.processing = false;
+          });
+      });
   }
 
   function shouldEnableKubernetesUserTokensTab() {

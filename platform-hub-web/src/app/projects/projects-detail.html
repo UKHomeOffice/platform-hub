@@ -234,6 +234,117 @@
       </md-tab>
 
       <md-tab
+        id="docker-repos-tab"
+        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.dockerRepos)"
+        ng-disabled="!$ctrl.shouldEnableDockerReposTab()"
+        md-on-select="$ctrl.loadDockerRepos()">
+        <md-tab-label>All Docker Repos</md-tab-label>
+        <md-tab-body>
+          <loading-indicator loading="$ctrl.loadingDockerRepos"></loading-indicator>
+
+          <div
+            layout="row"
+            layout-align="center center">
+            <md-button
+              class="md-primary md-raised"
+              aria-label="Create a new Docker repo for this project"
+              ui-sref="projects.docker-repos.new({projectId: $ctrl.project.id})">
+              <md-icon>add_box</md-icon>
+              Request New Docker Repo
+            </md-button>
+          </div>
+
+          <div ng-if="$ctrl.dockerRepos.length == 0" layout-padding>
+            <p class="md-body-1 none-text text-center">
+              No Docker repos created yet
+            </p>
+          </div>
+
+          <md-card ng-repeat="d in $ctrl.dockerRepos track by d.id">
+            <md-card-title>
+              <md-card-title-text>
+                <span class="md-headline">
+                  <small
+                    class="badge float-right"
+                    ng-if="d.status == 'pending'"
+                    md-colors="{background: 'blue'}">
+                    Pending
+                  </small>
+                  <small
+                    class="badge float-right"
+                    ng-if="d.status == 'ready'"
+                    md-colors="{background: 'green'}">
+                    Ready
+                  </small>
+                  <small
+                    class="badge float-right"
+                    ng-if="d.status == 'deleting'"
+                    md-colors="{background: 'accent'}">
+                    Deleting
+                  </small>
+
+                  <span>
+                    <span>{{d.name}}</span>
+                    <br ng-if="d.url" />
+                    <span
+                      class="md-body-1"
+                      ng-if="d.url">
+                      <a ng-href="{{d.url}}" target="_blank">
+                        {{d.url}}
+                      </a>
+                    </span>
+                  </span>
+                </span>
+              </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+              <p class="md-body-1">
+                <span md-colors="{color: 'blue-grey-700'}">
+                  For project service:
+                </span>
+                <strong>
+                  <a ui-sref="projects.services.detail({projectId: $ctrl.project.id, id: d.service.id})">
+                    {{d.service.name}}
+                  </a>
+                </strong>
+              </p>
+
+              <p
+                class="md-body-1"
+                md-colors="{background: 'blue-grey-50'}"
+                ng-if="d.description"
+                ng-bind-html='d.description | simpleFormat'
+                layout-padding>
+              </p>
+
+              <p class="md-body-1">
+                <span md-colors="{color: 'blue-grey-700'}">
+                  Requested at:
+                </span>
+                <span>{{d.created_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
+                <span class="separator">|</span>
+                <span md-colors="{color: 'blue-grey-700'}">
+                  Updated at:
+                </span>
+                <span>{{d.updated_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}</span>
+              </p>
+            </md-card-content>
+            <md-card-actions layout="row" layout-align="start center">
+              <span flex></span>
+              <md-button
+                class="md-accent"
+                ng-if="d.status != 'deleting'"
+                ng-disabled="$ctrl.processing"
+                aria-label="Delete this Docker repo"
+                ng-click="$ctrl.deleteDockerRepo(d, $event)">
+                Delete
+              </md-button>
+            </md-card-actions>
+          </md-card>
+        </md-tab-body>
+      </md-tab>
+
+      <md-tab
         id="kube-user-tokens-tab"
         ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)"
         ng-disabled="!$ctrl.shouldEnableKubernetesUserTokensTab()"

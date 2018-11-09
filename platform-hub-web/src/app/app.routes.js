@@ -64,6 +64,7 @@ import {
   PlatformThemesPage
 } from './platform-themes/platform-themes.module';
 import {
+  ProjectDockerReposForm,
   ProjectsForm,
   ProjectsDetail,
   ProjectsList,
@@ -482,6 +483,25 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           data: {
             authenticate: true,
             featureFlags: [featureFlagKeys.projects]
+          }
+        })
+      .state('projects.docker-repos', {
+        abstract: true,
+        url: '/:projectId/docker-repos',
+        template: '<ui-view></ui-view>'
+      })
+        .state('projects.docker-repos.new', {
+          url: '/new',
+          component: ProjectDockerReposForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlags: [
+              featureFlagKeys.projects,
+              featureFlagKeys.dockerRepos
+            ]
           }
         })
     .state('users', {

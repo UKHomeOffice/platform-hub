@@ -79,6 +79,10 @@ Rails.application.routes.draw do
         patch '/kubernetes_robot_tokens/:token_id', to: 'services#update_kubernetes_robot_token', on: :member
         delete '/kubernetes_robot_tokens/:token_id', to: 'services#destroy_kubernetes_robot_token', on: :member
       end
+
+      resources :docker_repos,
+        only: [ :index, :create, :destroy ],
+        constraints: lambda { |request| FeatureFlagService.is_enabled?(:docker_repos) }
     end
 
     resources :support_request_templates do

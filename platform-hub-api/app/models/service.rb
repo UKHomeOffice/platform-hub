@@ -29,4 +29,6 @@ class Service < ApplicationRecord
 
   has_many :kubernetes_namespaces, dependent: :destroy
 
+  has_many :docker_repos, dependent: :destroy
+
 end
