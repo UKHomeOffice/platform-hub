@@ -82,6 +82,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.getProjectDockerRepos = buildSubCollectionFetcher('projects', 'docker_repos');
   service.createProjectDockerRepo = buildSubResourceCreator('projects', 'docker_repos');
   service.deleteProjectDockerRepo = buildSubResourceDeletor('projects', 'docker_repos');
+  service.updateAccessProjectDockerRepo = updateAccessProjectDockerRepo;
 
   service.userOnboardGitHub = userOnboardGitHub;
   service.userOffboardGitHub = userOffboardGitHub;
@@ -631,6 +632,27 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to delete token', response));
+        return $q.reject(response);
+      });
+  }
+
+  function updateAccessProjectDockerRepo(projectId, dockerRepoId, robots, users) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(dockerRepoId) || _.isEmpty(dockerRepoId)) {
+      throw new Error('"dockerRepoId" argument not specified or empty');
+    }
+
+    return $http
+      .put(`${apiEndpoint}/projects/${projectId}/docker_repos/${dockerRepoId}/access`, {
+        robots,
+        users
+      })
+      .then(handleHttpError)
+      .then(response => response.data)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to request update to the access policy for the Docker repo', response));
         return $q.reject(response);
       });
   }

@@ -53,7 +53,7 @@ class ServicesController < ApiJsonController
 
       render json: service, status: :created
     else
-      render_model_errors service
+      render_model_errors service.errors
     end
   end
 
@@ -70,7 +70,7 @@ class ServicesController < ApiJsonController
 
       render json: @service
     else
-      render_model_errors @service
+      render_model_errors @service.errors
     end
   end
 

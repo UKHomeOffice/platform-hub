@@ -1,0 +1,122 @@
+<md-dialog aria-label="Update access policy for this Docker repo">
+  <md-toolbar class="md-toolbar-tools md-accent">
+    <h2>
+      Update access policy for Docker repo: {{$ctrl.dockerRepo.name}}
+    </h2>
+    <span flex></span>
+    <md-button
+      class="close-button md-icon-button"
+      ng-click="$ctrl.cancel()"
+      aria-label="Cancel and close dialog">
+      <md-icon>clear</md-icon>
+    </md-button>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.saving"></loading-indicator>
+
+  <md-dialog-content class="md-dialog-content" layout="column" layout-padding>
+    <form
+      name="$ctrl.form"
+      role="form">
+
+      <div>
+        <h3>
+          Robot accounts
+        </h3>
+        <p classs="md-body-1">
+          <em>Read + write access</em>
+        </p>
+
+        <br />
+
+        <div layout="row" ng-repeat="robot in $ctrl.robots">
+          <div
+            class="md-subhead"
+            ng-if="!robot.status"
+            style="margin-top: 24px; margin-right: 0;">
+            {{$ctrl.project.id}}_
+          </div>
+          <md-input-container class="md-block" flex>
+            <label for="robot{{$index}}-name">Username:</label>
+            <input
+              name="robot{{$index}}-username"
+              ng-model="robot.username"
+              ng-disabled="robot.status"
+              placeholder="deploy-bot"
+              ng-pattern="$ctrl.robotNameRegex"
+              autofocus
+              md-select-on-focus
+              required>
+            <div ng-messages="$ctrl.form['robot' + $index + '-username'].$error">
+              <div ng-message="required">This is required.</div>
+              <div ng-message="pattern">Must start with a letter and can only contain lowercase letters, numbers, hyphens and underscores.</div>
+            </div>
+          </md-input-container>
+          <md-button
+            class="md-icon-button"
+            style="margin-top: 14px;"
+            aria-label="Remove this robot account"
+            ng-click="$ctrl.removeRobot($index)">
+            <md-icon>delete</md-icon>
+          </md-button>
+        </div>
+
+        <div layout-align="center center">
+          <md-button
+            class="md-raised"
+            aria-label="Add new Robot account"
+            ng-click="$ctrl.addRobot()">
+            <md-icon>add_box</md-icon>
+            Add new robot account
+          </md-button>
+        </div>
+      </div>
+
+      <br ng-if="$ctrl.users.length" />
+      <br ng-if="$ctrl.users.length" />
+      <md-divider ng-if="$ctrl.users.length"></md-divider>
+      <br ng-if="$ctrl.users.length" />
+
+      <div ng-if="$ctrl.users.length">
+        <h3>
+          Project team members
+        </h3>
+
+        <br />
+
+        <div layout="column" ng-repeat="user in $ctrl.users">
+          <div>
+            <md-checkbox ng-model="user.enabled" aria-label="Enabled?">
+              <strong>{{user.username}}</strong>
+            </md-checkbox>
+          </div>
+          <div style="margin-left: 1.5em;">
+            <md-checkbox
+              ng-model="user.writable"
+              ng-disabled="!user.enabled">
+              Grant write access?
+            </md-checkbox>
+          </div>
+          <br />
+        </div>
+      </div>
+
+    </form>
+  </md-dialog-content>
+
+  <md-dialog-actions>
+    <md-button
+      ng-click="$ctrl.cancel()"
+      aria-label="Cancel">
+      Cancel
+    </md-button>
+    <md-button
+      class="md-primary"
+      ng-disabled="$ctrl.saving || $ctrl.form.$invalid"
+      ng-class="{'md-raised': ($ctrl.form.$dirty && $ctrl.form.$valid) }"
+      ng-click="$ctrl.save()"
+      aria-label="Save changes">
+      Save
+    </md-button>
+  </md-dialog-actions>
+</md-dialog>

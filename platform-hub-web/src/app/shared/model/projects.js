@@ -49,6 +49,7 @@ export const Projects = function ($window, $q, apiBackoffTimeMs, hubApiService, 
   model.getDockerRepos = hubApiService.getProjectDockerRepos;
   model.createDockerRepo = hubApiService.createProjectDockerRepo;
   model.deleteDockerRepo = hubApiService.deleteProjectDockerRepo;
+  model.updateAccessDockerRepo = hubApiService.updateAccessProjectDockerRepo;
 
   return model;
 

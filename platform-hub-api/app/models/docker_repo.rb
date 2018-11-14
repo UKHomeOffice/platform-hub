@@ -2,7 +2,14 @@ class DockerRepo < ApplicationRecord
 
   NAME_REGEX = /\A[a-z]+[a-z0-9\-_\/]*\z/
 
+  ACCESS_STATUS = {
+    pending: 'pending',
+    active: 'active',
+    removing: 'removing'
+  }.freeze
+
   include Audited
+  include ValidateHashes
 
   audited descriptor_field: :name, associated_field: :service
 
@@ -16,7 +23,7 @@ class DockerRepo < ApplicationRecord
 
   enum status: {
     pending: 'pending',
-    ready: 'ready',
+    active: 'active',
     deleting: 'deleting',
   }
 
@@ -34,7 +41,32 @@ class DockerRepo < ApplicationRecord
 
   validates :service_id, presence: true
 
+  validate_hashes(
+    access: {
+      schema: {
+        'robots' => [[
+          {
+            'username' => /\A[a-z]+[a-z0-9\-_]*\z/i,
+            'status' => DockerRepo::ACCESS_STATUS.values.to_set,
+          }
+        ]],
+        'users' => [[
+          {
+            'username' => String,
+            'writable' => TrueClass,
+            'status' => DockerRepo::ACCESS_STATUS.values.to_set,
+          }
+        ]],
+      },
+      unique_checks: [
+        { array_path: 'robots', obj_key: 'username' },
+        { array_path: 'users', obj_key: 'username' },
+      ]
+    }
+  )
+
   attr_default :status, :pending
+  attr_default :access, -> { { 'robots' => [], 'users' => [] } }
 
   private
 
@@ -49,7 +81,7 @@ class DockerRepo < ApplicationRecord
 
   def build_repo_name
     return if persisted? || self.name.blank? || self.service.blank?
-    self.name = "#{self.service.project.shortname.downcase}/#{self.name}"
+    self.name = "#{self.service.project.slug}/#{self.name}"
   end
 
 end

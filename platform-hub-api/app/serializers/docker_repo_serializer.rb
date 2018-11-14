@@ -3,5 +3,7 @@ class DockerRepoSerializer < ActiveModel::Serializer
 
   belongs_to :service
 
+  attribute :access
+
   attributes :created_at, :updated_at
 end

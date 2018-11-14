@@ -24,6 +24,7 @@
     "angular-jwt": "^0.1.9",
     "angular-loading-bar": "0.9.x",
     "angular-material": "^1.1.7",
+    "angular-material-expansion-panel": "^0.7.2",
     "angular-material-sidemenu": "^1.0.2",
     "angular-medium-editor": "^1.2.1",
     "angular-messages": "1.5.11",
