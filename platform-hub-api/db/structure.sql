@@ -252,7 +252,8 @@ CREATE TABLE docker_repos (
     url character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    provider character varying NOT NULL
+    provider character varying NOT NULL,
+    access jsonb
 );
 
 
@@ -1302,6 +1303,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180822130915'),
 ('20180927152425'),
 ('20181101135115'),
-('20181109123528');
+('20181109123528'),
+('20181114155258');
 
 

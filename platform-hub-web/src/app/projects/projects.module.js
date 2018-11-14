@@ -1,5 +1,7 @@
 import angular from 'angular';
 
+import {ProjectDockerReposAccessFormPopupController} from './docker-repos/project-docker-repos-access-form-popup.controller';
+import {projectDockerReposAccessFormPopupService} from './docker-repos/project-docker-repos-access-form-popup.service';
 import {ProjectDockerReposFormComponent} from './docker-repos/project-docker-repos-form.component';
 import {ProjectsFormComponent} from './projects-form.component';
 import {ProjectsDetailComponent} from './projects-detail.component';
@@ -19,6 +21,8 @@ export const ProjectServicesForm = 'projectServicesForm';
 
 export const ProjectsModule = angular
   .module('app.projects', [])
+  .controller('ProjectDockerReposAccessFormPopupController', ProjectDockerReposAccessFormPopupController)
+  .service('projectDockerReposAccessFormPopupService', projectDockerReposAccessFormPopupService)
   .component(ProjectDockerReposForm, ProjectDockerReposFormComponent)
   .component(ProjectsForm, ProjectsFormComponent)
   .component(ProjectsDetail, ProjectsDetailComponent)

@@ -10,6 +10,7 @@ import 'angular-ivh-treeview';
 import 'angular-jwt';
 import 'angular-loading-bar';
 import 'angular-material';
+import 'angular-material-expansion-panel';
 import 'angular-material-sidemenu';
 import 'angular-messages';
 import 'angular-moment';
@@ -59,6 +60,7 @@ import 'ng-material-datetimepicker/dist/material-datetimepicker.min.css';
 import 'angular-ivh-treeview/dist/ivh-treeview.css';
 import 'angular-ivh-treeview/dist/ivh-treeview-theme-basic.css';
 import './app.scss';
+import 'angular-material-expansion-panel/dist/md-expansion-panel.css';
 
 const name = 'app';
 
@@ -91,6 +93,7 @@ angular
     'base64',
     'bc.AngularUrlEncode',
     'ivh.treeview',
+    'material.components.expansionPanels',
     'ngAnimate',
     'ngAria',
     'ngclipboard',

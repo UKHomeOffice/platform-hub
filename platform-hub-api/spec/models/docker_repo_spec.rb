@@ -26,8 +26,8 @@ RSpec.describe DockerRepo, type: :model do
     end
 
     it 'allows updating the status' do
-      @docker_repo.update! status: :ready
-      expect(@docker_repo.reload.status).to eq 'ready'
+      @docker_repo.update! status: :active
+      expect(@docker_repo.reload.status).to eq 'active'
     end
   end
 

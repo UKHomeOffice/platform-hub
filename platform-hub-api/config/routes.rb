@@ -82,7 +82,9 @@ Rails.application.routes.draw do
 
       resources :docker_repos,
         only: [ :index, :create, :destroy ],
-        constraints: lambda { |request| FeatureFlagService.is_enabled?(:docker_repos) }
+        constraints: lambda { |request| FeatureFlagService.is_enabled?(:docker_repos) } do
+          put :access, to: 'docker_repos#update_access', on: :member
+        end
     end
 
     resources :support_request_templates do

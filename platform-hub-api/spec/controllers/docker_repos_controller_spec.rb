@@ -278,4 +278,102 @@ RSpec.describe DockerReposController, type: :controller do
     end
   end
 
+  describe 'PUT #update_access' do
+    let :robots do
+      [
+        { username: 'deploy1' },
+        { username: 'deploy2' },
+      ]
+    end
+    let :users do
+      [
+        { username: 'bob@bob.com', writable: false },
+        { username: 'jo@jo.com', writable: true },
+      ]
+    end
+
+    let(:access_policy_service) { instance_double('DockerRepoAccessPolicyService') }
+
+    before do
+      @docker_repo = create :docker_repo, service: service
+      @other_docker_repo = create :docker_repo, service: other_service
+    end
+
+    it_behaves_like 'unauthenticated not allowed'  do
+      before do
+        put :update_access, params: { project_id: project.friendly_id, id: @docker_repo.id, robots: robots, users: users }
+      end
+    end
+
+    it_behaves_like 'authenticated' do
+
+      def expect_update_access_docker_repo project, docker_repo, robots, users
+        expect(DockerRepoAccessPolicyService).to receive(:new)
+          .with(docker_repo)
+          .and_return(access_policy_service)
+        expect(access_policy_service).to receive(:request_update!)
+          .with(robots, users, anything)
+
+        put :update_access, params: { project_id: project.friendly_id, id: docker_repo.id, robots: robots, users: users }
+        expect(response).to be_success
+      end
+
+      it_behaves_like 'a hub admin' do
+
+        it 'can update access for a docker_repo in the project as expected' do
+          expect_update_access_docker_repo project, @docker_repo, robots, users
+        end
+
+        it 'can update access for a docker_repo in the other project as expected' do
+          expect_update_access_docker_repo other_project, @other_docker_repo, robots, users
+        end
+
+        it 'should return a 404 for incorrect matching of project and docker repo' do
+          put :update_access, params: { project_id: other_project.friendly_id, id: @docker_repo.id, robots: robots, users: users }
+          expect(response).to have_http_status(404)
+        end
+
+        it 'should allow empty lists' do
+          expect_update_access_docker_repo project, @docker_repo, [], []
+        end
+
+      end
+
+      context 'not a hub or project admin but is a member of the project' do
+
+        before do
+          create :project_membership, project: project, user: current_user
+        end
+
+        it 'can update access for a docker repo in the project as expected' do
+          expect_update_access_docker_repo project, @docker_repo, robots, users
+        end
+
+        it 'cannot update access for a docker repo in the other project - returning 403 Forbidden' do
+          put :update_access, params: { project_id: other_project.friendly_id, id: @other_docker_repo.id, robots: robots, users: users }
+          expect(response).to have_http_status(403)
+        end
+
+      end
+
+      context 'not a hub or other project admin but is a member of other project' do
+
+        before do
+          create :project_membership, project: other_project, user: current_user
+        end
+
+        it 'cannot update access for a docker repo in the project - returning 403 Forbidden' do
+          put :update_access, params: { project_id: project.friendly_id, id: @docker_repo.id, robots: robots, users: users }
+          expect(response).to have_http_status(403)
+        end
+
+        it 'can update access for a docker repo in the other project as expected' do
+          expect_update_access_docker_repo other_project, @other_docker_repo, robots, users
+        end
+
+      end
+
+    end
+  end
+
 end
