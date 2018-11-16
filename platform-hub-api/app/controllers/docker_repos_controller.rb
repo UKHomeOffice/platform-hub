@@ -18,18 +18,13 @@ class DockerReposController < ApiJsonController
 
     service = @project.services.find params[:service_id]
 
-    docker_repo = service.docker_repos.new(docker_repo_params)
-    docker_repo.provider = :ECR
+    docker_repo = DockerRepoLifecycleService.new.request_create(
+      service,
+      docker_repo_params,
+      audit_context,
+    )
 
-    if docker_repo.save
-      # TODO post to queue
-
-      AuditService.log(
-        context: audit_context,
-        action: 'request_create',
-        auditable: docker_repo
-      )
-
+    if docker_repo.errors.empty?
       render json: docker_repo, status: :created
     else
       render_model_errors docker_repo.errors
@@ -40,20 +35,9 @@ class DockerReposController < ApiJsonController
   def destroy
     authorize! :administer_docker_repos_in_project, @project
 
-    id = @docker_repo.id
-    name = @docker_repo.name
-    service = @docker_repo.service
-
-    @docker_repo.update! status: :deleting
-
-    # TODO post to queue
-
-    AuditService.log(
-      context: audit_context,
-      action: 'request_delete',
-      auditable: @docker_repo,
-      associated: service,
-      comment: "User '#{current_user.email}' has requested deletion of Docker repo: '#{name}' (ID: #{id}) in project '#{@project.shortname}'"
+    DockerRepoLifecycleService.new.request_delete!(
+      @docker_repo,
+      audit_context,
     )
 
     head :no_content
