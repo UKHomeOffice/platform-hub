@@ -109,6 +109,8 @@ RSpec.describe DockerReposController, type: :controller do
       }
     end
 
+    let(:lifecycle_service) { instance_double('DockerRepoLifecycleService') }
+
     it_behaves_like 'unauthenticated not allowed'  do
       before do
         post :create, params: { project_id: project.friendly_id }.merge(post_data)
@@ -118,16 +120,20 @@ RSpec.describe DockerReposController, type: :controller do
     it_behaves_like 'authenticated' do
 
       def expect_create_docker_repo service
-        expect(DockerRepo.count).to eq 0
-        expect(Audit.count).to eq 0
+        params = ActionController::Parameters.new(post_data[:docker_repo]).permit!
+        docker_repo = create :docker_repo, service: service
+
+        expect(DockerRepoLifecycleService).to receive(:new)
+          .and_return(lifecycle_service)
+        expect(lifecycle_service).to receive(:request_create)
+          .with(service, params, anything)
+          .and_return(docker_repo)
+
         post :create, params: {
           project_id: service.project.friendly_id,
           service_id: service.id
         }.merge(post_data)
         expect(response).to be_success
-        expect(DockerRepo.count).to eq 1
-        docker_repo = DockerRepo.first
-        expect(docker_repo.service).to eq service
         expect(json_response).to include(
           'id' => docker_repo.id,
           'name' => docker_repo.name,
@@ -138,12 +144,6 @@ RSpec.describe DockerReposController, type: :controller do
           'created_at' => docker_repo.created_at.iso8601,
           'updated_at' => docker_repo.updated_at.iso8601
         )
-        expect(Audit.count).to be 1
-        audit = Audit.first
-        expect(audit.action).to eq 'request_create'
-        expect(audit.associated).to eq service
-        expect(audit.auditable).to eq docker_repo
-        expect(audit.user).to eq current_user
       end
 
       it_behaves_like 'a hub admin' do
@@ -196,6 +196,8 @@ RSpec.describe DockerReposController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
+    let(:lifecycle_service) { instance_double('DockerRepoLifecycleService') }
+
     before do
       @docker_repo = create :docker_repo, service: service
       @other_docker_repo = create :docker_repo, service: other_service
@@ -210,18 +212,13 @@ RSpec.describe DockerReposController, type: :controller do
     it_behaves_like 'authenticated' do
 
       def expect_destroy_docker_repo project, docker_repo
-        expect(DockerRepo.exists?(docker_repo.id)).to be true
-        expect(Audit.count).to eq 0
+        expect(DockerRepoLifecycleService).to receive(:new)
+          .and_return(lifecycle_service)
+        expect(lifecycle_service).to receive(:request_delete!)
+          .with(docker_repo, anything)
+
         delete :destroy, params: { project_id: project.friendly_id, id: docker_repo.id }
         expect(response).to be_success
-        expect(DockerRepo.exists?(docker_repo.id)).to be true
-        expect(DockerRepo.find(docker_repo.id).deleting?).to be true
-        expect(Audit.count).to eq 1
-        audit = Audit.first
-        expect(audit.action).to eq 'request_delete'
-        expect(audit.auditable_type).to eq DockerRepo.name
-        expect(audit.auditable_id).to eq docker_repo.id
-        expect(audit.user.id).to eq current_user_id
       end
 
       it_behaves_like 'a hub admin' do

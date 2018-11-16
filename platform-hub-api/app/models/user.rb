@@ -59,6 +59,10 @@ class User < ApplicationRecord
     identity :kubernetes
   end
 
+  def ecr_identity
+    identity :ecr
+  end
+
   def identity provider
     identities.find_by provider: provider
   end
