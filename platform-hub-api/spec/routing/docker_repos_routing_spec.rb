@@ -25,6 +25,10 @@ RSpec.describe DockerReposController, type: :routing do
         expect(:delete => "/projects/foo/docker_repos/1").to route_to("docker_repos#destroy", :project_id => 'foo', :id => "1")
       end
 
+      it "routes to #update_access" do
+        expect(:put => "/projects/foo/docker_repos/1/access").to route_to("docker_repos#update_access", :project_id => 'foo', :id => "1")
+      end
+
     end
 
     context 'with docker_repos feature flag disabled' do
@@ -43,6 +47,10 @@ RSpec.describe DockerReposController, type: :routing do
 
       it "route to #destroy is not routable" do
         expect(:delete => "/projects/foo/docker_repos/1").to_not be_routable
+      end
+
+      it "route to #update_access is not routable" do
+        expect(:put => "/projects/foo/docker_repos/1/access").to_not be_routable
       end
 
     end

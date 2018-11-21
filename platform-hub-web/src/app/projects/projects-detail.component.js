@@ -6,7 +6,7 @@ export const ProjectsDetailComponent = {
   controller: ProjectsDetailController
 };
 
-function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, FeatureFlags, featureFlagKeys, Me, Projects, logger, _) {
+function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleCheckerService, hubApiService, FeatureFlags, featureFlagKeys, Me, Projects, projectDockerReposAccessFormPopupService, logger, _) {
   'ngInject';
 
   const ctrl = this;
@@ -52,6 +52,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   ctrl.shouldEnableCreateServiceButton = shouldEnableCreateServiceButton;
   ctrl.shouldEnableDockerReposTab = shouldEnableDockerReposTab;
   ctrl.loadDockerRepos = loadDockerRepos;
+  ctrl.dockerRepoManageAccess = dockerRepoManageAccess;
   ctrl.deleteDockerRepo = deleteDockerRepo;
   ctrl.shouldEnableKubernetesUserTokensTab = shouldEnableKubernetesUserTokensTab;
   ctrl.loadKubernetesUserTokens = loadKubernetesUserTokens;
@@ -384,6 +385,14 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
         angular.copy(dockerRepos, ctrl.dockerRepos);
       }).finally(() => {
         ctrl.loadingDockerRepos = false;
+      });
+  }
+
+  function dockerRepoManageAccess(repo, targetEvent) {
+    projectDockerReposAccessFormPopupService
+      .open(ctrl.project, repo, ctrl.memberships, targetEvent)
+      .then(() => {
+        return loadDockerRepos();
       });
   }
 
