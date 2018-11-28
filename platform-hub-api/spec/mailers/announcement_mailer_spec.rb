@@ -37,11 +37,11 @@ RSpec.describe AnnouncementMailer, type: :mailer do
       end
 
       let :expected_text do
-        "#{text}\n\n"  # Because we have extra newlines in the template
+        text.strip.gsub("\n", "\r\n")
       end
 
       let :expected_html do
-        <<~HTML
+        html = <<~HTML
           <!DOCTYPE html>
           <html>
             <head>
@@ -67,6 +67,7 @@ RSpec.describe AnnouncementMailer, type: :mailer do
             </body>
           </html>
         HTML
+        html.strip.gsub("\n", "\r\n")
       end
 
       before do
@@ -84,7 +85,7 @@ RSpec.describe AnnouncementMailer, type: :mailer do
         expect(@email[:to].value).to eq from
         expect(@email.bcc).to eq recipients
         expect(@email.subject).to eq expected_subject
-        expect(@email.text_part.body.to_s).to eq expected_text
+        expect(@email.text_part.body.to_s.strip).to eq expected_text
         expect(@email.html_part.body.to_s).to match expected_html
       end
     end
@@ -105,7 +106,7 @@ RSpec.describe AnnouncementMailer, type: :mailer do
       end
 
       let :expected_text do
-        template_definitions['email_text'].gsub("{{#{field_id}}}", field_value) + "\n\n"  # Because we have extra newlines in the template
+        template_definitions['email_text'].gsub("{{#{field_id}}}", field_value).strip
       end
 
       let :expected_html do
@@ -136,7 +137,7 @@ RSpec.describe AnnouncementMailer, type: :mailer do
         expect(@email[:to].value).to eq from
         expect(@email.bcc).to eq recipients
         expect(@email.subject).to eq expected_subject
-        expect(@email.text_part.body.to_s).to eq expected_text
+        expect(@email.text_part.body.to_s.strip).to eq expected_text
         expect(@email.html_part.body.to_s).to match expected_html
       end
     end
