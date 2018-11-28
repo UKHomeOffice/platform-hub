@@ -76,6 +76,52 @@
         </md-button>
       </div>
 
+      <md-divider></md-divider>
+
+    </md-list-item>
+
+    <md-list-item
+      ng-switch-when="ecr"
+      ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.dockerRepos)"
+      class="md-3-line md-long-text">
+
+      <md-icon ng-if="i.connected" md-colors="{color: 'teal'}">check_circle</md-icon>
+
+      <div class="md-list-item-text" ng-class="{'md-offset': !i.connected}">
+        <h3>{{i.title}}</h3>
+
+        <p ng-if="i.connected">
+          Username: {{i.external_username}}
+        </p>
+
+        <md-expansion-panel
+          md-component-id="ecr-credentials"
+          ng-if="i.credentials"
+          style="margin: 10px 2px;">
+          <md-expansion-panel-collapsed>
+            <div class="md-title">Credentials</div>
+            <span flex></span>
+            <md-expansion-panel-icon></md-expansion-panel-icon>
+          </md-expansion-panel-collapsed>
+
+          <md-expansion-panel-expanded>
+            <md-expansion-panel-header>
+              <div class="md-title">Credentials</div>
+              <span flex></span>
+              <md-expansion-panel-icon></md-expansion-panel-icon>
+            </md-expansion-panel-header>
+            <md-expansion-panel-content>
+              <p class="md-body-1" ng-repeat="(k, v) in i.credentials">
+                <span>{{k}}:</span>
+                <span>{{v}}</span>
+              </p>
+            </md-expansion-panel-content>
+          </md-expansion-panel-expanded>
+        </md-expansion-panel>
+      </div>
+
+      <md-divider></md-divider>
+
     </md-list-item>
 
   </md-list>
