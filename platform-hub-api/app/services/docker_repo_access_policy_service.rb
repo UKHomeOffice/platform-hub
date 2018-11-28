@@ -95,9 +95,10 @@ class DockerRepoAccessPolicyService
           user = User.find_by email: username
           identity = user.ecr_identity || user.identities.build(
             provider: Identity.providers[:ecr],
-            external_id: username
+            external_id: username,
+            external_username: username,
           )
-          identity.data = { credentials: credentials }
+          identity.data = { 'credentials' => credentials }
           identity.save!
         },
         fields_to_update: [ 'writable' ]

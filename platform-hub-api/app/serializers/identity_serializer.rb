@@ -16,4 +16,8 @@ class IdentitySerializer < BaseSerializer
   has_many :kubernetes_tokens, if: -> { object.kubernetes? && FeatureFlagService.is_enabled?(:kubernetes_tokens) } do
     []  # For backwards compatibility; user tokens list has now been moved to a dedicated endpoint
   end
+
+  attribute :credentials, if: -> { object.ecr? && FeatureFlagService.is_enabled?(:docker_repos) } do
+    object.data['credentials']
+  end
 end

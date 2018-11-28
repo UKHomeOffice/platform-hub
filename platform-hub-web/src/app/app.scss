@@ -179,11 +179,15 @@ form.compact {
   padding: 0;
 }
 
-md-card-content {
-  md-expansion-panel {
-    box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.2);
-  }
+md-expansion-panel {
+  box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.2);
 
+  .md-title {
+    font-size: 14px;
+  }
+}
+
+md-card-content {
   md-expansion-panel,
   md-expansion-panel.md-open,
   md-expansion-panel.md-open:first-of-type {
