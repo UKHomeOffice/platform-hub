@@ -83,7 +83,7 @@ class DockerRepo < ApplicationRecord
 
   def build_repo_name
     return if persisted? || self.name.blank? || self.service.blank?
-    self.name = "#{self.service.project.slug}/#{self.name}"
+    self.name = "#{self.service.project.friendly_id}/#{self.name}"
   end
 
 end

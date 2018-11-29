@@ -23,6 +23,10 @@ describe DockerRepoAccessPolicyService, type: :service do
 
   context '#request_update!' do
 
+    before do
+      allow(DockerRepoQueueService).to receive(:send_task)
+    end
+
     context 'with invalid inputs' do
 
       let!(:not_a_project_member) { create :user }
@@ -73,6 +77,24 @@ describe DockerRepoAccessPolicyService, type: :service do
         expect(docker_repo.access).to eq expected_access
       end
 
+      it 'posts a message to the queue' do
+        expected_message = {
+          action: 'update',
+          provider: docker_repo.provider,
+          resource_type: 'DockerRepositoryAccessPolicy',
+          resource: {
+            id: docker_repo.id,
+            repository: docker_repo.name,
+            robots: robots.sort_by { |i| i['username'] },
+            users: users.sort_by { |i| i['username'] }
+          }
+        }
+
+        expect(DockerRepoQueueService).to receive(:send_task).with(expected_message)
+
+        subject.request_update! robots, users, audit_context
+      end
+
       it 'logs an audit' do
         expect(Audit.count).to eq 0
 
@@ -86,6 +108,7 @@ describe DockerRepoAccessPolicyService, type: :service do
       end
 
       context 'with existing access already set' do
+
         before do
           docker_repo.update! access: expected_access
         end
@@ -175,6 +198,39 @@ describe DockerRepoAccessPolicyService, type: :service do
           docker_repo.reload
           expect(docker_repo.access).to eq expected_access
         end
+
+        it 'posts a message to the queue, ignoring items marked as \'removing\' and \'failed\'' do
+          expected_message = {
+            action: 'update',
+            provider: docker_repo.provider,
+            resource_type: 'DockerRepositoryAccessPolicy',
+            resource: {
+              id: docker_repo.id,
+              repository: docker_repo.name,
+              robots: robots.sort_by { |i| i['username'] },
+              users: users.sort_by { |i| i['username'] }
+            }
+          }
+
+          expect(DockerRepoQueueService).to receive(:send_task).with(expected_message)
+
+          unwanted_robots = [
+            { 'username' => 'unwanted1', 'status' => 'active' },
+            { 'username' => 'unwanted2', 'status' => 'active' },
+          ]
+          unwanted_users = [
+            { 'username' => create(:project_membership, project: project).user.email, 'writable' => true, 'status' => 'active' },
+            { 'username' => create(:project_membership, project: project).user.email, 'writable' => true, 'status' => 'active' },
+          ]
+
+          docker_repo.update! access: {
+            'robots' => docker_repo.access['robots'] + unwanted_robots,
+            'users' => docker_repo.access['users'] + unwanted_users
+          }
+
+          subject.request_update! robots, users, audit_context
+        end
+
       end
 
     end

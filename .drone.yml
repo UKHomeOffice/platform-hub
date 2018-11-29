@@ -91,6 +91,11 @@ pipeline:
       - FILESTORE_S3_BUCKET_NAME=noop
       - FILESTORE_S3_ACCESS_KEY_ID=noop
       - FILESTORE_S3_SECRET_ACCESS_KEY=noop
+      - SQS_REGION=noop
+      - SQS_ACCESS_KEY_ID=noop
+      - SQS_SECRET_ACCESS_KEY=noop
+      - SQS_ECR_AGENT_TASKS_QUEUE=noop
+      - SQS_ECR_AGENT_RESULTS_QUEUE=noop
     commands:
       - apk update && apk upgrade
       - apk --update add ca-certificates openssl
@@ -165,6 +170,11 @@ pipeline:
           -e FILESTORE_S3_BUCKET_NAME=noop
           -e FILESTORE_S3_ACCESS_KEY_ID=noop
           -e FILESTORE_S3_SECRET_ACCESS_KEY=noop
+          -e SQS_REGION=noop
+          -e SQS_ACCESS_KEY_ID=noop
+          -e SQS_SECRET_ACCESS_KEY=noop
+          -e SQS_ECR_AGENT_TASKS_QUEUE=noop
+          -e SQS_ECR_AGENT_RESULTS_QUEUE=noop
           platform-hub-api:${DRONE_COMMIT_SHA}
           /bin/bash -c "cd /app; bin/setup && bin/rails server -d; sleep 5; curl -s -f http://127.0.0.1:$${PORT}/healthz"
       - docker kill phub-api-postgres-${DRONE_BUILD_NUMBER}
