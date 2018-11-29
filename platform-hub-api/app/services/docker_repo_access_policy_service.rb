@@ -1,5 +1,7 @@
 class DockerRepoAccessPolicyService
 
+  RESOURCE_TYPE = 'DockerRepositoryAccessPolicy'.freeze
+
   module Errors
     class InvalidRobotName < StandardError
     end
@@ -29,6 +31,20 @@ class DockerRepoAccessPolicyService
 
       @docker_repo.save!
     end
+
+    message = {
+      action: 'update',
+      provider: @docker_repo.provider,
+      resource_type: RESOURCE_TYPE,
+      resource: {
+        id: @docker_repo.id,
+        repository: @docker_repo.name,
+        robots: wanted_items(@docker_repo.access['robots'], ['username']),
+        users: wanted_items(@docker_repo.access['users'], ['username', 'writable'])
+      }
+    }
+
+    DockerRepoQueueService.send_task message
 
     id = @docker_repo.id
     name = @docker_repo.name
@@ -155,8 +171,9 @@ class DockerRepoAccessPolicyService
         end
 
         # Special case: when an entry has previously been marked as 'removing'
-        # but now has been requested to be added back in again.
-        if i['status'] == DockerRepo::ACCESS_STATUS[:removing]
+        # OR 'failed', but now has been requested to be added back in again.
+        if i['status'] == DockerRepo::ACCESS_STATUS[:removing] ||
+          i['status'] == DockerRepo::ACCESS_STATUS[:failed]
           i['status'] = DockerRepo::ACCESS_STATUS[:pending]
         end
       else
@@ -228,6 +245,15 @@ class DockerRepoAccessPolicyService
     # Remove items not processed/seen in the backend response
     current.select do |r|
       processed.include? r['username']
+    end
+  end
+
+  def wanted_items items, fields_to_output
+    items.select do |i|
+      i['status'] != DockerRepo::ACCESS_STATUS[:removing] &&
+        i['status'] != DockerRepo::ACCESS_STATUS[:failed]
+    end.map do |i|
+      i.slice(*fields_to_output)
     end
   end
 
