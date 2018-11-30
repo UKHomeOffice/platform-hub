@@ -18,6 +18,11 @@ export const Identities = function (AppSettings, hubApiService) {
       provider: 'kubernetes',
       title: 'Kubernetes',
       selfservice: false
+    },
+    {
+      provider: 'ecr',
+      title: 'Amazon ECR',
+      selfservice: false
     }
   ];
 

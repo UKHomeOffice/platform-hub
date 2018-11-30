@@ -13,7 +13,7 @@ module AuditService
         request_uuid: context[:request_uuid]
       )
     rescue => e
-      Rails.logger.error "Failed to log audit - exception: type = #{e.class.name}, message = #{e.message}, backtrace = #{e.backtrace.join("\n")}"
+      Rails.logger.error "Failed to log audit - exception: type = #{e.class.name}, message = #{e.message}, backtrace = #{e.backtrace.join(" -- ")}"
     end
   end
 

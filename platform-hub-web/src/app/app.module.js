@@ -59,8 +59,8 @@ import 'medium-editor/dist/css/themes/beagle.css';
 import 'ng-material-datetimepicker/dist/material-datetimepicker.min.css';
 import 'angular-ivh-treeview/dist/ivh-treeview.css';
 import 'angular-ivh-treeview/dist/ivh-treeview-theme-basic.css';
-import './app.scss';
 import 'angular-material-expansion-panel/dist/md-expansion-panel.css';
+import './app.scss';
 
 const name = 'app';
 

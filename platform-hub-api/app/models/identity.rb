@@ -7,7 +7,8 @@ class Identity < ApplicationRecord
   enum provider: {
     keycloak: 'keycloak',
     github: 'github',
-    kubernetes: 'kubernetes'
+    kubernetes: 'kubernetes',
+    ecr: 'ecr',
   }
 
   has_many :tokens, -> { where kind: 'user' }, as: :tokenable, class_name: KubernetesToken

@@ -5,7 +5,8 @@ class DockerRepo < ApplicationRecord
   ACCESS_STATUS = {
     pending: 'pending',
     active: 'active',
-    removing: 'removing'
+    removing: 'removing',
+    failed: 'failed',
   }.freeze
 
   include Audited
@@ -25,6 +26,7 @@ class DockerRepo < ApplicationRecord
     pending: 'pending',
     active: 'active',
     deleting: 'deleting',
+    failed: 'failed',
   }
 
   enum provider: {
