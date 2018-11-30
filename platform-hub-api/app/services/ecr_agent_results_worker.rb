@@ -24,7 +24,7 @@ class EcrAgentResultsWorker
         if docker_repo
           DockerRepoAccessPolicyService.new(docker_repo).handle_update_result message
         else
-          Shoryuken.logger.error "[EcrAgentResultsWorker] could not find Docker repo with ID: '#{is}' - this queue message will now be discarded without being processed"
+          Shoryuken.logger.error "Could not find Docker repo with ID: '#{is}' - this queue message will now be discarded without being processed"
         end
       }
     }
@@ -40,14 +40,14 @@ class EcrAgentResultsWorker
     resource_type = message.fetch 'resource_type'
     action = message.fetch 'action'
 
-    Shoryuken.logger.info "[EcrAgentResultsWorker] Processing message (ID: #{message_id}) for resource type '#{resource_type}' and action '#{action}'"
+    Shoryuken.logger.info "Processing message (ID: #{message_id}) for resource type '#{resource_type}' and action '#{action}'"
 
     handler = HANDLERS.dig resource_type, action
 
     if handler
       handler.call message
     else
-      Shoryuken.logger.error "[EcrAgentResultsWorker] could not find handle for resource type '#{resource_type}', action '#{action}' - this queue message will now be discarded without being processed"
+      Shoryuken.logger.error "Could not find handle for resource type '#{resource_type}', action '#{action}' - this queue message will now be discarded without being processed"
     end
   end
 
