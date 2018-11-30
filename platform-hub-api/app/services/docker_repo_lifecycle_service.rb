@@ -1,16 +1,34 @@
 class DockerRepoLifecycleService
 
+  RESOURCE_TYPE = 'DockerRepository'.freeze
+
   def request_create service, params, audit_context
     docker_repo = service.docker_repos.new(params)
     docker_repo.provider = DockerRepo.providers[:ECR]
 
-    # TODO post to queue
+    if docker_repo.save
 
-    AuditService.log(
-      context: audit_context,
-      action: 'request_create',
-      auditable: docker_repo
-    )
+      message = {
+        action: 'create',
+        provider: docker_repo.provider,
+        resource_type: RESOURCE_TYPE,
+        resource: {
+          id: docker_repo.id,
+          project_id: docker_repo.service.project.friendly_id,
+          name: docker_repo.name,
+          url: docker_repo.url,
+        }
+      }
+
+      DockerRepoQueueService.send_task message
+
+      AuditService.log(
+        context: audit_context,
+        action: 'request_create',
+        auditable: docker_repo
+      )
+
+    end
 
     docker_repo
   end
@@ -22,7 +40,19 @@ class DockerRepoLifecycleService
 
     docker_repo.update! status: :deleting
 
-    # TODO post to queue
+    message = {
+      action: 'delete',
+      provider: docker_repo.provider,
+      resource_type: RESOURCE_TYPE,
+      resource: {
+        id: docker_repo.id,
+        project_id: docker_repo.service.project.friendly_id,
+        name: docker_repo.name,
+        url: docker_repo.url,
+      }
+    }
+
+    DockerRepoQueueService.send_task message
 
     AuditService.log(
       context: audit_context,

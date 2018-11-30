@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+# IMPORTANT: make sure to set `SQS_ECR_AGENT_RESULTS_QUEUE` in your environment manually when running this locally.
+
+shoryuken --queues="${SQS_ECR_AGENT_RESULTS_QUEUE}" --concurrency=1 --delay=10 --rails --require="./app/services/ecr_agent_results_worker"

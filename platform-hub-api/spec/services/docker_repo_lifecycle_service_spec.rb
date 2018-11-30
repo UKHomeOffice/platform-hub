@@ -24,6 +24,19 @@ describe DockerRepoLifecycleService, type: :service do
       expect(DockerRepo.count).to eq 0
       expect(Audit.count).to eq 0
 
+      expected_message = {
+        action: 'create',
+        provider: 'ECR',
+        resource_type: 'DockerRepository',
+        resource: include(
+          project_id: service.project.friendly_id,
+          name: "#{service.project.friendly_id}/#{params[:name]}",
+          url: nil,
+        )
+      }
+
+      expect(DockerRepoQueueService).to receive(:send_task).with(expected_message)
+
       docker_repo = subject.request_create service, params, audit_context
 
       expect(DockerRepo.count).to eq 1
@@ -49,6 +62,20 @@ describe DockerRepoLifecycleService, type: :service do
 
     it 'should mark the repo for deletion, post a request message to the queue and log an audit' do
       expect(Audit.count).to eq 0
+
+      expected_message = {
+        action: 'delete',
+        provider: 'ECR',
+        resource_type: 'DockerRepository',
+        resource: {
+          id: docker_repo.id,
+          project_id: docker_repo.service.project.friendly_id,
+          name: docker_repo.name,
+          url: docker_repo.url,
+        }
+      }
+
+      expect(DockerRepoQueueService).to receive(:send_task).with(expected_message)
 
       subject.request_delete! docker_repo, audit_context
 
