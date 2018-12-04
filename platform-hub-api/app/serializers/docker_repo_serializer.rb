@@ -1,5 +1,5 @@
 class DockerRepoSerializer < ActiveModel::Serializer
-  attributes :id, :name, :url, :description, :status, :provider
+  attributes :id, :name, :base_uri, :description, :status, :provider
 
   belongs_to :service
 

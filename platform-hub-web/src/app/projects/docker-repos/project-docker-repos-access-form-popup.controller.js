@@ -7,6 +7,8 @@ export const ProjectDockerReposAccessFormPopupController = function ($mdDialog, 
   ctrl.dockerRepo = dockerRepo;
   ctrl.projectMemberships = projectMemberships;
 
+  ctrl.robotNamePrefix = dockerRepo.name.replace(/\//gi, '_');
+
   ctrl.robotNameRegex = '^[a-z]+[a-z0-9\\-_]*$';
 
   ctrl.saving = false;
@@ -73,8 +75,8 @@ export const ProjectDockerReposAccessFormPopupController = function ($mdDialog, 
 
     const robots = ctrl.robots.map(r => {
       let username = r.username;
-      if (!username.startsWith(ctrl.project.id)) {
-        username = `${ctrl.project.id}_${username}`;
+      if (!username.startsWith(ctrl.robotNamePrefix)) {
+        username = `${ctrl.robotNamePrefix}_${username}`;
       }
       return {username};
     });

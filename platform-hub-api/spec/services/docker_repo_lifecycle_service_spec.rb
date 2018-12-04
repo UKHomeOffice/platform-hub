@@ -31,7 +31,7 @@ describe DockerRepoLifecycleService, type: :service do
         resource: include(
           project_id: service.project.friendly_id,
           name: "#{service.project.friendly_id}/#{params[:name]}",
-          url: nil,
+          base_uri: nil,
         )
       }
 
@@ -44,7 +44,7 @@ describe DockerRepoLifecycleService, type: :service do
       expect(docker_repo.name).to end_with params[:name]
       expect(docker_repo.description).to eq params[:description]
       expect(docker_repo.provider).to eq DockerRepo.providers[:ECR]
-      expect(docker_repo.url).to be nil
+      expect(docker_repo.base_uri).to be nil
       expect(docker_repo.status).to eq DockerRepo.statuses[:pending]
 
       expect(Audit.count).to be 1
@@ -71,7 +71,7 @@ describe DockerRepoLifecycleService, type: :service do
           id: docker_repo.id,
           project_id: docker_repo.service.project.friendly_id,
           name: docker_repo.name,
-          url: docker_repo.url,
+          base_uri: docker_repo.base_uri,
         }
       }
 
@@ -96,7 +96,7 @@ describe DockerRepoLifecycleService, type: :service do
         'resource' => {
           'id' => repo_id,
           'name' => repo_name,
-          'url' => 'a_url'
+          'base_uri' => 'a_base_uri'
         },
         'result' => {
           'status' => result_status
@@ -154,7 +154,7 @@ describe DockerRepoLifecycleService, type: :service do
         subject.handle_create_result message
 
         updated = DockerRepo.find docker_repo.id
-        expect(updated.url).to eq message['resource']['url']
+        expect(updated.base_uri).to eq message['resource']['base_uri']
         expect(updated).to be_active
       end
     end

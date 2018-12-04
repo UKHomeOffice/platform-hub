@@ -243,7 +243,7 @@ describe DockerRepoAccessPolicyService, type: :service do
         'resource' => {
           'id' => repo_id,
           'name' => repo_name,
-          'url' => 'a_url',
+          'base_uri' => 'a_base_uri',
           'robots' => robots,
           'users' => users,
         },
