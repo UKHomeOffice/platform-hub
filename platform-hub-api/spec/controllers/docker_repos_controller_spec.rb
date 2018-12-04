@@ -137,7 +137,7 @@ RSpec.describe DockerReposController, type: :controller do
         expect(json_response).to include(
           'id' => docker_repo.id,
           'name' => docker_repo.name,
-          'url' => docker_repo.url,
+          'base_uri' => docker_repo.base_uri,
           'description' => docker_repo.description,
           'status' => docker_repo.status,
           'provider'=> docker_repo.provider,
