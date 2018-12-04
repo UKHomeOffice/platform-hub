@@ -383,14 +383,26 @@
                       None
                     </p>
                     <md-list ng-if="d.access.robots.length" flex>
-                      <md-list-item class="md-2-line" ng-repeat="r in d.access.robots">
-                        <div class="md-list-item-text" flex>
+                      <md-list-item
+                        ng-repeat="r in d.access.robots"
+                        ng-class="{
+                          'md-2-line': !r.credentials,
+                          'md-3-line md-long-text': r.credentials
+                        }">
+                        <div class="md-list-item-text" layout="column">
                           <h3>{{r.username}}</h3>
                           <p>
                             Status: {{r.status}}
                           </p>
+                          <p ng-if="r.credentials">
+                            Credentials:
+                            <br />
+                            <span class="indented" ng-repeat="(k,v) in r.credentials">
+                              {{k}}: {{v}}
+                              <br />
+                            </span>
+                          </p>
                         </div>
-                        <md-divider ng-if="!$last"></md-divider>
                       </md-list-item>
                     </md-list>
 
@@ -412,7 +424,7 @@
                     </p>
                     <md-list ng-if="d.access.users.length" flex>
                       <md-list-item class="md-2-line" ng-repeat="u in d.access.users">
-                        <div class="md-list-item-text" flex>
+                        <div class="md-list-item-text" layout="column">
                           <h3>{{u.username}}</h3>
                           <p>
                             <span>Write access? {{u.writable}}</span>
@@ -420,7 +432,6 @@
                             <span>Status: {{u.status}}</span>
                           </p>
                         </div>
-                        <md-divider ng-if="!$last"></md-divider>
                       </md-list-item>
                     </md-list>
                   </md-expansion-panel-content>
