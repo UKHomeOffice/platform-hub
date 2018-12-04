@@ -92,6 +92,7 @@ class DockerRepoAccessPolicyService
         items: message['resource']['robots'],
         current: docker_repo.access['robots'],
         check_username: -> (_) { true },
+        get_credentials: -> (item) { item['credentials'] },
         set_credentials: -> (item, credentials) { item['credentials'] = credentials }
       )
 
@@ -106,16 +107,25 @@ class DockerRepoAccessPolicyService
               user.id
             )
         },
+        get_credentials: -> (item) {
+          username = item['username']
+          user = User.find_by email: username
+          if user
+            (user.ecr_identity.try(:data) || {})['credentials'].presence
+          end
+        },
         set_credentials: -> (item, credentials) {
           username = item['username']
           user = User.find_by email: username
-          identity = user.ecr_identity || user.identities.build(
-            provider: Identity.providers[:ecr],
-            external_id: username,
-            external_username: username,
-          )
-          identity.data = { 'credentials' => credentials }
-          identity.save!
+          if user
+            identity = user.ecr_identity || user.identities.build(
+              provider: Identity.providers[:ecr],
+              external_id: username,
+              external_username: username,
+            )
+            identity.data = { 'credentials' => credentials }
+            identity.save!
+          end
         },
         fields_to_update: [ 'writable' ]
       )
@@ -198,7 +208,7 @@ class DockerRepoAccessPolicyService
     updated.sort_by { |i| i['username'] }
   end
 
-  def process_items_from_result item_type:, items:, current:, check_username:, set_credentials:, fields_to_update: []
+  def process_items_from_result item_type:, items:, current:, check_username:, get_credentials:, set_credentials:, fields_to_update: []
     processed = Set.new
 
     items.each do |r|
@@ -223,7 +233,12 @@ class DockerRepoAccessPolicyService
 
               existing['status'] = DockerRepo::ACCESS_STATUS[:active]
             elsif existing['status'] == DockerRepo::ACCESS_STATUS[:pending]
-              existing['status'] = DockerRepo::ACCESS_STATUS[:failed]
+              # If we already have credentials then we assume those are still valid
+              if get_credentials.call existing
+                existing['status'] = DockerRepo::ACCESS_STATUS[:active]
+              else
+                existing['status'] = DockerRepo::ACCESS_STATUS[:failed]
+              end
             end
           end
         else
