@@ -31,14 +31,14 @@ RSpec.describe DockerRepo, type: :model do
     end
   end
 
-  describe '#url' do
+  describe '#base_uri' do
     before do
-      @docker_repo = create :docker_repo, url: nil
+      @docker_repo = create :docker_repo, base_uri: nil
     end
 
-    it 'allows updating the url' do
-      @docker_repo.update! url: 'http://example.org'
-      expect(@docker_repo.reload.url).to eq 'http://example.org'
+    it 'allows updating the base_uri' do
+      @docker_repo.update! base_uri: 'http://example.org'
+      expect(@docker_repo.reload.base_uri).to eq 'http://example.org'
     end
   end
 

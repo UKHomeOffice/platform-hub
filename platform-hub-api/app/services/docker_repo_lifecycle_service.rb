@@ -16,7 +16,7 @@ class DockerRepoLifecycleService
           id: docker_repo.id,
           project_id: docker_repo.service.project.friendly_id,
           name: docker_repo.name,
-          url: docker_repo.url,
+          base_uri: docker_repo.base_uri,
         }
       }
 
@@ -48,7 +48,7 @@ class DockerRepoLifecycleService
         id: docker_repo.id,
         project_id: docker_repo.service.project.friendly_id,
         name: docker_repo.name,
-        url: docker_repo.url,
+        base_uri: docker_repo.base_uri,
       }
     }
 
@@ -66,7 +66,7 @@ class DockerRepoLifecycleService
   def handle_create_result message
     handle_result message, 'handle_create_result' do |docker_repo|
       docker_repo.update!(
-        url: message['resource']['url'],
+        base_uri: message['resource']['base_uri'],
         status: DockerRepo.statuses[:active]
       )
 

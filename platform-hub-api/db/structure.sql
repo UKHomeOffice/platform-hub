@@ -249,7 +249,7 @@ CREATE TABLE docker_repos (
     description text,
     service_id uuid NOT NULL,
     status character varying NOT NULL,
-    url character varying,
+    base_uri character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     provider character varying NOT NULL,
@@ -1304,6 +1304,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180927152425'),
 ('20181101135115'),
 ('20181109123528'),
-('20181114155258');
+('20181114155258'),
+('20181204101525');
 
 

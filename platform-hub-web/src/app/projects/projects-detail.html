@@ -291,13 +291,11 @@
 
                   <span>
                     <span>{{d.name}}</span>
-                    <br ng-if="d.url" />
+                    <br ng-if="d.base_uri" />
                     <span
                       class="md-body-1"
-                      ng-if="d.url">
-                      <a ng-href="{{d.url}}" target="_blank">
-                        {{d.url}}
-                      </a>
+                      ng-if="d.base_uri">
+                      {{d.base_uri}}
                     </span>
                   </span>
                 </span>
