@@ -252,6 +252,13 @@
               <md-icon>add_box</md-icon>
               Request New Docker Repo
             </md-button>
+            <md-button
+              class="md-raised"
+              aria-label="Refresh the Docker repos list"
+              ng-click="$ctrl.loadDockerRepos()">
+              <md-icon>refresh</md-icon>
+              Refresh
+            </md-button>
           </div>
 
           <div ng-if="$ctrl.dockerRepos.length == 0" layout-padding>
