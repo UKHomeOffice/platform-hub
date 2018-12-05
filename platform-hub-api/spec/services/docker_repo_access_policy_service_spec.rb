@@ -66,7 +66,7 @@ describe DockerRepoAccessPolicyService, type: :service do
       let :expected_access do
         {
           'robots' => robots.map { |r| r.merge 'status' => 'pending' }.sort_by { |r| r['username'] },
-          'users' => users.map { |u| u.merge 'status' => 'pending' }.sort_by { |r| r['username'] },
+          'users' => users.map { |u| u.merge 'status' => 'pending' }.sort_by { |u| u['username'] },
         }
       end
 
@@ -233,6 +233,114 @@ describe DockerRepoAccessPolicyService, type: :service do
 
       end
 
+    end
+
+  end
+
+  context 'request_remove_user!' do
+
+    before do
+      allow(DockerRepoQueueService).to receive(:send_task)
+    end
+
+    let :robots do
+      [
+        { 'username' => "#{project.slug}_deploy" },
+        { 'username' => "#{project.slug}_ci" },
+      ]
+    end
+
+    let :users do
+      [
+        { 'username' => project_member_1.email, 'writable' => false },
+        { 'username' => project_member_2.email, 'writable' => true },
+      ]
+    end
+
+    let :access do
+      {
+        'robots' => robots.map { |r| r.merge 'status' => 'active' }.sort_by { |r| r['username'] },
+        'users' => users.map { |u| u.merge 'status' => 'active' }.sort_by { |u| u['username'] },
+      }
+    end
+
+    before do
+      docker_repo.access = access
+      docker_repo.save!
+    end
+
+    context 'when the user has access' do
+      it 'marks the user as removing from the access' do
+        expected_robots = access['robots']
+        expected_users = access['users'].map do |u|
+          if u['username'] == project_member_1.email
+            u.merge 'status' => 'removing'
+          else
+            u
+          end
+        end
+
+        subject.request_remove_user! project_member_1
+
+        docker_repo.reload
+        expect(docker_repo.access['robots']).to eq expected_robots
+        expect(docker_repo.access['users']).to eq expected_users
+      end
+
+      it 'posts a message to the queue with the user removed' do
+        expected_message = {
+          action: 'update',
+          provider: docker_repo.provider,
+          resource_type: 'DockerRepositoryAccessPolicy',
+          resource: {
+            id: docker_repo.id,
+            repository: docker_repo.name,
+            robots: robots.sort_by { |i| i['username'] },
+            users: users.reject { |u| u['username'] == project_member_1.email }.sort_by { |i| i['username'] }
+          }
+        }
+
+        expect(DockerRepoQueueService).to receive(:send_task).with(expected_message)
+
+        subject.request_remove_user! project_member_1
+      end
+
+      it 'logs an audit' do
+        expect(Audit.count).to eq 0
+
+        subject.request_remove_user! project_member_1
+
+        expect(Audit.count).to eq 1
+        audit = Audit.first
+        expect(audit.action).to eq 'request_access_remove_user'
+        expect(audit.auditable).to eq docker_repo
+      end
+    end
+
+    context 'when the user does not have access' do
+      let(:another_user) { create :user }
+
+      it 'does not change the repo\'s access' do
+        docker_repo.reload
+        expect(docker_repo.access).to eq access
+
+        subject.request_remove_user! another_user
+
+        docker_repo.reload
+        expect(docker_repo.access).to eq access
+      end
+
+      it 'does not post a message to the queue' do
+        expect(DockerRepoQueueService).to receive(:send_task).never
+
+        subject.request_remove_user! another_user
+      end
+
+      it 'does not log an audit' do
+        expect(AuditService).to receive(:log).never
+
+        subject.request_remove_user! another_user
+      end
     end
 
   end
