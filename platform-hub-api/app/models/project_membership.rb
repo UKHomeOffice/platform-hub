@@ -21,6 +21,10 @@ class ProjectMembership < ApplicationRecord
     if identity
       identity.tokens.by_project(self.project).each(&:destroy)
     end
+
+    self.project.docker_repos.each do |r|
+      DockerRepoAccessPolicyService.new(r).request_remove_user! self.user
+    end
   end
 
 end
