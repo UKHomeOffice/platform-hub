@@ -32,19 +32,7 @@ class DockerRepoAccessPolicyService
       @docker_repo.save!
     end
 
-    message = {
-      action: 'update',
-      provider: @docker_repo.provider,
-      resource_type: RESOURCE_TYPE,
-      resource: {
-        id: @docker_repo.id,
-        repository: @docker_repo.name,
-        robots: wanted_items(@docker_repo.access['robots'], ['username']),
-        users: wanted_items(@docker_repo.access['users'], ['username', 'writable'])
-      }
-    }
-
-    DockerRepoQueueService.send_task message
+    send_update_message
 
     id = @docker_repo.id
     name = @docker_repo.name
@@ -56,6 +44,28 @@ class DockerRepoAccessPolicyService
       auditable: @docker_repo,
       comment: "User '#{audit_context[:user].email}' has requested access updates to Docker repo: '#{name}' (ID: #{id}) in project '#{service.project.shortname}' - robots: #{robots.map{|r| r[:username]}.join(', ')}, users: #{users.map{|u| u[:username]}.join(', ')}"
     )
+  end
+
+  def request_remove_user! user
+    @docker_repo.with_lock do
+      access = @docker_repo.access
+
+      user_entry = access['users'].find { |u| u['username'] == user.email }
+
+      if user_entry
+        user_entry['status'] = DockerRepo::ACCESS_STATUS[:removing]
+
+        @docker_repo.save!
+
+        send_update_message
+
+        AuditService.log(
+          action: 'request_access_remove_user',
+          auditable: @docker_repo,
+          comment: "User '#{user.email}' has been requested to be removed access to this Docker repo"
+        )
+      end
+    end
   end
 
   def handle_update_result message
@@ -206,6 +216,22 @@ class DockerRepoAccessPolicyService
     end
 
     updated.sort_by { |i| i['username'] }
+  end
+
+  def send_update_message
+    message = {
+      action: 'update',
+      provider: @docker_repo.provider,
+      resource_type: RESOURCE_TYPE,
+      resource: {
+        id: @docker_repo.id,
+        repository: @docker_repo.name,
+        robots: wanted_items(@docker_repo.access['robots'], ['username']),
+        users: wanted_items(@docker_repo.access['users'], ['username', 'writable'])
+      }
+    }
+
+    DockerRepoQueueService.send_task message
   end
 
   def process_items_from_result item_type:, items:, current:, check_username:, get_credentials:, set_credentials:, fields_to_update: []
