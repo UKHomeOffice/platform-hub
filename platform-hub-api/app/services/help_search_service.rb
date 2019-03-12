@@ -106,7 +106,7 @@ class HelpSearchService
     ensure_available
 
     case item
-    when SupportRequestTemplate, QaEntry, DocsSource
+    when SupportRequestTemplate, QaEntry, DocsSourceEntry
       @repository.delete(id_for(item))
     else
       raise "Item of class '#{item.class.name}' not supported for deletion by the HelpSearchService"
