@@ -111,6 +111,8 @@ class HelpSearchService
     else
       raise "Item of class '#{item.class.name}' not supported for deletion by the HelpSearchService"
     end
+  rescue Elasticsearch::Transport::Transport::Errors::NotFound
+    Rails.logger.warn "Item '#{id_for(item)}' was not present in the ES index and thus could not be deleted. Carrying on anyway..."
   end
 
   def search query
