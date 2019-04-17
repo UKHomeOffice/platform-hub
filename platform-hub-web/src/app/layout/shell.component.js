@@ -85,7 +85,8 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       title: 'Support Requests',
       state: 'help.support.requests.overview',
       activeState: 'help.support.requests',
-      icon: icons.supportRequests
+      icon: icons.supportRequests,
+      featureFlags: [featureFlagKeys.supportRequests]
     },
     {
       title: 'About the Hub',
@@ -154,7 +155,8 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       title: 'Support Request Templates',
       state: 'help.support.request-templates.list',
       activeState: 'help.support.request-templates',
-      icon: icons.supportRequests
+      icon: icons.supportRequests,
+      featureFlags: [featureFlagKeys.supportRequests]
     },
     {
       title: 'Contact Lists',

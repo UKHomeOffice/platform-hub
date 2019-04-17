@@ -87,12 +87,12 @@ Rails.application.routes.draw do
         end
     end
 
-    resources :support_request_templates do
+    resources :support_request_templates, constraints: lambda { |request| FeatureFlagService.is_enabled?(:support_requests) } do
       get :form_field_types, on: :collection
       get :git_hub_repos, on: :collection
     end
 
-    resources :support_requests, only: [ :create ]
+    resources :support_requests, only: [ :create ], constraints: lambda { |request| FeatureFlagService.is_enabled?(:support_requests) }
 
     resources :platform_themes
 
