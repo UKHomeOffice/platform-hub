@@ -95,7 +95,7 @@
               </li>
             </ul>
           </li>
-          <li>
+          <li ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.announcements)">
             You can <a ui-sref="announcements.global">view global announcements about the platform</a>
           </li>
           <li>
@@ -191,7 +191,7 @@
     <md-card-content>
       <div class="md-body-1">
         <ul>
-          <li>
+          <li ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.announcements)">
             You can mark all global announcements as read by clicking on the "Mark all read" button on the top right hand side of the <a ui-sref="announcements.global">Global Announcements page</a>.
           </li>
           <li>

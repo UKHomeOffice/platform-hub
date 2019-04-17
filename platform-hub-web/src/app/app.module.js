@@ -121,6 +121,7 @@ angular
   .constant('apiEndpoint', apiEndpoint)
   .constant('apiBackoffTimeMs', 2000)
   .constant('featureFlagKeys', {
+    announcements: 'announcements',
     dockerRepos: 'docker_repos',
     docsSync: 'docs_sync',
     helpSearch: 'help_search',
