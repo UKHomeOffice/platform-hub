@@ -49,7 +49,7 @@
         Both the <a ui-sref="home">homepage</a> and the side nav bar contain <em>platform themes</em> – these are related groups of information, and links to docs and resources, that you may find useful when navigating the platform and figuring out how to perform certain tasks.
       </p>
 
-      <p class="md-body-1">
+      <p class="md-body-1" ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.supportRequests)">
         If you can't achieve what you need via these links or self-serve on the Hub (see FAQs below for more on self-serve) then you can request support from the {{$ctrl.AppSettings.getPlatformName()}} team by filling in
         <a ui-sref="help.support.requests.overview">one of the available support request forms</a>.
       </p>
@@ -110,7 +110,7 @@
               </li>
             </ul>
           </li>
-          <li>
+          <li ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.supportRequests)">
             You can <a ui-sref="help.support.requests.overview">make a support request</a>
           </li>
         </ul>

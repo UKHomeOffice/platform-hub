@@ -549,7 +549,8 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             url: '/overview',
             component: SupportRequestsOverview,
             data: {
-              authenticate: true
+              authenticate: true,
+              featureFlags: [featureFlagKeys.supportRequests]
             }
           })
           .state('help.support.requests.new', {
@@ -559,7 +560,8 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
               transition: '$transition$'
             },
             data: {
-              authenticate: true
+              authenticate: true,
+              featureFlags: [featureFlagKeys.supportRequests]
             }
           })
         .state('help.support.request-templates', {
@@ -572,6 +574,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             component: SupportRequestTemplatesList,
             data: {
               authenticate: true,
+              featureFlags: [featureFlagKeys.supportRequests],
               rolesPermitted: ['admin']
             }
           })
@@ -583,6 +586,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             },
             data: {
               authenticate: true,
+              featureFlags: [featureFlagKeys.supportRequests],
               rolesPermitted: ['admin']
             }
           })
@@ -591,6 +595,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             component: SupportRequestTemplatesForm,
             data: {
               authenticate: true,
+              featureFlags: [featureFlagKeys.supportRequests],
               rolesPermitted: ['admin']
             }
           })
@@ -602,6 +607,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             },
             data: {
               authenticate: true,
+              featureFlags: [featureFlagKeys.supportRequests],
               rolesPermitted: ['admin']
             }
           })

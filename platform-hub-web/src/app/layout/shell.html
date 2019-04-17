@@ -119,7 +119,10 @@
           </md-sidemenu-group>
 
           <md-sidemenu-group ng-if="$ctrl.shouldShowSection($ctrl.helpNavStates)">
-            <md-subheader class="md-no-sticky">Help &amp; Support</md-subheader>
+            <md-subheader class="md-no-sticky">
+              Help
+              <span ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.supportRequests)"> &amp; Support</span>
+            </md-subheader>
 
             <md-sidemenu-button
               ng-repeat="item in $ctrl.helpNavStates"

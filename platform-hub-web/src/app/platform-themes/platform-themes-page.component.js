@@ -8,12 +8,15 @@ export const PlatformThemesPageComponent = {
   controller: PlatformThemesPageController
 };
 
-function PlatformThemesPageController(hubApiService, icons, UserScopes, _) {
+function PlatformThemesPageController(hubApiService, icons, FeatureFlags, featureFlagKeys, UserScopes, _) {
   'ngInject';
 
   const ctrl = this;
 
   const id = ctrl.transition.params().id;
+
+  ctrl.FeatureFlags = FeatureFlags;
+  ctrl.featureFlagKeys = featureFlagKeys;
 
   ctrl.icons = {
     internal_route: icons.internalLink,
@@ -53,6 +56,7 @@ function PlatformThemesPageController(hubApiService, icons, UserScopes, _) {
   }
 
   function resourceIsVisible(resource) {
-    return resource.visible && UserScopes.isVisibleToCurrentUser(resource.user_scope);
+    const enabled = resource.kind !== 'support_request' || ctrl.FeatureFlags.isEnabled(ctrl.featureFlagKeys.supportRequests);
+    return enabled && resource.visible && UserScopes.isVisibleToCurrentUser(resource.user_scope);
   }
 }
