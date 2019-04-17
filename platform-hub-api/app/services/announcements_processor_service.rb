@@ -6,6 +6,8 @@ class AnnouncementsProcessorService
   end
 
   def run
+    return unless FeatureFlagService.is_enabled?(:announcements)
+
     Announcement.published.awaiting_delivery_or_resend.each(&method(:process))
   end
 

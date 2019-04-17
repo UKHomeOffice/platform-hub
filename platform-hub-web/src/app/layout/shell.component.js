@@ -109,13 +109,15 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
       title: 'Announcements',
       state: 'announcements.editor.list',
       activeState: 'announcements.editor',
-      icon: ctrl.announcementsIcon
+      icon: ctrl.announcementsIcon,
+      featureFlags: [featureFlagKeys.announcements]
     },
     {
       title: 'Announcement Templates',
       state: 'announcements.templates.list',
       activeState: 'announcements.templates',
-      icon: ctrl.announcementsIcon
+      icon: ctrl.announcementsIcon,
+      featureFlags: [featureFlagKeys.announcements]
     },
     {
       title: 'Costs Reports',

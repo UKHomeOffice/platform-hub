@@ -53,7 +53,7 @@
           </md-card-content>
         </md-card>
 
-        <sticky-announcements></sticky-announcements>
+        <sticky-announcements ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.announcements)"></sticky-announcements>
 
         <md-sidemenu role="navigation" class="nav">
           <md-sidemenu-group>
@@ -65,6 +65,7 @@
             </md-sidemenu-button>
 
             <md-sidemenu-button
+              ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.announcements)"
               ui-sref="announcements.global"
               ui-sref-active="active"
               layout-align="space-between">

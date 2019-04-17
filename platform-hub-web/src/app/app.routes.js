@@ -721,6 +721,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: AnnouncementsEditorList,
           data: {
             authenticate: true,
+            featureFlags: [featureFlagKeys.announcements],
             rolesPermitted: ['admin']
           }
         })
@@ -732,6 +733,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
+            featureFlags: [featureFlagKeys.announcements],
             rolesPermitted: ['admin']
           },
           params: {
@@ -746,6 +748,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
+            featureFlags: [featureFlagKeys.announcements],
             rolesPermitted: ['admin']
           }
         })
@@ -753,7 +756,8 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
         url: '/global',
         component: GlobalAnnouncements,
         data: {
-          authenticate: true
+          authenticate: true,
+          featureFlags: [featureFlagKeys.announcements]
         }
       })
       .state('announcements.templates', {
@@ -766,6 +770,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: AnnouncementTemplatesList,
           data: {
             authenticate: true,
+            featureFlags: [featureFlagKeys.announcements],
             rolesPermitted: ['admin']
           }
         })
@@ -777,6 +782,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
+            featureFlags: [featureFlagKeys.announcements],
             rolesPermitted: ['admin']
           }
         })
@@ -785,6 +791,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           component: AnnouncementTemplatesForm,
           data: {
             authenticate: true,
+            featureFlags: [featureFlagKeys.announcements],
             rolesPermitted: ['admin']
           }
         })
@@ -796,6 +803,7 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           },
           data: {
             authenticate: true,
+            featureFlags: [featureFlagKeys.announcements],
             rolesPermitted: ['admin']
           }
         })
