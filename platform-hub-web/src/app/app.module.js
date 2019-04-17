@@ -127,7 +127,8 @@ angular
     kubernetesTokens: 'kubernetes_tokens',
     kubernetesTokensEscalatePrivilege: 'kubernetes_tokens_escalate_privilege',
     kubernetesTokensSync: 'kubernetes_tokens_sync',
-    projects: 'projects'
+    projects: 'projects',
+    supportRequests: 'support_requests'
   });
 
 // Run function
