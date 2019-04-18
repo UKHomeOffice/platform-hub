@@ -121,13 +121,15 @@ angular
   .constant('apiEndpoint', apiEndpoint)
   .constant('apiBackoffTimeMs', 2000)
   .constant('featureFlagKeys', {
+    announcements: 'announcements',
     dockerRepos: 'docker_repos',
     docsSync: 'docs_sync',
     helpSearch: 'help_search',
     kubernetesTokens: 'kubernetes_tokens',
     kubernetesTokensEscalatePrivilege: 'kubernetes_tokens_escalate_privilege',
     kubernetesTokensSync: 'kubernetes_tokens_sync',
-    projects: 'projects'
+    projects: 'projects',
+    supportRequests: 'support_requests'
   });
 
 // Run function

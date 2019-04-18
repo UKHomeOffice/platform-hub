@@ -10,7 +10,7 @@ Rails.application.routes.draw do
     post '/me/agree_terms_of_service', to: 'me#agree_terms_of_service'
     post '/me/complete_hub_onboarding', to: 'me#complete_hub_onboarding'
     post '/me/complete_services_onboarding', to: 'me#complete_services_onboarding'
-    post '/me/global_announcements/mark_all_read', to: 'me#global_announcements_mark_all_read'
+    post '/me/global_announcements/mark_all_read', to: 'me#global_announcements_mark_all_read', constraints: lambda { |_| FeatureFlagService.is_enabled?(:announcements) }
     get '/me/kubernetes_tokens', to: 'me#kubernetes_tokens', constraints: lambda { |_| FeatureFlagService.is_enabled?(:kubernetes_tokens) }
 
     resources :feature_flags, only: [ :index ] do
@@ -87,12 +87,12 @@ Rails.application.routes.draw do
         end
     end
 
-    resources :support_request_templates do
+    resources :support_request_templates, constraints: lambda { |request| FeatureFlagService.is_enabled?(:support_requests) } do
       get :form_field_types, on: :collection
       get :git_hub_repos, on: :collection
     end
 
-    resources :support_requests, only: [ :create ]
+    resources :support_requests, only: [ :create ], constraints: lambda { |request| FeatureFlagService.is_enabled?(:support_requests) }
 
     resources :platform_themes
 
@@ -102,12 +102,12 @@ Rails.application.routes.draw do
       except: [ :create ],
       constraints: { id: ContactList::ID_REGEX_FOR_ROUTES }
 
-    resources :announcement_templates do
+    resources :announcement_templates, constraints: lambda { |_| FeatureFlagService.is_enabled?(:announcements) } do
       get :form_field_types, on: :collection
       post :preview, on: :collection
     end
 
-    resources :announcements do
+    resources :announcements, constraints: lambda { |_| FeatureFlagService.is_enabled?(:announcements) } do
       get :global, on: :collection
       post :mark_sticky, on: :member
       post :unmark_sticky, on: :member

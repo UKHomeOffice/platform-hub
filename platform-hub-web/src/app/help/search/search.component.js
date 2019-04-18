@@ -6,12 +6,15 @@ export const SearchComponent = {
   controller: SearchController
 };
 
-function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, roleCheckerService, icons, _) {
+function SearchController($q, $state, $sce, hubApiService, FeatureFlags, featureFlagKeys, PinnedHelpEntries, roleCheckerService, icons, _) {
   'ngInject';
 
   const ctrl = this;
 
   ctrl.query = ctrl.transition && ctrl.transition.params().q;
+
+  ctrl.FeatureFlags = FeatureFlags;
+  ctrl.featureFlagKeys = featureFlagKeys;
 
   ctrl.supportRequestsIcon = icons.supportRequests;
   ctrl.qaEntriesIcon = icons.qaEntries;
@@ -84,7 +87,7 @@ function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, ro
     return hubApiService
       .helpSearch(params)
       .then(results => {
-        ctrl.results = processResults(results);
+        ctrl.results = filterResults(processResults(results));
         ctrl.initialState = false;
       })
       .finally(() => {
@@ -96,7 +99,7 @@ function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, ro
     return PinnedHelpEntries
       .get()
       .then(items => {
-        angular.copy(items, ctrl.results);
+        angular.copy(filterResults(items), ctrl.results);
       });
   }
 
@@ -121,6 +124,12 @@ function SearchController($q, $state, $sce, hubApiService, PinnedHelpEntries, ro
       }
 
       return item;
+    });
+  }
+
+  function filterResults(results) {
+    return results.filter(r => {
+      return r.type !== 'support-request' || ctrl.FeatureFlags.isEnabled(ctrl.featureFlagKeys.supportRequests);
     });
   }
 
