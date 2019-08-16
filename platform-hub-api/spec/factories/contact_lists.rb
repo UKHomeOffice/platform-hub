@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :contact_list do
     sequence(:id) { |n| "list_#{n}" }
     email_addresses do
