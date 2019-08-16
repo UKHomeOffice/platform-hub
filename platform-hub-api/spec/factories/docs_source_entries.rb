@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :docs_source_entry do
     docs_source
 

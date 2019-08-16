@@ -1,14 +1,14 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :hash_record do
     sequence(:id) { |n| "hash_record_#{n}" }
-    scope 'general'
+    scope { 'general' }
     data do
       { bar: 'baz' }
     end
 
     factory :kubernetes_static_tokens_hash_record do
-      scope 'kubernetes'
-      id 'development-static-user-tokens'
+      scope { 'kubernetes' }
+      id { 'development-static-user-tokens' }
       data do
         [
           {
@@ -22,11 +22,11 @@ FactoryGirl.define do
     end
 
     factory :kubernetes_robot_tokens_hash_record do
-      scope 'kubernetes'
-      data []
+      scope { 'kubernetes' }
+      data { [] }
 
       transient do
-        cluster 'test'
+        cluster { 'test' }
       end
 
       after :build do |hr, evaluator|
@@ -35,8 +35,8 @@ FactoryGirl.define do
     end
 
     factory :feature_flags_hash_record do
-      scope 'general'
-      id 'feature_flags'
+      scope { 'general' }
+      id { 'feature_flags' }
 
       transient do
         flags do

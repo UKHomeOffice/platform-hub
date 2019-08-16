@@ -7,7 +7,8 @@ RUN apk update && apk upgrade \
     && update-ca-certificates \
     && apk --update add \
     bash curl ruby ruby-irb ruby-rake ruby-io-console ruby-json ruby-bigdecimal libstdc++ tzdata \
-    postgresql-client \
+    postgresql-client postgresql-dev \
+    && apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev libressl-dev zlib-dev \
     && echo 'gem: --no-document' > /etc/gemrc \
     && gem install bundler -v 1.16.2
 
@@ -19,12 +20,10 @@ RUN addgroup -S app \
     && chown -R app:app /app
 
 # Install deps
-RUN apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev libressl-dev zlib-dev && \
-    apk --update add postgresql-dev && \
-    /bin/bash -c 'sudo -u app bundle install --jobs 20 --retry 5 --deployment --without development test --no-cache' && \
+RUN /bin/bash -c 'sudo -u app bundle install --jobs 20 --retry 5 --deployment --without development test --no-cache' && \
     apk del build_deps
 
 ENV HOME /app
 USER 1000
 
-CMD bundle exec rails s
+CMD ["bundle", "exec", "rails", "s"]

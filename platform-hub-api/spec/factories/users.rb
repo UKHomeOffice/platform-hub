@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :user do
     id { SecureRandom.uuid }
     name { "Foo Bar #{id}" }
@@ -8,11 +8,11 @@ FactoryGirl.define do
 
 
     factory :admin_user do
-      role 'admin'
+      role { 'admin' }
     end
 
     factory :limited_admin_user do
-      role 'limited_admin'
+      role { 'limited_admin' }
     end
   end
 end

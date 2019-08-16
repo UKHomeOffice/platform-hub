@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :kubernetes_token do
 
     token { SecureRandom.uuid }
@@ -12,7 +12,7 @@ FactoryGirl.define do
       name { "user_#{SecureRandom.uuid}@example.com" }
 
       transient do
-        groups_count 0
+        groups_count { 0 }
       end
 
       after(:build) do |token, evaluator|
@@ -57,7 +57,7 @@ FactoryGirl.define do
       description { "Mr Robot" }
 
       transient do
-        groups_count 0
+        groups_count { 0 }
       end
 
       after(:build) do |token, evaluator|

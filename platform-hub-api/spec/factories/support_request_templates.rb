@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :support_request_template do
     id { SecureRandom.uuid }
 
@@ -6,16 +6,16 @@ FactoryGirl.define do
       "Support Request Type #{n}"
     end
 
-    git_hub_repo 'https://github.com/ACMECorp/support-requests'
+    git_hub_repo { 'https://github.com/ACMECorp/support-requests' }
 
     sequence :title do |n|
       "Support request for getting #{n} sorted out"
     end
 
-    description 'This is a support request for getting something sorted out'
+    description { 'This is a support request for getting something sorted out' }
 
     transient do
-      fields_count 1
+      fields_count { 1 }
     end
 
     after :build do |srt, evaluator|

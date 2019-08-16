@@ -14,7 +14,7 @@ class KubernetesToken < ApplicationRecord
 
   belongs_to :tokenable, -> { readonly }, polymorphic: true
   belongs_to :project, -> { readonly }
-  belongs_to :cluster, -> { readonly }, class_name: KubernetesCluster
+  belongs_to :cluster, -> { readonly }, class_name: 'KubernetesCluster'
 
   scope :privileged, -> { where.not(expire_privileged_at: nil) }
   scope :by_tokenable, ->(tokenable) { where(tokenable: tokenable) }

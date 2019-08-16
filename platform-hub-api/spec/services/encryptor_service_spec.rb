@@ -16,7 +16,7 @@ describe EncryptorService, type: :service do
   it 'should be tied to that specific secret key' do
     other_secret_key_base = SecureRandom.hex(64)
     other_service = EncryptorService.new(other_secret_key_base)
-    
+
     expect(other_service.decrypt(other_service.encrypt(string))).to eq string
     expect(@service.decrypt(other_service.encrypt(string))).to eq nil
     expect(other_service.decrypt(@service.encrypt(string))).to eq nil

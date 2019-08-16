@@ -24,7 +24,7 @@ class Service < ApplicationRecord
   has_many :kubernetes_robot_tokens,
     -> { where kind: 'robot' },
     as: :tokenable,
-    class_name: KubernetesToken,
+    class_name: 'KubernetesToken',
     dependent: :destroy
 
   has_many :kubernetes_namespaces, dependent: :destroy

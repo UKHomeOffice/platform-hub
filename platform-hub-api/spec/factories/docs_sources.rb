@@ -1,8 +1,8 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :docs_source do
     id { SecureRandom.uuid }
 
-    kind :github_repo
+    kind { :github_repo }
 
     sequence :name do |n|
       "Source #{n}"
