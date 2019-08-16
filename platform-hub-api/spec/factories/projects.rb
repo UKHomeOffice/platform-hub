@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :project do
     id { SecureRandom.uuid }
     sequence :shortname do |n|
@@ -7,6 +7,6 @@ FactoryGirl.define do
     sequence :name do |n|
       "Project #{n}"
     end
-    cost_centre_code 'foo'
+    cost_centre_code { 'foo' }
   end
 end

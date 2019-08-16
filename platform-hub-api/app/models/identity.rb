@@ -11,7 +11,7 @@ class Identity < ApplicationRecord
     ecr: 'ecr',
   }
 
-  has_many :tokens, -> { where kind: 'user' }, as: :tokenable, class_name: KubernetesToken
+  has_many :tokens, -> { where kind: 'user' }, as: :tokenable, class_name: 'KubernetesToken'
 
   belongs_to :user
   validates :user_id, presence: true

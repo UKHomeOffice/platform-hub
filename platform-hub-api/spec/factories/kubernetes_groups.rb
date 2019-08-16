@@ -1,40 +1,40 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :kubernetes_group do
     id { SecureRandom.uuid }
     sequence :name do |n|
       "kube-group:#{n}"
     end
-    kind 'namespace'
-    target 'user'
-    description 'This is a kube group'
-    is_privileged false
+    kind { 'namespace' }
+    target { 'user' }
+    description { 'This is a kube group' }
+    is_privileged { false }
 
     trait :not_privileged do
-      is_privileged false
+      is_privileged { false }
     end
 
     trait :privileged do
-      is_privileged true
+      is_privileged { true }
     end
 
     trait :for_namespace do
-      kind 'namespace'
+      kind { 'namespace' }
     end
 
     trait :for_clusterwide do
-      kind 'clusterwide'
+      kind { 'clusterwide' }
     end
 
     trait :for_user do
-      target 'user'
+      target { 'user' }
     end
 
     trait :for_robot do
-      target 'robot'
+      target { 'robot' }
     end
 
     transient do
-      allocate_to nil
+      allocate_to { nil }
     end
 
     after(:create) do |group, evaluator|

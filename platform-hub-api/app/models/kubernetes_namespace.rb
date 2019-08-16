@@ -7,7 +7,7 @@ class KubernetesNamespace < ApplicationRecord
   audited descriptor_field: :name, associated_field: :service
 
   belongs_to :service, -> { readonly }
-  belongs_to :cluster, -> { readonly }, class_name: KubernetesCluster
+  belongs_to :cluster, -> { readonly }, class_name: 'KubernetesCluster'
 
   scope :by_service, ->(s) { where(service: s) }
   scope :by_cluster, ->(c) { where(cluster: c) }

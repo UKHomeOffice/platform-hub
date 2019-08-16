@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :kubernetes_cluster do
     sequence :name do |n|
@@ -13,7 +13,7 @@ FactoryGirl.define do
     s3_object_key { 's3/object/key.csv' }
 
     transient do
-      allocate_to nil
+      allocate_to { nil }
     end
 
     after(:create) do |cluster, evaluator|

@@ -50,12 +50,12 @@ class KubernetesCluster < ApplicationRecord
   validate :ensure_unique_aliases_incl_names
 
   has_many :tokens,
-    class_name: KubernetesToken,
+    class_name: 'KubernetesToken',
     foreign_key: :cluster_id,
     dependent: :destroy
 
   has_many :namespaces,
-    class_name: KubernetesNamespace,
+    class_name: 'KubernetesNamespace',
     foreign_key: :cluster_id,
     dependent: :destroy
 
