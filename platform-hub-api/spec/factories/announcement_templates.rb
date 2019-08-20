@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :announcement_template do
     id { SecureRandom.uuid }
 
@@ -6,10 +6,10 @@ FactoryGirl.define do
       "Announcement Type #{n}"
     end
 
-    description 'This is a template for an announcement'
+    description { 'This is a template for an announcement' }
 
     transient do
-      fields_count 1
+      fields_count { 1 }
       templates do
         {
           'title': 'Title {{field0}}',

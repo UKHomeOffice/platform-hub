@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :qa_entry do
     sequence :question do |n|
       "Q#{n}"

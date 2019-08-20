@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :kubernetes_namespace do
     service
     sequence(:name) { |n| "#{service.name.parameterize}-namespace-#{n}" }

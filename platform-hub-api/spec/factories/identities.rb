@@ -1,6 +1,6 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :identity do
-    provider 'github'
+    provider { 'github' }
     user
     sequence :external_id do |n|
       "#{provider}_external_id_#{n}"
@@ -10,11 +10,11 @@ FactoryGirl.define do
     end
 
     factory :kubernetes_identity do
-      provider 'kubernetes'
+      provider { 'kubernetes' }
     end
 
     factory :ecr_identity do
-      provider 'ecr'
+      provider { 'ecr' }
       data do
         {
           'credentials' => {

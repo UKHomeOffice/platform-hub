@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :service do
     id { SecureRandom.uuid }
     sequence :name do |n|
