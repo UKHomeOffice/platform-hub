@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-export const Me = function ($window, windowPopupService, hubApiService, homeEndpoints, apiBackoffTimeMs, _) {
+export const Me = function ($timeout, windowPopupService, hubApiService, homeEndpoints, apiBackoffTimeMs, _) {
   'ngInject';
 
   const model = {};
@@ -28,7 +28,7 @@ export const Me = function ($window, windowPopupService, hubApiService, homeEndp
         .then(handleMeResourceFromApi)
         .finally(() => {
           // Reuse the same promise for some time, to prevent smashing the API
-          $window.setTimeout(() => {
+          $timeout(() => {
             fetcherPromise = null;
           }, apiBackoffTimeMs);
         });
