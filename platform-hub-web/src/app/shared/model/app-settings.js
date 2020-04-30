@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-export const AppSettings = function ($window, hubApiService, apiBackoffTimeMs, logger, _) {
+export const AppSettings = function ($timeout, hubApiService, apiBackoffTimeMs, logger, _) {
   'ngInject';
 
   const model = {};
@@ -30,7 +30,7 @@ export const AppSettings = function ($window, hubApiService, apiBackoffTimeMs, l
         })
         .finally(() => {
           // Reuse the same promise for some time, to prevent smashing the API
-          $window.setTimeout(() => {
+          $timeout(() => {
             fetcherPromise = null;
           }, apiBackoffTimeMs);
         });
