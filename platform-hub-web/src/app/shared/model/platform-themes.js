@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-export const PlatformThemes = function ($window, $q, AppSettings, apiBackoffTimeMs, hubApiService, arrayUtilsService, _) {
+export const PlatformThemes = function ($timeout, $q, AppSettings, apiBackoffTimeMs, hubApiService, arrayUtilsService, _) {
   'ngInject';
 
   const model = {};
@@ -28,7 +28,7 @@ export const PlatformThemes = function ($window, $q, AppSettings, apiBackoffTime
         return model.all;
       }).finally(() => {
         // Reuse the same promise for some time, to prevent smashing the API
-        $window.setTimeout(() => {
+        $timeout(() => {
           fetcherPromise = null;
         }, apiBackoffTimeMs);
       });
