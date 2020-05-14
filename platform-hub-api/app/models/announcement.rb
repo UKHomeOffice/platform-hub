@@ -7,7 +7,7 @@ class Announcement < ApplicationRecord
 
   acts_as_readable :on => :publish_at
 
-  belongs_to :original_template,
+  belongs_to :original_template, optional: true,
     class_name: 'AnnouncementTemplate'
 
   enum level: {

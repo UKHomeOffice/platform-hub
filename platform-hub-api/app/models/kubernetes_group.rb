@@ -84,8 +84,8 @@ class KubernetesGroup < ApplicationRecord
   private
 
   def handle_name_rename
-    if self.name_changed?
-      KubernetesToken.update_all_group_rename self.name_was, self.name
+    if self.saved_change_to_name?
+      KubernetesToken.update_all_group_rename self.name_before_last_save, self.name
     end
   end
 

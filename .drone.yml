@@ -127,7 +127,7 @@ pipeline:
   api_scan_image:
     image: quay.io/ukhomeofficedigital/anchore-submission:latest
     image_name: platform-hub-api:${DRONE_COMMIT_SHA}
-    whitelist: CVE-2019-5419,CVE-2019-5420,CVE-2020-8130
+    whitelist: CVE-2019-5419,CVE-2019-5420
     when:
       event: [push, tag]
 

@@ -1,8 +1,8 @@
 class Audit < ApplicationRecord
 
-  belongs_to :auditable, polymorphic: true
-  belongs_to :associated, polymorphic: true
-  belongs_to :user
+  belongs_to :auditable, optional: true, polymorphic: true
+  belongs_to :associated, optional: true, polymorphic: true
+  belongs_to :user, optional: true
 
   before_create :set_associated_if_needed
   before_create :set_descriptors_if_needed
