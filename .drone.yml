@@ -1,74 +1,5 @@
 pipeline:
 
-  web_tests_then_build_dist:
-    image: quay.io/ukhomeofficedigital/nodejs-base:v6.9.1
-    commands:
-      - yum install -y git bzip2 bzip2-libs fontconfig
-      - git config --global url."https://".insteadOf git://
-      - npm install -g yarn@0.27.5
-      - cd platform-hub-web
-      - rm -rf node_modules
-      - yarn
-      - yarn run test
-      - yarn run build
-    when:
-      event: [push, tag]
-
-  # Expects the optimized dist code to have been built
-  web_build_image:
-    image: docker:17.07.0-ce
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - cd platform-hub-web
-      - docker build -t platform-hub-web:$${DRONE_COMMIT_SHA} .
-    when:
-      event: [push, tag]
-
-  web_test_image:
-    image: docker:17.10.0
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker run -t --rm --name platform-hub-web-test platform-hub-web:${DRONE_COMMIT_SHA} sh -c "cd /app; ls -lah; test -e index.html"
-    when:
-      event: [push, tag]
-
-  web_scan_image:
-    image: quay.io/ukhomeofficedigital/anchore-submission:latest
-    image_name: platform-hub-web:${DRONE_COMMIT_SHA}
-    when:
-      event: [push, tag]
-
-  web_latest_image_to_quay:
-    image: docker:17.07.0-ce
-    secrets:
-      - docker_password
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag platform-hub-web:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_COMMIT_SHA}
-      - docker tag platform-hub-web:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-web:latest
-      - docker push quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_COMMIT_SHA}
-      - docker push quay.io/ukhomeofficedigital/platform-hub-web:latest
-    when:
-      event: push
-      branch: master
-
-  web_tag_image_to_quay:
-    image: docker:17.07.0-ce
-    secrets:
-      - docker_password
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag platform-hub-web:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_TAG}
-      - docker push quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_TAG}
-    when:
-      event: tag
-
   api_tests:
     image: ruby:2.3.8-alpine
     environment:
@@ -162,7 +93,7 @@ pipeline:
 
 services:
   postgres:
-    image: postgres:9.6.1
+    image: postgres:12
     environment:
       - POSTGRES_USER=phub
       - POSTGRES_PASSWORD=phub_password
