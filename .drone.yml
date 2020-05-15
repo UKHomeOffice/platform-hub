@@ -93,7 +93,7 @@ pipeline:
 
 services:
   postgres:
-    image: postgres:12
+    image: postgres:9.6.1
     environment:
       - POSTGRES_USER=phub
       - POSTGRES_PASSWORD=phub_password
