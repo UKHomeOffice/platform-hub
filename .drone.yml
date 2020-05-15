@@ -95,5 +95,6 @@ services:
   postgres:
     image: postgres:9.6.1
     environment:
+      - POSTGRES_DATABASE=phub_test
       - POSTGRES_USER=phub
       - POSTGRES_PASSWORD=phub_password
