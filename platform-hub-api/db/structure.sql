@@ -38,6 +38,20 @@ COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching
 
 
 --
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+
+
+--
 -- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -405,7 +419,7 @@ CREATE TABLE public.platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying,
+    colour character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -1275,7 +1289,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171003130836'),
 ('20171005115420'),
 ('20171010111440'),
-('20171012110416'),
 ('20171031164247'),
 ('20171114100517'),
 ('20171127115843'),
