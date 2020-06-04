@@ -15,7 +15,7 @@
     "webpack:analysis": "node_modules/.bin/webpack --json --config=./conf/webpack.conf.js | webpack-bundle-size-analyzer"
   },
   "dependencies": {
-    "angular": "1.5.11",
+    "angular": "1.7.9",
     "angular-animate": "1.5.11",
     "angular-aria": "1.5.11",
     "angular-base64": "^2.0.5",

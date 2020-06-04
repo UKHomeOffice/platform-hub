@@ -210,11 +210,7 @@ angular-url-encode@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/angular-url-encode/-/angular-url-encode-1.0.0.tgz#2f8ef915d0f7e25b310f869a7f38e6f7034dd175"
 
-angular@1.5.11:
-  version "1.5.11"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.11.tgz#8c5ba7386f15965c9acf3429f6881553aada30d6"
-
-"angular@>= 1.0.8", angular@^1.5.0, angular@^1.7.9:
+angular@1.7.9, "angular@>= 1.0.8", angular@^1.5.0, angular@^1.7.9:
   version "1.7.9"
   resolved "https://registry.yarnpkg.com/angular/-/angular-1.7.9.tgz#e52616e8701c17724c3c238cfe4f9446fd570bc4"
 
