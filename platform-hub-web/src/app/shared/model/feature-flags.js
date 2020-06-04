@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, logger, featureFlagKeys, _) {
+export const FeatureFlags = function ($timeout, hubApiService, apiBackoffTimeMs, logger, featureFlagKeys, _) {
   'ngInject';
 
   const model = {};
@@ -23,7 +23,7 @@ export const FeatureFlags = function ($window, hubApiService, apiBackoffTimeMs, 
         .then(handleFeatureFlagsResourceFromApi)
         .finally(() => {
           // Reuse the same promise for some time, to prevent smashing the API
-          $window.setTimeout(() => {
+          $timeout(() => {
             fetcherPromise = null;
           }, apiBackoffTimeMs);
         });

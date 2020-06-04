@@ -2,7 +2,7 @@
 
 import angular from 'angular';
 
-export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApiService, _) {
+export const Announcements = function ($timeout, moment, apiBackoffTimeMs, hubApiService, _) {
   'ngInject';
 
   const model = {};
@@ -52,7 +52,7 @@ export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApi
           return announcements;
         }).finally(() => {
           // Reuse the same promise for some time, to prevent smashing the API
-          $window.setTimeout(() => {
+          $timeout(() => {
             globalFetcherPromise = null;
           }, apiBackoffTimeMs);
         });
@@ -70,7 +70,7 @@ export const Announcements = function ($window, moment, apiBackoffTimeMs, hubApi
           return announcements;
         }).finally(() => {
           // Reuse the same promise for some time, to prevent smashing the API
-          $window.setTimeout(() => {
+          $timeout(() => {
             allFetcherPromise = null;
           }, apiBackoffTimeMs);
         });

@@ -1,6 +1,6 @@
 import angular from 'angular';
 
-export const KubernetesClusters = function ($window, hubApiService, apiBackoffTimeMs, _) {
+export const KubernetesClusters = function ($timeout, hubApiService, apiBackoffTimeMs, _) {
   'ngInject';
 
   const model = {};
@@ -30,7 +30,7 @@ export const KubernetesClusters = function ($window, hubApiService, apiBackoffTi
         })
         .finally(() => {
           // Reuse the same promise for some time, to prevent smashing the API
-          $window.setTimeout(() => {
+          $timeout(() => {
             fetcherPromise = null;
           }, apiBackoffTimeMs);
         });
