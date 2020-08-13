@@ -10,6 +10,7 @@ export const Projects = function ($timeout, $q, apiBackoffTimeMs, hubApiService,
   model.all = [];
 
   model.refresh = refresh;
+  model.getAll = hubApiService.getProjects;
   model.get = hubApiService.getProject;
   model.create = hubApiService.createProject;
   model.update = hubApiService.updateProject;

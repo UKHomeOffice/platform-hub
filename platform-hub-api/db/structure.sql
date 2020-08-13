@@ -3,14 +3,16 @@
 --
 
 -- Dumped from database version 9.6.1
--- Dumped by pg_dump version 9.6.2
+-- Dumped by pg_dump version 9.6.17
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
@@ -56,8 +58,6 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
 
-SET search_path = public, pg_catalog;
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -66,8 +66,8 @@ SET default_with_oids = false;
 -- Name: allocations; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE allocations (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.allocations (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     allocatable_type character varying NOT NULL,
     allocatable_id uuid NOT NULL,
     allocation_receivable_type character varying NOT NULL,
@@ -81,8 +81,8 @@ CREATE TABLE allocations (
 -- Name: announcement_templates; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE announcement_templates (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.announcement_templates (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     shortname character varying NOT NULL,
     slug character varying NOT NULL,
     description text,
@@ -96,8 +96,8 @@ CREATE TABLE announcement_templates (
 -- Name: announcements; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE announcements (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.announcements (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     level character varying NOT NULL,
     title character varying,
     text text,
@@ -118,7 +118,7 @@ CREATE TABLE announcements (
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE ar_internal_metadata (
+CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
     created_at timestamp without time zone NOT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE ar_internal_metadata (
 -- Name: audits; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE audits (
+CREATE TABLE public.audits (
     id integer NOT NULL,
     auditable_type character varying,
     auditable_id uuid,
@@ -154,7 +154,7 @@ CREATE TABLE audits (
 -- Name: audits_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE audits_id_seq
+CREATE SEQUENCE public.audits_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -166,14 +166,14 @@ CREATE SEQUENCE audits_id_seq
 -- Name: audits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE audits_id_seq OWNED BY audits.id;
+ALTER SEQUENCE public.audits_id_seq OWNED BY public.audits.id;
 
 
 --
 -- Name: contact_lists; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE contact_lists (
+CREATE TABLE public.contact_lists (
     id character varying NOT NULL,
     email_addresses character varying[],
     created_at timestamp without time zone NOT NULL,
@@ -185,7 +185,7 @@ CREATE TABLE contact_lists (
 -- Name: costs_reports; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE costs_reports (
+CREATE TABLE public.costs_reports (
     id character varying NOT NULL,
     year integer NOT NULL,
     month character varying NOT NULL,
@@ -204,7 +204,7 @@ CREATE TABLE costs_reports (
 -- Name: delayed_jobs; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE delayed_jobs (
+CREATE TABLE public.delayed_jobs (
     id integer NOT NULL,
     priority integer DEFAULT 0 NOT NULL,
     attempts integer DEFAULT 0 NOT NULL,
@@ -224,7 +224,7 @@ CREATE TABLE delayed_jobs (
 -- Name: delayed_jobs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE delayed_jobs_id_seq
+CREATE SEQUENCE public.delayed_jobs_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -236,15 +236,15 @@ CREATE SEQUENCE delayed_jobs_id_seq
 -- Name: delayed_jobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE delayed_jobs_id_seq OWNED BY delayed_jobs.id;
+ALTER SEQUENCE public.delayed_jobs_id_seq OWNED BY public.delayed_jobs.id;
 
 
 --
 -- Name: docker_repos; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE docker_repos (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.docker_repos (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     name character varying NOT NULL,
     description text,
     service_id uuid NOT NULL,
@@ -261,8 +261,8 @@ CREATE TABLE docker_repos (
 -- Name: docs_source_entries; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE docs_source_entries (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.docs_source_entries (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     docs_source_id uuid NOT NULL,
     content_id character varying NOT NULL,
     content_url character varying NOT NULL,
@@ -276,8 +276,8 @@ CREATE TABLE docs_source_entries (
 -- Name: docs_sources; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE docs_sources (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.docs_sources (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     kind character varying NOT NULL,
     name character varying NOT NULL,
     config json NOT NULL,
@@ -296,7 +296,7 @@ CREATE TABLE docs_sources (
 -- Name: hash_records; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE hash_records (
+CREATE TABLE public.hash_records (
     id character varying NOT NULL,
     scope character varying NOT NULL,
     data json NOT NULL,
@@ -309,8 +309,8 @@ CREATE TABLE hash_records (
 -- Name: identities; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE identities (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.identities (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
     provider character varying NOT NULL,
     external_id character varying NOT NULL,
@@ -327,8 +327,8 @@ CREATE TABLE identities (
 -- Name: kubernetes_clusters; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE kubernetes_clusters (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.kubernetes_clusters (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     name character varying NOT NULL,
     description text NOT NULL,
     s3_region character varying,
@@ -352,8 +352,8 @@ CREATE TABLE kubernetes_clusters (
 -- Name: kubernetes_groups; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE kubernetes_groups (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.kubernetes_groups (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     name character varying NOT NULL,
     kind character varying NOT NULL,
     target character varying NOT NULL,
@@ -369,8 +369,8 @@ CREATE TABLE kubernetes_groups (
 -- Name: kubernetes_namespaces; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE kubernetes_namespaces (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.kubernetes_namespaces (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     service_id uuid NOT NULL,
     cluster_id uuid NOT NULL,
     name character varying NOT NULL,
@@ -384,8 +384,8 @@ CREATE TABLE kubernetes_namespaces (
 -- Name: kubernetes_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE kubernetes_tokens (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.kubernetes_tokens (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     tokenable_type character varying NOT NULL,
     tokenable_id uuid NOT NULL,
     cluster_id uuid NOT NULL,
@@ -406,8 +406,8 @@ CREATE TABLE kubernetes_tokens (
 -- Name: platform_themes; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE platform_themes (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.platform_themes (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     title character varying NOT NULL,
     slug character varying NOT NULL,
     description text NOT NULL,
@@ -423,7 +423,7 @@ CREATE TABLE platform_themes (
 -- Name: project_memberships; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE project_memberships (
+CREATE TABLE public.project_memberships (
     project_id uuid NOT NULL,
     user_id uuid NOT NULL,
     role character varying,
@@ -436,8 +436,8 @@ CREATE TABLE project_memberships (
 -- Name: projects; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE projects (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.projects (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     shortname character varying NOT NULL,
     slug character varying NOT NULL,
     name character varying NOT NULL,
@@ -452,8 +452,8 @@ CREATE TABLE projects (
 -- Name: qa_entries; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE qa_entries (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.qa_entries (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     question character varying NOT NULL,
     answer text NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -465,7 +465,7 @@ CREATE TABLE qa_entries (
 -- Name: read_marks; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE read_marks (
+CREATE TABLE public.read_marks (
     id integer NOT NULL,
     readable_type character varying NOT NULL,
     readable_id uuid,
@@ -479,7 +479,7 @@ CREATE TABLE read_marks (
 -- Name: read_marks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE read_marks_id_seq
+CREATE SEQUENCE public.read_marks_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -491,14 +491,14 @@ CREATE SEQUENCE read_marks_id_seq
 -- Name: read_marks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE read_marks_id_seq OWNED BY read_marks.id;
+ALTER SEQUENCE public.read_marks_id_seq OWNED BY public.read_marks.id;
 
 
 --
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE schema_migrations (
+CREATE TABLE public.schema_migrations (
     version character varying NOT NULL
 );
 
@@ -507,8 +507,8 @@ CREATE TABLE schema_migrations (
 -- Name: services; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE services (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.services (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     name character varying NOT NULL,
     description text NOT NULL,
     project_id uuid NOT NULL,
@@ -521,8 +521,8 @@ CREATE TABLE services (
 -- Name: support_request_templates; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE support_request_templates (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.support_request_templates (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     shortname character varying NOT NULL,
     slug character varying NOT NULL,
     git_hub_repo character varying NOT NULL,
@@ -540,8 +540,8 @@ CREATE TABLE support_request_templates (
 -- Name: user_flags; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE user_flags (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.user_flags (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     completed_hub_onboarding boolean DEFAULT false,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
@@ -554,8 +554,8 @@ CREATE TABLE user_flags (
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE users (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.users (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     name character varying NOT NULL,
     email character varying NOT NULL,
     last_seen_at timestamp without time zone,
@@ -572,28 +572,28 @@ CREATE TABLE users (
 -- Name: audits id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY audits ALTER COLUMN id SET DEFAULT nextval('audits_id_seq'::regclass);
+ALTER TABLE ONLY public.audits ALTER COLUMN id SET DEFAULT nextval('public.audits_id_seq'::regclass);
 
 
 --
 -- Name: delayed_jobs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY delayed_jobs ALTER COLUMN id SET DEFAULT nextval('delayed_jobs_id_seq'::regclass);
+ALTER TABLE ONLY public.delayed_jobs ALTER COLUMN id SET DEFAULT nextval('public.delayed_jobs_id_seq'::regclass);
 
 
 --
 -- Name: read_marks id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY read_marks ALTER COLUMN id SET DEFAULT nextval('read_marks_id_seq'::regclass);
+ALTER TABLE ONLY public.read_marks ALTER COLUMN id SET DEFAULT nextval('public.read_marks_id_seq'::regclass);
 
 
 --
 -- Name: allocations allocations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY allocations
+ALTER TABLE ONLY public.allocations
     ADD CONSTRAINT allocations_pkey PRIMARY KEY (id);
 
 
@@ -601,7 +601,7 @@ ALTER TABLE ONLY allocations
 -- Name: announcement_templates announcement_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY announcement_templates
+ALTER TABLE ONLY public.announcement_templates
     ADD CONSTRAINT announcement_templates_pkey PRIMARY KEY (id);
 
 
@@ -609,7 +609,7 @@ ALTER TABLE ONLY announcement_templates
 -- Name: announcements announcements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY announcements
+ALTER TABLE ONLY public.announcements
     ADD CONSTRAINT announcements_pkey PRIMARY KEY (id);
 
 
@@ -617,7 +617,7 @@ ALTER TABLE ONLY announcements
 -- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY ar_internal_metadata
+ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
 
 
@@ -625,7 +625,7 @@ ALTER TABLE ONLY ar_internal_metadata
 -- Name: audits audits_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY audits
+ALTER TABLE ONLY public.audits
     ADD CONSTRAINT audits_pkey PRIMARY KEY (id);
 
 
@@ -633,7 +633,7 @@ ALTER TABLE ONLY audits
 -- Name: contact_lists contact_lists_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY contact_lists
+ALTER TABLE ONLY public.contact_lists
     ADD CONSTRAINT contact_lists_pkey PRIMARY KEY (id);
 
 
@@ -641,7 +641,7 @@ ALTER TABLE ONLY contact_lists
 -- Name: costs_reports costs_reports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY costs_reports
+ALTER TABLE ONLY public.costs_reports
     ADD CONSTRAINT costs_reports_pkey PRIMARY KEY (id);
 
 
@@ -649,7 +649,7 @@ ALTER TABLE ONLY costs_reports
 -- Name: delayed_jobs delayed_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY delayed_jobs
+ALTER TABLE ONLY public.delayed_jobs
     ADD CONSTRAINT delayed_jobs_pkey PRIMARY KEY (id);
 
 
@@ -657,7 +657,7 @@ ALTER TABLE ONLY delayed_jobs
 -- Name: docker_repos docker_repos_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY docker_repos
+ALTER TABLE ONLY public.docker_repos
     ADD CONSTRAINT docker_repos_pkey PRIMARY KEY (id);
 
 
@@ -665,7 +665,7 @@ ALTER TABLE ONLY docker_repos
 -- Name: docs_source_entries docs_source_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY docs_source_entries
+ALTER TABLE ONLY public.docs_source_entries
     ADD CONSTRAINT docs_source_entries_pkey PRIMARY KEY (id);
 
 
@@ -673,7 +673,7 @@ ALTER TABLE ONLY docs_source_entries
 -- Name: docs_sources docs_sources_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY docs_sources
+ALTER TABLE ONLY public.docs_sources
     ADD CONSTRAINT docs_sources_pkey PRIMARY KEY (id);
 
 
@@ -681,7 +681,7 @@ ALTER TABLE ONLY docs_sources
 -- Name: hash_records hash_records_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY hash_records
+ALTER TABLE ONLY public.hash_records
     ADD CONSTRAINT hash_records_pkey PRIMARY KEY (id);
 
 
@@ -689,7 +689,7 @@ ALTER TABLE ONLY hash_records
 -- Name: identities identities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY identities
+ALTER TABLE ONLY public.identities
     ADD CONSTRAINT identities_pkey PRIMARY KEY (id);
 
 
@@ -697,7 +697,7 @@ ALTER TABLE ONLY identities
 -- Name: kubernetes_clusters kubernetes_clusters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kubernetes_clusters
+ALTER TABLE ONLY public.kubernetes_clusters
     ADD CONSTRAINT kubernetes_clusters_pkey PRIMARY KEY (id);
 
 
@@ -705,7 +705,7 @@ ALTER TABLE ONLY kubernetes_clusters
 -- Name: kubernetes_groups kubernetes_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kubernetes_groups
+ALTER TABLE ONLY public.kubernetes_groups
     ADD CONSTRAINT kubernetes_groups_pkey PRIMARY KEY (id);
 
 
@@ -713,7 +713,7 @@ ALTER TABLE ONLY kubernetes_groups
 -- Name: kubernetes_namespaces kubernetes_namespaces_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kubernetes_namespaces
+ALTER TABLE ONLY public.kubernetes_namespaces
     ADD CONSTRAINT kubernetes_namespaces_pkey PRIMARY KEY (id);
 
 
@@ -721,7 +721,7 @@ ALTER TABLE ONLY kubernetes_namespaces
 -- Name: kubernetes_tokens kubernetes_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kubernetes_tokens
+ALTER TABLE ONLY public.kubernetes_tokens
     ADD CONSTRAINT kubernetes_tokens_pkey PRIMARY KEY (id);
 
 
@@ -729,7 +729,7 @@ ALTER TABLE ONLY kubernetes_tokens
 -- Name: platform_themes platform_themes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY platform_themes
+ALTER TABLE ONLY public.platform_themes
     ADD CONSTRAINT platform_themes_pkey PRIMARY KEY (id);
 
 
@@ -737,7 +737,7 @@ ALTER TABLE ONLY platform_themes
 -- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY projects
+ALTER TABLE ONLY public.projects
     ADD CONSTRAINT projects_pkey PRIMARY KEY (id);
 
 
@@ -745,7 +745,7 @@ ALTER TABLE ONLY projects
 -- Name: qa_entries qa_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY qa_entries
+ALTER TABLE ONLY public.qa_entries
     ADD CONSTRAINT qa_entries_pkey PRIMARY KEY (id);
 
 
@@ -753,7 +753,7 @@ ALTER TABLE ONLY qa_entries
 -- Name: read_marks read_marks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY read_marks
+ALTER TABLE ONLY public.read_marks
     ADD CONSTRAINT read_marks_pkey PRIMARY KEY (id);
 
 
@@ -761,7 +761,7 @@ ALTER TABLE ONLY read_marks
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY schema_migrations
+ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
 
 
@@ -769,7 +769,7 @@ ALTER TABLE ONLY schema_migrations
 -- Name: services services_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY services
+ALTER TABLE ONLY public.services
     ADD CONSTRAINT services_pkey PRIMARY KEY (id);
 
 
@@ -777,7 +777,7 @@ ALTER TABLE ONLY services
 -- Name: support_request_templates support_request_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY support_request_templates
+ALTER TABLE ONLY public.support_request_templates
     ADD CONSTRAINT support_request_templates_pkey PRIMARY KEY (id);
 
 
@@ -785,7 +785,7 @@ ALTER TABLE ONLY support_request_templates
 -- Name: users user_email; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users
+ALTER TABLE ONLY public.users
     ADD CONSTRAINT user_email UNIQUE (email);
 
 
@@ -793,7 +793,7 @@ ALTER TABLE ONLY users
 -- Name: user_flags user_flags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY user_flags
+ALTER TABLE ONLY public.user_flags
     ADD CONSTRAINT user_flags_pkey PRIMARY KEY (id);
 
 
@@ -801,7 +801,7 @@ ALTER TABLE ONLY user_flags
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users
+ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
@@ -809,434 +809,434 @@ ALTER TABLE ONLY users
 -- Name: delayed_jobs_priority; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX delayed_jobs_priority ON delayed_jobs USING btree (priority, run_at);
+CREATE INDEX delayed_jobs_priority ON public.delayed_jobs USING btree (priority, run_at);
 
 
 --
 -- Name: index_allocations_on_al_rec_type_and_al_rec_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_allocations_on_al_rec_type_and_al_rec_id ON allocations USING btree (allocation_receivable_type, allocation_receivable_id);
+CREATE INDEX index_allocations_on_al_rec_type_and_al_rec_id ON public.allocations USING btree (allocation_receivable_type, allocation_receivable_id);
 
 
 --
 -- Name: index_allocations_on_al_type_and_al_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_allocations_on_al_type_and_al_id ON allocations USING btree (allocatable_type, allocatable_id);
+CREATE INDEX index_allocations_on_al_type_and_al_id ON public.allocations USING btree (allocatable_type, allocatable_id);
 
 
 --
 -- Name: index_announcement_templates_on_shortname; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_announcement_templates_on_shortname ON announcement_templates USING btree (shortname);
+CREATE UNIQUE INDEX index_announcement_templates_on_shortname ON public.announcement_templates USING btree (shortname);
 
 
 --
 -- Name: index_announcement_templates_on_slug; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_announcement_templates_on_slug ON announcement_templates USING btree (slug);
+CREATE UNIQUE INDEX index_announcement_templates_on_slug ON public.announcement_templates USING btree (slug);
 
 
 --
 -- Name: index_announcements_on_is_global; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_announcements_on_is_global ON announcements USING btree (is_global);
+CREATE INDEX index_announcements_on_is_global ON public.announcements USING btree (is_global);
 
 
 --
 -- Name: index_announcements_on_level; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_announcements_on_level ON announcements USING btree (level);
+CREATE INDEX index_announcements_on_level ON public.announcements USING btree (level);
 
 
 --
 -- Name: index_announcements_on_original_template_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_announcements_on_original_template_id ON announcements USING btree (original_template_id);
+CREATE INDEX index_announcements_on_original_template_id ON public.announcements USING btree (original_template_id);
 
 
 --
 -- Name: index_announcements_on_publish_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_announcements_on_publish_at ON announcements USING btree (publish_at);
+CREATE INDEX index_announcements_on_publish_at ON public.announcements USING btree (publish_at);
 
 
 --
 -- Name: index_announcements_on_status; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_announcements_on_status ON announcements USING btree (status);
+CREATE INDEX index_announcements_on_status ON public.announcements USING btree (status);
 
 
 --
 -- Name: index_audits_on_associated_type_and_associated_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_audits_on_associated_type_and_associated_id ON audits USING btree (associated_type, associated_id);
+CREATE INDEX index_audits_on_associated_type_and_associated_id ON public.audits USING btree (associated_type, associated_id);
 
 
 --
 -- Name: index_audits_on_auditable_type_and_auditable_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_audits_on_auditable_type_and_auditable_id ON audits USING btree (auditable_type, auditable_id);
+CREATE INDEX index_audits_on_auditable_type_and_auditable_id ON public.audits USING btree (auditable_type, auditable_id);
 
 
 --
 -- Name: index_audits_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_audits_on_created_at ON audits USING btree (created_at);
+CREATE INDEX index_audits_on_created_at ON public.audits USING btree (created_at);
 
 
 --
 -- Name: index_audits_on_remote_ip; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_audits_on_remote_ip ON audits USING btree (remote_ip);
+CREATE INDEX index_audits_on_remote_ip ON public.audits USING btree (remote_ip);
 
 
 --
 -- Name: index_audits_on_request_uuid; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_audits_on_request_uuid ON audits USING btree (request_uuid);
+CREATE INDEX index_audits_on_request_uuid ON public.audits USING btree (request_uuid);
 
 
 --
 -- Name: index_audits_on_user_email; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_audits_on_user_email ON audits USING btree (user_email);
+CREATE INDEX index_audits_on_user_email ON public.audits USING btree (user_email);
 
 
 --
 -- Name: index_audits_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_audits_on_user_id ON audits USING btree (user_id);
+CREATE INDEX index_audits_on_user_id ON public.audits USING btree (user_id);
 
 
 --
 -- Name: index_audits_on_user_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_audits_on_user_name ON audits USING btree (user_name);
+CREATE INDEX index_audits_on_user_name ON public.audits USING btree (user_name);
 
 
 --
 -- Name: index_delayed_jobs_on_queue; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_delayed_jobs_on_queue ON delayed_jobs USING btree (queue);
+CREATE INDEX index_delayed_jobs_on_queue ON public.delayed_jobs USING btree (queue);
 
 
 --
 -- Name: index_docker_repos_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_docker_repos_on_name ON docker_repos USING btree (name);
+CREATE UNIQUE INDEX index_docker_repos_on_name ON public.docker_repos USING btree (name);
 
 
 --
 -- Name: index_docker_repos_on_service_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_docker_repos_on_service_id ON docker_repos USING btree (service_id);
+CREATE INDEX index_docker_repos_on_service_id ON public.docker_repos USING btree (service_id);
 
 
 --
 -- Name: index_docs_source_entries_on_docs_source_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_docs_source_entries_on_docs_source_id ON docs_source_entries USING btree (docs_source_id);
+CREATE INDEX index_docs_source_entries_on_docs_source_id ON public.docs_source_entries USING btree (docs_source_id);
 
 
 --
 -- Name: index_docs_sources_on_kind; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_docs_sources_on_kind ON docs_sources USING btree (kind);
+CREATE INDEX index_docs_sources_on_kind ON public.docs_sources USING btree (kind);
 
 
 --
 -- Name: index_hash_records_on_scope; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_hash_records_on_scope ON hash_records USING btree (scope);
+CREATE INDEX index_hash_records_on_scope ON public.hash_records USING btree (scope);
 
 
 --
 -- Name: index_identities_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_identities_on_user_id ON identities USING btree (user_id);
+CREATE INDEX index_identities_on_user_id ON public.identities USING btree (user_id);
 
 
 --
 -- Name: index_kubernetes_clusters_on_aliases; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_clusters_on_aliases ON kubernetes_clusters USING gin (aliases);
+CREATE INDEX index_kubernetes_clusters_on_aliases ON public.kubernetes_clusters USING gin (aliases);
 
 
 --
 -- Name: index_kubernetes_clusters_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_kubernetes_clusters_on_name ON kubernetes_clusters USING btree (name);
+CREATE UNIQUE INDEX index_kubernetes_clusters_on_name ON public.kubernetes_clusters USING btree (name);
 
 
 --
 -- Name: index_kubernetes_groups_on_is_privileged; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_groups_on_is_privileged ON kubernetes_groups USING btree (is_privileged);
+CREATE INDEX index_kubernetes_groups_on_is_privileged ON public.kubernetes_groups USING btree (is_privileged);
 
 
 --
 -- Name: index_kubernetes_groups_on_kind; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_groups_on_kind ON kubernetes_groups USING btree (kind);
+CREATE INDEX index_kubernetes_groups_on_kind ON public.kubernetes_groups USING btree (kind);
 
 
 --
 -- Name: index_kubernetes_groups_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_kubernetes_groups_on_name ON kubernetes_groups USING btree (name);
+CREATE UNIQUE INDEX index_kubernetes_groups_on_name ON public.kubernetes_groups USING btree (name);
 
 
 --
 -- Name: index_kubernetes_groups_on_restricted_to_clusters; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_groups_on_restricted_to_clusters ON kubernetes_groups USING gin (restricted_to_clusters);
+CREATE INDEX index_kubernetes_groups_on_restricted_to_clusters ON public.kubernetes_groups USING gin (restricted_to_clusters);
 
 
 --
 -- Name: index_kubernetes_groups_on_target; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_groups_on_target ON kubernetes_groups USING btree (target);
+CREATE INDEX index_kubernetes_groups_on_target ON public.kubernetes_groups USING btree (target);
 
 
 --
 -- Name: index_kubernetes_namespaces_on_cluster_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_namespaces_on_cluster_id ON kubernetes_namespaces USING btree (cluster_id);
+CREATE INDEX index_kubernetes_namespaces_on_cluster_id ON public.kubernetes_namespaces USING btree (cluster_id);
 
 
 --
 -- Name: index_kubernetes_namespaces_on_name_and_cluster_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_kubernetes_namespaces_on_name_and_cluster_id ON kubernetes_namespaces USING btree (name, cluster_id);
+CREATE UNIQUE INDEX index_kubernetes_namespaces_on_name_and_cluster_id ON public.kubernetes_namespaces USING btree (name, cluster_id);
 
 
 --
 -- Name: index_kubernetes_namespaces_on_service_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_namespaces_on_service_id ON kubernetes_namespaces USING btree (service_id);
+CREATE INDEX index_kubernetes_namespaces_on_service_id ON public.kubernetes_namespaces USING btree (service_id);
 
 
 --
 -- Name: index_kubernetes_tokens_on_cluster_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_tokens_on_cluster_id ON kubernetes_tokens USING btree (cluster_id);
+CREATE INDEX index_kubernetes_tokens_on_cluster_id ON public.kubernetes_tokens USING btree (cluster_id);
 
 
 --
 -- Name: index_kubernetes_tokens_on_groups; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_tokens_on_groups ON kubernetes_tokens USING gin (groups);
+CREATE INDEX index_kubernetes_tokens_on_groups ON public.kubernetes_tokens USING gin (groups);
 
 
 --
 -- Name: index_kubernetes_tokens_on_kind; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_tokens_on_kind ON kubernetes_tokens USING btree (kind);
+CREATE INDEX index_kubernetes_tokens_on_kind ON public.kubernetes_tokens USING btree (kind);
 
 
 --
 -- Name: index_kubernetes_tokens_on_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_tokens_on_project_id ON kubernetes_tokens USING btree (project_id);
+CREATE INDEX index_kubernetes_tokens_on_project_id ON public.kubernetes_tokens USING btree (project_id);
 
 
 --
 -- Name: index_kubernetes_tokens_on_token; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_kubernetes_tokens_on_token ON kubernetes_tokens USING btree (token);
+CREATE UNIQUE INDEX index_kubernetes_tokens_on_token ON public.kubernetes_tokens USING btree (token);
 
 
 --
 -- Name: index_kubernetes_tokens_on_tokenable_type_and_tokenable_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kubernetes_tokens_on_tokenable_type_and_tokenable_id ON kubernetes_tokens USING btree (tokenable_type, tokenable_id);
+CREATE INDEX index_kubernetes_tokens_on_tokenable_type_and_tokenable_id ON public.kubernetes_tokens USING btree (tokenable_type, tokenable_id);
 
 
 --
 -- Name: index_kubernetes_tokens_on_uid; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_kubernetes_tokens_on_uid ON kubernetes_tokens USING btree (uid);
+CREATE UNIQUE INDEX index_kubernetes_tokens_on_uid ON public.kubernetes_tokens USING btree (uid);
 
 
 --
 -- Name: index_platform_themes_on_slug; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_platform_themes_on_slug ON platform_themes USING btree (slug);
+CREATE UNIQUE INDEX index_platform_themes_on_slug ON public.platform_themes USING btree (slug);
 
 
 --
 -- Name: index_platform_themes_on_title; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_platform_themes_on_title ON platform_themes USING btree (title);
+CREATE UNIQUE INDEX index_platform_themes_on_title ON public.platform_themes USING btree (title);
 
 
 --
 -- Name: index_project_memberships_on_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_project_memberships_on_project_id ON project_memberships USING btree (project_id);
+CREATE INDEX index_project_memberships_on_project_id ON public.project_memberships USING btree (project_id);
 
 
 --
 -- Name: index_project_memberships_on_project_id_and_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_project_memberships_on_project_id_and_user_id ON project_memberships USING btree (project_id, user_id);
+CREATE UNIQUE INDEX index_project_memberships_on_project_id_and_user_id ON public.project_memberships USING btree (project_id, user_id);
 
 
 --
 -- Name: index_project_memberships_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_project_memberships_on_user_id ON project_memberships USING btree (user_id);
+CREATE INDEX index_project_memberships_on_user_id ON public.project_memberships USING btree (user_id);
 
 
 --
 -- Name: index_projects_on_shortname; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_projects_on_shortname ON projects USING btree (shortname);
+CREATE UNIQUE INDEX index_projects_on_shortname ON public.projects USING btree (shortname);
 
 
 --
 -- Name: index_projects_on_slug; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_projects_on_slug ON projects USING btree (slug);
+CREATE UNIQUE INDEX index_projects_on_slug ON public.projects USING btree (slug);
 
 
 --
 -- Name: index_read_marks_on_readable_type_and_readable_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_read_marks_on_readable_type_and_readable_id ON read_marks USING btree (readable_type, readable_id);
+CREATE INDEX index_read_marks_on_readable_type_and_readable_id ON public.read_marks USING btree (readable_type, readable_id);
 
 
 --
 -- Name: index_read_marks_on_reader_type_and_reader_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_read_marks_on_reader_type_and_reader_id ON read_marks USING btree (reader_type, reader_id);
+CREATE INDEX index_read_marks_on_reader_type_and_reader_id ON public.read_marks USING btree (reader_type, reader_id);
 
 
 --
 -- Name: index_services_on_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_services_on_project_id ON services USING btree (project_id);
+CREATE INDEX index_services_on_project_id ON public.services USING btree (project_id);
 
 
 --
 -- Name: index_support_request_templates_on_git_hub_repo; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_support_request_templates_on_git_hub_repo ON support_request_templates USING btree (git_hub_repo);
+CREATE INDEX index_support_request_templates_on_git_hub_repo ON public.support_request_templates USING btree (git_hub_repo);
 
 
 --
 -- Name: index_support_request_templates_on_shortname; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_support_request_templates_on_shortname ON support_request_templates USING btree (shortname);
+CREATE UNIQUE INDEX index_support_request_templates_on_shortname ON public.support_request_templates USING btree (shortname);
 
 
 --
 -- Name: index_support_request_templates_on_slug; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_support_request_templates_on_slug ON support_request_templates USING btree (slug);
+CREATE UNIQUE INDEX index_support_request_templates_on_slug ON public.support_request_templates USING btree (slug);
 
 
 --
 -- Name: index_users_on_is_active; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_users_on_is_active ON users USING btree (is_active);
+CREATE INDEX index_users_on_is_active ON public.users USING btree (is_active);
 
 
 --
 -- Name: index_users_on_role; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_users_on_role ON users USING btree (role);
+CREATE INDEX index_users_on_role ON public.users USING btree (role);
 
 
 --
 -- Name: kg_search_description_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX kg_search_description_idx ON kubernetes_groups USING gin (description gin_trgm_ops);
+CREATE INDEX kg_search_description_idx ON public.kubernetes_groups USING gin (description public.gin_trgm_ops);
 
 
 --
 -- Name: kg_search_name_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX kg_search_name_idx ON kubernetes_groups USING gin (name gin_trgm_ops);
+CREATE INDEX kg_search_name_idx ON public.kubernetes_groups USING gin (name public.gin_trgm_ops);
 
 
 --
 -- Name: read_marks_reader_readable_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX read_marks_reader_readable_index ON read_marks USING btree (reader_id, reader_type, readable_type, readable_id);
+CREATE UNIQUE INDEX read_marks_reader_readable_index ON public.read_marks USING btree (reader_id, reader_type, readable_type, readable_id);
 
 
 --
 -- Name: users_search_email_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_search_email_idx ON users USING gin (email gin_trgm_ops);
+CREATE INDEX users_search_email_idx ON public.users USING gin (email public.gin_trgm_ops);
 
 
 --
 -- Name: users_search_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_search_idx ON users USING gin (name gin_trgm_ops);
+CREATE INDEX users_search_idx ON public.users USING gin (name public.gin_trgm_ops);
 
 
 --
