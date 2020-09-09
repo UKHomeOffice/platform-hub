@@ -17,7 +17,7 @@
 
   <loading-indicator loading="$ctrl.loading"></loading-indicator>
 
-  <md-content id="projects">
+  <md-content>
 
     <md-card id="projects" ng-repeat="p in $ctrl.Projects.all track by p.id"
              md-colors="{ 'background' : p.isProjectTeamMember ? 'grey-A100' : 'grey-300' }">
@@ -26,7 +26,8 @@
           <span class="md-headline">
             {{p.name}}
             ({{p.shortname}})
-            <small class="badge" id="member-badge" ng-if="p.isProjectTeamMember" md-colors="{background: 'primary'}">Member</small>
+            <small class="badge" id="member-badge" ng-if="p.isProjectTeamMember && !p.isProjectAdmin" md-colors="{background: 'primary'}">Member</small>
+            <small class="badge" id="admin-badge" ng-if="p.isProjectTeamMember && p.isProjectAdmin" md-colors="{background: 'accent'}">Admin</small>
           </span>
         </md-card-title-text>
       </md-card-title>

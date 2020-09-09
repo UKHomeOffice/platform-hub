@@ -638,6 +638,54 @@ RSpec.describe ProjectsController, type: :controller do
 
       end
 
+      context 'not a hub admin but is project admin of same project' do
+        before do
+          create :project_membership_as_admin, project: @project, user: current_user
+        end
+
+        context 'when user is not a project team member' do
+          it 'should return a 400 Bad Request error' do
+            put :set_role, params: { id: @project.id, user_id: @user.id, role: role }
+            expect(response).to have_http_status(400)
+          end
+        end
+
+        context 'when user is a project team member' do
+          before do
+            create :project_membership, project: @project, user: @user
+          end
+
+          it 'should set the role accordingly' do
+            expect(ProjectMembership.exists?(project_id: @project.id, user_id: @user.id, role: role)).to be false
+            expect(Audit.count).to eq 0
+            put :set_role, params: { id: @project.id, user_id: @user.id, role: role }
+            expect(response).to be_success
+            expect(json_response['role']).to eq role
+            expect(ProjectMembership.exists?(project_id: @project.id, user_id: @user.id, role: role)).to be true
+            expect(Audit.count).to eq 1
+            audit = Audit.first
+            expect(audit.action).to eq 'set_role'
+            expect(audit.auditable.id).to eq @project.id
+            expect(audit.associated.id).to eq @user.id
+            expect(audit.user.id).to eq current_user_id
+            expect(audit.data['previous_role']).to eq nil
+            expect(audit.data['new_role']).to eq role
+          end
+        end
+      end
+
+      context 'not a hub admin but is project admin of a different project' do
+        before do
+          another_project = create :project
+          create :project_membership_as_admin, project: another_project, user: current_user
+        end
+
+        it 'should not be able to set the role - returning 403 Forbidden' do
+          put :set_role, params: { id: @project.id, user_id: @user.id, role: role }
+          expect(response).to have_http_status(403)
+        end
+      end
+
     end
   end
 
@@ -698,6 +746,55 @@ RSpec.describe ProjectsController, type: :controller do
           end
         end
 
+      end
+
+      context 'not a hub admin but is project admin of same project' do
+        before do
+          create :project_membership_as_admin, project: @project, user: current_user
+        end
+
+        context 'when user is not a project team member' do
+          it 'should return a 400 Bad Request error' do
+            put :unset_role, params: { id: @project.id, user_id: @user.id, role: role }
+            expect(response).to have_http_status(400)
+          end
+        end
+
+        context 'when user is a project team member' do
+          before do
+            create :project_membership, project: @project, user: @user, role: role
+          end
+
+          it 'should unset the role accordingly' do
+            expect(ProjectMembership.exists?(project_id: @project.id, user_id: @user.id, role: role)).to be true
+            expect(Audit.count).to eq 0
+            delete :unset_role, params: { id: @project.id, user_id: @user.id, role: role }
+            expect(response).to be_success
+            expect(json_response['role']).to eq nil
+            expect(ProjectMembership.exists?(project_id: @project.id, user_id: @user.id, role: role)).to be false
+            expect(ProjectMembership.exists?(project_id: @project.id, user_id: @user.id, role: nil)).to be true
+            expect(Audit.count).to eq 1
+            audit = Audit.first
+            expect(audit.action).to eq 'unset_role'
+            expect(audit.auditable.id).to eq @project.id
+            expect(audit.associated.id).to eq @user.id
+            expect(audit.user.id).to eq current_user_id
+            expect(audit.data['previous_role']).to eq role
+            expect(audit.data['new_role']).to eq nil
+          end
+        end
+      end
+
+      context 'not a hub admin but is project admin of a different project' do
+        before do
+          another_project = create :project
+          create :project_membership_as_admin, project: another_project, user: current_user
+        end
+
+        it 'should not be able to unset the role - returning 403 Forbidden' do
+          put :unset_role, params: { id: @project.id, user_id: @user.id, role: role }
+          expect(response).to have_http_status(403)
+        end
       end
 
     end
