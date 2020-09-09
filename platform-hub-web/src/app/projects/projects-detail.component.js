@@ -198,7 +198,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   }
 
   function makeAdmin(membership, targetEvent) {
-    if (!ctrl.isAdmin) {
+    if (!ctrl.isAdmin && !ctrl.isProjectAdmin) {
       return;
     }
 
@@ -225,7 +225,7 @@ function ProjectsDetailController($rootScope, $q, $mdDialog, $state, roleChecker
   }
 
   function demoteAdmin(membership, targetEvent) {
-    if (!ctrl.isAdmin) {
+    if (!ctrl.isAdmin && !ctrl.isProjectAdmin) {
       return;
     }
 

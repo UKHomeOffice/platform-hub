@@ -80,14 +80,36 @@ describe('projects-list component', () => {
 
     it('shows all projects with user prioritised', () => {
       const ctrl = $componentController('projectsList');
-      ctrl.myProjects = [{id: 'test1', shortname: 'Test1', name: 'Testing1', description: null, costCentreCode: null, isProjectTeamMember: true, membersCount: 1, createdAt: '2020-07-30T16:19:02Z', updatedAt: '2020-07-30T16:19:02Z'}];
-      ctrl.notMyProjects = [{id: 'test2', shortname: 'Test2', name: 'Testing2', description: null, costCentreCode: null, isProjectTeamMember: false, membersCount: 0, createdAt: '2020-07-30T16:29:02Z', updatedAt: '2020-07-30T16:29:02Z'}];
-      Projects.all = _.concat(ctrl.myProjects, ctrl.notMyProjects);
+      const myProjects = [{id: 'test1', shortname: 'Test1', name: 'Testing1', description: null, costCentreCode: null, isProjectTeamMember: true, membersCount: 1, createdAt: '2020-07-30T16:19:02Z', updatedAt: '2020-07-30T16:19:02Z'}];
+      const notMyProjects = [{id: 'test2', shortname: 'Test2', name: 'Testing2', description: null, costCentreCode: null, isProjectTeamMember: false, membersCount: 0, createdAt: '2020-07-30T16:29:02Z', updatedAt: '2020-07-30T16:29:02Z'}];
+      ctrl.Projects.all = _.concat(myProjects, notMyProjects);
 
+      renderComponent();
       expect(Projects.all[0].isProjectTeamMember).toBe(true);
       expect(Projects.all[1].isProjectTeamMember).toBe(false);
       expect(Projects.all).toEqual([{id: 'test1', shortname: 'Test1', name: 'Testing1', description: null, costCentreCode: null, isProjectTeamMember: true, membersCount: 1, createdAt: '2020-07-30T16:19:02Z', updatedAt: '2020-07-30T16:19:02Z'},
                                     {id: 'test2', shortname: 'Test2', name: 'Testing2', description: null, costCentreCode: null, isProjectTeamMember: false, membersCount: 0, createdAt: '2020-07-30T16:29:02Z', updatedAt: '2020-07-30T16:29:02Z'}]);
+      expect(element).toContainElement('md-card#projects');
+    });
+
+    it(`shows a 'Member' badge for user projects`, () => {
+      const ctrl = $componentController('projectsList');
+      const myProjects = [{id: 'test1', shortname: 'Test1', name: 'Testing1', description: null, costCentreCode: null, isProjectTeamMember: true, membersCount: 1, createdAt: '2020-07-30T16:19:02Z', updatedAt: '2020-07-30T16:19:02Z'}];
+      const notMyProjects = [];
+      ctrl.Projects.all = _.concat(myProjects, notMyProjects);
+
+      renderComponent();
+      expect(element).toContainElement('small#member-badge');
+    });
+
+    it(`does not show a 'Member' badge for non-user projects`, () => {
+      const ctrl = $componentController('projectsList');
+      const myProjects = [];
+      const notMyProjects = [{id: 'test2', shortname: 'Test2', name: 'Testing2', description: null, costCentreCode: null, isProjectTeamMember: false, membersCount: 0, createdAt: '2020-07-30T16:29:02Z', updatedAt: '2020-07-30T16:29:02Z'}];
+      ctrl.Projects.all = _.concat(myProjects, notMyProjects);
+
+      renderComponent();
+      expect(element).not.toContainElement('small#member-badge');
     });
   });
 
@@ -98,14 +120,47 @@ describe('projects-list component', () => {
 
     it('shows all projects with user prioritised', () => {
       const ctrl = $componentController('projectsList');
-      ctrl.myProjects = [{id: 'test1', shortname: 'Test1', name: 'Testing1', description: null, costCentreCode: null, isProjectTeamMember: true, membersCount: 1, createdAt: '2020-07-30T16:19:02Z', updatedAt: '2020-07-30T16:19:02Z'}];
-      ctrl.notMyProjects = [{id: 'test2', shortname: 'Test2', name: 'Testing2', description: null, costCentreCode: null, isProjectTeamMember: false, membersCount: 0, createdAt: '2020-07-30T16:29:02Z', updatedAt: '2020-07-30T16:29:02Z'}];
-      Projects.all = _.concat(ctrl.myProjects, ctrl.notMyProjects);
+      const myProjects = [{id: 'test1', shortname: 'Test1', name: 'Testing1', description: null, costCentreCode: null, isProjectTeamMember: true, isProjectAdmin: false, membersCount: 1, createdAt: '2020-07-30T16:19:02Z', updatedAt: '2020-07-30T16:19:02Z'}];
+      const notMyProjects = [{id: 'test2', shortname: 'Test2', name: 'Testing2', description: null, costCentreCode: null, isProjectTeamMember: false, isProjectAdmin: false, membersCount: 0, createdAt: '2020-07-30T16:29:02Z', updatedAt: '2020-07-30T16:29:02Z'}];
+      ctrl.Projects.all = _.concat(myProjects, notMyProjects);
 
+      renderComponent();
       expect(Projects.all[0].isProjectTeamMember).toBe(true);
       expect(Projects.all[1].isProjectTeamMember).toBe(false);
-      expect(Projects.all).toEqual([{id: 'test1', shortname: 'Test1', name: 'Testing1', description: null, costCentreCode: null, isProjectTeamMember: true, membersCount: 1, createdAt: '2020-07-30T16:19:02Z', updatedAt: '2020-07-30T16:19:02Z'},
-                                    {id: 'test2', shortname: 'Test2', name: 'Testing2', description: null, costCentreCode: null, isProjectTeamMember: false, membersCount: 0, createdAt: '2020-07-30T16:29:02Z', updatedAt: '2020-07-30T16:29:02Z'}]);
+      expect(Projects.all).toEqual([{id: 'test1', shortname: 'Test1', name: 'Testing1', description: null, costCentreCode: null, isProjectTeamMember: true, isProjectAdmin: false, membersCount: 1, createdAt: '2020-07-30T16:19:02Z', updatedAt: '2020-07-30T16:19:02Z'},
+                                    {id: 'test2', shortname: 'Test2', name: 'Testing2', description: null, costCentreCode: null, isProjectTeamMember: false, isProjectAdmin: false, membersCount: 0, createdAt: '2020-07-30T16:29:02Z', updatedAt: '2020-07-30T16:29:02Z'}]);
+      expect(element).toContainElement('md-card#projects');
+    });
+
+    it(`shows a 'Member' badge for projects where user is a member but not a project admin `, () => {
+      const ctrl = $componentController('projectsList');
+      const myProjects = [{id: 'test1', shortname: 'Test1', name: 'Testing1', description: null, costCentreCode: null, isProjectTeamMember: true, isProjectAdmin: false, membersCount: 1, createdAt: '2020-07-30T16:19:02Z', updatedAt: '2020-07-30T16:19:02Z'}];
+      const notMyProjects = [];
+      ctrl.Projects.all = _.concat(myProjects, notMyProjects);
+
+      renderComponent();
+      expect(element).toContainElement('small#member-badge');
+    });
+
+    it(`shows an 'Admin' badge for projects of which the user is a project admin  `, () => {
+      const ctrl = $componentController('projectsList');
+      const myProjects = [{id: 'test1', shortname: 'Test1', name: 'Testing1', description: null, costCentreCode: null, isProjectTeamMember: true, isProjectAdmin: true, membersCount: 1, createdAt: '2020-07-30T16:19:02Z', updatedAt: '2020-07-30T16:19:02Z'}];
+      const notMyProjects = [];
+      ctrl.Projects.all = _.concat(myProjects, notMyProjects);
+
+      renderComponent();
+      expect(element).toContainElement('small#admin-badge');
+    });
+
+    it(`does not show a 'Member' badge for non-user projects`, () => {
+      const ctrl = $componentController('projectsList');
+      const myProjects = [];
+      const notMyProjects = [{id: 'test2', shortname: 'Test2', name: 'Testing2', description: null, costCentreCode: null, isProjectTeamMember: false, isProjectAdmin: false, membersCount: 0, createdAt: '2020-07-30T16:29:02Z', updatedAt: '2020-07-30T16:29:02Z'}];
+      ctrl.Projects.all = _.concat(myProjects, notMyProjects);
+
+      renderComponent();
+      expect(element).not.toContainElement('small#member-badge');
+      expect(element).not.toContainElement('small#admin-badge');
     });
   });
 });
