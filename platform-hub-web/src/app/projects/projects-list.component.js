@@ -9,12 +9,9 @@ function ProjectsListController(roleCheckerService, Projects, Me, _) {
   const ctrl = this;
 
   ctrl.Projects = Projects;
-  ctrl.myProjects = [];
-  ctrl.notMyProjects = [];
 
   ctrl.loading = true;
   ctrl.isAdmin = false;
-  ctrl.memberships = [];
 
   init();
 
@@ -33,15 +30,10 @@ function ProjectsListController(roleCheckerService, Projects, Me, _) {
         return Promise.all(projects.map(projectIdto => {
           return Projects.getMemberships(projectIdto.id);
         })).then(memberships => {
-          ctrl.memberships = memberships;
+          const myProjects = getProjects(projects, currentUserId, memberships, true);
+          const notMyProjects = getProjects(projects, currentUserId, memberships, false);
 
-          ctrl.myProjects = getMyProjects(projects, currentUserId, memberships);
-          ctrl.notMyProjects = getNotMyProjects(projects, currentUserId, memberships);
-
-          ctrl.myProjects = _.orderBy(ctrl.myProjects, [project => project.name.toLowerCase()], ['asc']);
-          ctrl.notMyProjects = _.orderBy(ctrl.notMyProjects, [project => project.name.toLowerCase()], ['asc']);
-
-          Projects.all = _.concat(ctrl.myProjects, ctrl.notMyProjects);
+          Projects.all = _.concat(myProjects, notMyProjects);
 
           ctrl.loading = false;
         });
@@ -49,36 +41,29 @@ function ProjectsListController(roleCheckerService, Projects, Me, _) {
     });
   }
 
-  function getMyProjects(allProjects, currentUserId, memberships) {
+  function getProjects(allProjects, currentUserId, memberships, myProjects) {
     return _.chain(allProjects)
     .zip(memberships)
     .filter(projectsMembershipsPair => {
       const membership = projectsMembershipsPair[1];
-      return _.some(membership, {user: {id: currentUserId}});
+      const userIsProjectMember = _.some(membership, {user: {id: currentUserId}});
+      return myProjects ? userIsProjectMember : !userIsProjectMember;
     })
     .map(projectsMembershipsPair => {
       const project = projectsMembershipsPair[0];
-      project.isProjectTeamMember = true;
+      project.isProjectTeamMember = myProjects;
+      if (myProjects) {
+        const membership = projectsMembershipsPair[1];
+        if (_.some(membership, {user: {id: currentUserId}, role: 'admin'})) {
+          project.isProjectAdmin = true;
+        }
+      }
       return projectsMembershipsPair;
     })
     .unzip()
-    .head().value();
-  }
-
-  function getNotMyProjects(allProjects, currentUserId, memberships) {
-    return _.chain(allProjects)
-    .zip(memberships)
-    .filter(projectsMembershipsPair => {
-      const membership = projectsMembershipsPair[1];
-      return !_.some(membership, {user: {id: currentUserId}});
-    })
-    .map(projectsMembershipsPair => {
-      const project = projectsMembershipsPair[0];
-      project.isProjectTeamMember = false;
-      return projectsMembershipsPair;
-    })
-    .unzip()
-    .head().value();
+    .head()
+    .orderBy([project => project.name.toLowerCase()], ['asc'])
+    .value();
   }
 
   function loadAdminStatus() {

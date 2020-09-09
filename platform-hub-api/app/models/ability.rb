@@ -26,6 +26,12 @@ class Ability
     can :remove_membership, Project do |project|
       can_administer_project project, user
     end
+    can :set_role, Project do |project|
+      can_administer_project project, user
+    end
+    can :unset_role, Project do |project|
+      can_administer_project project, user
+    end
     can :administer_projects, Project do |project|
       can_administer_project project, user
     end
