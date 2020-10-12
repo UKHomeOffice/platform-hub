@@ -55,14 +55,15 @@ steps:
 
 - name: web_latest_image_to_quay
   image: docker:19.03.12-dind
-  secrets:
-    - docker_password
   commands:
     - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
     - docker tag platform-hub-web:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_COMMIT_SHA}
     - docker tag platform-hub-web:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-web:latest
     - docker push quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_COMMIT_SHA}
     - docker push quay.io/ukhomeofficedigital/platform-hub-web:latest
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: docker_password
   volumes:
     - name: dockersock
       path: /var/run
@@ -149,14 +150,15 @@ steps:
 
 - name: api_latest_image_to_quay
   image: docker:19.03.12-dind
-  secrets:
-    - docker_password
   commands:
     - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
     - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_COMMIT_SHA}
     - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:latest
     - docker push quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_COMMIT_SHA}
     - docker push quay.io/ukhomeofficedigital/platform-hub-api:latest
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: docker_password
   volumes:
     - name: dockersock
       path: /var/run
