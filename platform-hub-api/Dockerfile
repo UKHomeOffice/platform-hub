@@ -10,7 +10,8 @@ RUN apk update && apk upgrade \
     postgresql-client postgresql-dev \
     && apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev libressl-dev zlib-dev \
     && echo 'gem: --no-document' > /etc/gemrc \
-    && gem install bundler -v 1.16.2
+    && gem install bundler -v 2.1.4 \
+    && gem update --system
 
 # Create app user and directory, set permissions
 WORKDIR /app
