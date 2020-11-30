@@ -23,7 +23,7 @@ steps:
 
   # Expects the optimized dist code to have been built
 - name: web_build_image
-  image: docker:19.03.12-dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
     - cd platform-hub-web
     # wait for docker service to be up before running docker build.
@@ -36,7 +36,7 @@ steps:
     event: [push, tag]
 
 - name: web_test_image
-  image: docker:19.03.12-dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
     - docker run -t --rm --name platform-hub-web-test platform-hub-web:${DRONE_COMMIT_SHA} sh -c "cd /app; ls -lah; test -e index.html"
   volumes:
@@ -54,7 +54,7 @@ steps:
     event: [push, tag]
 
 - name: web_latest_image_to_quay
-  image: docker:19.03.12-dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
     - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
     - docker tag platform-hub-web:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_COMMIT_SHA}
@@ -72,7 +72,7 @@ steps:
     branch: master
 
 - name: web_tag_image_to_quay
-  image: docker:19.03.12-dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
     - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
     - docker tag platform-hub-web:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-web:$${DRONE_TAG}
@@ -101,7 +101,7 @@ steps:
     event: [push, tag]
 
 - name: api_build_image
-  image: docker:19.03.12-dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
     - cd platform-hub-api
     # wait for docker service to be up before running docker build.
@@ -114,7 +114,7 @@ steps:
     event: [push, tag]
 
 - name: api_test_image
-  image: docker:19.03.12-dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   environment:
     POSTGRES_USER: phub
     POSTGRES_PASSWORD: phub_password
@@ -129,7 +129,7 @@ steps:
       path: /var/run
 
 - name: cleanup_postgres
-  image: docker:19.03.12-dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
     - docker rm -f phub-api-postgres-${DRONE_BUILD_NUMBER}
   volumes:
@@ -149,7 +149,7 @@ steps:
     event: [push, tag]
 
 - name: api_latest_image_to_quay
-  image: docker:19.03.12-dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
     - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
     - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_COMMIT_SHA}
@@ -167,7 +167,7 @@ steps:
     branch: master
 
 - name: api_tag_image_to_quay
-  image: docker:19.03.12-dind
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
     - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
     - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_TAG}
@@ -183,10 +183,7 @@ steps:
 
 services:
 - name: docker
-  image: docker:19.03.12-dind
-  volumes:
-  - name: dockersock
-    path: /var/run
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
 
 - name: anchore-submission-server
   image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
@@ -195,9 +192,7 @@ services:
   environment:
     ANCHORE_URL: "acp-anchore.acp.homeoffice.gov.uk"
     REGISTRY_URL: "acp-ephemeral-registry.acp.homeoffice.gov.uk"
-  volumes:
-  - name: dockersock
-    path: /var/run
+    DOCKER_SERVER: tcp://127.0.0.1:2375
 
 - name: postgres
   image: postgres:9.6.1
