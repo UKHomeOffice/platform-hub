@@ -48,11 +48,18 @@ All services/components provided by this repo are currently versioned together u
 
 Creating and pushing a Git tag in this repo will trigger a drone pipeline that builds Docker images tagged with the same tag value, and pushes them to the relevant Quay.io repositories.
 
-The general process to trigger a new release of Docker images:
+The general process to prepare a new release of Docker images:
 
 - Switch to / pull the latest `master` branch (ensuring this has previously built successfully)
 - Find the latest version using `git tag`
 - Tag a new incremental version (either major, minor or patch)
   - e.g. `git tag -a v0.5.1 -m "v0.5.1"`
 - Push tags using `git push --tags`
-- Monitor the triggered drone build to ensure it builds and pushes images sucessfully
+
+### To deploy the `acp-ops` instance:
+
+```bash
+$ export DRONE_SERVER=https://drone-gh.acp.homeoffice.gov.uk
+$ export DRONE_TOKEN=xxxxxxxxxxx
+$ drone build promote UKHomeOffice/kube-platform-hub <build-no> acp-ops
+```
