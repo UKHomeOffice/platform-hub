@@ -44,7 +44,6 @@ class Kubernetes::TokensController < ApiJsonController
     destroy_kubernetes_token @token
   end
 
-
   # PATCH /kubernetes/tokens/:id/escalate
   def escalate
     authorize! :administer_projects, @token.project
