@@ -1,14 +1,20 @@
 module KubernetesTokensManagement
   extend ActiveSupport::Concern
 
+
   def create_kubernetes_token kind, params
     common_params = common_token_create_params(params)
     data = {
       token: SecureRandom.uuid,
       uid: SecureRandom.uuid,
       cluster: KubernetesCluster.friendly.find(common_params[:cluster_name]),
-      groups: common_params[:groups]
+      groups: common_params[:groups],
+      expire_token_at: nil
     }
+
+    if common_params[:expire_token_at]!=nil
+      data[:expire_token_at] = Time.now + (common_params[:expire_token_at])
+    end
 
     token =
       case kind
@@ -121,7 +127,8 @@ module KubernetesTokensManagement
     params.permit(
       :cluster_name,
       :groups,
-      {:groups => []}
+      {:groups => []},
+      :expire_token_at
     )
   end
 

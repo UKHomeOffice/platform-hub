@@ -36,6 +36,8 @@ class ServicesController < ApiJsonController
     authorize! :read_services_in_project, @project
 
     render json: @service
+
+    Kubernetes::TokensExpirerJobTriggerService.trigger
   end
 
   # POST /projects/:project_id/services
