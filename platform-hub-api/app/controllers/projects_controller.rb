@@ -204,19 +204,23 @@ class ProjectsController < ApiJsonController
   def kubernetes_user_tokens
     authorize! :administer_projects, @project
 
+    Kubernetes::TokensExpirerJobTriggerService.trigger
+
     render json: @project.kubernetes_user_tokens.order(:name)
   end
 
   # GET /projects/:id/kubernetes_user_tokens/:token_id
   def show_kubernetes_user_token
-    authorize! :administer_projects, @project
+    authorize! :administer_user_tokens, @token
 
     render json: @token
   end
 
   # POST /projects/:id/kubernetes_user_tokens
   def create_kubernetes_user_token
-    authorize! :administer_projects, @project
+    if @current_user
+      authorize! :create_user_tokens, @project
+    end
 
     token_params = params.require(:user_token)
     token_params[:project_id] = @project.id
@@ -233,7 +237,7 @@ class ProjectsController < ApiJsonController
 
   # DELETE /projects/:id/kubernetes_user_tokens/:token_id
   def destroy_kubernetes_user_token
-    authorize! :administer_projects, @project
+    authorize! :administer_user_tokens, @token
 
     destroy_kubernetes_token @token
   end

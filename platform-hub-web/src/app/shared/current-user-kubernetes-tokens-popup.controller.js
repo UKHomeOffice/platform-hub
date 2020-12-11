@@ -7,6 +7,7 @@ export const currentUserKubernetesTokensPopupController = function ($mdDialog, i
 
   ctrl.loading = true;
   ctrl.tokensByProject = {};
+  ctrl.regenerateState = null;
 
   ctrl.close = $mdDialog.hide;
   ctrl.openKubeConfigHelperPopup = openKubeConfigHelperPopup;
@@ -20,6 +21,11 @@ export const currentUserKubernetesTokensPopupController = function ($mdDialog, i
       .getKubernetesTokens()
       .then(tokens => {
         ctrl.tokensByProject = _.groupBy(tokens, t => `Project: ${t.project.name} (${t.project.shortname})`);
+        _.forEach(tokens, token => {
+          if (token.kind === 'user') {
+            ctrl.regenerateState = 'kubernetes.user-tokens.regenerate';
+          }
+        });
       })
       .finally(() => {
         ctrl.loading = false;

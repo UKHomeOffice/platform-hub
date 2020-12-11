@@ -34,6 +34,12 @@ function KubernetesUserTokensFormController($scope, $q, $state, $mdSelect, Proje
   ctrl.allowedClusters = [];
   ctrl.possibleGroups = {};
   ctrl.allowedGroups = {};
+  ctrl.expiryOptions = [
+    {label: 'No expiration', value: null},
+    {label: '10 seconds', value: 10},
+    {label: '30 days', value: 30 * 24 * 60 * 60},
+    {label: '90 days', value: 90 * 24 * 60 * 60}
+  ];
 
   ctrl.canChangeProject = canChangeProject;
   ctrl.handleProjectChange = handleProjectChange;

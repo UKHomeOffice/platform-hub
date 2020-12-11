@@ -61,6 +61,14 @@
       {{$ctrl.token.expire_privileged_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
       (<span am-time-ago="$ctrl.token.expire_privileged_at"></span>)
     </p>
+    <p
+      class="md-body-1"
+      ng-if="$ctrl.token.expire_token_at"
+      md-colors="{color: 'accent'}">
+      <strong>Token expires at:</strong>
+      {{$ctrl.token.expire_token_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+      (<span am-time-ago="$ctrl.token.expire_token_at"></span>)
+    </p>
   </md-card-content>
 
   <md-card-actions
@@ -84,6 +92,16 @@
         Grant a short lived escalation of privilege for this token. Opens a popup where you can configure and apply this escalation.
       </md-tooltip>
     </md-button>
+
+    <md-button
+      ng-if="($ctrl.token.kind == 'user' && $ctrl.token.user.is_active) || $ctrl.token.kind == 'robot'"
+      class="md-primary"
+      ui-state="$ctrl.regenerateState"
+      ui-state-params="$ctrl.regenerateStateParams"
+      aria-label="Regenerate your token">
+      Regenerate Token
+    </md-button>
+
     <span flex></span>
     <md-button
       class="md-accent"
