@@ -9,11 +9,13 @@ import {KubernetesGroupsListComponent} from './kubernetes-groups-list.component'
 import {KubernetesNamespacesFormComponent} from './kubernetes-namespaces-form.component';
 import {KubernetesNamespacesListComponent} from './kubernetes-namespaces-list.component';
 import {KubernetesRobotTokensFormComponent} from './kubernetes-robot-tokens-form.component';
+import {KubernetesRobotTokensRegenerateFormComponent} from './kubernetes-robot-tokens-regenerate-form.component';
 import {KubernetesRobotTokensListComponent} from './kubernetes-robot-tokens-list.component';
 import {KubernetesTokenEscalatePrivilegePopupController} from './kubernetes-token-escalate-privilege-popup.controller';
 import {kubernetesTokenEscalatePrivilegePopupService} from './kubernetes-token-escalate-privilege-popup.service';
 import {KubernetesTokensSyncComponent} from './kubernetes-tokens-sync.component';
 import {KubernetesUserTokensFormComponent} from './kubernetes-user-tokens-form.component';
+import {KubernetesUserTokensRegenerateFormComponent} from './kubernetes-user-tokens-regenerate-form.component';
 import {KubernetesUserTokensListComponent} from './kubernetes-user-tokens-list.component';
 
 // Main section component names
@@ -26,9 +28,11 @@ export const KubernetesGroupsList = 'kubernetesGroupsList';
 export const KubernetesNamespacesForm = 'kubernetesNamespacesForm';
 export const KubernetesNamespacesList = 'kubernetesNamespacesList';
 export const KubernetesRobotTokensForm = 'kubernetesRobotTokensForm';
+export const KubernetesRobotTokensRegenerateForm = 'kubernetesRobotTokensRegenerateForm';
 export const KubernetesRobotTokensList = 'kubernetesRobotTokensList';
 export const KubernetesTokensSync = 'kubernetesTokensSync';
 export const KubernetesUserTokensForm = 'kubernetesUserTokensForm';
+export const KubernetesUserTokensRegenerateForm = 'kubernetesUserTokensRegenerateForm';
 export const KubernetesUserTokensList = 'kubernetesUserTokensList';
 
 export const KubernetesModule = angular
@@ -42,10 +46,12 @@ export const KubernetesModule = angular
   .component(KubernetesNamespacesForm, KubernetesNamespacesFormComponent)
   .component(KubernetesNamespacesList, KubernetesNamespacesListComponent)
   .component(KubernetesRobotTokensForm, KubernetesRobotTokensFormComponent)
+  .component(KubernetesRobotTokensRegenerateForm, KubernetesRobotTokensRegenerateFormComponent)
   .component(KubernetesRobotTokensList, KubernetesRobotTokensListComponent)
   .controller('KubernetesTokenEscalatePrivilegePopupController', KubernetesTokenEscalatePrivilegePopupController)
   .service('kubernetesTokenEscalatePrivilegePopupService', kubernetesTokenEscalatePrivilegePopupService)
   .component(KubernetesTokensSync, KubernetesTokensSyncComponent)
   .component(KubernetesUserTokensForm, KubernetesUserTokensFormComponent)
+  .component(KubernetesUserTokensRegenerateForm, KubernetesUserTokensRegenerateFormComponent)
   .component(KubernetesUserTokensList, KubernetesUserTokensListComponent)
   .name;
