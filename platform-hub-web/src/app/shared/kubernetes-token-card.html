@@ -11,6 +11,13 @@
           md-colors="{background: 'accent-100'}">
           {{$ctrl.token.cluster.name}} cluster
         </span>
+        <span
+          flex="none"
+          class="badge"
+          md-colors="{background: 'accent'}"
+          ng-if="$ctrl.token.expiredToken">
+          Expired
+        </span>
       </span>
     </md-card-title-text>
   </md-card-title>
@@ -61,6 +68,14 @@
       {{$ctrl.token.expire_privileged_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
       (<span am-time-ago="$ctrl.token.expire_privileged_at"></span>)
     </p>
+    <p
+      class="md-body-1"
+      ng-if="$ctrl.token.expire_token_at"
+      md-colors="{color: 'accent'}">
+      <strong>Token expires at:</strong>
+      {{$ctrl.token.expire_token_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+      (<span am-time-ago="$ctrl.token.expire_token_at"></span>)
+    </p>
   </md-card-content>
 
   <md-card-actions
@@ -72,18 +87,30 @@
       class="md-primary"
       aria-label="View and edit details for this kubernetes token"
       ui-state="$ctrl.editState"
-      ui-state-params="$ctrl.editStateParams">
+      ui-state-params="$ctrl.editStateParams"
+      ng-disabled ="$ctrl.token.expiredToken">
       View and edit
     </md-button>
     <md-button
       ng-if="$ctrl.token.kind == 'user' && $ctrl.token.user.is_active && $ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokensEscalatePrivilege)"
       aria-label="Escalate privilege for this particular token. Opens up a popup where you can choose details for the escalation."
-      ng-click="$ctrl.escalatePrivilege($event)">
+      ng-click="$ctrl.escalatePrivilege($event)"
+      ng-disabled ="$ctrl.token.expiredToken">
       Escalate privilege
       <md-tooltip md-direction="bottom">
         Grant a short lived escalation of privilege for this token. Opens a popup where you can configure and apply this escalation.
       </md-tooltip>
     </md-button>
+
+    <md-button
+      ng-if="($ctrl.token.kind == 'user' && $ctrl.token.user.is_active) || $ctrl.token.kind == 'robot'"
+      class="md-primary"
+      ui-state="$ctrl.regenerateState"
+      ui-state-params="$ctrl.regenerateStateParams"
+      aria-label="Regenerate your token">
+      Regenerate Token
+    </md-button>
+
     <span flex></span>
     <md-button
       class="md-accent"
