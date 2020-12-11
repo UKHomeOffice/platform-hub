@@ -6,7 +6,12 @@ namespace :kubernetes do
   end
 
   desc "Trigger the Kubernetes privileged tokens expirer job if it's not already in the queue"
-  task trigger_tokens_expirer: :environment do
+  task trigger_privileged_tokens_expirer: :environment do
+    Kubernetes::PrivilegedTokensExpirerJobTriggerService.trigger
+  end
+
+  desc "Trigger the Kubernetes tokens expirer job if it's not already in the queue"
+  task trigger_expiry_tokens_expirer: :environment do
     Kubernetes::TokensExpirerJobTriggerService.trigger
   end
 
