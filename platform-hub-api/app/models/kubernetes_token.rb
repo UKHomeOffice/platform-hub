@@ -1,7 +1,7 @@
 class KubernetesToken < ApplicationRecord
   TOKEN_LENGTH = 36
   UID_LENGTH = 36
-  PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS = 21600 # max privilege period is 6h
+  PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS = 28800 # max privilege period is 8h
 
   NAME_REGEX = /\A[a-zA-Z][\@\.\w-]*\z/
 
@@ -17,6 +17,8 @@ class KubernetesToken < ApplicationRecord
   belongs_to :cluster, -> { readonly }, class_name: 'KubernetesCluster'
 
   scope :privileged, -> { where.not(expire_privileged_at: nil) }
+  scope :timed, -> { where.not(expire_token_at: nil) }
+  scope :not_expired, -> { where(["expire_token_at > ? OR expire_token_at IS ?", DateTime.now, nil]) }
   scope :by_tokenable, ->(tokenable) { where(tokenable: tokenable) }
   scope :by_project, ->(project) { where(project: project) }
   scope :by_cluster, ->(c) { where(cluster: c) }
@@ -39,6 +41,7 @@ class KubernetesToken < ApplicationRecord
       message: "must start with letter and can only contain letters, numbers, underscores, dashes, dots and @"
     }
   validates :description, presence: true, if: :robot?
+  validates :expire_token_at, presence: true, allow_blank: true
 
   before_validation :set_project, if: :robot?
 
@@ -120,6 +123,10 @@ class KubernetesToken < ApplicationRecord
     val[0..30].gsub(/\w/, 'X') + val[31..35]
   end
 
+  def timed?
+    expire_token_at.present?
+  end
+
   def privileged?
     expire_privileged_at.present?
   end
@@ -150,6 +157,10 @@ class KubernetesToken < ApplicationRecord
       expire_privileged_at: nil,
       groups: groups - KubernetesGroup.privileged_names
     )
+  end
+
+  def destroy_expired_token
+    KubernetesToken.where('expire_token_at < NOW()').destroy_all
   end
 
   protected
@@ -299,5 +310,4 @@ class KubernetesToken < ApplicationRecord
       group_allowed_for_cluster &&
       allocation_exists
   end
-
 end

@@ -9,7 +9,9 @@ export const KubernetesTokenEscalatePrivilegePopupController = function ($scope,
     {label: '10 mins', value: 10 * 60},
     {label: '30 mins', value: 30 * 60},
     {label: '1 hour', value: 1 * 60 * 60},
-    {label: '2 hours', value: 2 * 60 * 60}
+    {label: '2 hours', value: 2 * 60 * 60},
+    {label: '4 hours', value: 4 * 60 * 60},
+    {label: '8 hours', value: 8 * 60 * 60}
   ];
 
   ctrl.loading = true;
