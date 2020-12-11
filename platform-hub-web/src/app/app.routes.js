@@ -49,9 +49,11 @@ import {
   KubernetesNamespacesForm,
   KubernetesNamespacesList,
   KubernetesRobotTokensForm,
+  KubernetesRobotTokensRegenerateForm,
   KubernetesRobotTokensList,
   KubernetesTokensSync,
   KubernetesUserTokensForm,
+  KubernetesUserTokensRegenerateForm,
   KubernetesUserTokensList
 } from './kubernetes/kubernetes.module';
 import {
@@ -351,6 +353,21 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
             fromProject: null
           }
         })
+        .state('kubernetes.user-tokens.regenerate', {
+          url: '/regenerate/:userId?fromProject&tokenId',
+          component: KubernetesUserTokensRegenerateForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlags: [featureFlagKeys.kubernetesTokens]
+          },
+          params: {
+            userId: '',
+            fromProject: null
+          }
+        })
       .state('kubernetes.robot-tokens', {
         abstract: true,
         url: '/robot-tokens',
@@ -400,6 +417,21 @@ export const appRoutes = function ($stateProvider, $urlRouterProvider, $location
           params: {
             fromProject: null,
             fromService: null
+          }
+        })
+        .state('kubernetes.robot-tokens.regenerate', {
+          url: '/regenerate/:tokenId?fromProject&fromService',
+          component: KubernetesRobotTokensRegenerateForm,
+          resolve: {
+            transition: '$transition$'
+          },
+          data: {
+            authenticate: true,
+            featureFlags: [featureFlagKeys.kubernetesTokens]
+          },
+          params: {
+            userId: '',
+            fromProject: null
           }
         })
     .state('projects', {

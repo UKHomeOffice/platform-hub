@@ -283,6 +283,7 @@ GEM
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
       equalizer (~> 0.0, >= 0.0.9)
+    webrick (1.7.0)
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -334,6 +335,7 @@ DEPENDENCIES
   timecop (~> 0.9.1)
   tzinfo-data (>= 1.2019.0)
   unread (~> 0.10.0)
+  webrick (>= 1.4.3)
   with_model (~> 2.0)
 
 RUBY VERSION
