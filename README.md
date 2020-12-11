@@ -56,3 +56,25 @@ The general process to trigger a new release of Docker images:
   - e.g. `git tag -a v0.5.1 -m "v0.5.1"`
 - Push tags using `git push --tags`
 - Monitor the triggered drone build to ensure it builds and pushes images sucessfully
+
+### `platform-hub-cron-job`
+
+[README](platform-hub-cron-job/README.md)
+
+[Source code](platform-hub-cron-job) for the script to send email notifications for expiring kubernetes tokens.
+
+- Uses [Express](https://expressjs.com) as the web framework for [Node.js](https://nodejs.org/en/)
+- Uses [PostgreSQL](https://www.postgresql.org/) to retrieve expiring kubernetes tokens data
+- Fetches user emails from [Jira Service Desk](https://www.atlassian.com/software/jira/service-management/features/service-desk)
+- Uses [AWS SES](https://aws.amazon.com/ses/) to send email notifications
+
+### `platform-hub-no-expiry-job`
+
+[README](platform-hub-no-expiry-job/README.md)
+
+[Source code](platform-hub-no-expiry-job) for the script to send email notifications for long-lived kubernetes tokens.
+
+- Uses [Express](https://expressjs.com) as the web framework for [Node.js](https://nodejs.org/en/)
+- Uses [PostgreSQL](https://www.postgresql.org/) to retrieve expiring kubernetes tokens data
+- Fetches user emails from [Jira Service Desk](https://www.atlassian.com/software/jira/service-management/features/service-desk)
+- Uses [AWS SES](https://aws.amazon.com/ses/) to send email notifications
