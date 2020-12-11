@@ -36,6 +36,7 @@ class ServicesController < ApiJsonController
     authorize! :read_services_in_project, @project
 
     render json: @service
+
   end
 
   # POST /projects/:project_id/services

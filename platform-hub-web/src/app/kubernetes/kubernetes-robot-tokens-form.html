@@ -91,6 +91,35 @@
 
           <br />
 
+          <md-input-container class="md-block" ng-if="$ctrl.isNew">
+            <label for="expiresInSecs">Token Expiration:</label>
+            <md-select
+              ng-if="$ctrl.isNew"
+              name="expiresInSecs"
+              required
+              ng-model="$ctrl.token.expiresInSecs"
+              aria-label="The expiry of the token">
+              <md-option
+                ng-repeat="e in $ctrl.expiryOptions"
+                ng-value="e.value">
+                {{e.label}}
+              </md-option>
+            </md-select>
+            <br />
+          </md-input-container>
+
+          <md-input-container class="md-block" ng-if="!$ctrl.isNew && $ctrl.token.expire_token_at">
+            <label for="expiresInSecs">Token Expiration:</label>
+            <input
+              name="expiresInSecs"
+              ng-model="$ctrl.token.expiresInSecs"
+              ng-disabled="!$ctrl.isNew"
+              ng-value="$ctrl.token.expire_token_at">
+              <br />
+          </md-input-container>
+
+          <br />
+
           <p
             ng-if="!$ctrl.processing && $ctrl.service && $ctrl.token.cluster.name && $ctrl.allowedGroups.length == 0"
             class="md-body-2"

@@ -3,14 +3,16 @@
   <md-button
     ng-click="showToken = !showToken"
     class="md-icon-button"
-    aria-label="reveal token value">
+    aria-label="reveal token value"
+    ng-disabled ="$ctrl.item.expiredToken">
     <md-icon ng-if="!showToken">visibility</md-icon>
     <md-icon ng-if="showToken">visibility_off</md-icon>
   </md-button>
   <md-button
     class="md-icon-button"
     ngclipboard
-    data-clipboard-text="{{$ctrl.item.token}}">
+    data-clipboard-text="{{$ctrl.item.token}}"
+    ng-disabled ="$ctrl.item.expiredToken">
     <md-icon ng-bind="$ctrl.copyIcon"></md-icon>
     <md-tooltip md-direction="bottom">
       Copy to clipboard
