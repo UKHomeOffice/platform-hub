@@ -65,6 +65,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.createProjectKubernetesUserToken = createProjectKubernetesUserToken;
   service.updateProjectKubernetesUserToken = updateProjectKubernetesUserToken;
   service.deleteProjectKubernetesUserToken = buildSubResourceDeletor('projects', 'kubernetes_user_tokens');
+  service.regenerateProjectKubernetesUserToken = regenerateProjectKubernetesUserToken;
   service.getProjectBills = buildSubCollectionFetcher('projects', 'bills');
 
   service.getProjectServices = buildSubCollectionFetcher('projects', 'services');
@@ -78,6 +79,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
   service.createProjectServiceKubernetesRobotToken = createProjectServiceKubernetesRobotToken;
   service.updateProjectServiceKubernetesRobotToken = updateProjectServiceKubernetesRobotToken;
   service.deleteProjectServiceKubernetesRobotToken = deleteProjectServiceKubernetesRobotToken;
+  service.regenerateProjectServiceKubernetesRobotToken = regenerateProjectServiceKubernetesRobotToken;
 
   service.getProjectDockerRepos = buildSubCollectionFetcher('projects', 'docker_repos');
   service.createProjectDockerRepo = buildSubResourceCreator('projects', 'docker_repos');
@@ -153,10 +155,12 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
 
   service.getKubernetesUserTokens = getKubernetesUserTokens;
   service.createKubernetesUserToken = createKubernetesUserToken;
+  service.regenerateKubernetesUserToken = regenerateKubernetesUserToken;
   service.updateKubernetesUserToken = updateKubernetesUserToken;
 
   service.getKubernetesRobotTokens = getKubernetesRobotTokens;
   service.createKubernetesRobotToken = createKubernetesRobotToken;
+  service.regenerateKubernetesRobotToken = regenerateKubernetesRobotToken;
   service.updateKubernetesRobotToken = updateKubernetesRobotToken;
 
   service.getKubernetesTokensChangeset = getKubernetesTokensChangeset;
@@ -500,6 +504,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .post(`${apiEndpoint}/projects/${projectId}/kubernetes_user_tokens`, {
         user_token: {
           cluster_name: data.cluster.name,
+          expire_token_at: data.expiresInSecs,
           groups: data.groups,
           user_id: data.user.id
         }
@@ -533,6 +538,32 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to update user token for project', response));
+        return $q.reject(response);
+      });
+  }
+
+  function regenerateProjectKubernetesUserToken(projectId, data) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/projects/${projectId}/kubernetes_user_tokens/regenerate`, {
+        user_token: {
+          cluster_name: data.cluster.name,
+          groups: data.groups,
+          user_id: data.user.id,
+          expire_token_at: data.expiresInSecs
+
+        }
+      })
+      .then(handleHttpError)
+      .then(response => response.data)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to create new user token for project', response));
         return $q.reject(response);
       });
   }
@@ -574,6 +605,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         robot_token: {
           service_id: serviceId,
           cluster_name: data.cluster.name,
+          expire_token_at: data.expiresInSecs,
           groups: data.groups,
           name: data.name,
           description: data.description
@@ -612,6 +644,33 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .then(response => response.data)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse('Failed to update token for project service', response));
+        return $q.reject(response);
+      });
+  }
+
+  function regenerateProjectServiceKubernetesRobotToken(projectId, serviceId, data) {
+    if (_.isNull(projectId) || _.isEmpty(projectId)) {
+      throw new Error('"projectId" argument not specified or empty');
+    }
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/projects/${projectId}/kubernetes_robot_tokens/regenerate`, {
+        robot_token: {
+          service_id: serviceId,
+          cluster_name: data.cluster.name,
+          expire_token_at: data.expiresInSecs,
+          groups: data.groups,
+          name: data.name,
+          description: data.description
+        }
+      })
+      .then(handleHttpError)
+      .then(response => response.data)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse('Failed to create new robot token for project', response));
         return $q.reject(response);
       });
   }
@@ -840,7 +899,8 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         user_id: userId,
         project_id: data.project.id,
         cluster_name: data.cluster.name,
-        groups: data.groups
+        groups: data.groups,
+        expire_token_at: data.expiresInSecs
       })
       .then(handleHttpError)
       .catch(response => {
@@ -865,6 +925,30 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to update a "${data.cluster}" kubernetes token`, response));
+        return $q.reject(response);
+      });
+  }
+
+  function regenerateKubernetesUserToken(userId, data) {
+    if (_.isNull(userId) || _.isEmpty(userId)) {
+      throw new Error('"userId" argument not specified or empty');
+    }
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/kubernetes/tokens/regenerate`, {
+        kind: 'user',
+        user_id: userId,
+        project_id: data.project.id,
+        cluster_name: data.cluster.name,
+        expire_token_at: data.expiresInSecs,
+        groups: data.groups
+      })
+      .then(handleHttpError)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse(`Failed to create kubernetes token`, response));
         return $q.reject(response);
       });
   }
@@ -904,6 +988,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         kind: 'robot',
         service_id: serviceId,
         cluster_name: data.cluster.name,
+        expire_token_at: data.expiresInSecs,
         groups: data.groups,
         name: data.name,
         description: data.description
@@ -932,6 +1017,31 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .then(handleHttpError)
       .catch(response => {
         logger.error(buildErrorMessageFromResponse(`Failed to update a "${data.name}" kubernetes robot token`, response));
+        return $q.reject(response);
+      });
+  }
+
+  function regenerateKubernetesRobotToken(serviceId, data) {
+    if (_.isNull(serviceId) || _.isEmpty(serviceId)) {
+      throw new Error('"tokenId" argument not specified or empty');
+    }
+    if (_.isNull(data) || _.isEmpty(data)) {
+      throw new Error('"data" argument not specified or empty');
+    }
+
+    return $http
+      .post(`${apiEndpoint}/kubernetes/tokens/regenerate`, {
+        kind: 'robot',
+        service_id: serviceId,
+        cluster_name: data.cluster.name,
+        expire_token_at: data.expiresInSecs,
+        groups: data.groups,
+        name: data.name,
+        description: data.description
+      })
+      .then(handleHttpError)
+      .catch(response => {
+        logger.error(buildErrorMessageFromResponse(`Failed to create kubernetes token`, response));
         return $q.reject(response);
       });
   }

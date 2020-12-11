@@ -398,7 +398,8 @@ CREATE TABLE public.kubernetes_tokens (
     expire_privileged_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    project_id uuid NOT NULL
+    project_id uuid NOT NULL,
+    expire_token_at timestamp without time zone
 );
 
 
@@ -1305,6 +1306,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181101135115'),
 ('20181109123528'),
 ('20181114155258'),
-('20181204101525');
+('20181204101525'),
+('20201111123802');
 
 

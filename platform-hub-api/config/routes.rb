@@ -118,7 +118,7 @@ Rails.application.routes.draw do
       namespace :kubernetes do
 
         resources :tokens do
-          constraints lambda { |_| FeatureFlagService.all_enabled?([:kubernetes_tokens_escalate_privilege, :kubernetes_tokens])} do
+          constraints lambda { |_| FeatureFlagService.all_enabled?([:kubernetes_tokens_escalate_privilege, :kubernetes_tokens_escalate_privilege ,:kubernetes_tokens])} do
             patch '/escalate', to: 'tokens#escalate', on: :member
             patch '/deescalate', to: 'tokens#deescalate', on: :member
           end

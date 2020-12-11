@@ -204,6 +204,8 @@ class ProjectsController < ApiJsonController
   def kubernetes_user_tokens
     authorize! :administer_projects, @project
 
+    Kubernetes::TokensExpirerJobTriggerService.trigger
+
     render json: @project.kubernetes_user_tokens.order(:name)
   end
 

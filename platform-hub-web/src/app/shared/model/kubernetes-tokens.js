@@ -9,10 +9,12 @@ export const KubernetesTokens = function (hubApiService) {
   model.getUserTokens = hubApiService.getKubernetesUserTokens;
   model.createUserToken = hubApiService.createKubernetesUserToken;
   model.updateUserToken = hubApiService.updateKubernetesUserToken;
+  model.regenerateUserToken = hubApiService.regenerateKubernetesUserToken;
 
   model.getRobotTokens = hubApiService.getKubernetesRobotTokens;
   model.createRobotToken = hubApiService.createKubernetesRobotToken;
   model.updateRobotToken = hubApiService.updateKubernetesRobotToken;
+  model.regenerateRobotToken = hubApiService.regenerateKubernetesRobotToken;
 
   model.revokeToken = revokeToken;
   model.escalatePrivilege = hubApiService.escalatePrivilegeForKubernetesTokens;

@@ -30,6 +30,7 @@ export const Projects = function ($timeout, $q, apiBackoffTimeMs, hubApiService,
   model.createKubernetesUserToken = hubApiService.createProjectKubernetesUserToken;
   model.updateKubernetesUserToken = hubApiService.updateProjectKubernetesUserToken;
   model.deleteKubernetesUserToken = hubApiService.deleteProjectKubernetesUserToken;
+  model.regenerateKubernetesUserToken = hubApiService.regenerateProjectKubernetesUserToken;
 
   model.getServices = hubApiService.getProjectServices;
   model.getService = hubApiService.getProjectService;

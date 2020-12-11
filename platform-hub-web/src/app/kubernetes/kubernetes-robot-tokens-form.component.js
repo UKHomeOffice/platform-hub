@@ -32,6 +32,16 @@ function KubernetesRobotTokensFormController($q, $state, $mdSelect, roleCheckerS
   ctrl.allowedClusters = [];
   ctrl.possibleGroups = [];
   ctrl.allowedGroups = [];
+  ctrl.expiryOptions = [
+    {label: 'No expiration', value: null},
+    {label: '15 seconds', value: 15},
+    {label: '10 minutes', value: 10 * 60},
+    {label: '1 day', value: 24 * 60 * 60},
+    {label: '3 days', value: 3 * 24 * 60 * 60},
+    {label: '1 week', value: 7 * 24 * 60 * 60},
+    {label: '1 month', value: 30 * 24 * 60 * 60},
+    {label: '2 months', value: 60 * 24 * 60 * 60}
+  ];
 
   ctrl.canChangeService = canChangeService;
   ctrl.chooseService = chooseService;
