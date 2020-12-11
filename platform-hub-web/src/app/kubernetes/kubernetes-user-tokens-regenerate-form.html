@@ -1,9 +1,8 @@
-<div class="kubernetes-user-tokens-form">
+<div class="kubernetes-user-tokens-regenerate-form">
   <md-toolbar>
     <div class="md-toolbar-tools">
       <h3>
-        <span ng-if="$ctrl.isNew">New Kubernetes User Token</span>
-        <span ng-if="!$ctrl.isNew">Edit Kubernetes User Token</span>
+        <span>Regenerate Kubernetes User Token</span>
       </h3>
     </div>
   </md-toolbar>
@@ -20,11 +19,10 @@
             <label for="project">Project:</label>
             <md-select
               ng-model="$ctrl.token.project.id"
-              ng-change="$ctrl.handleProjectChange()"
               name="project"
               required
-              placeholder="Select the project this token is tied to"
-              ng-disabled="!$ctrl.canChangeProject()">
+              ng-disabled="$ctrl.processing || $ctrl.token.project.id"
+              placeholder="Select the project this token is tied to">
               <md-option
                 ng-repeat="p in $ctrl.Projects.all track by p.id"
                 value="{{p.id}}">
@@ -52,7 +50,7 @@
               ng-model="$ctrl.token.user.id"
               required
               placeholder="Select the user this token is for"
-              ng-disabled="$ctrl.processing || !$ctrl.token.project.id || !$ctrl.isNew || !$ctrl.allowedUsers.length">
+              ng-disabled="$ctrl.processing || !$ctrl.token.project.id || $ctrl.token.user || !$ctrl.allowedUsers.length">
               <md-option
                 ng-repeat="u in $ctrl.allowedUsers track by u.id"
                 ng-disabled="!u.is_active"
@@ -79,11 +77,10 @@
             <label for="cluster">Cluster:</label>
             <md-select
               ng-model="$ctrl.token.cluster.name"
-              ng-change="$ctrl.handleClusterChange()"
               name="cluster"
               required
-              placeholder="Select the cluster"
-              ng-disabled="$ctrl.processing || !$ctrl.token.project.id || (!$ctrl.isNew && $ctrl.token.cluster) || !$ctrl.allowedClusters.length">
+              placeholder="Select the clusters"
+              ng-disabled="$ctrl.processing || !$ctrl.token.project.id || $ctrl.token.cluster || !$ctrl.allowedClusters.length">
               <md-option
                 ng-repeat="c in $ctrl.allowedClusters track by c.name"
                 value="{{c.name}}">
@@ -97,10 +94,9 @@
 
           <br />
 
-          <md-input-container class="md-block" ng-if="$ctrl.isNew">
+          <md-input-container class="md-block">
             <label for="expiresInSecs">Token Expiration:</label>
             <md-select
-              ng-if="$ctrl.isNew"
               name="expiresInSecs"
               required
               ng-model="$ctrl.token.expiresInSecs"
@@ -112,16 +108,6 @@
               </md-option>
             </md-select>
             <br />
-          </md-input-container>
-
-          <md-input-container class="md-block" ng-if="!$ctrl.isNew && $ctrl.token.expire_token_at">
-            <label for="expiresInSecs">Token Expiration:</label>
-            <input
-              name="expiresInSecs"
-              ng-model="$ctrl.token.expiresInSecs"
-              ng-disabled="!$ctrl.isNew"
-              ng-value="$ctrl.token.expire_token_at">
-              <br />
           </md-input-container>
 
           <p
@@ -140,7 +126,7 @@
               name="groups"
               ng-model="$ctrl.token.groups"
               md-selected-text="$ctrl.token.groups.length ? $ctrl.token.groups.join(', ') : 'Select RBAC group(s):'"
-              ng-disabled="$ctrl.processing || _.isEmpty($ctrl.allowedGroups) || !$ctrl.token.project.id || !$ctrl.token.cluster.name"
+              ng-disabled="$ctrl.processing || _.isEmpty($ctrl.allowedGroups) || !$ctrl.token.project.id || $ctrl.token.groups || !$ctrl.allowedGroups.length"
               multiple>
               <md-optgroup
                 ng-repeat="(label, groups) in $ctrl.allowedGroups track by label"
@@ -158,42 +144,14 @@
 
           <br />
 
-          <md-input-container class="md-block" ng-if="!$ctrl.isNew">
-            <label for="token">Token:</label>
-            <input
-              name="token"
-              ng-model="$ctrl.token.obfuscated_token"
-              ng-disabled="$ctrl.token.obfuscated_token"
-              required
-              placeholder="Kubernetes access token">
-            <div ng-messages="$ctrl.kubernetesTokenForm.token.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
-
-          <md-input-container class="md-block" ng-if="!$ctrl.isNew">
-            <label for="uid">UID:</label>
-            <input
-              name="uid"
-              ng-model="$ctrl.token.uid"
-              ng-disabled="$ctrl.token.uid"
-              required
-              placeholder="Kubernetes user UID">
-            <div ng-messages="$ctrl.kubernetesTokenForm.uid.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
-
           <div>
             <md-button
-              type="submit"
               class="md-primary"
-              ng-if="$ctrl.token.user.is_active"
+              ng-click="$ctrl.regenerateToken($event)"
               ng-disabled="$ctrl.processing || $ctrl.saving || !$ctrl.kubernetesTokenForm.$valid"
               ng-class="{'md-raised': ($ctrl.kubernetesTokenForm.$dirty && $ctrl.kubernetesTokenForm.$valid) }"
               aria-label="Save Token">
-              <span ng-if="$ctrl.isNew">Create</span>
-              <span ng-if="!$ctrl.isNew">Update</span>
+              <span">Regenerate</span>
             </md-button>
             <md-button
               ng-if="!$ctrl.fromProject"

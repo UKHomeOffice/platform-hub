@@ -1,9 +1,8 @@
-<div class="kubernetes-robot-tokens-form">
+<div class="kubernetes-robot-tokens-regenerate-form">
   <md-toolbar>
     <div class="md-toolbar-tools">
       <h3>
-        <span ng-if="$ctrl.isNew">New Kubernetes Robot Token</span>
-        <span ng-if="!$ctrl.isNew">Edit Kubernetes Robot Token</span>
+        <span>Regenerate Kubernetes Robot Token</span>
       </h3>
     </div>
   </md-toolbar>
@@ -47,16 +46,6 @@
                 <strong>No project service specified</strong>
               </p>
             </md-input-container>
-            <md-button
-              class="md-icon-button input-button-end"
-              aria-label="Choose a service"
-              ng-if="$ctrl.canChangeService()"
-              ng-click="$ctrl.chooseService()">
-              <md-icon>create</md-icon>
-              <md-tooltip md-direction="bottom">
-                Choose service
-              </md-tooltip>
-            </md-button>
           </div>
 
           <p
@@ -77,7 +66,7 @@
               name="cluster"
               required
               placeholder="Select the cluster"
-              ng-disabled="$ctrl.processing || !$ctrl.service || (!$ctrl.isNew && $ctrl.token.cluster) || !$ctrl.allowedClusters.length">
+              ng-disabled="$ctrl.processing || !$ctrl.service || $ctrl.token.cluster || !$ctrl.allowedClusters.length">
               <md-option
                 ng-repeat="c in $ctrl.allowedClusters track by c.name"
                 ng-value="c.name">
@@ -91,10 +80,9 @@
 
           <br />
 
-          <md-input-container class="md-block" ng-if="$ctrl.isNew">
+          <md-input-container class="md-block">
             <label for="expiresInSecs">Token Expiration:</label>
             <md-select
-              ng-if="$ctrl.isNew"
               name="expiresInSecs"
               required
               ng-model="$ctrl.token.expiresInSecs"
@@ -106,16 +94,6 @@
               </md-option>
             </md-select>
             <br />
-          </md-input-container>
-
-          <md-input-container class="md-block" ng-if="!$ctrl.isNew && $ctrl.token.expire_token_at">
-            <label for="expiresInSecs">Token Expiration:</label>
-            <input
-              name="expiresInSecs"
-              ng-model="$ctrl.token.expiresInSecs"
-              ng-disabled="!$ctrl.isNew"
-              ng-value="$ctrl.token.expire_token_at">
-              <br />
           </md-input-container>
 
           <br />
@@ -136,7 +114,7 @@
               name="groups"
               ng-model="$ctrl.token.groups"
               md-selected-text="$ctrl.token.groups.length ? $ctrl.token.groups.join(', ') : 'Select RBAC group(s):'"
-              ng-disabled="$ctrl.processing || !$ctrl.allowedGroups.length || !$ctrl.service || !$ctrl.token.cluster.name"
+              ng-disabled="$ctrl.processing || !$ctrl.allowedGroups.length || !$ctrl.service || $ctrl.token.groups || !$ctrl.token.cluster.name"
               multiple>
               <md-option
                 ng-repeat="g in $ctrl.allowedGroups track by g.name"
@@ -150,38 +128,12 @@
 
           <br />
 
-          <md-input-container class="md-block" ng-if="!$ctrl.isNew">
-            <label for="token">Token:</label>
-            <input
-              name="token"
-              ng-model="$ctrl.token.obfuscated_token"
-              ng-disabled="!$ctrl.service || $ctrl.token.obfuscated_token"
-              required
-              placeholder="Kubernetes access token">
-            <div ng-messages="$ctrl.kubernetesTokenForm.token.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
-
-          <md-input-container class="md-block" ng-if="!$ctrl.isNew">
-            <label for="uid">UID:</label>
-            <input
-              name="uid"
-              ng-model="$ctrl.token.uid"
-              ng-disabled="!$ctrl.service || $ctrl.token.uid"
-              required
-              placeholder="Kubernetes user UID">
-            <div ng-messages="$ctrl.kubernetesTokenForm.uid.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
-
           <md-input-container class="md-block">
             <label for="name">Name (Only letters, numbers, underscores, dashes, dots and @. Must start with a letter)</label>
             <input
               name="name"
               ng-model="$ctrl.token.name"
-              ng-disabled="!$ctrl.service || !$ctrl.isNew"
+              ng-disabled="!$ctrl.service || $ctrl.token.name"
               required
               ng-pattern="/^[a-zA-Z][\@\.\w-]*$/">
             <div ng-messages="$ctrl.kubernetesTokenForm.name.$error">
@@ -195,7 +147,7 @@
             <textarea
               name="description"
               ng-model="$ctrl.token.description"
-              ng-disabled="!$ctrl.service"
+              ng-disabled="!$ctrl.service || $ctrl.token.description"
               required
               rows="2"
               aria-label="Set a description for this robot token"
@@ -208,13 +160,12 @@
 
           <div>
             <md-button
-              type="submit"
               class="md-primary"
-              ng-disabled="!$ctrl.service || $ctrl.processing || $ctrl.saving || !$ctrl.kubernetesTokenForm.$valid"
+              ng-click="$ctrl.regenerateToken($event)"
+              ng-disabled="$ctrl.processing || $ctrl.saving || !$ctrl.kubernetesTokenForm.$valid"
               ng-class="{'md-raised': ($ctrl.kubernetesTokenForm.$dirty && $ctrl.kubernetesTokenForm.$valid) }"
               aria-label="Save Token">
-              <span ng-if="$ctrl.isNew">Create</span>
-              <span ng-if="!$ctrl.isNew">Update</span>
+              <span">Regenerate</span>
             </md-button>
             <md-button
               ng-if="!$ctrl.fromService"

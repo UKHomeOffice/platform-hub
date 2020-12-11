@@ -44,6 +44,28 @@ class Kubernetes::TokensController < ApiJsonController
     destroy_kubernetes_token @token
   end
 
+  # DELETE /kubernetes/tokens/:id
+  def destroy_expired_token
+    authorize! :administer_projects, @token.project
+
+    if @token.destroy_expired_token
+      AuditService.log(
+        context: audit_context,
+        action: 'destroy_expired_token',
+        auditable: @token,
+        data: {
+          cluster: @token.cluster.name,
+          id: @token.id
+        }
+      )
+
+      Kubernetes::TokensSyncJobTriggerService.trigger
+
+      render json: @token
+    else
+      render_model_errors @token.errors
+    end
+  end
 
   # PATCH /kubernetes/tokens/:id/escalate
   def escalate
