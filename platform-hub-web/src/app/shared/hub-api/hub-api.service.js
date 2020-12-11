@@ -500,6 +500,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
       .post(`${apiEndpoint}/projects/${projectId}/kubernetes_user_tokens`, {
         user_token: {
           cluster_name: data.cluster.name,
+          expire_token_at: data.expiresInSecs,
           groups: data.groups,
           user_id: data.user.id
         }
@@ -574,6 +575,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         robot_token: {
           service_id: serviceId,
           cluster_name: data.cluster.name,
+          expire_token_at: data.expiresInSecs,
           groups: data.groups,
           name: data.name,
           description: data.description
@@ -840,6 +842,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         user_id: userId,
         project_id: data.project.id,
         cluster_name: data.cluster.name,
+        expire_token_at: data.expiresInSecs,
         groups: data.groups
       })
       .then(handleHttpError)
@@ -904,6 +907,7 @@ export const hubApiService = function ($rootScope, $http, $q, logger, apiEndpoin
         kind: 'robot',
         service_id: serviceId,
         cluster_name: data.cluster.name,
+        expire_token_at: data.expiresInSecs,
         groups: data.groups,
         name: data.name,
         description: data.description
