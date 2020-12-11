@@ -90,12 +90,16 @@ class Kubernetes::ClustersController < ApiJsonController
   def robot_tokens
     tokens = KubernetesToken.robot.by_cluster(@cluster).order(updated_at: :desc)
     paginate json: tokens
+
+    Kubernetes::TokensExpirerJobTriggerService.trigger
   end
 
   # GET /kubernetes/clusters/:id/user_tokens
   def user_tokens
     tokens = KubernetesToken.user.by_cluster(@cluster).order(updated_at: :desc)
     paginate json: tokens
+
+    Kubernetes::TokensExpirerJobTriggerService.trigger
   end
 
   private
