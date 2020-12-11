@@ -51,6 +51,13 @@
             </span>
             <br ng-if="t.expire_privileged_at" />
 
+            <span ng-if="t.expire_token_at" md-colors="{color: 'default-accent'}">
+              <strong>Token expires at:</strong>
+              {{t.expire_token_at | date:'EEE MMM d y HH:mm UTC':'UTC'}}
+              (<span am-time-ago="t.expire_token_at"></span>)
+            </span>
+            <br ng-if="t.expire_expire_token_at" />
+
             <span ng-if="!t.groups.length" class="none-text">
               No RBAC groups assigned to this token yet
             </span>
@@ -70,6 +77,14 @@
             ng-click="$ctrl.openKubeConfigHelperPopup(t, $event)"
             aria-label="Help me set up my kube config to use this token">
             Set up Kube Config
+          </md-button>
+          <md-button
+            class="md-raised md-secondary"
+            ng-click="$ctrl.close()"
+            ui-state="$ctrl.regenerateState"
+            ui-state-params="({userId:t.user.id, fromProject: t.project.id, tokenId: t.id})""
+            aria-label="Regenerate your user token">
+            Regenerate Token
           </md-button>
 
           <md-divider></md-divider>

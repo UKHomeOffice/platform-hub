@@ -180,6 +180,52 @@ steps:
       path: /var/run
   when:
     event: tag
+  # Expects the optimized dist code to have been built
+- name: cron_job_build_image
+  image: docker:19.03.12-dind
+  commands:
+    - cd platform-hub-cron-job
+    # wait for docker service to be up before running docker build.
+    - n=0; while [ "$n" -lt 60 ] && [ ! -e /var/run/docker.sock ]; do n=$(( n + 1 )); sleep 1; done
+    - docker build -t platform-hub-cron-job:$${DRONE_COMMIT_SHA} .
+  volumes:
+    - name: dockersock
+      path: /var/run
+  when:
+    event: [push, tag]
+
+- name: cron_job_tag_image_to_quay
+  image: docker:19.03.12-dind
+  commands:
+    - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
+    - docker tag platform-hub-cron-job:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-cron-job:$${DRONE_TAG}
+    - docker push quay.io/ukhomeofficedigital/platform-hub-cron-job:$${DRONE_TAG}
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+  volumes:
+    - name: dockersock
+      path: /var/run
+  when:
+    event: tag
+
+- name: cron_job_latest_image_to_quay
+  image: docker:19.03.12-dind
+  commands:
+    - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
+    - docker tag platform-hub-cron-job:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-cron-job:$${DRONE_COMMIT_SHA}
+    - docker tag platform-hub-cron-job:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-cron-job:latest
+    - docker push quay.io/ukhomeofficedigital/platform-hub-cron-job:$${DRONE_COMMIT_SHA}
+    - docker push quay.io/ukhomeofficedigital/platform-hub-cron-job:latest
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+  volumes:
+    - name: dockersock
+      path: /var/run
+  when:
+    event: push
+    branch: master
 
 services:
 - name: docker

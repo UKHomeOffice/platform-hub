@@ -1,4 +1,5 @@
 require 'rails_helper'
+require "cancan/matchers"
 
 RSpec.describe ProjectsController, type: :controller do
 
@@ -1150,7 +1151,6 @@ RSpec.describe ProjectsController, type: :controller do
       end
 
       context 'not a hub or other project admin but is a member of the other project' do
-
         before do
           create :project_membership, project: @other_project, user: current_user
         end
@@ -1460,13 +1460,35 @@ RSpec.describe ProjectsController, type: :controller do
       context 'not a hub or project admin but is a member of the project' do
 
         before do
-          create :project_membership, project: @project, user: current_user
+          create :project_membership, project: @project
         end
+
 
         it 'cannot create a user token for the project - returning 403 Forbidden' do
           post :create_kubernetes_user_token, params: { id: @project.id, user_token: user_token_data.merge({ user_id: @user.id }) }
           expect(response).to have_http_status(403)
           expect(KubernetesToken.count).to eq 0
+        end
+
+        it 'cannot create a user token for the other project - returning 403 Forbidden' do
+          post :create_kubernetes_user_token, params: { id: @other_project.id, user_token: user_token_data.merge({ user_id: @other_user.id }) }
+          expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
+        end
+
+      end
+
+      context 'not a hub or project admin but is a member of the project, regenerating a token' do
+
+        before do
+          create :project_membership, project: @project, user: current_user
+        end
+
+
+        it 'can create a user token for the project' do
+          post :create_kubernetes_user_token, params: { id: @project.id, user_token: user_token_data.merge({ user_id: @user.id }) }
+          expect(response).to have_http_status(201)
+          expect(KubernetesToken.count).to eq 1
         end
 
         it 'cannot create a user token for the other project - returning 403 Forbidden' do
@@ -1498,7 +1520,7 @@ RSpec.describe ProjectsController, type: :controller do
       context 'not a hub or other project admin but is a member of the other project' do
 
         before do
-          create :project_membership, project: @other_project, user: current_user
+          create :project_membership, project: @other_project
         end
 
         it 'cannot create a user token for the project - returning 403 Forbidden' do
@@ -1511,6 +1533,26 @@ RSpec.describe ProjectsController, type: :controller do
           post :create_kubernetes_user_token, params: { id: @other_project.id, user_token: user_token_data.merge({ user_id: @other_user.id }) }
           expect(response).to have_http_status(403)
           expect(KubernetesToken.count).to eq 0
+        end
+
+      end
+
+      context 'not a hub or other project admin but is a member of the other project regenerating a token' do
+
+        before do
+          create :project_membership, project: @other_project, user: current_user
+        end
+
+        it 'cannot create a user token for the project - returning 403 Forbidden' do
+          post :create_kubernetes_user_token, params: { id: @project.id, user_token: user_token_data.merge({ user_id: @user.id }) }
+          expect(response).to have_http_status(403)
+          expect(KubernetesToken.count).to eq 0
+        end
+
+        it 'can create a user token for the other project' do
+          post :create_kubernetes_user_token, params: { id: @other_project.id, user_token: user_token_data.merge({ user_id: @other_user.id }) }
+          expect(response).to have_http_status(201)
+          expect(KubernetesToken.count).to eq 1
         end
 
       end

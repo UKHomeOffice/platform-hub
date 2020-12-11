@@ -1,0 +1,14 @@
+{
+  "name": "platform-hub-cron-job",
+  "version": "1.0.0",
+  "description": "Token expiration reminder",
+  "author": "Rhodine Orleans-Lindsay",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.829.0",
+    "express": "^4.16.1"
+  }
+}
