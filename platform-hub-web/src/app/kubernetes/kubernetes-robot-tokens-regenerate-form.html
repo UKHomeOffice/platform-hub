@@ -1,0 +1,190 @@
+<div class="kubernetes-robot-tokens-regenerate-form">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h3>
+        <span>Regenerate Kubernetes Robot Token</span>
+      </h3>
+    </div>
+  </md-toolbar>
+
+  <loading-indicator loading="$ctrl.loading || $ctrl.processing || $ctrl.saving"></loading-indicator>
+
+  <md-content layout-padding ng-if="!$ctrl.loading">
+
+    <div flex-sm="100" flex-gt-sm="90" flex-gt-md="70" flex-gt-lg="50" class="md-whiteframe-z1">
+      <md-content layout-padding>
+        <form name="$ctrl.kubernetesTokenForm" role="form" ng-submit="$ctrl.create()">
+
+          <div layout="row" flex>
+            <md-input-container
+              flex
+              class="md-block md-icon-float"
+              ng-click="$ctrl.chooseService()">
+              <label for="service">For service</label>
+              <input
+                name="service"
+                ng-value="$ctrl.service.name"
+                ng-class="{'pointer': $ctrl.isAdmin && !$ctrl.fromService}"
+                disabled="true"
+                required>
+              <div ng-messages="$ctrl.kubernetesTokenForm.service.$error">
+                <div ng-message="required">This is required.</div>
+              </div>
+              <p
+                ng-if="$ctrl.service"
+                class="md-body-1"
+                md-colors="{background: 'green-50'}"
+                layout-padding>
+                <strong>Project: </strong>{{$ctrl.service.project.shortname}}
+                <strong>Service: </strong>{{$ctrl.service.name}}
+              </p>
+              <p
+                ng-if="!$ctrl.service"
+                class="md-body-1"
+                md-colors="{background: 'accent-50'}"
+                layout-padding>
+                <strong>No project service specified</strong>
+              </p>
+            </md-input-container>
+          </div>
+
+          <p
+            ng-if="!$ctrl.processing && $ctrl.service && $ctrl.allowedClusters.length == 0"
+            class="md-body-2"
+            md-colors="{background: 'accent-50'}"
+            layout-padding>
+            No Kubernetes clusters have been allocated yet to this project.
+            <br />
+            Please contact the {{$ctrl.AppSettings.getPlatformName()}} team to allocate a cluster to use in the project.
+          </p>
+
+          <md-input-container class="md-block">
+            <label for="cluster">Cluster:</label>
+            <md-select
+              ng-model="$ctrl.token.cluster.name"
+              ng-change="$ctrl.handleClusterChange()"
+              name="cluster"
+              required
+              placeholder="Select the cluster"
+              ng-disabled="$ctrl.processing || !$ctrl.service || $ctrl.token.cluster || !$ctrl.allowedClusters.length">
+              <md-option
+                ng-repeat="c in $ctrl.allowedClusters track by c.name"
+                ng-value="c.name">
+                {{c.name}} ({{c.description}})
+              </md-option>
+            </md-select>
+            <div ng-messages="$ctrl.kubernetesTokenForm.cluster.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <br />
+
+          <md-input-container class="md-block">
+            <label for="expiresInSecs">Token Expiration:</label>
+            <md-select
+              md-colors="{background: 'purple-50'}"
+              name="expiresInSecs"
+              required
+              ng-model="$ctrl.token.expiresInSecs"
+              aria-label="The expiry of the token">
+              <md-option
+                ng-repeat="e in $ctrl.expiryOptions"
+                ng-value="e.value">
+                {{e.label}}
+              </md-option>
+            </md-select>
+            <br />
+          </md-input-container>
+
+          <br />
+
+          <p
+            ng-if="!$ctrl.processing && $ctrl.service && $ctrl.token.cluster.name && $ctrl.allowedGroups.length == 0"
+            class="md-body-2"
+            md-colors="{background: 'accent-50'}"
+            layout-padding>
+            No RBAC groups (for robot tokens) have been allocated yet to the selected service or project, or they may not be accessible to the selected cluster.
+            <br />
+            You can still create this token and add in the groups later (by editing the token once you have a group allocated).
+          </p>
+
+          <md-input-container class="md-block">
+            <label for="groups">RBAC groups</label>
+            <md-select
+              name="groups"
+              ng-model="$ctrl.token.groups"
+              md-selected-text="$ctrl.token.groups.length ? $ctrl.token.groups.join(', ') : 'Select RBAC group(s):'"
+              ng-disabled="$ctrl.processing || !$ctrl.allowedGroups.length || !$ctrl.service || $ctrl.token.groups || !$ctrl.token.cluster.name"
+              multiple>
+              <md-option
+                ng-repeat="g in $ctrl.allowedGroups track by g.name"
+                ng-value="g.name">
+                {{g.name}}
+                <br />
+                <small>{{g.description}}</small>
+              </md-option>
+            </md-select>
+          </md-input-container>
+
+          <br />
+
+          <md-input-container class="md-block">
+            <label for="name">Name (Only letters, numbers, underscores, dashes, dots and @. Must start with a letter)</label>
+            <input
+              name="name"
+              ng-model="$ctrl.token.name"
+              ng-disabled="!$ctrl.service || $ctrl.token.name"
+              required
+              ng-pattern="/^[a-zA-Z][\@\.\w-]*$/">
+            <div ng-messages="$ctrl.kubernetesTokenForm.name.$error">
+              <div ng-message="required">This is required.</div>
+              <div ng-message="pattern">Only letters, numbers, underscores, dashes, dots and @. Must start with a letter.</div>
+            </div>
+          </md-input-container>
+
+          <md-input-container class="md-block">
+            <label for="description">Description</label>
+            <textarea
+              name="description"
+              ng-model="$ctrl.token.description"
+              ng-disabled="!$ctrl.service || $ctrl.token.description"
+              required
+              rows="2"
+              aria-label="Set a description for this robot token"
+              md-select-on-focus>
+            </textarea>
+            <div ng-messages="$ctrl.kubernetesTokenForm.description.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+
+          <div>
+            <md-button
+              class="md-primary"
+              ng-click="$ctrl.regenerateToken($event)"
+              ng-disabled="$ctrl.processing || $ctrl.saving || !$ctrl.kubernetesTokenForm.$valid"
+              ng-class="{'md-raised': ($ctrl.kubernetesTokenForm.$dirty && $ctrl.kubernetesTokenForm.$valid) }"
+              aria-label="Save Token">
+              <span">Regenerate</span>
+            </md-button>
+            <md-button
+              ng-if="!$ctrl.fromService"
+              ui-sref="kubernetes.robot-tokens.list({cluster: $ctrl.token.cluster.name})"
+              ng-disabled="$ctrl.processing || $ctrl.saving">
+              Cancel
+            </md-button>
+            <md-button
+              ng-if="$ctrl.fromService"
+              ui-sref="projects.services.detail({projectId: $ctrl.fromProject, id: $ctrl.fromService})"
+              ng-disabled="$ctrl.processing || $ctrl.saving">
+              Cancel
+            </md-button>
+           </div>
+        </form>
+      </md-content>
+    </div>
+
+  </md-content>
+
+</div>

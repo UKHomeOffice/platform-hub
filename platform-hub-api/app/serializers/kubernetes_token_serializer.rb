@@ -7,6 +7,7 @@ class KubernetesTokenSerializer < BaseSerializer
     :name,
     :uid,
     :groups,
+    :expire_token_at,
     :obfuscated_token
   )
 
@@ -21,6 +22,8 @@ class KubernetesTokenSerializer < BaseSerializer
   attribute :description, if: -> { object.robot? }
 
   attribute :expire_privileged_at, if: -> { object.expire_privileged_at.present? }
+
+  attribute :expire_token_at, if: -> { object.expire_token_at.present? }
 
   has_one :user,
     if: -> { object.user? && object.tokenable_type == Identity.name },
