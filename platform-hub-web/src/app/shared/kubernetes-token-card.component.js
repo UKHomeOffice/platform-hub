@@ -22,6 +22,9 @@ function KubernetesTokenCardController($mdDialog, KubernetesTokens, Projects, fe
   ctrl.editState = null;
   ctrl.editStateParams = null;
 
+  ctrl.regenerateState = null;
+  ctrl.regenerateStateParams = null;
+
   ctrl.escalatePrivilege = escalatePrivilege;
   ctrl.deleteToken = deleteToken;
 
@@ -34,10 +37,17 @@ function KubernetesTokenCardController($mdDialog, KubernetesTokens, Projects, fe
         cluster: ctrl.token.cluster.name,
         tokenId: ctrl.token.id
       };
+      ctrl.regenerateState = 'kubernetes.robot-tokens.regenerate';
+      ctrl.regenerateStateParams = {
+        cluster: ctrl.token.cluster.name,
+        tokenId: ctrl.token.id
+      };
 
       if (ctrl.fromProject) {
         ctrl.editStateParams.fromProject = ctrl.fromProject;
         ctrl.editStateParams.fromService = ctrl.fromService;
+        ctrl.regenerateStateParams.fromProject = ctrl.fromProject;
+        ctrl.regenerateStateParams.fromService = ctrl.fromService;
       }
     } else if (ctrl.token.kind === 'user') {
       ctrl.editState = 'kubernetes.user-tokens.edit';
@@ -45,9 +55,15 @@ function KubernetesTokenCardController($mdDialog, KubernetesTokens, Projects, fe
         userId: ctrl.token.user.id,
         tokenId: ctrl.token.id
       };
+      ctrl.regenerateState = 'kubernetes.user-tokens.regenerate';
+      ctrl.regenerateStateParams = {
+        userId: ctrl.token.user.id,
+        tokenId: ctrl.token.id
+      };
 
       if (ctrl.fromProject) {
         ctrl.editStateParams.fromProject = ctrl.fromProject;
+        ctrl.regenerateStateParams.fromProject = ctrl.fromProject;
       }
     }
   }
@@ -65,41 +81,41 @@ function KubernetesTokenCardController($mdDialog, KubernetesTokens, Projects, fe
 
   function deleteToken(targetEvent) {
     const confirm = $mdDialog.confirm()
-      .title(`Are you sure?`)
-      .textContent(`This will delete the selected token permanently.`)
-      .ariaLabel('Confirm token deletion')
-      .targetEvent(targetEvent)
-      .ok('Do it')
-      .cancel('Cancel');
+    .title(`Are you sure?`)
+    .textContent(`This will delete the selected token permanently.`)
+    .ariaLabel('Confirm token deletion')
+    .targetEvent(targetEvent)
+    .ok('Do it')
+    .cancel('Cancel');
 
     $mdDialog
-      .show(confirm)
-      .then(() => {
-        ctrl.busy = true;
+    .show(confirm)
+    .then(() => {
+      ctrl.busy = true;
 
-        let promise = null;
+      let promise = null;
 
-        if (ctrl.fromProject) {
-          if (ctrl.token.kind === 'robot') {
-            promise = Projects.deleteServiceKubernetesRobotToken(ctrl.fromProject, ctrl.fromService, ctrl.token.id);
-          } else if (ctrl.token.kind === 'user') {
-            promise = Projects.deleteKubernetesUserToken(ctrl.fromProject, ctrl.token.id);
-          }
-        } else {
-          promise = KubernetesTokens.deleteToken(ctrl.token.id);
+      if (ctrl.fromProject) {
+        if (ctrl.token.kind === 'robot') {
+          promise = Projects.deleteServiceKubernetesRobotToken(ctrl.fromProject, ctrl.fromService, ctrl.token.id);
+        } else if (ctrl.token.kind === 'user') {
+          promise = Projects.deleteKubernetesUserToken(ctrl.fromProject, ctrl.token.id);
         }
+      } else {
+        promise = KubernetesTokens.deleteToken(ctrl.token.id);
+      }
 
-        return promise
-          .then(() => {
-            logger.success('Token deleted');
+      return promise
+      .then(() => {
+        logger.success('Token deleted');
 
-            if (ctrl.afterUpdate) {
-              return ctrl.afterUpdate();
-            }
-          })
-          .finally(() => {
-            ctrl.busy = false;
-          });
+        if (ctrl.afterUpdate) {
+          return ctrl.afterUpdate();
+        }
+      })
+      .finally(() => {
+        ctrl.busy = false;
       });
+    });
   }
 }

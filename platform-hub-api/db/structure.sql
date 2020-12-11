@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.1
--- Dumped by pg_dump version 9.6.17
+-- Dumped from database version 9.6.19
+-- Dumped by pg_dump version 9.6.19
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -398,7 +398,8 @@ CREATE TABLE public.kubernetes_tokens (
     expire_privileged_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    project_id uuid NOT NULL
+    project_id uuid NOT NULL,
+    expire_token_at timestamp without time zone
 );
 
 
@@ -412,7 +413,7 @@ CREATE TABLE public.platform_themes (
     slug character varying NOT NULL,
     description text NOT NULL,
     image_url character varying NOT NULL,
-    colour character varying,
+    colour character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     resources json
@@ -467,9 +468,9 @@ CREATE TABLE public.qa_entries (
 
 CREATE TABLE public.read_marks (
     id integer NOT NULL,
-    readable_type character varying NOT NULL,
+    readable_type character varying,
     readable_id uuid,
-    reader_type character varying NOT NULL,
+    reader_type character varying,
     reader_id uuid,
     "timestamp" timestamp without time zone
 );
@@ -1282,7 +1283,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171003130836'),
 ('20171005115420'),
 ('20171010111440'),
-('20171012110416'),
 ('20171031164247'),
 ('20171114100517'),
 ('20171127115843'),
@@ -1305,6 +1305,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181101135115'),
 ('20181109123528'),
 ('20181114155258'),
-('20181204101525');
-
-
+('20181204101525'),
+('20201111123802');

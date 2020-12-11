@@ -42,6 +42,14 @@ class Ability
       can_participate_in_project project, user
     end
 
+    # Tokens in projects
+    can :administer_user_tokens, KubernetesToken do |token|
+      can_administer_user_token token, user
+    end
+    can :create_user_tokens, Project do |project|
+      (can_administer_project project, user)  || (can_create_user_token project, user)
+    end
+
 
     # Services in projects
 
@@ -118,6 +126,26 @@ class Ability
     ProjectMembershipsService.is_user_an_admin_of_a_common_project?(
       user,
       target_user
+    )
+  end
+
+  def can_create_user_token project, user
+      Kubernetes::KubernetesTokensService.is_user_a_member_of_project?(
+        project.id,
+        user.id
+      )
+  end
+
+  def can_administer_user_token token, user
+    ProjectMembershipsService.is_user_an_admin_of_project?(
+      token.project_id,
+      user.id
+    )||
+    (user.id == token.tokenable.user.id) &&
+    Kubernetes::KubernetesTokensService.is_user_a_holder_of_token?(
+      token.tokenable,
+      token.cluster_id,
+      token.project_id
     )
   end
 

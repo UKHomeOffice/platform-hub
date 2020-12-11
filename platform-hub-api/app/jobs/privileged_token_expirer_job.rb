@@ -1,10 +1,10 @@
 class PrivilegedTokenExpirerJob < ApplicationJob
-  queue_as :tokens_expirer
+  queue_as :privileged_tokens_expirer
 
   BATCH_SIZE = 100
 
   def self.is_already_queued?
-    Delayed::Job.where(queue: :tokens_expirer).count > 0
+    Delayed::Job.where(queue: :privileged_tokens_expirer).count > 0
   end
 
   def perform
