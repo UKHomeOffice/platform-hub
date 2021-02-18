@@ -121,7 +121,7 @@ steps:
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
   environment:
     IMAGE_NAME: platform-hub-api:${DRONE_COMMIT_SHA}
-    WHITELIST: CVE-2020-8164,CVE-2020-8165,CVE-2020-8162,CVE-2019-5420
+    WHITELIST: CVE-2020-8164,CVE-2020-8165,CVE-2020-8162,CVE-2019-5420,CVE-2021-22880
   when:
     event: [push, tag]
 
@@ -197,9 +197,6 @@ services:
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
   commands:
     - /run.sh server
-  environment:
-    ANCHORE_URL: "acp-anchore.acp.homeoffice.gov.uk"
-    REGISTRY_URL: "acp-ephemeral-registry.acp.homeoffice.gov.uk"
 
 - name: postgres
   image: postgres:9.6.1
@@ -208,6 +205,3 @@ services:
   environment:
     POSTGRES_USER: phub
     POSTGRES_PASSWORD: phub_password
-volumes:
- - name: dockersock
-   temp: {}
