@@ -87,7 +87,7 @@ steps:
     event: tag
 
 - name: api_tests
-  image: ruby:2.7.3-alpine
+  image: ruby:2.5.9-alpine
   environment:
     PHUB_DB_HOST: postgres
   commands:
