@@ -1,7 +1,7 @@
 class KubernetesToken < ApplicationRecord
   TOKEN_LENGTH = 36
   UID_LENGTH = 36
-  PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS = 21600 # max privilege period is 6h
+  PRIVILEGED_GROUP_MAX_EXPIRATION_SECONDS = 28800 # max privilege period is 8h
 
   NAME_REGEX = /\A[a-zA-Z][\@\.\w-]*\z/
 
