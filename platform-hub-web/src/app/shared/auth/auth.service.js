@@ -72,7 +72,17 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $r
   }
 
   function getToken() {
-    return $cookies.get(accessCookieName);
+    let accessCookie = '';
+
+    // if there are multiple cookies with this name, then combine them to get the full cookie
+    const allCookies = $cookies.getAll();
+    angular.forEach(allCookies, (key, value) => {
+      if (key.startsWith(accessCookieName)) {
+        accessCookie += value;
+      }
+    });
+
+    return accessCookie;
   }
 
   function getPayload() {
