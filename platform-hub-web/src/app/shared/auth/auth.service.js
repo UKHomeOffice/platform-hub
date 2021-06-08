@@ -3,7 +3,7 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $r
 
   const authEndpoint = `${apiEndpoint}/oauth`;
 
-  const accessCookieName = 'auth-access';
+  // const accessCookieName = 'auth-access';
 
   const service = {};
 
@@ -66,13 +66,33 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $r
     } catch (e) {
       logger.debug('Failed to parse JWT token: ');
       logger.debug(e);
+      logger.debug('token: ');
+      logger.debug(token);
     }
 
     return !isExpired;
   }
 
   function getToken() {
-    return $cookies.get(accessCookieName);
+    // let accessCookie = '';
+
+    // // if there are multiple cookies with this name, then combine them to get the full cookie
+    // const allCookies = $cookies.getAll();
+
+    // angular.forEach(allCookies, (value, key) => {
+    //   // logger.info('cookie object length: ' + Object.keys(allCookies)); // temporary changes for testing
+    //   // logger.info('cookie object: '); // temporary changes for testing
+    //   // logger.info(allCookies); // temporary changes for testing
+    //   // logger.info('key: ' + key); // temporary changes for testing
+    //   // logger.info('value: ' + value); // temporary changes for testing
+    //   if (key.startsWith(accessCookieName)) {
+    //     // logger.info('found cookie with matching key: ' + key); // temporary changes for testing
+    //     accessCookie += value;
+    //   }
+    // });
+
+    // hardcoding to test
+    return $cookies.get('auth-access_0') + $cookies.get('auth-access_1');
   }
 
   function getPayload() {
