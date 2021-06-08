@@ -72,7 +72,24 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $r
   }
 
   function getToken() {
-    return $cookies.get(accessCookieName);
+    let accessCookie = '';
+
+    // if there are multiple cookies with this name, then combine them to get the full cookie
+    const allCookies = $cookies.getAll();
+
+    angular.forEach(allCookies, (value, key) => {
+      // logger.info('cookie object length: ' + Object.keys(allCookies)); // temporary changes for testing
+      // logger.info('cookie object: '); // temporary changes for testing
+      // logger.info(allCookies); // temporary changes for testing
+      // logger.info('key: ' + key); // temporary changes for testing
+      // logger.info('value: ' + value); // temporary changes for testing
+      if (key.startsWith(accessCookieName)) {
+        // logger.info('found cookie with matching key: ' + key); // temporary changes for testing
+        accessCookie += value;
+      }
+    });
+
+    return accessCookie;
   }
 
   function getPayload() {
