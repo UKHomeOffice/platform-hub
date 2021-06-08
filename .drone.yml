@@ -27,11 +27,8 @@ steps:
   commands:
     - cd platform-hub-web
     # wait for docker service to be up before running docker build.
-    - n=0; while [ "$n" -lt 60 ] && [ ! -e /var/run/docker.sock ]; do n=$(( n + 1 )); sleep 1; done
+    - n=0; while [ "$n" -lt 60 ] && [ ! "$(docker stats --no-stream)" ]; do n=$(( n + 1 )); sleep 1; done
     - docker build -t platform-hub-web:$${DRONE_COMMIT_SHA} .
-  volumes:
-    - name: dockersock
-      path: /var/run
   when:
     event: [push, tag]
 
@@ -39,9 +36,6 @@ steps:
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
     - docker run -t --rm --name platform-hub-web-test platform-hub-web:${DRONE_COMMIT_SHA} sh -c "cd /app; ls -lah; test -e index.html"
-  volumes:
-    - name: dockersock
-      path: /var/run
   when:
     event: [push, tag]
 
@@ -64,9 +58,6 @@ steps:
   environment:
     DOCKER_PASSWORD:
       from_secret: docker_password
-  volumes:
-    - name: dockersock
-      path: /var/run
   when:
     event: push
     branch: master
@@ -80,9 +71,6 @@ steps:
   environment:
     DOCKER_PASSWORD:
       from_secret: docker_password
-  volumes:
-    - name: dockersock
-      path: /var/run
   when:
     event: tag
 
@@ -105,11 +93,8 @@ steps:
   commands:
     - cd platform-hub-api
     # wait for docker service to be up before running docker build.
-    - n=0; while [ "$n" -lt 60 ] && [ ! -e /var/run/docker.sock ]; do n=$(( n + 1 )); sleep 1; done
+    - n=0; while [ "$n" -lt 60 ] && [ ! "$(docker stats --no-stream)" ]; do n=$(( n + 1 )); sleep 1; done
     - docker build -t platform-hub-api:$${DRONE_COMMIT_SHA} .
-  volumes:
-    - name: dockersock
-      path: /var/run
   when:
     event: [push, tag]
 
@@ -124,17 +109,11 @@ steps:
     - docker run --name phub-api-${DRONE_BUILD_NUMBER} -t --rm --env-file=platform-hub-api/.env.test -e PHUB_DB_HOST=phub-api-postgres-${DRONE_BUILD_NUMBER} --link phub-api-postgres-${DRONE_BUILD_NUMBER} platform-hub-api:${DRONE_COMMIT_SHA} /bin/bash -c "cd /app; bin/setup; bin/rails server -d; sleep 5; curl -s -f http://127.0.0.1:3000/healthz"
   when:
     event: [push, tag]
-  volumes:
-    - name: dockersock
-      path: /var/run
 
 - name: cleanup_postgres
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
     - docker rm -f phub-api-postgres-${DRONE_BUILD_NUMBER}
-  volumes:
-    - name: dockersock
-      path: /var/run
   when:
     event: [push, tag]
     status: [success, failure]
@@ -159,9 +138,6 @@ steps:
   environment:
     DOCKER_PASSWORD:
       from_secret: docker_password
-  volumes:
-    - name: dockersock
-      path: /var/run
   when:
     event: push
     branch: master
@@ -175,9 +151,6 @@ steps:
   environment:
     DOCKER_PASSWORD:
       from_secret: docker_password
-  volumes:
-    - name: dockersock
-      path: /var/run
   when:
     event: tag
 
@@ -201,6 +174,3 @@ services:
   environment:
     POSTGRES_USER: phub
     POSTGRES_PASSWORD: phub_password
-volumes:
- - name: dockersock
-   temp: {}

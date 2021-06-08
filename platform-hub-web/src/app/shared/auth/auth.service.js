@@ -64,15 +64,27 @@ export const authService = function ($window, $cookies, $q, $filter, $base64, $r
     try {
       isExpired = jwtHelper.isTokenExpired(token);
     } catch (e) {
-      logger.debug('Failed to parse JWT token: ');
-      logger.debug(e);
+      logger.error('Failed to parse JWT token: '); // temporary changes for testing
+      logger.error(e); // temporary changes for testing
     }
 
     return !isExpired;
   }
 
   function getToken() {
-    return $cookies.get(accessCookieName);
+    let accessCookie = '';
+
+    // if there are multiple cookies with this name, then combine them to get the full cookie
+    const allCookies = $cookies.getAll();
+    angular.forEach(allCookies, (key, value) => {
+      logger.info('key: ' + key); // temporary changes for testing
+      if (key.startsWith(accessCookieName)) {
+        logger.info('found cookie with matching key: ' + key); // temporary changes for testing
+        accessCookie += value;
+      }
+    });
+
+    return accessCookie;
   }
 
   function getPayload() {
