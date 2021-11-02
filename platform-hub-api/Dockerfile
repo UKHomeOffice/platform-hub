@@ -1,4 +1,4 @@
-FROM alpine:3.5
+FROM alpine:3.14
 
 ENV RAILS_ENV production
 
@@ -11,6 +11,7 @@ RUN apk update && apk upgrade \
     && apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev libressl-dev zlib-dev \
     && echo 'gem: --no-document' > /etc/gemrc \
     && gem install bundler -v 2.1.4 \
+    && gem install rdoc --no-document \
     && gem update --system
 
 # Create app user and directory, set permissions
