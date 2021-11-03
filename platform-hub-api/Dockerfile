@@ -6,7 +6,7 @@ RUN apk update && apk upgrade \
     && apk --update add ca-certificates libressl \
     && update-ca-certificates \
     && apk --update add \
-    bash curl ruby ruby-irb ruby-rake ruby-io-console ruby-json ruby-bigdecimal libstdc++ tzdata \
+    bash curl ruby ruby-irb ruby-rake ruby-io-console ruby-json ruby-bigdecimal ruby-etc libstdc++ tzdata \
     postgresql-client postgresql-dev \
     && apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev libressl-dev zlib-dev \
     && echo 'gem: --no-document' > /etc/gemrc \
