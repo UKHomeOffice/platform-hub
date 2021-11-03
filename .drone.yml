@@ -141,17 +141,17 @@ steps:
 #     event: push
 #     branch: master
 
-# - name: api_tag_image_to_quay
-#   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-#   commands:
-#     - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
-#     - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_TAG}
-#     - docker push quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_TAG}
-#   environment:
-#     DOCKER_PASSWORD:
-#       from_secret: docker_password
-#   when:
-#     event: tag
+- name: api_tag_image_to_quay
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+  commands:
+    - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
+    - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_TAG}
+    - docker push quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_TAG}
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+  when:
+    event: tag
 
 # - name: cron_job_build_image
 #   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
@@ -231,19 +231,19 @@ services:
 - name: docker
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
 
-- name: anchore-submission-server
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
-  commands:
-    - /anchore-submission server
-  environment:
-    ANCHORE_URL: "acp-anchore.acp.homeoffice.gov.uk"
-    REGISTRY_URL: "acp-ephemeral-registry.acp.homeoffice.gov.uk"
-    DOCKER_SERVER: tcp://127.0.0.1:2375
+# - name: anchore-submission-server
+#   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
+#   commands:
+#     - /anchore-submission server
+#   environment:
+#     ANCHORE_URL: "acp-anchore.acp.homeoffice.gov.uk"
+#     REGISTRY_URL: "acp-ephemeral-registry.acp.homeoffice.gov.uk"
+#     DOCKER_SERVER: tcp://127.0.0.1:2375
 
-- name: postgres
-  image: postgres:9.6.1
-  ports:
-  - 5432
-  environment:
-    POSTGRES_USER: phub
-    POSTGRES_PASSWORD: phub_password
+# - name: postgres
+#   image: postgres:9.6.1
+#   ports:
+#   - 5432
+#   environment:
+#     POSTGRES_USER: phub
+#     POSTGRES_PASSWORD: phub_password
