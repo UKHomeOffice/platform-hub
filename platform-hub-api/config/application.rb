@@ -12,6 +12,9 @@ require "action_cable/engine"
 
 require 'delayed_job_active_record'
 
+## Disable peer verification (work around LE root cert issue)
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
