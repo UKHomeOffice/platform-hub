@@ -50,6 +50,7 @@ steps:
   environment:
     IMAGE_NAME: platform-hub-web:${DRONE_COMMIT_SHA}
     SERVICE_URL: http://anchore-submission-server:10080
+    FAIL_ON_DETECTION: false
   when:
     event: [push, tag]
 
@@ -144,7 +145,7 @@ steps:
   environment:
     IMAGE_NAME: platform-hub-api:${DRONE_COMMIT_SHA}
     SERVICE_URL: http://anchore-submission-server:10080
-    WHITELIST: CVE-2020-8164,CVE-2020-8165,CVE-2020-8162,CVE-2019-5420,CVE-2021-22880,CVE-2021-29509
+    FAIL_ON_DETECTION: false
   when:
     event: [push, tag]
 
