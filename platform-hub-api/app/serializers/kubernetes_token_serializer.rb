@@ -10,10 +10,10 @@ class KubernetesTokenSerializer < BaseSerializer
     :obfuscated_token
   )
 
-  # - robot tokens: only hub admins and project team members of that service get `token` field at all
+  # - robot tokens: only hub admins and project team admins of that service get `token` field at all
   # - user tokens: only the user gets the _full_ token value in the API – everyone else gets `XXXXXXXXXXX4567` (i.e. last few digits only)
   attribute :token, if:
-    -> {(object.robot? && is_admin_or_project_team_member?) ||
+    -> {(object.robot? && is_admin_or_project_team_admin?) ||
         (object.user? && object.tokenable.user.id == scope.id)} do
     object.decrypted_token
   end
@@ -37,9 +37,9 @@ class KubernetesTokenSerializer < BaseSerializer
   belongs_to :project, serializer: ProjectEmbeddedSerializer
 
   # Note: `scope` here is actually `current_user` (passed in from controller)
-  def is_admin_or_project_team_member?
+  def is_admin_or_project_team_admin?
     return true if is_admin?
     return false if object.project.blank?
-    ProjectMembershipsService.is_user_a_member_of_project?(object.project.id, scope.id)
+    ProjectMembershipsService.is_user_an_admin_of_project?(object.project.id, scope.id)
   end
 end
