@@ -838,10 +838,6 @@ RSpec.describe ServicesController, type: :controller do
           create :project_membership, project: project, user: current_user
         end
 
-        it 'can fetch robot tokens for service in the project as expected' do
-          expect_tokens project, @service, @tokens
-        end
-
         it 'cannot fetch robot tokens for service in the other project - returning 403 Forbidden' do
           get :kubernetes_robot_tokens, params: { project_id: other_project.friendly_id, id: @other_service.id }
           expect(response).to have_http_status(403)
@@ -875,10 +871,6 @@ RSpec.describe ServicesController, type: :controller do
         it 'cannot fetch robot tokens for service in the project - returning 403 Forbidden' do
           get :kubernetes_robot_tokens, params: { project_id: project.friendly_id, id: @service.id }
           expect(response).to have_http_status(403)
-        end
-
-        it 'can fetch robot tokens for service in the other project as expected' do
-          expect_tokens other_project, @other_service, @other_tokens
         end
 
       end
@@ -997,10 +989,6 @@ RSpec.describe ServicesController, type: :controller do
           create :project_membership, project: project, user: current_user
         end
 
-        it 'can fetch a robot token for the service in the project as expected' do
-          expect_token project, @service, @token
-        end
-
         it 'cannot fetch a robot token for the service in the other project - returning 403 Forbidden' do
           get :show_kubernetes_robot_token, params: { project_id: other_project.friendly_id, id: @other_service.id, token_id: @other_token.id }
           expect(response).to have_http_status(403)
@@ -1034,10 +1022,6 @@ RSpec.describe ServicesController, type: :controller do
         it 'cannot fetch a robot token for the service in the project - returning 403 Forbidden' do
           get :show_kubernetes_robot_token, params: { project_id: project.friendly_id, id: @service.id, token_id: @token.id }
           expect(response).to have_http_status(403)
-        end
-
-        it 'can fetch a robot token for the service in the other project as expected' do
-          expect_token other_project, @other_service, @other_token
         end
 
       end
