@@ -43,11 +43,8 @@ steps:
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
   environment:
     IMAGE_NAME: platform-hub-web:${DRONE_COMMIT_SHA}
-<<<<<<< HEAD
     SERVICE_URL: http://anchore-submission-server:10080
-=======
-    FAIL_ON_DETECTION: false
->>>>>>> 90b8e68 (Resume token expiry work)
+    WHITELIST: CVE-2021-28831
   when:
     event: [push, tag]
 
@@ -126,12 +123,8 @@ steps:
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
   environment:
     IMAGE_NAME: platform-hub-api:${DRONE_COMMIT_SHA}
-<<<<<<< HEAD
     SERVICE_URL: http://anchore-submission-server:10080
-    WHITELIST: CVE-2020-8164,CVE-2020-8165,CVE-2020-8162,CVE-2019-5420,CVE-2021-22880,CVE-2021-29509
-=======
-    FAIL_ON_DETECTION: false
->>>>>>> 90b8e68 (Resume token expiry work)
+    WHITELIST:  CVE-2020-8164,CVE-2020-8165,CVE-2020-8162,CVE-2019-5420,CVE-2021-22880,CVE-2021-29509,CVE-2021-32740,CVE-2021-22904,CVE-2020-36327
   when:
     event: [push, tag]
 
