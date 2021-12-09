@@ -247,6 +247,7 @@
             layout-align="center center">
             <md-button
               class="md-primary md-raised"
+              ng-if="$ctrl.isAdmin || $ctrl.isProjectAdmin"
               aria-label="Create a new Docker repo for this project"
               ui-sref="projects.docker-repos.new({projectId: $ctrl.project.id})">
               <md-icon>add_box</md-icon>
@@ -447,7 +448,7 @@
             </md-card-content>
             <md-card-actions layout="row" layout-align="start center">
               <md-button
-                ng-disabled="d.status != 'active'"
+                ng-disabled="d.status != 'active' || !($ctrl.isAdmin || $ctrl.isProjectAdmin)"
                 aria-label="Manage the access for this Docker repo"
                 ng-click="$ctrl.dockerRepoManageAccess(d, $event)">
                 Manage Access
@@ -456,7 +457,7 @@
               <md-button
                 class="md-accent"
                 ng-if="d.status != 'deleting'"
-                ng-disabled="$ctrl.processing"
+                ng-disabled="$ctrl.processing || !($ctrl.isAdmin || $ctrl.isProjectAdmin)"
                 aria-label="Delete this Docker repo"
                 ng-click="$ctrl.deleteDockerRepo(d, $event)">
                 Delete

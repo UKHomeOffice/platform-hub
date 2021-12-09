@@ -798,6 +798,16 @@ RSpec.describe ServicesController, type: :controller do
         expect(pluck_from_json_response('token')).to match_array tokens.map(&:decrypted_token)
       end
 
+      def expect_only_obfuscated_tokens project, service, tokens
+        get :kubernetes_robot_tokens, params: { project_id: project.friendly_id, id: service.id }
+        expect(response).to be_success
+        expect(pluck_from_json_response('id')).to match_array tokens.map(&:id)
+        expect(pluck_from_json_response('obfuscated_token')).to match_array tokens.map(&:obfuscated_token)
+        pluck_from_json_response('token').each do |robot_token|
+          expect(robot_token).to be_nil
+        end
+      end
+
       it_behaves_like 'a hub admin' do
 
         it 'can fetch robot tokens for service in the project as expected' do
@@ -838,6 +848,10 @@ RSpec.describe ServicesController, type: :controller do
           create :project_membership, project: project, user: current_user
         end
 
+        it 'can fetch only obfuscated robot tokens for service in the project as expected' do
+          expect_only_obfuscated_tokens project, @service, @tokens
+        end
+
         it 'cannot fetch robot tokens for service in the other project - returning 403 Forbidden' do
           get :kubernetes_robot_tokens, params: { project_id: other_project.friendly_id, id: @other_service.id }
           expect(response).to have_http_status(403)
@@ -873,6 +887,10 @@ RSpec.describe ServicesController, type: :controller do
           expect(response).to have_http_status(403)
         end
 
+        it 'can fetch only obfuscated robot tokens for service in the other project' do
+          expect_only_obfuscated_tokens other_project, @other_service, @other_tokens
+        end
+
       end
 
     end
@@ -894,7 +912,7 @@ RSpec.describe ServicesController, type: :controller do
 
     it_behaves_like 'authenticated' do
 
-      def expect_token project, service, token, is_admin: false
+      def expect_token project, service, token, is_admin: false, raw_token: true
         get :show_kubernetes_robot_token, params: { project_id: project.friendly_id, id: service.id, token_id: token.id }
         expect(response).to be_success
 
@@ -911,11 +929,10 @@ RSpec.describe ServicesController, type: :controller do
         cluster['costs_bucket'] = token.cluster.costs_bucket if is_admin
         cluster['skip_sync'] = token.cluster.skip_sync if is_admin
 
-        expect(json_response).to eq({
+        expected_response = {
           'id' => token.id,
           'kind' => 'robot',
           'obfuscated_token' => token.obfuscated_token,
-          'token' => token.decrypted_token,
           'name' => token.name,
           'uid' => token.uid,
           'groups' => token.groups,
@@ -936,7 +953,10 @@ RSpec.describe ServicesController, type: :controller do
             'shortname' => project.shortname,
             'name' => project.name
           }
-        })
+        }
+        expected_response['token'] = token.decrypted_token if raw_token
+
+        expect(json_response).to eq(expected_response)
       end
 
       it_behaves_like 'a hub admin' do
@@ -989,6 +1009,10 @@ RSpec.describe ServicesController, type: :controller do
           create :project_membership, project: project, user: current_user
         end
 
+        it 'can fetch only the obfuscated robot token for the service in the project as expected' do
+          expect_token project, @service, @token, is_admin: false, raw_token: false
+        end
+
         it 'cannot fetch a robot token for the service in the other project - returning 403 Forbidden' do
           get :show_kubernetes_robot_token, params: { project_id: other_project.friendly_id, id: @other_service.id, token_id: @other_token.id }
           expect(response).to have_http_status(403)
@@ -1022,6 +1046,10 @@ RSpec.describe ServicesController, type: :controller do
         it 'cannot fetch a robot token for the service in the project - returning 403 Forbidden' do
           get :show_kubernetes_robot_token, params: { project_id: project.friendly_id, id: @service.id, token_id: @token.id }
           expect(response).to have_http_status(403)
+        end
+
+        it 'can fetch only the obfuscated robot token for the service in the other project as expected' do
+          expect_token other_project, @other_service, @other_token, is_admin: false, raw_token: false
         end
 
       end
