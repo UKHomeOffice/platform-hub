@@ -164,8 +164,9 @@ RSpec.describe DockerReposController, type: :controller do
           create :project_membership, project: project, user: current_user
         end
 
-        it 'can create a new docker repo in the project as expected' do
-          expect_create_docker_repo service
+        it 'cannot create a new docker repo in the project - returning 403 Forbidden' do
+          post :create, params: { project_id: project.friendly_id }
+          expect(response).to have_http_status(403)
         end
 
         it 'cannot create a new docker repo in the other project - returning 403 Forbidden' do
@@ -186,8 +187,9 @@ RSpec.describe DockerReposController, type: :controller do
           expect(response).to have_http_status(403)
         end
 
-        it 'can create a new docker repo in the other project as expected' do
-          expect_create_docker_repo other_service
+        it 'cannot create a new docker repo in the other project - returning 403 Forbidden' do
+          post :create, params: { project_id: other_project.friendly_id }
+          expect(response).to have_http_status(403)
         end
 
       end
@@ -244,8 +246,9 @@ RSpec.describe DockerReposController, type: :controller do
           create :project_membership, project: project, user: current_user
         end
 
-        it 'can delete a docker repo in the project as expected' do
-          expect_destroy_docker_repo project, @docker_repo
+        it 'cannot delete a docker repo in the project - returning 403 Forbidden' do
+          delete :destroy, params: { project_id: project.friendly_id, id: @docker_repo.id }
+          expect(response).to have_http_status(403)
         end
 
         it 'cannot delete a docker repo in the other project - returning 403 Forbidden' do
@@ -266,8 +269,9 @@ RSpec.describe DockerReposController, type: :controller do
           expect(response).to have_http_status(403)
         end
 
-        it 'can delete a docker repo in the other project as expected' do
-          expect_destroy_docker_repo other_project, @other_docker_repo
+        it 'cannot delete a docker repo in the other project - returning 403 Forbidden' do
+          delete :destroy, params: { project_id: other_project.friendly_id, id: @other_docker_repo.id }
+          expect(response).to have_http_status(403)
         end
 
       end
@@ -342,8 +346,9 @@ RSpec.describe DockerReposController, type: :controller do
           create :project_membership, project: project, user: current_user
         end
 
-        it 'can update access for a docker repo in the project as expected' do
-          expect_update_access_docker_repo project, @docker_repo, robots, users
+        it 'cannot update access for a docker repo in the project - returning 403 Forbidden' do
+          put :update_access, params: { project_id: project.friendly_id, id: @docker_repo.id, robots: robots, users: users }
+          expect(response).to have_http_status(403)
         end
 
         it 'cannot update access for a docker repo in the other project - returning 403 Forbidden' do
@@ -364,8 +369,9 @@ RSpec.describe DockerReposController, type: :controller do
           expect(response).to have_http_status(403)
         end
 
-        it 'can update access for a docker repo in the other project as expected' do
-          expect_update_access_docker_repo other_project, @other_docker_repo, robots, users
+        it 'cannot update access for a docker repo in the other project - returning 403 Forbidden' do
+          put :update_access, params: { project_id: other_project.friendly_id, id: @other_docker_repo.id, robots: robots, users: users }
+          expect(response).to have_http_status(403)
         end
 
       end

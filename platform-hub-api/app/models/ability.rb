@@ -73,7 +73,7 @@ class Ability
       can_participate_in_project project, user
     end
     can :administer_docker_repos_in_project, Project do |project|
-      can_participate_in_project project, user
+      can_administer_project project, user
     end
 
 
