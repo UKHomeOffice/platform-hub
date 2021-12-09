@@ -9,6 +9,15 @@ class DockerReposController < ApiJsonController
     authorize! :read_docker_repos_in_project, @project
 
     docker_repos = @project.docker_repos.order(:name)
+
+    if !current_user.admin? && !ProjectMembershipsService.is_user_an_admin_of_project?(@project, current_user)
+      docker_repos.each do |r|
+        r.access['robots'].each do |robot|
+          robot['credentials']['access_key'].gsub!(/\S/, '*')
+        end
+      end
+    end
+
     render json: docker_repos
   end
 
