@@ -1,6 +1,7 @@
 class EncryptorService
   def initialize(secret_key_base)
-    @encryptor = ActiveSupport::MessageEncryptor.new(secret_key_base)
+    @key = Digest::MD5.hexdigest(secret_key_base)
+    @encryptor = ActiveSupport::MessageEncryptor.new(@key)
   end
 
   def encrypt(plaintext)

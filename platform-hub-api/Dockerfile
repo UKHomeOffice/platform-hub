@@ -1,4 +1,4 @@
-FROM alpine:3.5
+FROM alpine:3.13
 
 ENV RAILS_ENV production
 
@@ -6,13 +6,13 @@ RUN apk update && apk upgrade \
     && apk --update add ca-certificates libressl \
     && update-ca-certificates \
     && apk --update add \
-    bash curl ruby ruby-irb ruby-rake ruby-io-console ruby-json ruby-bigdecimal libstdc++ tzdata \
+    bash curl ruby ruby-etc ruby-irb ruby-rake ruby-io-console ruby-json ruby-bigdecimal libstdc++ tzdata \
     postgresql-client postgresql-dev \
     && apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev libressl-dev zlib-dev \
     && echo 'gem: --no-document' > /etc/gemrc \
     && gem install bundler -v 2.1.4 \
     && gem update --system \
-    && rm /etc/ssl/certs/ca-cert-DST_ACES_CA_X6.pem \
+  #  && rm /etc/ssl/certs/ca-cert-DST_ACES_CA_X6.pem \
     && rm /etc/ssl/certs/ca-cert-DST_Root_CA_X3.pem \
     && update-ca-certificates \
     && cp /etc/ssl/certs/ca-certificates.crt /etc/ssl/cert.pem
