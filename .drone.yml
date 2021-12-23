@@ -8,7 +8,7 @@ platform:
 
 steps:
 - name: web_tests_then_build_dist
-  image: quay.io/ukhomeofficedigital/nodejs-base:v6.9.1
+  image: quay.io/ukhomeofficedigital/nodejs-base:v12.22.8
   commands:
     - yum install -y git bzip2 bzip2-libs fontconfig
     - git config --global url."https://".insteadOf git://
