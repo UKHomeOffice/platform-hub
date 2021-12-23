@@ -76,7 +76,7 @@ steps:
     event: tag
 
 - name: api_tests
-  image: ruby:2.3.8-alpine
+  image: ruby:2.7.5-alpine3.13
   environment:
     PHUB_DB_HOST: postgres
   commands:
@@ -124,7 +124,7 @@ steps:
   environment:
     IMAGE_NAME: platform-hub-api:${DRONE_COMMIT_SHA}
     SERVICE_URL: http://anchore-submission-server:10080
-    WHITELIST:  CVE-2020-8164,CVE-2020-8165,CVE-2020-8162,CVE-2019-5420,CVE-2021-22880,CVE-2021-29509,CVE-2021-32740,CVE-2021-22904,CVE-2020-36327
+    WHITELIST:  CVE-2020-8164,CVE-2020-8165,CVE-2020-8162,CVE-2019-5420,CVE-2021-22880,CVE-2021-29509,CVE-2021-22904,CVE-2020-36327
   when:
     event: [push, tag]
 
