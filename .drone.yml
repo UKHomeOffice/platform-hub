@@ -120,7 +120,7 @@ steps:
     POSTGRES_USER: phub
     POSTGRES_PASSWORD: phub_password
   commands:
-    - docker run -d --name phub-api-postgres-${DRONE_BUILD_NUMBER} -e POSTGRES_USER -e POSTGRES_PASSWORD postgres:9.6.1
+    - docker run -d --name phub-api-postgres-${DRONE_BUILD_NUMBER} -e POSTGRES_USER -e POSTGRES_PASSWORD postgres:12.5
     - sleep 5
     - docker run --name phub-api-${DRONE_BUILD_NUMBER} -t --rm --env-file=platform-hub-api/.env.test -e PHUB_DB_HOST=phub-api-postgres-${DRONE_BUILD_NUMBER} --link phub-api-postgres-${DRONE_BUILD_NUMBER} platform-hub-api:${DRONE_COMMIT_SHA} /bin/bash -c "cd /app; bin/setup; bin/rails server -d; sleep 5; curl -s -f http://127.0.0.1:3000/healthz"
   when:
@@ -196,7 +196,7 @@ services:
     DOCKER_SERVER: tcp://127.0.0.1:2375
 
 - name: postgres
-  image: postgres:9.6.1
+  image: postgres:12.5
   ports:
   - 5432
   environment:

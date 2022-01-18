@@ -26,7 +26,7 @@ The following packages are required to run the API (may vary across Operating Sy
 
 [Bundler](http://bundler.io/) is used for dependency management. Install this with `gem install bundler`.
 
-#### PostgresSQL v9.6.1
+#### PostgresSQL v12.5
 
 For local development, we recommend using the scripts provided in `./bin/postgres/*` to easily manage a locally running PostgreSQL container with the correct config set up already. See the [relevant README doc](bin/postgres/README.md) for more details.
 
