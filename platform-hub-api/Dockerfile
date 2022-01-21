@@ -12,7 +12,6 @@ RUN apk update && apk upgrade \
     && echo 'gem: --no-document' > /etc/gemrc \
     && gem install bundler -v 2.1.4 \
     && gem update --system \
-    && rm /etc/ssl/certs/ca-cert-DST_ACES_CA_X6.pem \
     && rm /etc/ssl/certs/ca-cert-DST_Root_CA_X3.pem \
     && update-ca-certificates \
     && cp /etc/ssl/certs/ca-certificates.crt /etc/ssl/cert.pem
