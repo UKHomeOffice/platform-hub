@@ -37,6 +37,7 @@ function KubernetesUserTokensRegenerateFormController($scope, $q, $state, $mdDia
   ctrl.allowedGroups = {};
   ctrl.expiryOptions = [
     {label: 'No expiration', value: null},
+    {label: '1 hour', value: 60 * 60},
     {label: '30 days', value: 30 * 24 * 60 * 60},
     {label: '90 days', value: 90 * 24 * 60 * 60}
   ];
