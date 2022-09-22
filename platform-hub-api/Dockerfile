@@ -10,10 +10,9 @@ RUN apk update && apk upgrade \
     postgresql-client postgresql-dev \
     && apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev libressl-dev zlib-dev \
     && echo 'gem: --no-document' > /etc/gemrc \
-    && gem install bundler -v 2.3.4 \
+    && gem install rdoc etc \
     && gem update --system \
-    && rm /etc/ssl/certs/ca-cert-DST_ACES_CA_X6.pem \
-    && rm /etc/ssl/certs/ca-cert-DST_Root_CA_X3.pem \
+    && gem install bundler -v 2.3.14 \
     && update-ca-certificates \
     && cp /etc/ssl/certs/ca-certificates.crt /etc/ssl/cert.pem
 
@@ -25,8 +24,11 @@ RUN addgroup -S app \
     && chown -R app:app /app
 
 # Install deps
-RUN /bin/bash -c 'sudo -u app bundle install --jobs 20 --retry 5 --deployment --without development test --no-cache' && \
-    apk del build_deps
+# RUN sudo -u app /bin/bash -c 'bundle config set --local deployment "true";  bundle config set --local without "development test"; bundle install --jobs 20 --retry 5 --no-cache' \
+# RUN sudo -u app /bin/bash -c 'bundle config set --local deployment "true";  bundle config set --local without "development test"; bundle add etc' \
+    # && apk del build_deps
+RUN sudo -u app /bin/bash -c "bundle config set --local path 'vendor/bundle'; bundle add etc" \
+    && apk del build_deps
 
 ENV HOME /app
 USER 1000
