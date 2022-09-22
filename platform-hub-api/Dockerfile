@@ -10,7 +10,7 @@ RUN apk update && apk upgrade \
     postgresql-client postgresql-dev \
     && apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev libressl-dev zlib-dev \
     && echo 'gem: --no-document' > /etc/gemrc \
-    && gem install bundler -v 2.1.4 \
+    && gem install bundler -v 2.3.4 \
     && gem update --system \
     && rm /etc/ssl/certs/ca-cert-DST_ACES_CA_X6.pem \
     && rm /etc/ssl/certs/ca-cert-DST_Root_CA_X3.pem \
