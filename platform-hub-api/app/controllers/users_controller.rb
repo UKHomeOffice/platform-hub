@@ -38,7 +38,24 @@ class UsersController < ApiJsonController
 
   # GET /users/:id/identities
   def identities
-    render json: @user.identities
+    user_identity = @user.identities
+
+    if current_user.id != @user.id
+      user_identity.each do |item|
+        if item["provider"] == "ecr"
+          if item["credentials"]
+            if item["credentials"]["access_id"]
+              item["credentials"]["access_id"].gsub!(/\S/, '*')
+            end
+            if item["credentials"]["access_key"]
+              item["credentials"]["access_key"].gsub!(/\S/, '*')
+            end
+          end
+        end
+      end
+    end
+
+    render json: user_identity
   end
 
   # POST /users/:id/make_admin
