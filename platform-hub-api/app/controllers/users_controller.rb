@@ -40,7 +40,7 @@ class UsersController < ApiJsonController
   def identities
     user_identity = @user.identities
 
-    if current_user.id != @user.id
+    if current_user.id == @user.id
       user_identity.each do |item|
         if item["provider"] == "ecr"
           if item["credentials"]
