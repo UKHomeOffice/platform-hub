@@ -38,27 +38,17 @@ class UsersController < ApiJsonController
 
   # GET /users/:id/identities
   def identities
-    user_identity = @user.identities
-    puts("user identity::")
-    puts (user_identity.inspect)
+    user_identity = @user.identities.dup
 
-    if current_user.id == @user.id
-      puts("condition match")
+    if current_user.id != @user.id
       user_identity.each do |item|
-        puts("item::")
-        puts(item.inspect)
         if item["provider"] == "ecr"
-          puts("condition match ecr")
           if item["data"]
-            puts("condition match ecr data")
             if item["data"]["credentials"]
-              puts("condition match ecr data credentials")
               if item["data"]["credentials"]["access_id"]
-                puts("condition match ecr data credentials access")
                 item["data"]["credentials"]["access_id"] = item["data"]["credentials"]["access_id"].gsub!(/\S/, '*')
               end
               if item["data"]["credentials"]["access_key"]
-                puts("condition match ecr data credentials secret")
                 item["data"]["credentials"]["access_id"] = item["data"]["credentials"]["access_key"].gsub!(/\S/, '*')
               end
             end
