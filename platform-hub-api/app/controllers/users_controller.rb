@@ -40,13 +40,13 @@ class UsersController < ApiJsonController
   def identities
     user_identity = @user.identities
     puts("user identity::")
-    puts (user_identity)
+    puts (user_identity.inspect)
 
     if current_user.id == @user.id
       puts("condition match")
       user_identity.each do |item|
         puts("item::")
-        puts(item)
+        puts(item.inspect)
         if item["provider"] == "ecr"
           if item["credentials"]
             if item["credentials"]["access_id"]
