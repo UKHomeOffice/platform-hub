@@ -49,15 +49,18 @@ class UsersController < ApiJsonController
         puts(item.inspect)
         if item["provider"] == "ecr"
           puts("condition match ecr")
-          if item["credentials"]
-            puts("condition match ecr credentials")
-            if item["credentials"]["access_id"]
-              puts("condition match ecr credentials access")
-              item["credentials"]["access_id"] = item["credentials"]["access_id"].gsub!(/\S/, '*')
-            end
-            if item["credentials"]["access_key"]
-              puts("condition match ecr credentials secret")
-              item["credentials"]["access_id"] = item["credentials"]["access_key"].gsub!(/\S/, '*')
+          if item["data"]
+            puts("condition match ecr data")
+            if item["data"]["credentials"]
+              puts("condition match ecr data credentials")
+              if item["data"]["credentials"]["access_id"]
+                puts("condition match ecr data credentials access")
+                item["data"]["credentials"]["access_id"] = item["data"]["credentials"]["access_id"].gsub!(/\S/, '*')
+              end
+              if item["data"]["credentials"]["access_key"]
+                puts("condition match ecr data credentials secret")
+                item["data"]["credentials"]["access_id"] = item["data"]["credentials"]["access_key"].gsub!(/\S/, '*')
+              end
             end
           end
         end
