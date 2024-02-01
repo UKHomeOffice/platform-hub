@@ -45,14 +45,20 @@ steps:
   when:
     event: [push, tag]
 
-- name: web_scan_image
-  image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
+- name: scan-image-web
+  pull: Always
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/trivy/client:latest
+  resources:
+    limits:
+      cpu: 1000
+      memory: 1024Mi
   environment:
     IMAGE_NAME: platform-hub-web:${DRONE_COMMIT_SHA}
-    SERVICE_URL: http://anchore-submission-server:10080
-    WHITELIST: CVE-2021-28831
+    IGNORE_UNFIXED: "true"
   when:
-    event: [push, tag]
+    event:
+    - pull_request
+    - push
 
 - name: web_latest_image_to_quay
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
@@ -140,14 +146,20 @@ steps:
     event: [push, tag]
     status: [success, failure]
 
-- name: api_scan_image
-  image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
+- name: scan-image-api
+  pull: Always
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/trivy/client:latest
+  resources:
+    limits:
+      cpu: 1000
+      memory: 1024Mi
   environment:
-    IMAGE_NAME: platform-hub-api:${DRONE_COMMIT_SHA}
-    SERVICE_URL: http://anchore-submission-server:10080
-    WHITELIST:  CVE-2020-8164,CVE-2020-8165,CVE-2020-8162,CVE-2019-5420,CVE-2021-22880,CVE-2021-29509,CVE-2021-32740,CVE-2021-22904,CVE-2020-36327
+    IMAGE_NAME: latform-hub-api:${DRONE_COMMIT_SHA}
+    IGNORE_UNFIXED: "true"
   when:
-    event: [push, tag]
+    event:
+    - pull_request
+    - push
 
 - name: api_latest_image_to_quay
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
@@ -185,15 +197,6 @@ steps:
 services:
 - name: docker
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-
-- name: anchore-submission-server
-  image: docker.digital.homeoffice.gov.uk/acp-anchore-submission:latest
-  commands:
-    - /anchore-submission server
-  environment:
-    ANCHORE_URL: "acp-anchore.acp.homeoffice.gov.uk"
-    REGISTRY_URL: "acp-ephemeral-registry.acp.homeoffice.gov.uk"
-    DOCKER_SERVER: tcp://127.0.0.1:2375
 
 - name: postgres
   image: postgres:12.5
