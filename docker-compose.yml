@@ -1,0 +1,7 @@
+services:
+  api:
+    build:
+      context: platform-hub-api
+      dockerfile: api.Dockerfile
+    ports:
+      - 8080:8080
