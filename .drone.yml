@@ -154,7 +154,7 @@ steps:
       cpu: 1000
       memory: 1024Mi
   environment:
-    IMAGE_NAME: latform-hub-api:${DRONE_COMMIT_SHA}
+    IMAGE_NAME: platform-hub-api:${DRONE_COMMIT_SHA}
     IGNORE_UNFIXED: "true"
   when:
     event:
