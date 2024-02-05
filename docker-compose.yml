@@ -1,7 +1,14 @@
 services:
-  api:
+  web:
     build:
-      context: platform-hub-api
-      dockerfile: api.Dockerfile
+      context: platform-hub-web
+      dockerfile: web.Dockerfile
     ports:
-      - 8080:8080
+      - 3000:3000
+
+  # api:
+  #   build:
+  #     context: platform-hub-api
+  #     dockerfile: api.Dockerfile
+  #   ports:
+  #     - 8080:8080
