@@ -1,3 +1,4 @@
+# Other
 discovery-url: https://sso-dev.notprod.homeoffice.gov.uk/auth/realms/hod-test
 revocation-url: https://sso-dev.notprod.homeoffice.gov.uk/auth/realms/hod-test/protocol/openid-connect/logout
 listen: 0.0.0.0:8080

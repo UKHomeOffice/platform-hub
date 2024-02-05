@@ -1,14 +1,33 @@
+version: '3.7'
 services:
   web:
     build:
       context: platform-hub-web
       dockerfile: web.Dockerfile
+    volumes:
+      - ./platform-hub-web:/app
     ports:
       - 3000:3000
+  
+  phub-auth-proxy:
+    image: quay.io/ukhomeofficedigital/go-keycloak-proxy:v2.0.3
+    entrypoint: > 
+      sh -c "/opt/keycloak-proxy 
+      --config=/opt/data/config.yml 
+      --client-id=$$KCPROXY_CLIENT_ID 
+      --client-secret=$$KCPROXY_CLIENT_SECRET 
+      --encryption-key=$$KCPROXY_ENCRYPTION_KEY 
+      --upstream-url=$$KCPROXY_UPSTREAM_URL"
+    env_file:
+      - ./platform-hub-auth-proxy/local/.env.local
+    ports:
+      - 8080:8080
+    volumes:
+      - ./platform-hub-auth-proxy/local/data:/opt/data
 
-  # api:
-  #   build:
-  #     context: platform-hub-api
-  #     dockerfile: api.Dockerfile
-  #   ports:
-  #     - 8080:8080
+  api:
+    build:
+      context: platform-hub-api
+      dockerfile: api.Dockerfile
+    ports:
+      - 8081:8081

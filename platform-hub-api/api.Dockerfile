@@ -1,24 +1,20 @@
-FROM ruby:2.3.8
+FROM ruby:2.3.8-alpine3.8
 
 WORKDIR /platform-hub-api
 COPY . .
 
+RUN apk update
+RUN apk upgrade
+RUN apk --update add ca-certificates libressl
+RUN update-ca-certificates
+RUN apk --update add bash curl libstdc++ tzdata postgresql-client postgresql-dev
+RUN apk --update add --virtual build_deps sudo build-base libc-dev libressl-dev zlib-dev
+RUN echo 'gem: --no-document' > /etc/gemrc
+
 RUN gem install bundler -v 2.3.27
 RUN bundle
 
-RUN apk update && apk upgrade \
-    && apk --update add ca-certificates libressl \
-    && update-ca-certificates \
-    && apk --update add \
-    bash curl libstdc++ tzdata \
-    postgresql-client postgresql-dev \
-    && apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev libressl-dev zlib-dev \
-    && echo 'gem: --no-document' > /etc/gemrc \
-    && gem update --system \
-    && rm /etc/ssl/certs/ca-cert-DST_ACES_CA_X6.pem \
-    && rm /etc/ssl/certs/ca-cert-DST_Root_CA_X3.pem \
-    && update-ca-certificates \
-    && cp /etc/ssl/certs/ca-certificates.crt /etc/ssl/cert.pem
+
 
 RUN bin/rails db:setup
 

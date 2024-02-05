@@ -1,5 +1,14 @@
 # Platform Hub – the software powering the Application Container Platform Hub at the UK Home Office
 
+## Running the app
+
+Run the below:
+```sh
+docker compose up -d
+```
+
+Visit http://host.docker.internal:3000/ to use the app.
+
 ## General architecture
 
 ### `platform-hub-web`
