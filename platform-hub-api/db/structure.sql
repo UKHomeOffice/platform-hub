@@ -1,9 +1,9 @@
--
+--
 -- PostgreSQL database dump
 --
 
 -- Dumped from database version 12.5 (Debian 12.5-1.pgdg100+1)
--- Dumped by pg_dump version 12.9 (Ubuntu 12.9-2.pgdg20.04+1)
+-- Dumped by pg_dump version 13.8 (Debian 13.8-0+deb11u1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1294,3 +1294,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181109123528'),
 ('20181114155258'),
 ('20181204101525');
+
+
