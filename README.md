@@ -7,7 +7,7 @@ Run the below:
 docker compose up -d
 ```
 
-Visit http://localhost:3000/ to use the app.
+Visit http://host.docker.internal:3000/ to use the app.
 
 ## General architecture
 
@@ -109,7 +109,7 @@ Alastair Mottram-Epson
 Perfect, thanks.
 If you want, please push the change into feature/setup branch.
 9:48
-Does network_mode allow docker containers to interact with other docker containers via localhost rather than host.docker.internal?
+Does network_mode allow docker containers to interact with other docker containers via host.docker.internal rather than host.docker.internal?
 
 
 [ACP] Tom Haynes

@@ -24,6 +24,34 @@ services:
       - 8080:8080
     volumes:
       - ./platform-hub-auth-proxy/local/data:/opt/data
+  
+  platform-hub-db:
+    container_name: platform-hub-db
+    image: postgres:12.5
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    env_file:
+      - ./platform-hub-api/bin/postgres/.env
+  
+  platform-hub-elasticsearch:
+    container_name: phub-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+    volumes:
+     - esdata:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+      - cluster.name=5.5.1
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.ml.enabled=false
+      - xpack.watcher.enabled=false
+      - xpack.graph.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - 9200:9200
 
   api:
     build:
@@ -31,3 +59,7 @@ services:
       dockerfile: api.Dockerfile
     ports:
       - 8081:8081
+    
+volumes:
+  pgdata:
+  esdata:
