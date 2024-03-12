@@ -14,9 +14,7 @@ RUN echo 'gem: --no-document' > /etc/gemrc
 RUN gem install bundler -v 2.3.27
 RUN bundle
 
-
-
-RUN bin/rails db:setup
+# RUN bin/rails db:setup
 
 
 CMD [ "bin/rails", "server" ]
