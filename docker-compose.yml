@@ -8,6 +8,7 @@ services:
       - ./platform-hub-web:/app
     ports:
       - 3000:3000
+      - 3001:3001
   
   phub-auth-proxy:
     image: quay.io/ukhomeofficedigital/go-keycloak-proxy:v2.0.3
@@ -30,10 +31,13 @@ services:
     image: postgres:12.5
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=phub
+      - POSTGRES_PASSWORD=phub_password
+      - POSTGRES_DB=phub_development
     volumes:
       - pgdata:/var/lib/postgresql/data
-    env_file:
-      - ./platform-hub-api/bin/postgres/.env
+    ports:
+      - 5432:5432
   
   platform-hub-elasticsearch:
     container_name: phub-elasticsearch
@@ -57,6 +61,7 @@ services:
     build:
       context: platform-hub-api
       dockerfile: api.Dockerfile
+    command: bundle exec rails s -b '0.0.0.0'
     ports:
       - 8081:8081
     
