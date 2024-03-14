@@ -62,6 +62,8 @@ services:
       context: platform-hub-api
       dockerfile: api.Dockerfile
     command: bundle exec rails s -b '0.0.0.0'
+    volumes:
+      - ./platform-hub-api/.env.local:/platform-hub-api/.env.local
     ports:
       - 8081:8081
     
