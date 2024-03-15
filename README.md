@@ -18,6 +18,7 @@ docker compose up -d
 ```
 
 Visit http://host.docker.internal:3000/ to use the app.
+- http://localhost:3000 will not work.
 
 ## General architecture
 
