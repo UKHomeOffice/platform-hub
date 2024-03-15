@@ -8,7 +8,7 @@
 # NOTE: we're expecting the proxy that sits in the front of the API server to take care of CORS headers
 # Rails.application.config.middleware.insert_before 0, Rack::Cors do
 #   allow do
-#     origins 'localhost:3000'
+#     origins 'host.docker.internal:3000'
 #
 #     resource '*',
 #       headers: :any,

@@ -1,0 +1,75 @@
+version: '3.7'
+services:
+  web:
+    build:
+      context: platform-hub-web
+      dockerfile: web.Dockerfile
+    volumes:
+      - ./platform-hub-web:/app
+      - /app/node_modules
+    ports:
+      - 3000:3000
+      - 3001:3001
+  
+  phub-auth-proxy:
+    image: quay.io/ukhomeofficedigital/go-keycloak-proxy:v2.0.3
+    entrypoint: > 
+      sh -c "/opt/keycloak-proxy 
+      --config=/opt/data/config.yml 
+      --client-id=$$KCPROXY_CLIENT_ID 
+      --client-secret=$$KCPROXY_CLIENT_SECRET 
+      --encryption-key=$$KCPROXY_ENCRYPTION_KEY 
+      --upstream-url=$$KCPROXY_UPSTREAM_URL"
+    env_file:
+      - ./platform-hub-auth-proxy/local/.env.local
+    ports:
+      - 8080:8080
+    volumes:
+      - ./platform-hub-auth-proxy/local/data:/opt/data
+  
+  platform-hub-db:
+    container_name: platform-hub-db
+    image: postgres:12.5
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=phub
+      - POSTGRES_PASSWORD=phub_password
+      - POSTGRES_DB=phub_development
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  
+  platform-hub-elasticsearch:
+    container_name: phub-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+    volumes:
+     - esdata:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+      - cluster.name=5.5.1
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.ml.enabled=false
+      - xpack.watcher.enabled=false
+      - xpack.graph.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - 9200:9200
+
+  api:
+    build:
+      context: platform-hub-api
+      dockerfile: api.Dockerfile
+    command: sh -c "bin/rails db:setup && bundle exec rails s -b '0.0.0.0'"
+    volumes:
+      - ./platform-hub-api/.env.local:/platform-hub-api/.env.local
+    depends_on:
+      - platform-hub-db
+    ports:
+      - 8081:8081
+    
+volumes:
+  pgdata:
+  esdata:

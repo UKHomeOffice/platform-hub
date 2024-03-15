@@ -8,7 +8,7 @@ default: &default
   <% if ENV.include? 'PHUB_DB_URL' %>
   url: <%= ENV['PHUB_DB_URL'] %>
   <% else %>
-  host: <%= ENV.fetch('PHUB_DB_HOST', 'localhost') %>
+  host: <%= ENV.fetch('PHUB_DB_HOST', 'host.docker.internal') %>
   <% end %>
   port: <%= ENV.fetch('PHUB_DB_PORT', 5432) %>
 

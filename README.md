@@ -1,5 +1,25 @@
 # Platform Hub – the software powering the Application Container Platform Hub at the UK Home Office
 
+## Wiki pages
+
+Look at these confluence pages [ACP Platform Hub](https://collaboration.homeoffice.gov.uk/display/DSASS/ACP-Platform).
+
+## Running the app
+
+### Pre-requeistics
+
+Follow these confluence pages for setting the environments for:
+* [Keycloak proxy](https://collaboration.homeoffice.gov.uk/display/DSASS/ACP+Platform+Hub+-+keycloak+auth+proxy+local+setup).
+* [Backend API](https://collaboration.homeoffice.gov.uk/display/DSASS/ACP+Platform+Hub+-+How+to+setup+API+backend+locally)
+
+Run the below:
+```sh
+docker compose up -d
+```
+
+Visit http://host.docker.internal:3000/ to use the app.
+- http://localhost:3000 will not work.
+
 ## General architecture
 
 ### `platform-hub-web`
