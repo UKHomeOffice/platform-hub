@@ -12,6 +12,7 @@ RUN apk --update add --virtual build_deps sudo build-base libc-dev libressl-dev 
 RUN echo 'gem: --no-document' > /etc/gemrc
 
 RUN gem install bundler -v 2.3.27
+RUN gem update --system 3.2.3
 RUN bundle
 
 CMD [ "bin/rails", "server" ]
