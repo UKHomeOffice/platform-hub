@@ -30,6 +30,11 @@ services:
   platform-hub-db:
     container_name: platform-hub-db
     image: postgres:12.5
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U phub -d phub_development"]
+        interval: 1s
+        timeout: 3s
+        retries: 10
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_USER=phub
@@ -62,11 +67,12 @@ services:
     build:
       context: platform-hub-api
       dockerfile: api.Dockerfile
-    command: bundle exec rails s -b '0.0.0.0'
+    command: sh -c "bin/rails db:setup && bundle exec rails s -b '0.0.0.0'"
     volumes:
       - ./platform-hub-api/.env.local:/platform-hub-api/.env.local
     depends_on:
-      - platform-hub-db
+      platform-hub-db:
+        condition: service_healthy
     ports:
       - 8081:8081
     
