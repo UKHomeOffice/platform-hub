@@ -13,6 +13,6 @@ RUN echo 'gem: --no-document' > /etc/gemrc
 
 RUN gem install bundler -v 2.3.27
 RUN gem update --system 3.2.3
-RUN bundle
+RUN bundle install --binstubs
 
 CMD [ "bin/rails", "server" ]
