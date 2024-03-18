@@ -6,7 +6,7 @@ Look at these confluence pages [ACP Platform Hub](https://collaboration.homeoffi
 
 ## Running the app
 
-### Pre-requeistics
+### Prerequisites
 
 Follow these confluence pages for setting the environments for:
 * [Keycloak proxy](https://collaboration.homeoffice.gov.uk/display/DSASS/ACP+Platform+Hub+-+keycloak+auth+proxy+local+setup).
