@@ -4,13 +4,33 @@
 
 An AngularJS 1.5 web app that runs fully client side (served as static assets), with a local development and build stack for easy development, testing and building, as well as communicating with the backend API server (via proxying `/api` calls from the browser).
 
+Note: You can receive memory issues when running the tests in a docker container. 
+* I would recommend 6GB memory for using over 4 GB for docker.
+* Alternatively, run the test in the local environment.
+```sh
+yarn run test
+```
+
 ## Dev
 
 ### Prerequisites
 
 #### Node v6.9.1
 
-[`nave`](https://github.com/isaacs/nave) is a useful way to manage multiple/specific versions of NodeJS
+[`nave`](https://github.com/isaacs/nave) is a useful way to manage multiple/specific versions of NodeJS.
+
+I would recommend using `nvm` instead. To setup, install [nvm](https://github.com/nvm-sh/nvm).
+
+Then run:
+```sh
+nvm install 6.9.1
+```
+Then run afterwards or any time you need to use node 6.9.1:
+```sh
+nvm use 6.9.1
+```
+
+Alternatively use the following:
 
 To set up:
 - `npm install -g nave`
