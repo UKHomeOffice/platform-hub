@@ -22,9 +22,23 @@ docker compose up -d
 Visit http://host.docker.internal:3000/ to use the app.
 - http://localhost:3000 will not work.
 
-### Using all feature
+### Enabling all feature
 
-Run the following in the database to get the all the features in the app:
+To try of the roles in the platform hub:
+- admin
+- limited_admin
+
+admin have access ot the feature flag page, which allows them to determine what features are avialable for use in the app.
+- this feature is required to test all feature in the app on the frontend.
+
+Run the following in the database (platform-hub-db) to get the all the features in the app:
+Access database:
+
+```sh
+psql -U $POSTGRES_USER -d $POSTGRES_DB
+```
+
+For admin users:
 ```sql
 UPDATE users SET role = 'admin';
 ```
