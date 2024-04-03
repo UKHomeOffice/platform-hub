@@ -64,6 +64,10 @@ module.exports = {
       debug: true
     })
   ],
+  watchOptions: {
+    aggregateTimeout: 200,
+    ignored: /node_modules/
+  },
   devtool: 'source-map',
   output: {
     path: path.join(process.cwd(), conf.paths.tmp),

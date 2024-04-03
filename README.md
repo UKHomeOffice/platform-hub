@@ -12,6 +12,8 @@ Follow these confluence pages for setting the environments for:
 * [Keycloak proxy](https://collaboration.homeoffice.gov.uk/display/DSASS/ACP+Platform+Hub+-+keycloak+auth+proxy+local+setup).
 * [Backend API](https://collaboration.homeoffice.gov.uk/display/DSASS/ACP+Platform+Hub+-+How+to+setup+API+backend+locally)
 
+### How To
+
 Run the below:
 ```sh
 docker compose up -d
@@ -20,7 +22,38 @@ docker compose up -d
 Visit http://host.docker.internal:3000/ to use the app.
 - http://localhost:3000 will not work.
 
-## General architecture
+### Enabling All Feature
+
+To try of the roles in the platform hub:
+- admin
+- limited_admin
+
+Admin have access to the feature flag page, which allows them to determine what features are available for use in the app.
+- This feature is required to test all feature in the app on the frontend.
+
+Run the following in the database (platform-hub-db) to get the all the features in the app:
+Access database:
+
+```sh
+psql -U $POSTGRES_USER -d $POSTGRES_DB
+```
+
+For admin users:
+```sql
+UPDATE users SET role = 'admin';
+```
+
+For limited_admin, try:
+```sql
+UPDATE users SET role = 'limited_admin';
+```
+
+**NOTE**: As of April 2nd 2024:
+- This is a not an ideal since the role information is not documented.
+- I don't know if there is better way to do this.
+- However, the above works for providing the full range of features to test, so it has some use.
+
+## General Architecture
 
 ### `platform-hub-web`
 
