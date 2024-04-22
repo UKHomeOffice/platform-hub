@@ -55,6 +55,7 @@ steps:
   environment:
     IMAGE_NAME: platform-hub-web:${DRONE_COMMIT_SHA}
     IGNORE_UNFIXED: "true"
+    ALLOW_CVE_LIST_FILE: .trivyignore
   when:
     event:
     - pull_request
