@@ -11,6 +11,7 @@ RUN apk update && apk upgrade \
     && apk --update add --virtual build_deps sudo build-base ruby-dev libc-dev libressl-dev zlib-dev \
     && echo 'gem: --no-document' > /etc/gemrc \
     && gem install bundler -v 2.1.4 \
+    && gem install rubygems-update -v 3.3.5 \
     && gem update --system \
     && rm /etc/ssl/certs/ca-cert-DST_ACES_CA_X6.pem \
     && rm /etc/ssl/certs/ca-cert-DST_Root_CA_X3.pem \
