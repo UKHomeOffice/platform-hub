@@ -147,21 +147,21 @@ steps:
     event: [push, tag]
     status: [success, failure]
 
-- name: scan-image-api
-  pull: Always
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/trivy/client:latest
-  resources:
-    limits:
-      cpu: 1000
-      memory: 1024Mi
-  environment:
-    IMAGE_NAME: platform-hub-api:${DRONE_COMMIT_SHA}
-    IGNORE_UNFIXED: "true"
-    SEVERITY: HIGH,CRITICAL
-  when:
-    event:
-    - pull_request
-    - push
+# - name: scan-image-api
+#   pull: Always
+#   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/trivy/client:latest
+#   resources:
+#     limits:
+#       cpu: 1000
+#       memory: 1024Mi
+#   environment:
+#     IMAGE_NAME: platform-hub-api:${DRONE_COMMIT_SHA}
+#     IGNORE_UNFIXED: "true"
+#     SEVERITY: HIGH,CRITICAL
+#   when:
+#     event:
+#     - pull_request
+#     - push
 
 - name: api_latest_image_to_quay
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
@@ -181,20 +181,20 @@ steps:
     event: push
     branch: master
 
-- name: api_tag_image_to_quay
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-  commands:
-    - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
-    - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_TAG}
-    - docker push quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_TAG}
-  environment:
-    DOCKER_PASSWORD:
-      from_secret: docker_password
-  volumes:
-    - name: dockersock
-      path: /var/run
-  when:
-    event: tag
+# - name: api_tag_image_to_quay
+#   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+#   commands:
+#     - docker login -u="ukhomeofficedigital+platform_hub" -p=$${DOCKER_PASSWORD} quay.io
+#     - docker tag platform-hub-api:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_TAG}
+#     - docker push quay.io/ukhomeofficedigital/platform-hub-api:$${DRONE_TAG}
+#   environment:
+#     DOCKER_PASSWORD:
+#       from_secret: docker_password
+#   volumes:
+#     - name: dockersock
+#       path: /var/run
+#   when:
+#     event: tag
 
 services:
 - name: docker
