@@ -126,41 +126,9 @@
         </md-tab-body>
       </md-tab>
 
-      <md-tab id="kube-robot-tokens-tab" md-on-select="$ctrl.loadKubernetesRobotTokens()">
-        <md-tab-label>Kube Robot Tokens</md-tab-label>
-        <md-tab-body>
-          <loading-indicator loading="$ctrl.processingKubernetesRobotTokens"></loading-indicator>
-
-          <p
-            ng-if="!$ctrl.processingKubernetesRobotTokens && $ctrl.kubernetesRobotTokens.length == 0"
-            class="md-body-1 none-text"
-            layout="row"
-            layout-align="center center"
-            layout-padding>
-            This cluster has not been used in any robot tokens yet
-          </p>
-
-          <div
-            ng-if="$ctrl.kubernetesRobotTokens.length"
-            paginated-list
-            paginated-list-per-page="$ctrl.kubernetesRobotTokens.pagination.perPage"
-            paginated-list-total="$ctrl.kubernetesRobotTokens.pagination.total"
-            paginated-list-fetch="$ctrl.loadKubernetesRobotTokens(page)">
-
-            <kubernetes-token-card
-              ng-repeat="t in $ctrl.kubernetesRobotTokens track by t.id"
-              token="t"
-              show-actions="true"
-              busy="$ctrl.processingKubernetesRobotTokens"
-              after-update="$ctrl.loadKubernetesRobotTokens()">
-            </kubernetes-token-card>
-
-          </div>
-        </md-tab-body>
-      </md-tab>
 
       <md-tab id="kube-user-tokens-tab" md-on-select="$ctrl.loadKubernetesUserTokens()">
-        <md-tab-label>Kube User Tokens</md-tab-label>
+        <md-tab-label>EKS User RBAC</md-tab-label>
         <md-tab-body>
           <loading-indicator loading="$ctrl.processingKubernetesUserTokens"></loading-indicator>
 

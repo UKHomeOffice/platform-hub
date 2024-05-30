@@ -131,32 +131,6 @@
 
           <br />
 
-          <md-input-container class="md-block" ng-if="!$ctrl.isNew">
-            <label for="token">Token:</label>
-            <input
-              name="token"
-              ng-model="$ctrl.token.obfuscated_token"
-              ng-disabled="$ctrl.token.obfuscated_token"
-              required
-              placeholder="Kubernetes access token">
-            <div ng-messages="$ctrl.kubernetesTokenForm.token.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
-
-          <md-input-container class="md-block" ng-if="!$ctrl.isNew">
-            <label for="uid">UID:</label>
-            <input
-              name="uid"
-              ng-model="$ctrl.token.uid"
-              ng-disabled="$ctrl.token.uid"
-              required
-              placeholder="Kubernetes user UID">
-            <div ng-messages="$ctrl.kubernetesTokenForm.uid.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
-
           <div>
             <md-button
               type="submit"

@@ -472,7 +472,7 @@
         ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)"
         ng-disabled="!$ctrl.shouldEnableKubernetesUserTokensTab()"
         md-on-select="$ctrl.loadKubernetesUserTokens()">
-        <md-tab-label>Kube User Tokens</md-tab-label>
+        <md-tab-label>EKS user RBAC</md-tab-label>
         <md-tab-body>
           <loading-indicator loading="$ctrl.processingKubernetesUserTokens"></loading-indicator>
 

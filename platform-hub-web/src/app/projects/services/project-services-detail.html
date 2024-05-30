@@ -61,37 +61,6 @@
         </md-tab-body>
       </md-tab>
 
-      <md-tab
-        id="kube-robot-tokens-tab"
-        ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)"
-        md-on-select="$ctrl.loadKubernetesRobotTokens()">
-        <md-tab-label>Kube Robot Tokens</md-tab-label>
-        <md-tab-body>
-          <loading-indicator loading="$ctrl.processingKubernetesRobotTokens"></loading-indicator>
-
-          <div
-            ng-if="$ctrl.shouldShowCreateKubernetesRobotTokenButton()"
-            layout="row"
-            layout-align="center center">
-            <md-button
-              class="md-primary md-raised"
-              aria-label="Create a new Kubernetes robot token for this service"
-              ui-sref="kubernetes.robot-tokens.new({fromProject: $ctrl.projectId, fromService: $ctrl.service.id})">
-              Create a new Kubernetes robot token for this service
-            </md-button>
-          </div>
-
-          <kubernetes-token-card
-            ng-repeat="t in $ctrl.kubernetesRobotTokens track by t.id"
-            token="t"
-            show-actions="$ctrl.isAdmin || $ctrl.isProjectAdmin"
-            busy="$ctrl.processingKubernetesRobotTokens"
-            after-update="$ctrl.loadKubernetesRobotTokens()"
-            from-project="$ctrl.projectId"
-            from-service="$ctrl.service.id">
-          </kubernetes-token-card>
-        </md-tab-body>
-      </md-tab>
 
       <md-tab
         id="kube-namespaces-tab"
