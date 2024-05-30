@@ -12,7 +12,7 @@
     </md-card-title>
     <md-card-content>
       <p class="md-body-1">
-        A portal for users of the {{$ctrl.AppSettings.getPlatformName()}}, currently providing information about the platform, links to docs and resources, support request forms and self-serve tools for onboarding and for managing projects (e.g. self serve of Kubernetes tokens). With plans to provide more tools, docs, status and updates for the platform in one central place.
+         A portal for project leads to manage access the ACP EKS notprod sandbox running a later version of kubernetes on a managed elastic kubernetes instance. If you are looking for the live KOPs based environments please visit the live instance of platform hub located <a href="https://hub.acp.homeoffice.gov.uk/">here.</a>
       </p>
     </md-card-content>
   </md-card>
@@ -29,16 +29,16 @@
     </md-card-title>
     <md-card-content>
       <p class="md-body-1">
-        Login <em>(Sidebar > Login)</em> using your single sign-on account (SSO) through Keycloak and a new account will be created for you on the Hub
+        This is the same process as the live environment, get the user to Login <em>(Sidebar > Login)</em> using their single sign-on account (SSO) through Keycloak and a new account will be created for them on the Hub
       </p>
     </md-card-content>
   </md-card>
 
-  <md-card id="how-to-find-stuff-and-request-support">
+  <md-card id="how-to-create-a-namespace">
     <md-card-title>
       <md-card-title-text>
         <span class="md-title" layout="row">
-          How can I find the links to docs and resources, and how do I request support?
+          How can I create a namespace on the sandbox cluster?
           <span flex></span>
           <a class="md-icon-button" ui-sref="{'#':'how-to-find-stuff-and-request-support'}" target="_self"><md-icon ng-bind="$ctrl.linkIcon"></md-icon></a>
         </span>
@@ -46,162 +46,8 @@
     </md-card-title>
     <md-card-content>
       <p class="md-body-1">
-        Both the <a ui-sref="home">homepage</a> and the side nav bar contain <em>platform themes</em> – these are related groups of information, and links to docs and resources, that you may find useful when navigating the platform and figuring out how to perform certain tasks.
+        Please raise a support ticket requesting the namespace be created on the new EKS cluster.
       </p>
-
-      <p class="md-body-1" ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.supportRequests)">
-        If you can't achieve what you need via these links or self-serve on the Hub (see FAQs below for more on self-serve) then you can request support from the {{$ctrl.AppSettings.getPlatformName()}} team by filling in
-        <a ui-sref="help.support.requests.overview">one of the available support request forms</a>.
-      </p>
-    </md-card-content>
-  </md-card>
-
-  <md-card id="what-can-I-do-on-the-hub">
-    <md-card-title>
-      <md-card-title-text>
-        <span class="md-title" layout="row">
-          What can I do on the Hub?
-          <span flex></span>
-          <a class="md-icon-button" ui-sref="{'#':'what-can-I-do-on-the-hub'}" target="_self"><md-icon ng-bind="$ctrl.linkIcon"></md-icon></a>
-        </span>
-      </md-card-title-text>
-    </md-card-title>
-    <md-card-content>
-      <div class="md-body-1">
-        <p>
-          Once you log in…
-        </p>
-        <ul>
-          <li>
-            You will be taken through an onboarding process:
-            <ul>
-              <li>
-                <a ui-sref="terms-of-service">Agree to the Terms of Service</a>
-              </li>
-              <li>
-                <a ui-sref="onboarding.hub-setup">Configure your Hub setup</a>
-              </li>
-              <li>
-                <a ui-sref="onboarding.services">Onboard on to platform services</a>
-              </li>
-            </ul>
-          </li>
-          <li>
-            You can <a ui-sref="identities">manage your connected identities and view any relevant auth info</a> (e.g: Github, Kubernetes)
-
-            <ul ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)">
-              <li>
-                E.g. here you can find Kubernetes tokens you have been granted by your project(s)
-              </li>
-            </ul>
-          </li>
-          <li ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.announcements)">
-            You can <a ui-sref="announcements.global">view global announcements about the platform</a>
-          </li>
-          <li>
-            You can view information and resources about the various <em>platform themes</em> from the sidebar or <a ui-sref="home">homepage</a>
-          </li>
-          <li ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.projects)">
-            You can <a ui-sref="projects.list">view projects and their team members</a>
-
-            <ul>
-              <li>
-                If you are a member of a project, you can also view all of its services and associated resources (e.g. Kubernetes robot tokens for a particular service within that project)
-              </li>
-            </ul>
-          </li>
-          <li ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.supportRequests)">
-            You can <a ui-sref="help.support.requests.overview">make a support request</a>
-          </li>
-        </ul>
-
-        <p ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.projects)">
-          If you have been made a <strong>project admin</strong> you can:
-        </p>
-        <ul ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.projects)">
-          <li>
-            Add someone to your project team (on the main project page).
-          </li>
-          <li>
-            Remove a team member from your project (using the <em>Actions</em> button next to a team member, on the project page).
-          </li>
-          <li>
-            Onboard and offboard team members on Github (using the <em>Actions</em> button next to a team member, on the project page). <strong>Note:</strong> you can only do this for users that have connected up their Github identity within the Hub.
-          </li>
-          <li>
-            Manage the <em>services</em> that are being developed in your project (via the Services tab on your project page).
-
-            <ul>
-              <li>
-                Project services are a way of grouping and breaking up your project into smaller sub-projects / deliverables / components / apps etc. Most resources provided by the platform are scoped to, and associated with, a particular service in your project (e.g. Kubernetes robot tokens).
-              </li>
-            </ul>
-          </li>
-          <li>
-            Manage Kubernetes user tokens for team members.
-          </li>
-          <li>
-            Manage Kubernetes robot tokens for CI builds and deploys (on the project service page that you can drill down to from the services list of your project).
-          </li>
-          <li>
-            View the monthly costs for your project (via the "Bills" tab on the project page).
-          </li>
-        </ul>
-      </div>
-    </md-card-content>
-  </md-card>
-
-  <md-card id="why-cant-I-create-projects-etc" ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.projects)">
-    <md-card-title>
-      <md-card-title-text>
-        <span class="md-title" layout="row">
-          Why can't I create new projects or perform certain actions on the Hub?
-          <span flex></span>
-          <a class="md-icon-button" ui-sref="{'#':'why-cant-I-create-projects-etc'}" target="_self"><md-icon ng-bind="$ctrl.linkIcon"></md-icon></a>
-        </span>
-      </md-card-title-text>
-    </md-card-title>
-    <md-card-content>
-      <div class="md-body-1">
-        <p>
-          You need to be granted specific permissions to be able to do certain things on the Hub:
-        </p>
-        <ul>
-          <li>
-            <strong>Project admins</strong> can manage a project's team, onboard/offboard its team members and manage its services and Kubernetes user and robot tokens
-          </li>
-          <li>
-            <strong>Hub admins</strong> manage announcements, users, projects and much more on the Hub and grant special permissions to others
-          </li>
-        </ul>
-      </div>
-    </md-card-content>
-  </md-card>
-
-  <md-card id="tips-n-tricks">
-    <md-card-title>
-      <md-card-title-text>
-        <span class="md-title" layout="row">
-          Tips &amp; Tricks
-          <span flex></span>
-          <a class="md-icon-button" ui-sref="{'#':'tips-n-tricks'}" target="_self"><md-icon ng-bind="$ctrl.linkIcon"></md-icon></a>
-        </span>
-      </md-card-title-text>
-    </md-card-title>
-    <md-card-content>
-      <div class="md-body-1">
-        <ul>
-          <li ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.announcements)">
-            You can mark all global announcements as read by clicking on the "Mark all read" button on the top right hand side of the <a ui-sref="announcements.global">Global Announcements page</a>.
-          </li>
-          <li>
-            You can go back to the <a ui-sref="onboarding.services">platform services onboarding page</a> at any time and onboard yourself to services, regardless of whether you have previously onboarded or not (i.e. bad things should not happen if you onboard again).
-          </li>
-          <li ng-if="$ctrl.FeatureFlags.isEnabled($ctrl.featureFlagKeys.kubernetesTokens)">
-            You can view all your Kubernetes tokens on your <a ui-sref="identities">connected identities page</a>.
-          </li>
-        </ul>
-      </div>
     </md-card-content>
   </md-card>
 

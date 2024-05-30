@@ -41,29 +41,6 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
     }
   ];
 
-  ctrl.myAccountNavStates = [
-    {
-      title: 'Terms of Service',
-      state: 'terms-of-service',
-      icon: icons.termsOfService
-    },
-    {
-      title: 'Hub Setup',
-      state: 'onboarding.hub-setup',
-      icon: icons.hubSetup
-    },
-    {
-      title: 'Services Onboarding',
-      state: 'onboarding.services',
-      icon: icons.services
-    },
-    {
-      title: 'Connected Identities',
-      state: 'identities',
-      icon: icons.identities
-    }
-  ];
-
   ctrl.orgNavStates = [
     {
       title: 'Projects',

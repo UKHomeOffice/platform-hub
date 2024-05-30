@@ -36,14 +36,6 @@
     </div>
 
     <p class="md-body-1">
-      <strong>Token: </strong>
-      <kubernetes-token-value item="$ctrl.token"></kubernetes-token-value>
-    </p>
-    <p class="md-body-1">
-      <strong>UID:</strong> {{$ctrl.token.uid}}
-    </p>
-
-    <p class="md-body-1">
       <strong>Groups:</strong>
       <span ng-if="$ctrl.token.groups.length > 0">
         <span ng-repeat="g in $ctrl.token.groups track by g" class="badge" md-colors="{background: 'green-100'}">{{g}}</span>
