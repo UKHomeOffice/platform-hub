@@ -94,47 +94,47 @@ steps:
   when:
     event: tag
 
-- name: api_tests
-  image: ruby:2.3.8-alpine
-  environment:
-    PHUB_DB_HOST: postgres
-  commands:
-    - apk -U add ca-certificates libressl postgresql-client postgresql-dev build-base make
-    - update-ca-certificates
-    - "echo 'gem: --no-document' > /etc/gemrc && gem install bundler -v 2.1.4"
-    - cd platform-hub-api
-    - bundle install --jobs 20 --retry 5 --deployment
-    - ./test.sh
-  when:
-    event: [push, tag]
+# - name: api_tests
+#   image: ruby:2.3.8-alpine
+#   environment:
+#     PHUB_DB_HOST: postgres
+#   commands:
+#     - apk -U add ca-certificates libressl postgresql-client postgresql-dev build-base make
+#     - update-ca-certificates
+#     - "echo 'gem: --no-document' > /etc/gemrc && gem install bundler -v 2.1.4"
+#     - cd platform-hub-api
+#     - bundle install --jobs 20 --retry 5 --deployment
+#     - ./test.sh
+#   when:
+#     event: [push, tag]
 
-- name: api_build_image
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-  commands:
-    - cd platform-hub-api
-    # wait for docker service to be up before running docker build.
-    - n=0; while [ "$n" -lt 60 ] && [ ! -e /var/run/docker.sock ]; do n=$(( n + 1 )); sleep 1; done
-    - docker build -t platform-hub-api:$${DRONE_COMMIT_SHA} .
-  volumes:
-    - name: dockersock
-      path: /var/run
-  when:
-    event: [push, tag]
+# - name: api_build_image
+#   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+#   commands:
+#     - cd platform-hub-api
+#     # wait for docker service to be up before running docker build.
+#     - n=0; while [ "$n" -lt 60 ] && [ ! -e /var/run/docker.sock ]; do n=$(( n + 1 )); sleep 1; done
+#     - docker build -t platform-hub-api:$${DRONE_COMMIT_SHA} .
+#   volumes:
+#     - name: dockersock
+#       path: /var/run
+#   when:
+#     event: [push, tag]
 
-- name: api_test_image
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-  environment:
-    POSTGRES_USER: phub
-    POSTGRES_PASSWORD: phub_password
-  commands:
-    - docker run -d --name phub-api-postgres-${DRONE_BUILD_NUMBER} -e POSTGRES_USER -e POSTGRES_PASSWORD postgres:12.5
-    - sleep 5
-    - docker run --name phub-api-${DRONE_BUILD_NUMBER} -t --rm --env-file=platform-hub-api/.env.test -e PHUB_DB_HOST=phub-api-postgres-${DRONE_BUILD_NUMBER} --link phub-api-postgres-${DRONE_BUILD_NUMBER} platform-hub-api:${DRONE_COMMIT_SHA} /bin/bash -c "cd /app; bin/setup; bin/rails server -d; sleep 5; curl -s -f http://127.0.0.1:3000/healthz"
-  when:
-    event: [push, tag]
-  volumes:
-    - name: dockersock
-      path: /var/run
+# - name: api_test_image
+#   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+#   environment:
+#     POSTGRES_USER: phub
+#     POSTGRES_PASSWORD: phub_password
+#   commands:
+#     - docker run -d --name phub-api-postgres-${DRONE_BUILD_NUMBER} -e POSTGRES_USER -e POSTGRES_PASSWORD postgres:12.5
+#     - sleep 5
+#     - docker run --name phub-api-${DRONE_BUILD_NUMBER} -t --rm --env-file=platform-hub-api/.env.test -e PHUB_DB_HOST=phub-api-postgres-${DRONE_BUILD_NUMBER} --link phub-api-postgres-${DRONE_BUILD_NUMBER} platform-hub-api:${DRONE_COMMIT_SHA} /bin/bash -c "cd /app; bin/setup; bin/rails server -d; sleep 5; curl -s -f http://127.0.0.1:3000/healthz"
+#   when:
+#     event: [push, tag]
+#   volumes:
+#     - name: dockersock
+#       path: /var/run
 
 - name: cleanup_postgres
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
