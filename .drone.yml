@@ -55,6 +55,7 @@ steps:
   environment:
     IMAGE_NAME: platform-hub-web:${DRONE_COMMIT_SHA}
     IGNORE_UNFIXED: "true"
+    SEVERITY: HIGH,CRITICAL
   when:
     event:
     - pull_request
@@ -156,6 +157,7 @@ steps:
   environment:
     IMAGE_NAME: platform-hub-api:${DRONE_COMMIT_SHA}
     IGNORE_UNFIXED: "true"
+    SEVERITY: HIGH,CRITICAL
   when:
     event:
     - pull_request
