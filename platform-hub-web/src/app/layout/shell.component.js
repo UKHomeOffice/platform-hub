@@ -24,21 +24,7 @@ function ShellController($scope, $mdSidenav, authService, roleCheckerService, ev
   ctrl.isLimitedAdmin = false;
 
   ctrl.flagMessages = [
-    {
-      flag: 'agreed_to_terms_of_service',
-      state: 'terms-of-service',
-      text: 'Agree to the Terms of Service'
-    },
-    {
-      flag: 'completed_hub_onboarding',
-      state: 'onboarding.hub-setup',
-      text: 'Complete your hub setup'
-    },
-    {
-      flag: 'completed_services_onboarding',
-      state: 'onboarding.services',
-      text: 'Complete your services onboarding'
-    }
+
   ];
 
   ctrl.orgNavStates = [

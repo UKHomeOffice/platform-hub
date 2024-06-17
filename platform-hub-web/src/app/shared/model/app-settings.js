@@ -53,11 +53,11 @@ export const AppSettings = function ($timeout, hubApiService, apiBackoffTimeMs, 
   }
 
   function getPlatformName() {
-    return model.data.platformName || 'Platform';
+    return model.data.platformName || 'ACP EKS Platform';
   }
 
   function getPlatformOverviewText() {
-    return model.data.platform_overview || '';
+    return '<h2 align="center">ACP EKS Platform Hub</h2><p align="center">This instance of platform hub is to be used with the ACP EKS notprod sandbox environment.<br></p><p align="center">For more information please see our <a href="https://docs.eks.acp.homeoffice.gov.uk/announcements/2024/06/12/acp-eks-notprod-sandbox-release">announcement</a><br></p>';
   }
 
   function getTermsOfServiceText() {

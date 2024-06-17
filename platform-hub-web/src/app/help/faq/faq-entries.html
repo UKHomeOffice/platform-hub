@@ -4,7 +4,7 @@
     <md-card-title>
       <md-card-title-text>
         <span class="md-title" layout="row">
-          What is the {{$ctrl.AppSettings.getAppTitle()}}?
+          What is the EKS Platform Hub?
           <span flex></span>
           <a class="md-icon-button" ui-sref="{'#':'what-is-this-hub'}" target="_self"><md-icon ng-bind="$ctrl.linkIcon"></md-icon></a>
         </span>
@@ -12,7 +12,7 @@
     </md-card-title>
     <md-card-content>
       <p class="md-body-1">
-         A portal for project leads to manage access the ACP EKS notprod sandbox running a later version of kubernetes on a managed elastic kubernetes instance. If you are looking for the live KOPs based environments please visit the live instance of platform hub located <a href="https://hub.acp.homeoffice.gov.uk/">here.</a>
+         A portal for project leads to manage access to the ACP Elastic Kubernetes Service (EKS) sandbox kubernetes cluster. If you are looking for the live KOPs based environments please visit the live instance of platform hub located <a href="https://hub.acp.homeoffice.gov.uk/">here.</a>
       </p>
     </md-card-content>
   </md-card>
@@ -47,6 +47,97 @@
     <md-card-content>
       <p class="md-body-1">
         Please raise a support ticket requesting the namespace be created on the new EKS cluster.
+      </p>
+    </md-card-content>
+  </md-card>
+
+  <md-card id="where-is-feature">
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-title" layout="row">
+          Where is (x) feature of platform hub?
+          <span flex></span>
+          <a class="md-icon-button" ui-sref="{'#':'how-to-find-stuff-and-request-support'}" target="_self"><md-icon ng-bind="$ctrl.linkIcon"></md-icon></a>
+        </span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <p class="md-body-1">
+        Many features of platform hub have been disabled in this version of platform hub. This is a sandbox environment dedicated to the single EKS notprod sandbox.
+      </p>
+    </md-card-content>
+  </md-card>
+
+
+  <md-card id="authenticating-with-the-cluster">
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-title" layout="row">
+          How do I connect to the cluster?
+          <span flex></span>
+          <a class="md-icon-button" ui-sref="{'#':'how-to-find-stuff-and-request-support'}" target="_self"><md-icon ng-bind="$ctrl.linkIcon"></md-icon></a>
+        </span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <p class="md-body-1">
+        Get one of your project admins to allocate you to a RBAC group for your project. These will either be read-only, pod-management or admin scoped to the project's namespaces.
+        To connect to the cluster you can utilise the helper script located in this <a href="https://github.com/UKHomeOffice/acp-eks-helper">github repo.</a> If for some reason you cannot use the script please directly login to the <a href="https://eks-vault.notprod.acp.homeoffice.gov.uk">vault UI</a> under the cluster-auth provider and generate credentials for the role you have been allocated in this platform hub instance.
+      </p>
+    </md-card-content>
+  </md-card>
+
+  <md-card id="old-tokens">
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-title" layout="row">
+          Where are the old tokens?
+          <span flex></span>
+          <a class="md-icon-button" ui-sref="{'#':'how-to-find-stuff-and-request-support'}" target="_self"><md-icon ng-bind="$ctrl.linkIcon"></md-icon></a>
+        </span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <p class="md-body-1">
+        The static tokens used by the KOPs clusters cannot be used in EKS. As a result we needed to design a new solution for authenticating with the cluster. More information on the authentication architecture can be found in the EKS Docs.
+      </p>
+    </md-card-content>
+  </md-card>
+  
+  <md-card id="escalation-on-the-cluster">
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-title" layout="row">
+          Does this mean just in time escalation has been removed?
+          <span flex></span>
+          <a class="md-icon-button" ui-sref="{'#':'how-to-find-stuff-and-request-support'}" target="_self"><md-icon ng-bind="$ctrl.linkIcon"></md-icon></a>
+        </span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <p class="md-body-1">
+        The just in time escalation solution has been left in place. As this is a Sandbox environment this can be removed at a tenants request. The solution has some quirks and interactions with Vault that are unintended, because this solution will not be productionised we have avoided implementing a fix.
+      </p>
+    </md-card-content>
+  </md-card>
+
+
+
+
+
+  <md-card id="tenant-scoped-rbac">
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-title" layout="row">
+          Why are tenant RBAC groups no longer scoped to a namespace?
+          <span flex></span>
+          <a class="md-icon-button" ui-sref="{'#':'how-to-find-stuff-and-request-support'}" target="_self"><md-icon ng-bind="$ctrl.linkIcon"></md-icon></a>
+        </span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <p class="md-body-1">
+        As this architecture is no longer going to progress to production, we decided to keep the RBAC roles tenant scoped. It might have caused technical issues to give more granular permissions.
       </p>
     </md-card-content>
   </md-card>
