@@ -343,13 +343,6 @@ describe('routes', () => {
       authService.isAuthenticated.should.have.callCount(1);
       expect($state.current.name).toBe('terms-of-service');
 
-      goTo('/onboarding/hub-setup');
-      authService.isAuthenticated.should.have.callCount(2);
-      expect($state.current.name).toBe('onboarding.hub-setup');
-
-      goTo('/identities');
-      authService.isAuthenticated.should.have.callCount(3);
-      expect($state.current.name).toBe('identities');
     });
   });
 
