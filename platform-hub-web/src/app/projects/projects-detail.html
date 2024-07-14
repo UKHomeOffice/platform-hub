@@ -489,7 +489,7 @@
                 <md-select
                   ng-model="$ctrl.kubernetesUserTokensSelectedUser"
                   placeholder="Select a project team member"
-                  aria-label="Select a user to see their tokens for this project">
+                  aria-label="Select a user to see their group assignments for this project">
                   <md-option
                     ng-repeat="m in $ctrl.memberships track by m.user.id"
                     value="{{m.user.id}}">
@@ -505,9 +505,9 @@
               ng-if="$ctrl.kubernetesUserTokensSelectedUser">
               <md-button
                 class="md-primary md-raised"
-                aria-label="Create a new Kubernetes token for this user"
+                aria-label="Assign a Kubernetes group to this user"
                 ui-sref="kubernetes.user-tokens.new({userId: $ctrl.kubernetesUserTokensSelectedUser, fromProject: $ctrl.project.id})">
-                Create a new Kubernetes user token for this user
+                Assign a Kubernetes group to this user
               </md-button>
             </div>
 
