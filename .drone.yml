@@ -59,6 +59,7 @@ steps:
   environment:
     IMAGE_NAME: platform-hub-web:${DRONE_COMMIT_SHA}
     IGNORE_UNFIXED: "true"
+    ALLOW_CVE_LIST: CVE-2022-37434
   when:
     event:
     - pull_request
@@ -91,7 +92,6 @@ steps:
   environment:
     DOCKER_PASSWORD:
       from_secret: docker_password
-    ALLOW_CVE_LIST: CVE-2022-37434
   volumes:
     - name: dockersock
       path: /var/run
