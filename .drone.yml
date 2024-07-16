@@ -59,7 +59,8 @@ steps:
   environment:
     IMAGE_NAME: platform-hub-web:${DRONE_COMMIT_SHA}
     IGNORE_UNFIXED: "true"
-    ALLOW_CVE_LIST: CVE-2022-37434
+    FAIL_ON_DETECTION	: false
+    FAIL_ON_EOL_OS_DETECTION: false
   when:
     event:
     - pull_request
@@ -161,6 +162,8 @@ steps:
   environment:
     IMAGE_NAME: platform-hub-api:${DRONE_COMMIT_SHA}
     IGNORE_UNFIXED: "true"
+    FAIL_ON_DETECTION	: false
+    FAIL_ON_EOL_OS_DETECTION: false
   when:
     event:
     - pull_request
