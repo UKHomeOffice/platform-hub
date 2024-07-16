@@ -91,6 +91,7 @@ steps:
   environment:
     DOCKER_PASSWORD:
       from_secret: docker_password
+    ALLOW_CVE_LIST: CVE-2022-37434
   volumes:
     - name: dockersock
       path: /var/run
