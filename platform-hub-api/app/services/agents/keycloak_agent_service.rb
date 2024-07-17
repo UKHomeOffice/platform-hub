@@ -33,7 +33,7 @@ module Agents
       end
 
       begin
-        response = client.post "/auth/realms/#{@realm}/protocol/openid-connect/token",
+        response = client.post "/realms/#{@realm}/protocol/openid-connect/token",
           {
             client_id: @client_id,
             client_secret: @client_secret,
@@ -81,7 +81,7 @@ module Agents
       raise Errors::KeycloakIdentityMissing if user_id.nil?
 
       begin
-        response = client.get "/auth/admin/realms/#{@realm}/users/#{user_id}",
+        response = client.get "/admin/realms/#{@realm}/users/#{user_id}",
           {},
           {Authorization: "Bearer #{bearer_token}"}
       rescue => e
@@ -108,7 +108,7 @@ module Agents
       end
 
       begin
-        response = client.put "/auth/admin/realms/#{@realm}/users/#{user_id}",
+        response = client.put "/admin/realms/#{@realm}/users/#{user_id}",
           representation.to_json,
           {
             'Authorization': "Bearer #{bearer_token}",
