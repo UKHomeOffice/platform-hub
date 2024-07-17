@@ -48,7 +48,7 @@ describe Agents::KeycloakAgentService, type: :service do
         expect(subject).to receive(:client) { client }
 
         expect(client).to receive(:post).with(
-          "/auth/realms/#{realm}/protocol/openid-connect/token",
+          "/realms/#{realm}/protocol/openid-connect/token",
           {
             client_id: client_id,
             client_secret: client_secret,
@@ -180,7 +180,7 @@ describe Agents::KeycloakAgentService, type: :service do
           expect(subject).to receive(:client) { client }
           expect(subject).to receive(:bearer_token) { bearer_token }
           expect(client).to receive(:get).with(
-            "/auth/admin/realms/#{realm}/users/#{keycloak_user_id}",
+            "/admin/realms/#{realm}/users/#{keycloak_user_id}",
             {},
             {
               'Authorization': "Bearer #{bearer_token}"
@@ -237,7 +237,7 @@ describe Agents::KeycloakAgentService, type: :service do
           expect(subject).to receive(:client) { client }
           expect(subject).to receive(:bearer_token) { bearer_token }
           expect(client).to receive(:put).with(
-            "/auth/admin/realms/#{realm}/users/#{keycloak_user_id}",
+            "/admin/realms/#{realm}/users/#{keycloak_user_id}",
             representation.to_json,
             {
               'Authorization': "Bearer #{bearer_token}",
