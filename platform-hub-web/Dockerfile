@@ -7,7 +7,7 @@
 # NOTE: this dockerfile expects that a built/optimized version of the web app is
 # already available within `./dist`.
 
-FROM alpine:3.12
+FROM alpine:3.20
 
 COPY dist /app/
 WORKDIR /app
