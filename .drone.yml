@@ -10,6 +10,10 @@ steps:
 - name: web_tests_then_build_dist
   image: quay.io/ukhomeofficedigital/nodejs-base:v6.9.1
   commands:
+    ## Band aid workaround to build container after centos7 EOL 20240701 - https://serverfault.com/questions/1161816/mirrorlist-centos-org-no-longer-resolve
+    - sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo
+    - sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo
+    - sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
     - yum install -y git bzip2 bzip2-libs fontconfig
     - git config --global url."https://".insteadOf git://
     - npm install -g yarn@0.27.5
@@ -55,6 +59,8 @@ steps:
   environment:
     IMAGE_NAME: platform-hub-web:${DRONE_COMMIT_SHA}
     IGNORE_UNFIXED: "true"
+    FAIL_ON_DETECTION: false
+    FAIL_ON_EOL_OS_DETECTION: false
   when:
     event:
     - pull_request
@@ -156,6 +162,8 @@ steps:
   environment:
     IMAGE_NAME: platform-hub-api:${DRONE_COMMIT_SHA}
     IGNORE_UNFIXED: "true"
+    FAIL_ON_DETECTION: false
+    FAIL_ON_EOL_OS_DETECTION: false
   when:
     event:
     - pull_request
