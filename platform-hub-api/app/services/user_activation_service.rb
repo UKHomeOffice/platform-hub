@@ -18,7 +18,12 @@ module UserActivationService
   end
 
   def deactivate! user
-    keycloak_agent_service.deactivate_user(user)
+    begin
+      keycloak_agent_service.deactivate_user(user)
+    rescue Agents::KeycloakAgentService::Errors::KeycloakIdentityMissing,
+           Agents::KeycloakAgentService::Errors::KeycloakUserRepresentationMissing => e
+      Rails.logger.warn "No Keycloak account for #{user.email} (#{e.class.name}); continuing with deactivation."
+    end
 
     if user.github_identity
       begin
